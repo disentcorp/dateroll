@@ -1,7 +1,7 @@
-from tplus1.date import Date
-from tplus1.period import Period
-from tplus1.schedule import Schedule
-from tplus1.ddh import ddh
+from dateroll.date import Date
+from dateroll.period import Period
+from dateroll.schedule import Schedule
+from dateroll.ddh import ddh
 
 import code
 code.interact(local=locals())

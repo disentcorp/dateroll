@@ -5,8 +5,8 @@ import datetime
 from dateutil.parser import parse
 from dateutil.relativedelta import relativedelta
 
-from tplus1.regex import PTN
-from tplus1.utils import datePeriodStringToDatePeriod
+from dateroll.regex import PTN
+from dateroll.utils import datePeriodStringToDatePeriod
 
 DATE_CONVERT_DICT = {
     "1w": {"d": {"7d": "perfect"}},

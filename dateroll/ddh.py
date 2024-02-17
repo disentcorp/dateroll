@@ -2,11 +2,11 @@ import re
 
 from dateutil.relativedelta import relativedelta
 
-from tplus1.date import Date
-from tplus1.period import Period
-from tplus1.schedule import Schedule
-from tplus1.utils import datePeriodParse, assign_kwargs
-from tplus1.regex import PTNW,PTN,RHS_PATTERN_2
+from dateroll.date import Date
+from dateroll.period import Period
+from dateroll.schedule import Schedule
+from dateroll.utils import datePeriodParse, assign_kwargs
+from dateroll.regex import PTNW,PTN,RHS_PATTERN_2
 
 def handle_input(args):
     isit = all([isinstance(arg, str) for arg in args])

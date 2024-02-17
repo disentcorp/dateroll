@@ -1,9 +1,9 @@
 
-from tplus1.date import Date
-from tplus1.period import Period
-from tplus1.utils import fwd_or_bwd
-from tplus1.utils import datePeriodParse, genEndtoEnd
-from tplus1.utils import DATE_RANGE_HELPER_DICT, IERULE_MAPPING, LASTDATEOFMONTH
+from dateroll.date import Date
+from dateroll.period import Period
+from dateroll.utils import fwd_or_bwd
+from dateroll.utils import datePeriodParse, genEndtoEnd
+from dateroll.utils import DATE_RANGE_HELPER_DICT, IERULE_MAPPING, LASTDATEOFMONTH
 
 
 class Schedule:
