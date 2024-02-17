@@ -5,6 +5,7 @@ from dateroll.holidays import get_hol_list
 from dateutil.parser import parse
 import calendar
 import numpy
+import dateutil.relativedelta
 
 class Date(datetime.date):
     # dt_str some f(y,m,d)
@@ -77,6 +78,10 @@ class Date(datetime.date):
 
     def strftime(self, mask):
         return datetime.datetime(self.year, self.month, self.day).strftime(mask)
+    
+    def __cmp__(self,b):
+        return self.datetime == b
+
 
     @property
     def datetime(self):
@@ -108,6 +113,8 @@ class Date(datetime.date):
     
     def __radd__(self,o):
         return self.__add__(o)
+
+DateLike = (datetime.datetime,datetime.date,Date)
 
 if __name__ == '__main__':
     ...

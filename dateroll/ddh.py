@@ -47,16 +47,21 @@ def ddh(*args):
             # asof_ed = ddh(ed)
             # st = ddh(f'{asof_st}+0bd').strftime('%Y%m%d') if 'bd' in per.lower() else ...
             # ed = ddh(f'{ed}-0bd').strftime('%Y%m%d') if 'bd' in per.lower() else ...
+            if isinstance(st,str):
+                st = Date(st)
+            if isinstance(ed,str):
+                ed = Date(ed)
             rs = Schedule(
                 st,
                 ed,
-                per=per,
+                per,
                 stub=stub,
                 ret=ret,
                 monthEndRule=monthEndRule,
                 ie=ie,
                 dc=dc,
             )()
+            
             if not ret in ["l", "ll", "df", "lp"]:
                 rs = set(rs)
                 rs = list(sorted(rs))

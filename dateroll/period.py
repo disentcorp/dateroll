@@ -1,6 +1,7 @@
 import re
 import warnings
 import datetime
+import dateutil
 
 from dateutil.parser import parse
 from dateutil.relativedelta import relativedelta
@@ -83,6 +84,7 @@ def date_convert_dict(per, roughly):
 class Period:  # look like a subclass of relativedelta
     # dt_str some f(operatior,num,unit,cal_array,roll_function)
     def __init__(self, date_period_string):
+        self.orig_date_period_string = date_period_string
         # self.date_period_string,self.st,self.ed = dtYMD_convert(date_period_string)
         self.date_period_string, self.days_, self.st, self.ed = self.per(date_period_string)
         self.date_period_function = datePeriodStringToDatePeriod(self.date_period_string)
@@ -111,7 +113,8 @@ class Period:  # look like a subclass of relativedelta
             self.rs = datetime.datetime.strptime(self.rs, "%Y%m%d")  # datetime.strptime(rs,'%Y%m%d')
 
         # self.rs = self.rs.replace(hour=0, minute=0, second=0, microsecond=0)
-        return self.rs
+        from dateroll.date import Date
+        return Date(self.rs)
 
     def today(self):
         return self.date_period_function(datetime.date.today(), 1)
@@ -143,10 +146,10 @@ class Period:  # look like a subclass of relativedelta
         return self.toDt()
 
     def __str__(self):
-        return f"{self.date_period_string}"
+        return f"{self.orig_date_period_string}"
 
     def __repr__(self):
-        return f'Period("{self.date_period_string}")'
+        return f'Period("{self.orig_date_period_string}")'
 
     def per(self, date_period_string):
 
@@ -221,6 +224,9 @@ class Period:  # look like a subclass of relativedelta
         n = float(n.replace("d", ""))
         return n
     
+
+PeriodLike = (dateutil.relativedelta,datetime.timedelta,Period)
+
 
 if __name__ == '__main__':
     ...
