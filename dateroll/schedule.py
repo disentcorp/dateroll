@@ -1,3 +1,5 @@
+import datetime
+
 
 from dateroll.date import Date
 from dateroll.period import Period
@@ -116,6 +118,9 @@ class Schedule:
             rs["dur"] = rs["dur"].apply(f)
         if self.ret.lower() == "lp":
             rs = [Date(f"-{p}d") if ("-" in self.per_origin and p >= 0) else Date(f"{p}d") for p in rs]
+        if isinstance(rs,list) and len(rs)>0 and isinstance(rs[0],datetime.datetime):
+            # temporary fix, sometimes self.ret has datetime instead of date
+            rs = [Date(dt) for dt in rs]
 
         return rs
     
