@@ -108,13 +108,14 @@ class Schedule:
             self.stub = "full"
         rs = DATE_RANGE_HELPER_DICT[self.ret.lower()](dts, self.stub)
         # handle result, if lp, it has to be period, if period<0 it has to be negative period in the result
-        if not self.ret.lower() in ["ll", "df"]:
+        if not self.ret.lower() in ["ll", "df", "lp"]:
             rs = set(rs)
-            print(rs)
             rs = list(sorted(rs))
         if self.ret.lower() == "df":
             f = lambda p: f"-{p}" if ("-" in self.per_origin and not "-" in p) else f"{p}"
             rs["dur"] = rs["dur"].apply(f)
+        if self.ret.lower() == "lp":
+            rs = [Date(f"-{p}d") if ("-" in self.per_origin and p >= 0) else Date(f"{p}d") for p in rs]
 
         return rs
     
