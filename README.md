@@ -5,15 +5,15 @@
 # Date Math (by Disent)
 The purpose of the Disent Date Math Library is to extend the native date manipulation capabilities in the python standard libraries to be compatible with the range of date manipulations required in [fixed income mathematics](https://www.amazon.com/Fixed-Income-Mathematics-Analytical-Statistical/dp/007146073X).
 
-If interested we highly recommend reading up on [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) the international standards for representing dates.
+If interested we highly recommend reading up on [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) the international standard for representing dates.
 
 ## Quick start guide
 
 ```python
  from disentpy.dates import ddh 
- # ddh is disent_date_helper
+ # ddh() is the Disent date helper function
 ```
-Helper allows for many operations without having to use the underlying classes and methods explicitly.
+The helper function, ddh(), allows for many operations without having to use the underlying classes and methods explicitly.
 
 ```python
 >>> # plain date
@@ -31,10 +31,12 @@ Date("02-Oct-1984")
 >>> # subtract period from date
 >>> ddh("7/2/84 - 1d")
 Date("01-Jul-1984")
->>> # add business days on holiday calender
->>> ddh("1/1/2015 + 0bd|NYuLN")
-Date("02-Jan-2015")
->>> # add business days
+>>> # add business days (skip weekend days)
+>>> ddh("1/8/2015 + 2bd")
+Date("12-Jan-2015")
+>>> # add days
+>>> ddh("1/8/2015 + 2d")
+Date("10-Jan-2015")
 ```
 
 Subtract dates
@@ -59,7 +61,7 @@ Date('DD-MMM-YYYY')
 
 Monthly schedule for 5 years from today, starting backwards:
 ```python
-> ddh("t,t+5y,-1m",ret='df') # returns a dataframe!
+> ddh("t,t+5y,-1m",ret='df') # returns a Pandas dataframe!
 per          bgn          end  dur  stub
 60   12-Sep-2027  12-Oct-2027  30d  full
 59   12-Aug-2027  12-Sep-2027  31d  full
@@ -76,7 +78,7 @@ per          bgn          end  dur  stub
 There are 3 conceptual objects used in date mathematics. Namely a **`date`**, a **`duration`**, and a **`schedule`**. 
 
 ###  Date
-You guessed, the basic object in date math is, ... well a date. A date is a **point in time** referenced by a **`year`**, a **`month`**, and a **`day`**. Can be represented as a string of characters in various formats. From a date one can extrapolate `day of the week`, `day of the month`, `week number`, and other details.
+You guessed, the basic object in date math is..., well, a date. A date is a **point in time** referenced by a **`year`**, a **`month`**, and a **`day`** and can be represented as a string of characters in various formats. From a date one can extrapolate `day of the week`, `day of the month`, `week number`, and other details.
 
 ### Period
 
