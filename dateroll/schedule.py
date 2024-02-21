@@ -109,6 +109,9 @@ class Schedule:
         if "d" in self.per.__str__().lower() and "1" in self.per.__str__().lower():
             self.stub = "full"
         rs = DATE_RANGE_HELPER_DICT[self.ret.lower()](dts, self.stub)
+        if isinstance(rs,list) and len(rs)>0:
+            # temporary fix, sometimes self.ret has datetime instead of date
+            rs = [Date(dt) for dt in rs]
         # handle result, if lp, it has to be period, if period<0 it has to be negative period in the result
         if not self.ret.lower() in ["ll", "df", "lp"]:
             rs = set(rs)
@@ -118,9 +121,6 @@ class Schedule:
             rs["dur"] = rs["dur"].apply(f)
         if self.ret.lower() == "lp":
             rs = [Date(f"-{p}d") if ("-" in self.per_origin and p >= 0) else Date(f"{p}d") for p in rs]
-        if isinstance(rs,list) and len(rs)>0 and isinstance(rs[0],datetime.datetime):
-            # temporary fix, sometimes self.ret has datetime instead of date
-            rs = [Date(dt) for dt in rs]
 
         return rs
     
