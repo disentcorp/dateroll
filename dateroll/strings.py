@@ -44,20 +44,25 @@ ADD = r'LHS\ ?\+\ ?RHS'
 SUB = r'LHS\ ?\-\ ?RHS'
 IDENTITY = r'LHS'
 
-def match_datestring(s):
+def parseDateString(s):
     '''
     '''
     dates = []
     return dates,s
 
-def match_durationstring(s):
+def parseDurationString(s):
     '''
     '''
     durations = []
     return durations,s
 
-def match_datemathstring(s):
+def parseDateMathString(s):
     '''
     '''
     result = ''
     return result
+
+def parseScheduleString(s):
+    '''
+    '''
+    return s

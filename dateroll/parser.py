@@ -1,7 +1,7 @@
 import datetime
-from dateroll.strings import match_datestring
-from dateroll.strings import match_durationstring
-from dateroll.strings import match_datemathstring
+import dateutil
+import dateutil.relativedelta
+import dateutil.rrule
 
 DEFAULT_CONVENTION = 'american'
 
@@ -10,52 +10,84 @@ class ParserError(Exception):
 
 class Parser:
     '''
-    Parser can process one of three strings:
-    
-        1 - DateString (eg "1/2/93")
-        2 - DurationString (eg "-3m/MF}")
-        3 - DateMathString (combination of 1 and 2 above with +/-)
-            't-1bd|NY'  DateStringProcessor('1bd') - 
-            '3y+5/5/5'
 
-    Up to 9 valid patterns with type detections (a-h below, 4 are invalid patterns):
+    Parser input/output:
 
-        tString
-            a   tString                             -> DateString
+        dateroll types:
+
+        str -> dateroll.Date
+        str -> dateroll.Duration
+        str -> dateutil.Schedule
+
+        or to python native types (with flag):
+        
+        str -> datetime.date
+        str -> datetime.timedelta
+        str -> dateutil.relativedelta.relativedelta
+        str -> dateutil.rrule.rrule
+
+
+    str "string" must one of the following formats:
+
+        1 - TodayString (today's date)
+        2 - DateString (represents a date)
+        3 - DurationString (represents a duration)
+        4 - DateMathString (e.g. date + duration, date - date, etc...)
+        5 - DateScheduleString (represents a trip of end-to-end dates)
+
+    Patterns:
+
+        TodayString
+
+            a   TodayString                         ->   DateString
     
         DateString:
 
-            b   DateString                          ->   Date
+            b   DateString                          ->   Date | datetime.date | datetime.datetime
         
         DurationString:
-            c   DurationString                      ->   Duration
+
+            c   DurationString                      ->   Duration | datetime.timedelta | datetime.relativedelta.relativedelta
         
-        DateMathString (addition)                 
-            d   DateString      +   Duration        ->   Date
-            e   DurationString  +   DateString      ->   Date
-            f   DurationString  +   DurationString  ->   Duration
+        DateMathString (addition subtypes:)       
+
+            d   DateString      +   Duration        ->   Date | datetime.date | datetime.datetime
+            e   DurationString  +   DateString      ->   Date | datetime.date | datetime.datetime
+            f   DurationString  +   DurationString  ->   Duration | datetime.timedelta | datetime.relativedelta.relativedelta
                 Duration        +   DateString      ->   raise Exception
                 DateString      +   DateString      ->   raise Exception    
         
-        DateMathString (subtraction)
-            g   DateString      -   DateString      ->   Duration
-            h   DateString      -   Duration        ->   Date
-            i   DurationString  -   DurationString  ->   Duration   
-                Duration        -   DateString      ->   raise Exce
-                ption
+        DateMathString (subtraction subtypes:)
+
+            g   DateString      -   DateString      ->   Duration | datetime.timedelta | datetime.relativedelta.relativedelta
+            h   DateString      -   Duration        ->   Date | datetime.date | datetime.datetime
+            i   DurationString  -   DurationString  ->   Duration | datetime.timedelta | datetime.relativedelta.relativedelta   
+                Duration        -   DateString      ->   raise Exception
                 DurationString  -   DateString      ->   raise Exception
+
+        DateScheduleString:
+
+            j    DateString      ,   DateString      ,    Schedule | dateutil.rrule.rrule
+            k    DateString      ,   DateMathString  ,    Schedule | dateutil.rrule.rrule
+            l    DateMathString  ,   DateString      ,    Schedule | dateutil.rrule.rrule
+                 DateMathString  ,   DateMathString  ,    Schedule | dateutil.rrule.rrule
+
+
     '''
+    native_date = datetime.date
+    native_delta = dateutil.relativedelta.relativedelta
     possible_today_strings = ['t','t0','today']
 
     @classmethod
-    def match_t(cls,s):
+    def parseTodayString(cls,s):
         '''
         this is [the] place where "t" is replaced
         '''
         today_string = datetime.date.today().strftime(r'%Y/%m/%d')
         for t in cls.possible_today_strings:
-            str_no_t = s.replace('t',today_string)
-        return str_no_t
+            if t in s:
+                return s.replace(t,today_string)
+        return s
         
     def __new__(
             self,
@@ -72,6 +104,9 @@ class Parser:
                 [match] DateMathString and perform math
         '''
 
+        if not isinstance(s,str):
+            raise ParserError('Must be string')
+
         if convention != 'american':
             raise NotImplementedError('american only for now')
         if use_native_types:
@@ -81,7 +116,14 @@ class Parser:
         self.use_native_types = use_native_types
 
         #1
-        s1 = Parser.match_t(s)
+        s1 = Parser.parseTodayString(s)
+
+        
+        ##### MOVE THESE HERE WHEN READY
+        from dateroll.strings import match_datestring
+        from dateroll.strings import match_durationstring
+        from dateroll.strings import match_datemathstring
+
 
         #2        
         dates, s2 = match_datestring(s1)
@@ -101,3 +143,57 @@ def parse_to_native(string,convention=DEFAULT_CONVENTION):
 
 def parse_to_dateroll(string,convention=DEFAULT_CONVENTION):
     return Parser(string,convention=convention)
+
+
+
+
+### SCHEDULE CODE FOR LATER
+
+
+# from dateutil.parser import parse
+# import datetime
+# from dateroll import Date,Duration,Schedule
+# from dateroll.ddh import ddh as oddh
+
+# from dateroll.parser import parse_to_dateroll
+# from dateroll.parser import parse_to_native
+
+        
+#         parts = some_string.split(',')
+#         if some_string == '':
+#             TypeError('No empty strings')
+#         num_parts = len(parts)
+
+#         match num_parts:
+#             case 1:
+#                 part = parts[0]
+#                 date_or_period = parse_to_dateroll(part,convention=self.convention)
+#                 return date_or_period
+#             case 3:
+#                 _maybe_start, _maybe_stop, _maybe_step = parts
+                
+#                 maybe_start = parse_to_dateroll(_maybe_start,convention=self.convention)
+#                 maybe_stop = parse_to_dateroll(_maybe_stop,convention=self.convention)
+#                 maybe_step = parse_to_dateroll(_maybe_step,convention=self.convention)
+
+#                 if isinstance(maybe_start,Date):
+#                     start = maybe_start
+#                 else:
+#                     raise TypeError('Start of generation must be a valid Date')
+                
+#                 if isinstance(maybe_stop,Date):
+#                     stop = maybe_stop
+#                 else:
+#                     raise TypeError('Stop of generation must be a valid Date')
+                
+#                 if isinstance(maybe_step,Duration):
+#                     step = maybe_step
+#                 else:
+#                     raise TypeError('Step of generation must be a valid Duration')
+
+#                 sch = Schedule(start=start,stop=stop,step=step)
+#                 return sch
+
+#             case _:
+#                 # Must 
+#                 raise Exception(f'String must contain either 1 or 3 parts (not {num_parts})')
