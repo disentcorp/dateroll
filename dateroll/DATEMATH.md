@@ -5,6 +5,15 @@
 
 `dateroll` allows the user to provide strings to rapidly enumerate many types of vanilla and exotic data manipulations.
 
+`ddh(some_string)`
+
+`ddh('thing')`
+`ddh('thing,thing,thing')`
+
+where thing is either `DateString`, `DurationString`, or `DateMathString`
+
+== split table below into thing and thing,thing,thing==
+
 Flavor|`str` example|`dateroll` constructor|
 |-|-|-|
 |Date string|`'7/2/84'`|`Date(1984, 7, 2)`|

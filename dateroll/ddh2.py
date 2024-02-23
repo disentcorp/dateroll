@@ -91,30 +91,33 @@ class DateStringProcessor:
     
         1 - DateString (eg "1/2/93")
         2 - DurationString (eg "-3m/MF}")
-        3 - DateMathString 
+        3 - DateMathString (combination of 1 and 2 above with +/-)
             't-1bd|NY'  DateStringProcessor('1bd') - 
             '3y+5/5/5'
 
-    Up to 8 valid patterns with type detections (a-h below, 4 are invalid patterns):
+    Up to 9 valid patterns with type detections (a-h below, 4 are invalid patterns):
 
+        tString
+            a   tString                             -> DateString
+    
         DateString:
 
-            a   DateString                          ->   Date
+            b   DateString                          ->   Date
         
         DurationString:
-            b   DurationString                      ->   Duration
+            c   DurationString                      ->   Duration
         
         DateMathString (addition)                 
-            c   DateString      +   Duration        ->   Date
-            d   DurationString  +   DateString      ->   Date
-            e   DurationString  +   DurationString  ->   Duration
+            d   DateString      +   Duration        ->   Date
+            e   DurationString  +   DateString      ->   Date
+            f   DurationString  +   DurationString  ->   Duration
                 Duration        +   DateString      ->   raise Exception
                 DateString      +   DateString      ->   raise Exception    
         
         DateMathString (subtraction)
-            f   DateString      -   DateString      ->   Duration
-            g   DateString      -   Duration        ->   Date
-            h   DurationString  -   DurationString  ->   Duration   
+            g   DateString      -   DateString      ->   Duration
+            h   DateString      -   Duration        ->   Date
+            i   DurationString  -   DurationString  ->   Duration   
                 Duration        -   DateString      ->   raise Exception
                 DurationString  -   DateString      ->   raise Exception
     '''
@@ -131,7 +134,7 @@ class DateStringProcessor:
     def __new__(self,s):
         '''
         Algorithm works left to right implicitly:
-            1 - match t, convert to today's date in DateString
+            1 - convert tString into DateString, swap in prinary string
             2 - try date parser directly (performance cheat)
             3 - [match] DateString, [parse] to Date, [store] in list l, [swap] in string for X
             4 - [match] DurationString, [parse] to Duration, [store] in list l, [swap] in string for X
@@ -149,7 +152,7 @@ class DateStringProcessor:
             pass
 
         #3
-        
+
         #4
 
         #5
