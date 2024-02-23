@@ -56,7 +56,7 @@ def match_durationstring(s):
     durations = []
     return durations,s
 
-def match_datemathstring(l,s):
+def match_datemathstring(s):
     '''
     '''
     result = ''

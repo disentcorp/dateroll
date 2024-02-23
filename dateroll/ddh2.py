@@ -3,6 +3,9 @@ import datetime
 from dateroll import Date,Duration,Schedule
 from dateroll.ddh import ddh as oddh
 
+from dateroll.parser import parse_to_dateroll
+from dateroll.parser import parse_to_native
+
 class ddh:
     '''
     ddh is designed for people working with rule-based Gregorian dates. 
@@ -38,7 +41,7 @@ class ddh:
 
     convention = 'american'
 
-    def __init__(self,some_string):
+    def __new__(self,some_string):
 
         if self.convention == 'european':
             raise NotImplementedError('European dates')
@@ -53,14 +56,14 @@ class ddh:
         match num_parts:
             case 1:
                 part = parts[0]
-                date_or_period = DateStringProcessor(part)
+                date_or_period = parse_to_dateroll(part,convention=self.convention)
                 return date_or_period
             case 3:
                 _maybe_start, _maybe_stop, _maybe_step = parts
                 
-                maybe_start = DateStringProcessor(_maybe_start)
-                maybe_stop = DateStringProcessor(_maybe_stop)
-                maybe_step = DateStringProcessor(_maybe_step)
+                maybe_start = parse_to_dateroll(_maybe_start,convention=self.convention)
+                maybe_stop = parse_to_dateroll(_maybe_stop,convention=self.convention)
+                maybe_step = parse_to_dateroll(_maybe_step,convention=self.convention)
 
                 if isinstance(maybe_start,Date):
                     start = maybe_start
@@ -83,83 +86,6 @@ class ddh:
             case _:
                 # Must 
                 raise Exception(f'String must contain either 1 or 3 parts (not {num_parts})')
-
-class DateStringProcessor:
-    '''
-
-    A DateStringProcessor can process one of three strings:
-    
-        1 - DateString (eg "1/2/93")
-        2 - DurationString (eg "-3m/MF}")
-        3 - DateMathString (combination of 1 and 2 above with +/-)
-            't-1bd|NY'  DateStringProcessor('1bd') - 
-            '3y+5/5/5'
-
-    Up to 9 valid patterns with type detections (a-h below, 4 are invalid patterns):
-
-        tString
-            a   tString                             -> DateString
-    
-        DateString:
-
-            b   DateString                          ->   Date
-        
-        DurationString:
-            c   DurationString                      ->   Duration
-        
-        DateMathString (addition)                 
-            d   DateString      +   Duration        ->   Date
-            e   DurationString  +   DateString      ->   Date
-            f   DurationString  +   DurationString  ->   Duration
-                Duration        +   DateString      ->   raise Exception
-                DateString      +   DateString      ->   raise Exception    
-        
-        DateMathString (subtraction)
-            g   DateString      -   DateString      ->   Duration
-            h   DateString      -   Duration        ->   Date
-            i   DurationString  -   DurationString  ->   Duration   
-                Duration        -   DateString      ->   raise Exception
-                DurationString  -   DateString      ->   raise Exception
-    '''
-
-    @staticmethod
-    def match_t(s):
-        '''
-        this is [the] place where "t" is replaced
-        '''
-        today_string = datetime.date.today().strftime(r'%Y/%m/%d')
-        str_no_t = s.replace('t',today_string)
-        return str_no_t
-        
-    def __new__(self,s):
-        '''
-        Algorithm works left to right implicitly:
-            1 - convert tString into DateString, swap in prinary string
-            2 - try date parser directly (performance cheat)
-            3 - [match] DateString, [parse] to Date, [store] in list l, [swap] in string for X
-            4 - [match] DurationString, [parse] to Duration, [store] in list l, [swap] in string for X
-            5 - if len(l)==1 and string=='' return l[0], otherwise 
-                [match] DateMathString and perform math
-        '''
-
-        #1
-        str_no_t = DateStringProcessor.match_t(s)
-
-        #2
-        try:
-            return Date.from_string(s)
-        except:
-            pass
-
-        #3
-
-        #4
-
-        #5
-        
-
-        
-
 
 import unittest
 
@@ -195,4 +121,9 @@ class Tests(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main()
+    # unittest.main()
+
+    # print('3/1/24')
+    # print(ddh('t'))
+    print(ddh('3m'))
+    # print(ddh('t+3m'))
