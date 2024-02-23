@@ -81,9 +81,10 @@ def date_convert_dict(per, roughly):
     return converted_per, perfect_or_approx
 
 
-class Period:  # look like a subclass of relativedelta
+class Duration:  # look like a subclass of relativedelta
     # dt_str some f(operatior,num,unit,cal_array,roll_function)
     def __init__(self, date_period_string):
+        raise Exception
         self.orig_date_period_string = date_period_string
         # self.date_period_string,self.st,self.ed = dtYMD_convert(date_period_string)
         self.date_period_string, self.days_, self.st, self.ed = self.per(date_period_string)
@@ -99,6 +100,25 @@ class Period:  # look like a subclass of relativedelta
         if perfect_or_approx == "approx":
             warnings.warn("roughly approximated, this may not be true as there is no anchor date")
         return converted_per
+    
+    @staticmethod
+    def from_relativedelta(rd_object):
+        '''
+        create Duration from dateutil.relativedelta.relativedelta
+        '''
+    
+    @staticmethod
+    def from_timedelta(td_object):
+        '''
+        create Duration from datetime.timedelta
+        '''
+    
+    @staticmethod
+    def from_string(td_object):
+        '''
+        create Duration from DurationString
+        '''
+    
 
     def cd(self, ie="[)"):
         # self.stub='short',self.ret='l',self.monthEndRule='anniv',self.ie=NotImplementedError,self.dc=NotImplementedError
@@ -149,7 +169,7 @@ class Period:  # look like a subclass of relativedelta
         return f"{self.orig_date_period_string}"
 
     def __repr__(self):
-        return f'Period("{self.orig_date_period_string}")'
+        return f'Duration("{self.orig_date_period_string}")'
 
     def per(self, date_period_string):
 
@@ -220,12 +240,12 @@ class Period:  # look like a subclass of relativedelta
 
     @property
     def days(self):
-        n = Period(self.date_period_string).convert("d")
+        n = Duration(self.date_period_string).convert("d")
         n = float(n.replace("d", ""))
         return n
     
 
-PeriodLike = (dateutil.relativedelta,datetime.timedelta,Period)
+PeriodLike = (dateutil.relativedelta,datetime.timedelta,Duration)
 
 
 if __name__ == '__main__':

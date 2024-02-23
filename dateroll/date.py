@@ -1,14 +1,15 @@
 import datetime
 from datetime import timezone
-from dateroll.period import Period
+from dateroll.period import Duration
 from dateroll.holidays import get_hol_list
 from dateutil.parser import parse
 import calendar
 import numpy
 import dateutil.relativedelta
 
+DateLike = (datetime.datetime,datetime.date)
+
 class Date(datetime.date):
-    # dt_str some f(y,m,d)
     def __new__(self, *args, **kwargs):
         if isinstance(args[0], str):
             if args[0] in ["0", "t0", "t", "T", "today", "Today", "TODAY"]:
@@ -22,6 +23,21 @@ class Date(datetime.date):
             return super().__new__(self, y, m, d)
         else:
             return super().__new__(self, *args, **kwargs)
+    
+    
+    @staticmethod
+    def from_string(s):
+        dt = parse(s)
+        return Date.from_datetime(dt)
+
+    @staticmethod
+    def from_datetime(dt):
+        '''
+        Create a Date instance from a datetime.datetime (drops time information), or datetime.date
+        '''
+        if isinstance(dt,DateLike):
+            y, m, d = dt.year, dt.month, dt.day
+            return Date(y,m,d)
 
     def __str__(self):
         return f'{self.strftime("%d-%b-%Y")}'
@@ -92,19 +108,19 @@ class Date(datetime.date):
             dt1 = lhs.toStr()
             dt2 = self.toStr()
             str_ = f"{dt2}-{dt1}"
-            return Period(str_)
+            return Duration(str_)
         else:
             dt = self.strftime("%Y%m%d")
             dr = lhs.__str__()
             str_ = "".join([dt, dr])
-            rs = Period(dr).__sub__(self)
+            rs = Duration(dr).__sub__(self)
 
             return rs 
 
     def __add__(self,o):
         if isinstance(o,str):
             try:
-                o_adj = Period(o)
+                o_adj = Duration(o)
             except:
                 o_adj = Date(o)
             res = o_adj.__add__(self)
@@ -113,7 +129,7 @@ class Date(datetime.date):
     
     def __radd__(self,o):
         return self.__add__(o)
-
+    
 DateLike = (datetime.datetime,datetime.date,Date)
 
 if __name__ == '__main__':

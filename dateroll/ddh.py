@@ -3,7 +3,7 @@ import re
 from dateutil.relativedelta import relativedelta
 
 from dateroll.date import Date
-from dateroll.period import Period
+from dateroll.period import Duration
 from dateroll.schedule import Schedule
 from dateroll.utils import datePeriodParse, assign_kwargs
 from dateroll.regex import PTNW,PTN,RHS_PATTERN_2
@@ -34,7 +34,7 @@ def ddh(*args):
 
     if len(str_dur) > 1 and len(str_dts) == 0 and len(str_wor) == 0:
         dur_l = ["".join(x) for x in str_dur]
-        rs = [Period(x) for x in dur_l]
+        rs = [Duration(x) for x in dur_l]
         return rs
     else:
         asof_st, dur_st = datePeriodParse(str_l[0])
@@ -75,19 +75,19 @@ def ddh(*args):
             str_dur = re.findall(RHS_PATTERN_2, asof_st)
             dur_l = ["".join(x) for x in str_dur]
             if len(str_dts) == 2:
-                rs = Period(asof_st)
+                rs = Duration(asof_st)
             elif len(str_dts) == 1:  # this is the format of '20220101'
-                rs = Date(asof_st) + Period(dur_st)
+                rs = Date(asof_st) + Duration(dur_st)
             elif len(str_dts) == 0:
                 if len(str_dur) > 0:
-                    rs = Period(str_dur[0])
+                    rs = Duration(str_dur[0])
                 else:
                     if dur_st == "" and asof_st != "":
                         rs = Date(asof_st)
                     elif dur_st != "" and asof_st != "":
-                        rs = Date(asof_st) + Period(dur_st)
+                        rs = Date(asof_st) + Duration(dur_st)
                     else:
-                        rs = Period(dur_st)
+                        rs = Duration(dur_st)
 
         return rs
 
@@ -103,7 +103,7 @@ def unit_tests():
     d = d - relativedelta(days=10)
 
     # test date period, and add and subtract
-    date_period = Period("5d")
+    date_period = Duration("5d")
     print(date_period, repr(date_period), type(date_period))
     print(d + date_period)
     print(d)
@@ -116,7 +116,7 @@ def unit_tests2():
     print(type(dt.__str__()))
     print(dt.__repr__())
     print(type(dt.__str__()))
-    rd = Period("-1m")
+    rd = Duration("-1m")
     # rs = dt + rd
     rs = dt + rd
     rs1 = rd + dt
@@ -303,7 +303,7 @@ if __name__ == "__main__":
     # t1 = '20220817'
     # t2 = '20220901'
     x = ddh(f"{t1},{t2},1bd,ie=[]")
-    # x = ddh(t1)+Period('0bd')
+    # x = ddh(t1)+Duration('0bd')
     print(x)
 
     # x = ddh('3m').convert(roughly='q')

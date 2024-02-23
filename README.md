@@ -40,7 +40,7 @@ Date("02-Jan-2015")
 Subtract dates
 ```python
 >>> ddh("5/15/25 - 7/13/22")
-Period("2y10m2d")
+Duration("2y10m2d")
 >>> ddh("5/15/25 - 7/13/22").cd()
 1037
 >>> ddh("5/15/25 - 7/13/22").bd()
@@ -78,12 +78,12 @@ There are 3 conceptual objects used in date mathematics. Namely a **`date`**, a 
 ###  Date
 You guessed, the basic object in date math is, ... well a date. A date is a **point in time** referenced by a **`year`**, a **`month`**, and a **`day`**. Can be represented as a string of characters in various formats. From a date one can extrapolate `day of the week`, `day of the month`, `week number`, and other details.
 
-### Period
+### Duration
 
 A portion, period or **length of time** represented by a **`number`** and a **`unit`**. Example date period: 3 months. Valid date period units are **`day`** or **`calendar day`**, **`business day`**, **`month`**, **`quarter`**, or **`year`**. Periods are not tied in anyway to a specific point in time. Date math operations typically look at the whole (24hour) day as the base unit, and we can ignore sub-units of day for now.
 
 #### Term and Tenor
-A derivative of **`Period`** called a term (or tenor) occurs when the duration is anchored to a particular **point in time**, for example `today's date`. This is commonly known as a Term or a Tenor. A typical set of tenors used could be: $\{$`1m`,`3m`,`6m`,`1y`,`100y`$\}$. When the language term/tenor is used, `today's date` is implicitly the anchor point for the beginning of the duration.
+A derivative of **`Duration`** called a term (or tenor) occurs when the duration is anchored to a particular **point in time**, for example `today's date`. This is commonly known as a Term or a Tenor. A typical set of tenors used could be: $\{$`1m`,`3m`,`6m`,`1y`,`100y`$\}$. When the language term/tenor is used, `today's date` is implicitly the anchor point for the beginning of the duration.
 
 ##### Equal but unequal
 
@@ -105,7 +105,7 @@ Schedules are **ordered, contiguous, blocks of time** (a.k.a. **`list of duratio
 |2|`15-Feb-2022`|`15-Mar-2022`|`28d`|`full`|
 |3|`15-Mar-2022`|`15-Apr-2022`|`31d`|`full`|
 
-- `per` for Period numbers starting with 1
+- `per` for Duration numbers starting with 1
 - `bgn` for the start (beginning) date of the period
 - `end` for the start date of the period
 - `dur` for the duration of the period (in days)
@@ -196,7 +196,7 @@ $$ d2 = d1+0bd|\text{WE}\cup \text{NY}\cup\text{LN}$$
 ## Import Library
 
 ```python
-from disentpy.dates import Date, Period, Schedule
+from disentpy.dates import Date, Duration, Schedule
 from disentpy.dates import disent_date_helper, ddh, disent_list_dates_helper
 ```
 
@@ -236,10 +236,10 @@ We support numerous permutations like MM/DD/YY, M/D/Y, YYYYMMDD, with slashes or
 If 1 or two digit year is provided: 0-71 are 2000 to 2071, and 72 to 99 are 2072 to 2099. This differs from excel which uses 2029 as the divider. A global setting can be provided. Use cause when import two digit years around these cutoffs.
 
 
-## Period
+## Duration
 
 ```python 
-Period(duration_string)
+Duration(duration_string)
 ```
 
 Period_string is of type `str`. The string can be composed as follows:
@@ -290,25 +290,25 @@ Option roll convention for business date adjustment:
 |`/P`|Previous|Previous business day (default if rolling backwards)
 |`/MP`|Modified previous|Previous business day unless it rolls into the prior month, in which case the first business day of the current month is used.
 
-### Period Examples
+### Duration Examples
 
 ```python
->>> Period('5d')
-Period("5d")
->>> Period('5bd')
-Period("5bd")
->>> Period('5bd|NY')
-Period("5bd|NY")
->>> Period('-2d')
-Period("-2d")
->>> Period('-1m')
-Period("-1m")
->>> Period('-1q')
-Period("-1q")
->>> Period('-5y')
-Period("-5y")
->>> Period('-2bd|NY/MP')
-Period("-5y")
+>>> Duration('5d')
+Duration("5d")
+>>> Duration('5bd')
+Duration("5bd")
+>>> Duration('5bd|NY')
+Duration("5bd|NY")
+>>> Duration('-2d')
+Duration("-2d")
+>>> Duration('-1m')
+Duration("-1m")
+>>> Duration('-1q')
+Duration("-1q")
+>>> Duration('-5y')
+Duration("-5y")
+>>> Duration('-2bd|NY/MP')
+Duration("-5y")
 ```
 
 ## Schedule
@@ -373,7 +373,7 @@ Comparison of classes in commonly available python standard libraries and 3rd pa
 |disentpy.dates|Python Std Lib|Pandas|Numpy|
 |-|-|-|-|
 |`Date`|datetime.datetime or datetime.date|pd.Timestamp|np.datetime64|
-|`Period`|dateutil.relativedelta or datetime.timedelta|offsets, DateOffset|np.timedelta64|
+|`Duration`|dateutil.relativedelta or datetime.timedelta|offsets, DateOffset|np.timedelta64|
 |`Schedule`|dateutil.rrule|date_range or bdate_range or period_range or timedelta_range|n/a|
 
 - `disent_date_helper` (or ddh)
@@ -384,5 +384,5 @@ Comparison of classes in commonly available python standard libraries and 3rd pa
 
 *What about year to date or month to date?*
 
-Date().ytd() --> Period
-Date().mtd() --> Period
+Date().ytd() --> Duration
+Date().mtd() --> Duration

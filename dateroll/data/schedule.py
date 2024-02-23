@@ -1,6 +1,6 @@
 
 from dateroll.date import Date
-from dateroll.period import Period
+from dateroll.period import Duration
 from dateroll.utils import fwd_or_bwd
 from dateroll.utils import datePeriodParse, genEndtoEnd
 from dateroll.utils import DATE_RANGE_HELPER_DICT, IERULE_MAPPING, LASTDATEOFMONTH
@@ -25,15 +25,15 @@ class Schedule:
         self.dc = dc
         asof_st, dur_st = datePeriodParse(st)
         asof_ed, dur_ed = datePeriodParse(ed)
-        st1 = Date(asof_st) + Period(dur_st)
-        ed1 = Date(asof_ed) + Period(dur_ed)
+        st1 = Date(asof_st) + Duration(dur_st)
+        ed1 = Date(asof_ed) + Duration(dur_ed)
         self.per_origin = per
         st1, ed1, per, bwd = fwd_or_bwd(st1, ed1, per)
-        self.per = Period(per)
+        self.per = Duration(per)
         self.bwd = bwd
 
         if st1 != ed1:  # here applied ieRule; did not understand why self.st>self.ed runs a lot of code?
-            ed1, st1 = IERULE_MAPPING[ie](ed1, st1, Period("1bd")) if "bd" in self.per.__str__().lower() else IERULE_MAPPING[ie](ed1, st1, Period("1d"))
+            ed1, st1 = IERULE_MAPPING[ie](ed1, st1, Duration("1bd")) if "bd" in self.per.__str__().lower() else IERULE_MAPPING[ie](ed1, st1, Duration("1d"))
 
         self.st = st1
         self.ed = ed1
@@ -43,7 +43,7 @@ class Schedule:
             st_ = self.st
 
             if "bd" in self.per.__str__().lower():
-                st_ = st_ + Period("0bd")
+                st_ = st_ + Duration("0bd")
             if st_ > self.ed:
                 return []
             else:
@@ -60,7 +60,7 @@ class Schedule:
         done = False
         max_iter = 365*100*4
         c = 0
-        dt = dt + Period("0bd")
+        dt = dt + Duration("0bd")
         while not done:
 
             c += 1
@@ -83,7 +83,7 @@ class Schedule:
     def genLWrapper(self):
         dts = self.genL()
         if "bd" in str(self.per):
-            dts[-1] = dts[-1] + Period("0bd")
+            dts[-1] = dts[-1] + Duration("0bd")
         lst = dts[-1] + self.per
         if lst == self.ed:
 

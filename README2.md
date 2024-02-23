@@ -18,7 +18,7 @@
 ## what's it for
 - $+$ and $-$ dates and time periods
 - 🎉 dealing with holidays
-- computing 💵 payments and 🪙 accruals
+- computing 💸 payments and 🪙 accruals
 - handling 🎫 stubs
 
 <br />
