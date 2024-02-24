@@ -79,11 +79,16 @@ class Parser:
     possible_today_strings = ['t','t0','today']
 
     @classmethod
-    def parseTodayString(cls,s):
+    def parseTodayString(cls,s,convention=DEFAULT_CONVENTION):
         '''
         this is [the] place where "t" is replaced
         '''
-        today_string = datetime.date.today().strftime(r'%Y/%m/%d')
+        today = datetime.date.today()
+        match convention:
+            case 'american': today_string = today.strftime(r'%m/%d/%Y')
+            case 'european': today_string = today.strftime(r'%d/%m/%Y')
+            case 'international': today_string = today.strftime(r'%Y/%m/%d')
+
         for t in cls.possible_today_strings:
             if t in s:
                 return s.replace(t,today_string)
@@ -117,19 +122,22 @@ class Parser:
 
         #1
         s1 = Parser.parseTodayString(s)
-
         
         ##### MOVE THESE HERE WHEN READY
-        from dateroll.strings import match_datestring
-        from dateroll.strings import match_durationstring
-        from dateroll.strings import match_datemathstring
+        from dateroll.strings import parseDateString
+        from dateroll.strings import parseDurationString
+        from dateroll.strings import parseDateMathString
 
 
         #2        
-        dates, s2 = match_datestring(s1)
+        dates, s2 = parseDateString(s1,self.convention)
+        if s2=='X':
+            return dates[0]
 
         #4
-        durations, s3 = match_datestring(s2)
+        durations, s3 = parseDurationString(s2)
+        if s3=='X':
+            return durations[0]
         dates_durations = dates + durations
 
         #5

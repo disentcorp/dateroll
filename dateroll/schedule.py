@@ -1,13 +1,12 @@
-import datetime
+class Schedule:
+    ...
 
-
-from dateroll.date import Date, DateLike
-from dateroll.period import Duration,PeriodLike
-from dateroll.utils import fwd_or_bwd
-from dateroll.utils import datePeriodParse, genEndtoEnd
-from dateroll.utils import DATE_RANGE_HELPER_DICT, IERULE_MAPPING, LASTDATEOFMONTH
-
-
+# from dateroll.date import Date, DateLike
+# from dateroll.period import Duration,PeriodLike
+# from dateroll.utils import fwd_or_bwd
+# from dateroll.utils import datePeriodParse, genEndtoEnd
+# from dateroll.utils import DATE_RANGE_HELPER_DICT, IERULE_MAPPING, LASTDATEOFMONTH
+# import datetime
 # class Schedule:
 #     def __init__(
 #         self,
@@ -117,47 +116,47 @@ from dateroll.utils import DATE_RANGE_HELPER_DICT, IERULE_MAPPING, LASTDATEOFMON
 #         return rs
 
 
-class Schedule:
-    def __init__(self,start,stop,step,**kwargs):
-        self.days = []
-        if not isinstance(start,DateLike):
-            raise TypeError(f'Start is not date-like ({type(start).__name__})')
-        elif not isinstance(stop,DateLike):
-            raise TypeError(f'Start is not date-like ({type(start).__name__})')
-        elif not isinstance(step,Duration):
-            raise TypeError(f'Step is not period-like ({type(start).__name__})')
+# class Schedule:
+#     def __init__(self,start,stop,step,**kwargs):
+#         self.days = []
+#         if not isinstance(start,DateLike):
+#             raise TypeError(f'Start is not date-like ({type(start).__name__})')
+#         elif not isinstance(stop,DateLike):
+#             raise TypeError(f'Start is not date-like ({type(start).__name__})')
+#         elif not isinstance(step,Duration):
+#             raise TypeError(f'Step is not period-like ({type(start).__name__})')
 
-        self.start = start
-        self.stop = stop
-        self.step = step
+#         self.start = start
+#         self.stop = stop
+#         self.step = step
         
-        if start == stop:
-            self.days = [start]
-        elif start > stop:
-            temp = start
-            start = stop
-            stop = temp
-        else: # start < stop
-            d = start
-            while d < stop:
-                self.days.append(d)
-                d = d + self.step
+#         if start == stop:
+#             self.days = [start]
+#         elif start > stop:
+#             temp = start
+#             start = stop
+#             stop = temp
+#         else: # start < stop
+#             d = start
+#             while d < stop:
+#                 self.days.append(d)
+#                 d = d + self.step
 
-    def __len__(self):
-        return len(self.days)
+#     def __len__(self):
+#         return len(self.days)
 
-    def __repr__(self):
-        s = f"{self.__class__.__name__}({repr(self.start)},{repr(self.stop)},{repr(self.step)})"
-        return s
+#     def __repr__(self):
+#         s = f"{self.__class__.__name__}({repr(self.start)},{repr(self.stop)},{repr(self.step)})"
+#         return s
     
-if __name__ == '__main__':
+# if __name__ == '__main__':
 
-    t1 = Date('t') + Duration('1m')
-    t2 = Date('t') + Duration('3m')
-    dt = Duration('1d|WE')
+#     t1 = Date('t') + Duration('1m')
+#     t2 = Date('t') + Duration('3m')
+#     dt = Duration('1d|WE')
 
-    print(t1,t2,dt)
-    s = Schedule(t1,t2,dt)
-    print(s)
+#     print(t1,t2,dt)
+#     s = Schedule(t1,t2,dt)
+#     print(s)
 
-    import code;code.interact(local=locals())
+#     import code;code.interact(local=locals())

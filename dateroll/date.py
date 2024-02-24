@@ -1,6 +1,6 @@
 import datetime
 from datetime import timezone
-from dateroll.period import Duration
+from dateroll.duration import Duration
 from dateroll.holidays import get_hol_list
 from dateutil.parser import parse
 import calendar
@@ -26,8 +26,8 @@ class Date(datetime.date):
     
     
     @staticmethod
-    def from_string(s):
-        dt = parse(s)
+    def from_string(s,**dateparser_kwargs):
+        dt = parse(s,**dateparser_kwargs)
         return Date.from_datetime(dt)
 
     @staticmethod
@@ -130,7 +130,7 @@ class Date(datetime.date):
     def __radd__(self,o):
         return self.__add__(o)
     
-DateLike = (datetime.datetime,datetime.date,Date)
+DateLike = DateLike + (Date,)
 
 if __name__ == '__main__':
     ...
