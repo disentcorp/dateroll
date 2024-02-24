@@ -16,9 +16,37 @@ PeriodLike = (dateutil.relativedelta,datetime.timedelta)
 
 class Duration:
     '''
-    Duration class represents a period of time, a duration of time, an interval of time
-    i.e. some distance of time between two specific dates
+    we do not inherit from relativedelta or timedelta, it is something to be considered
 
+    Duration class represents a period of time, a duration of time, an interval of time
+    i.e. some distance of time between two specific (yet unknown) dates
+
+    there's implicitly 2 modes:
+
+    calendar day mode - no knowledge of holidays or non-working days
+        When counting days, there is no skipping over some days over others because a governing body declares that the offices are closed.
+   
+    business day mode -  
+        a) implicit assumption that 'WE' is always used in bd calcs
+            'WE' stands for [W]eek[End] which is our internal two-letter code for the holiday of Saturdays and Sunday's during the "reasonable business period"
+        b) user supplied holiday vectors can be unioned for adjusting accordingly
+
+        bd adjustment is O(1) assuming the calenders are in memory or the unions are cached, worst
+        bd adjustment is O(n) on bd's between two dates. 
+
+    A duration can have a number of:
+        business days
+        days (1d = 1.44bd)
+        weeks  (1w=7d)
+        months (1m approx 28-31d)
+        years (1y=12m)
+
+    ^ in order of seniority   
+
+
+    We define the "reasonable business period" (naiively) as the interval of (t-100y,t+100y)
+        this could be extended: from 1582 AD to future if we have historical vectors for holiday calendar changes (i.e. juneteenth 1st occured on X, to map backwards math, and assume last forward for futuree math (e.g. last jubilee was 5cd, and happens every 50years..))
+        realistically 5-7 year perfect lookup would be more than substantial for more use cases.
     '''
     def __init__(self,
         y=0,
@@ -35,6 +63,8 @@ class Duration:
         W=0,
         d=0,
         D=0,
+        bd=0,
+        BD=0,
         cals=[],
         roll=None
     ):
@@ -46,52 +76,105 @@ class Duration:
         m = month
         w = week
         d = day
+        bd = business days
         cals = list of 2-letter codes for calendars
         roll = roll convention (F,P,MF,MP)
         '''
-        self.y = y+Y
-        self.h = h+S
-        self.s = s+S
-        self.q = q+Q
-        self.m = m+M
-        self.w = w+W
-        self.d = d+D
+        self.ny = y+Y
+        self.nm = m+M + 3*(q+Q) + 6*(s+S+h+H)
+        self.nw = w+W
+        self.nd = d+D
+        self.nbd = bd+BD
 
         self.cals = cals
         self.roll = roll
 
     @property
     def delta(self):
-        y = self.y
-        m = self.h*6 + self.s*6 + self.q*3 + self.m
-        w = self.w
-        d = self.d
-        rd = dateutil.relativedelta.relativedelta(years=y,months=m,weeks=w,days=d)
+        '''
+        '''
+        rd = dateutil.relativedelta.relativedelta(
+            years=self.ny,
+            months=self.nm,
+            weeks=self.nw,
+            days=self.nd
+        )
         return rd
     
     def apply_business_date_adjustment(self):
+        '''
+        '''
         raise NotImplementedError
     
     def apply_roll_convention(self):
+        '''
+        '''
         raise NotImplementedError
+    
+    def compute_business_days(self):
+        '''
+        '''
+        ...
 
+    def simmplify(self):
+        '''
+        excluding business days, from smallest unit (d) to largest (y) 
+        if units is larger than the next largest unit, and it is perfectly divisible,
+        subtract equivalent units from smaller and increment the larger
+
+        e.g.
+
+        25mo = 2y1m (exact)
+        5w = 1m1w (approx)
+        28d = 1m (approx)
+
+        make a setting to enable approx calculations
+
+        approx:
+            28-31 days is 1m
+            4w is 1m
+        exact:
+            12m is 1y
+
+        note - we skip 1w = exactly 7d, because no human knows what 2w3d but they know 17d is roughly 1/2 a month in their head
+
+        note: q, s, and h are automatically converted to more senior buckets
+
+        '''
+        ...
 
     '''
-    if 3m with calendar
+    if 3m with calenda
     
     '''
 
-    def math(self,b,dir):
+    def math(self,x,direction):
+        '''
+        '''
         rd = self.delta
-        if len(self.cals)>0:
-            # apply calendar adjustment
-            raise NotImplementedError
-        elif self.roll:
-            # apply date rolling
-            raise NotImplementedError
+        # add/sub
 
-        y = b + rd
-        return y
+        y = x + direction*rd
+
+        # bd adjustment
+        y_adj = self.apply_business_date_adjustment() if self.nbd >0 else y
+        
+        # date rolling
+        y_rolled = self.apply_roll_convention() if self.roll else y_adj
+
+        return y_rolled
+    
+
+    @property
+    def q(self):
+        ''' equiv quarters '''
+
+    @property
+    def s(self):
+        ''' equiv semesters '''
+
+    ... # q, w, h, d, bd(with cal), y {implicit act/365, can be setting,} y(with counter)
+    # m, ... 
     
     def __radd__(self, x): return self.math(x, 1)
     def __rsub__(self, x): return self.math(x, -1)
@@ -101,6 +184,12 @@ class Duration:
     def __isub__(self, x): return self.math(x, -1)
 
     def __repr__(self):
+        '''
+        repr sorts units by seniority specificed in global
+
+        future note: implicity call the simplify() method before sorting, and repr on the simpllifed version, not direct on __dict__
+        consider moving ny/nm/nd/nbd to dict on class??
+        '''
         d = self.__dict__
         items = {k: d[k] for k in period_order if k in d}
         constructor = ''

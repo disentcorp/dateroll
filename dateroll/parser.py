@@ -39,6 +39,8 @@ class Parser:
         4 - DateMathString (e.g. date + duration, date - date, etc...)
         5 - DateScheduleString (represents a trip of end-to-end dates)
 
+        ^^ details on each is in the subsequent parsing sub-fucntion
+
     Patterns:
 
         TodayString
