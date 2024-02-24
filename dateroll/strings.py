@@ -30,7 +30,8 @@ def parseDateString(s,convention):
         case 'international': 
             pattern = regex.YMD
             dateparser_kwargs = {'yearfirst ':True}
-    
+        case _:
+            raise ParserStringsError('No convention provided!')
     dates = []
     matches =re.findall(pattern,s)
 
@@ -132,11 +133,29 @@ def parseDurationString(s):
     return durations,s
 
 
-def parseDateMathString(s):
+def parseDateMathString(s,things):
     '''
+    takes only date math strings using X placeholder:
+        X
+        X+X
+        X-X
+    does the match..relies on items for the overload. invalid pairings will raise their own exeption.
     '''
-    result = ''
-    return result
+    s = s.replace(' ','')
+
+    if len(things)==1:
+        operand = things[0]
+        return operand
+    if len(things)==2:
+        left_hand_side = things[0]
+        right_hand_side = things[1]
+    if s=='X+X':
+        total = left_hand_side + right_hand_side
+        return total
+    if s=='X-X':
+        total = left_hand_side - right_hand_side
+
+    raise ParserStringsError('Cannot recognize as math')
 
 def parseScheduleString(s):
     '''

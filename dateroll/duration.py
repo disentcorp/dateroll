@@ -57,6 +57,49 @@ class Duration:
         self.w = w+W
         self.d = d+D
 
+        self.cals = cals
+        self.roll = roll
+
+    @property
+    def delta(self):
+        y = self.y
+        m = self.h*6 + self.s*6 + self.q*3 + self.m
+        w = self.w
+        d = self.d
+        rd = dateutil.relativedelta.relativedelta(years=y,months=m,weeks=w,days=d)
+        return rd
+    
+    def apply_business_date_adjustment(self):
+        raise NotImplementedError
+    
+    def apply_roll_convention(self):
+        raise NotImplementedError
+
+
+    '''
+    if 3m with calendar
+    
+    '''
+
+    def math(self,b,dir):
+        rd = self.delta
+        if len(self.cals)>0:
+            # apply calendar adjustment
+            raise NotImplementedError
+        elif self.roll:
+            # apply date rolling
+            raise NotImplementedError
+
+        y = b + rd
+        return y
+    
+    def __radd__(self, x): return self.math(x, 1)
+    def __rsub__(self, x): return self.math(x, -1)
+    def __add__ (self, x): return self.math(x, 1)
+    def __sub__ (self, x): return self.math(x, -1)
+    def __iadd__(self, x): return self.math(x, 1)
+    def __isub__(self, x): return self.math(x, -1)
+
     def __repr__(self):
         d = self.__dict__
         items = {k: d[k] for k in period_order if k in d}
@@ -65,6 +108,7 @@ class Duration:
             if v!=0:
                 constructor += f'{k}={v}, '
         return f'{self.__class__.__name__}({constructor.rstrip(", ")})'
+
 
 # DATE_CONVERT_DICT = {
 #     "1w": {"d": {"7d": "perfect"}},

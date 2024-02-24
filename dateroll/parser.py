@@ -3,6 +3,10 @@ import dateutil
 import dateutil.relativedelta
 import dateutil.rrule
 
+from dateroll import Date
+from dateroll import Duration
+from dateroll import Schedule
+
 DEFAULT_CONVENTION = 'american'
 
 class ParserError(Exception):
@@ -102,11 +106,12 @@ class Parser:
         ):
         '''
         Algorithm works left to right implicitly:
-            1 - convert tString into DateString, swap in prinary string
-            2 - [match] DateString, [parse] to Date, [store] in list l, [swap] in string for X
-            3 - [match] DurationString, [parse] to Duration, [store] in list l, [swap] in string for X
-            4 - if len(l)==1 and string=='' return l[0], otherwise 
-                [match] DateMathString and perform math
+            1 - make + -> ++ and - -> +- to avoid conflict (note below)
+            2 - convert tString into DateString, swap in prinary string
+            3 - Check for how many parts (1 or 3 allowed), For each part:
+                3a. Match DateString's -> Date
+                3b. Match DurationString's -> Duration
+                3c. Match DateMathString -> Date or Duration
         '''
 
         if not isinstance(s,str):
@@ -120,88 +125,85 @@ class Parser:
         self.convention = convention
         self.use_native_types = use_native_types
 
-        #1
-        s1 = Parser.parseTodayString(s)
-        
+        #1 replace minus with plusminus and plus with plusplus, 
+        # this avoids conflict with DateMathString and DateDurationString
+        s0 = s.replace('-','+-').replace('+','++')
+
+        #2
+        s1 = Parser.parseTodayString(s0)
+
+        #3
+        part = Parser.parse_maybe_many_parts(s1,convention=self.convention)        
+        return part
+    
+    @classmethod
+    def parse_one_part(cls,untouched,convention=DEFAULT_CONVENTION):
         ##### MOVE THESE HERE WHEN READY
         from dateroll.strings import parseDateString
         from dateroll.strings import parseDurationString
         from dateroll.strings import parseDateMathString
 
-
-        #2        
-        dates, s2 = parseDateString(s1,self.convention)
-        if s2=='X':
+        #3a      
+        dates, nodates = parseDateString(untouched,convention=convention)
+        if nodates=='X':
             return dates[0]
 
-        #4
-        durations, s3 = parseDurationString(s2)
-        if s3=='X':
+        #3b
+        durations, nodatesordurations = parseDurationString(nodates)
+        if nodatesordurations=='X':
             return durations[0]
         dates_durations = dates + durations
 
-        #5
-        # fund, arg_names = match_datemathstring(s3)
-        # return processed_answer
+        #3c
+        processed_answer = parseDateMathString(nodatesordurations,dates_durations)
+        return processed_answer
+    
+    @classmethod
+    def parse_maybe_many_parts(cls,s,convention=DEFAULT_CONVENTION):
+        parts = s.split(',')
+        if not s:
+            TypeError('No empty strings')
+        num_parts = len(parts)
 
+        match num_parts:
+            case 1:
+                part = parts[0]
+                date_or_period = cls.parse_one_part(part,convention=convention)
+                return date_or_period
+            case 3:
+                _maybe_start, _maybe_stop, _maybe_step = parts
+                
+                maybe_start = cls.parse_one_part(_maybe_start,convention=convention)
+                maybe_stop = cls.parse_one_part(_maybe_stop,convention=convention)
+                maybe_step = cls.parse_one_part(_maybe_step,convention=convention)
+
+                if isinstance(maybe_start,Date):
+                    start = maybe_start
+                else:
+                    raise TypeError('Start of generation must be a valid Date')
+                
+                if isinstance(maybe_stop,Date):
+                    stop = maybe_stop
+                else:
+                    raise TypeError('Stop of generation must be a valid Date')
+                
+                if isinstance(maybe_step,Duration):
+                    step = maybe_step
+                else:
+                    raise TypeError('Step of generation must be a valid Duration')
+
+                sch = Schedule(start=start,stop=stop,step=step)
+                return sch
+
+            case _:
+                # Must 
+                raise Exception(f'String must contain either 1 or 3 parts (not {num_parts})')
+        
         raise ParserError(f"Sorry, can't understand {s}") from None
+
     
 def parse_to_native(string,convention=DEFAULT_CONVENTION):
     return Parser(string,convention=convention,use_native_types=True)
 
 def parse_to_dateroll(string,convention=DEFAULT_CONVENTION):
     return Parser(string,convention=convention)
-
-
-
-
-### SCHEDULE CODE FOR LATER
-
-
-# from dateutil.parser import parse
-# import datetime
-# from dateroll import Date,Duration,Schedule
-# from dateroll.ddh import ddh as oddh
-
-# from dateroll.parser import parse_to_dateroll
-# from dateroll.parser import parse_to_native
-
-        
-#         parts = some_string.split(',')
-#         if some_string == '':
-#             TypeError('No empty strings')
-#         num_parts = len(parts)
-
-#         match num_parts:
-#             case 1:
-#                 part = parts[0]
-#                 date_or_period = parse_to_dateroll(part,convention=self.convention)
-#                 return date_or_period
-#             case 3:
-#                 _maybe_start, _maybe_stop, _maybe_step = parts
-                
-#                 maybe_start = parse_to_dateroll(_maybe_start,convention=self.convention)
-#                 maybe_stop = parse_to_dateroll(_maybe_stop,convention=self.convention)
-#                 maybe_step = parse_to_dateroll(_maybe_step,convention=self.convention)
-
-#                 if isinstance(maybe_start,Date):
-#                     start = maybe_start
-#                 else:
-#                     raise TypeError('Start of generation must be a valid Date')
-                
-#                 if isinstance(maybe_stop,Date):
-#                     stop = maybe_stop
-#                 else:
-#                     raise TypeError('Stop of generation must be a valid Date')
-                
-#                 if isinstance(maybe_step,Duration):
-#                     step = maybe_step
-#                 else:
-#                     raise TypeError('Step of generation must be a valid Duration')
-
-#                 sch = Schedule(start=start,stop=stop,step=step)
-#                 return sch
-
-#             case _:
-#                 # Must 
-#                 raise Exception(f'String must contain either 1 or 3 parts (not {num_parts})')
