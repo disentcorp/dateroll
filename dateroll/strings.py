@@ -1,11 +1,32 @@
 import re
+import datetime
 from dateroll import regex
 from dateroll import Date
 from dateroll import Duration
 from dateroll import Schedule
 
+DEFAULT_CONVENTION = 'american'
+TODAYSTRINGVALUES = ['t','t0','today']
+
 class ParserStringsError(Exception):
     ...
+
+def parseTodayString(s,convention=DEFAULT_CONVENTION):
+    '''
+    this is [the] place where "t" is replaced
+    '''
+    today = datetime.date.today()
+
+    match convention:
+        case 'american': today_string = today.strftime(r'%m/%d/%Y')
+        case 'european': today_string = today.strftime(r'%d/%m/%Y')
+        case 'international': today_string = today.strftime(r'%Y/%m/%d')
+
+    for t in TODAYSTRINGVALUES:
+        if t in s:
+            return s.replace(t,today_string)
+    return s
+
 
 def parseDateString(s,convention):
     '''
@@ -20,6 +41,9 @@ def parseDateString(s,convention):
 
     '''
 
+    if convention is None:
+        convention = DEFAULT_CONVENTION
+
     match convention:
         case 'american': 
             pattern = regex.MDY
@@ -31,6 +55,7 @@ def parseDateString(s,convention):
             pattern = regex.YMD
             dateparser_kwargs = {'yearfirst ':True}
         case _:
+
             raise ParserStringsError('No convention provided!')
     dates = []
     matches =re.findall(pattern,s)

@@ -7,7 +7,11 @@ from dateroll import Date
 from dateroll import Duration
 from dateroll import Schedule
 
-DEFAULT_CONVENTION = 'american'
+
+from dateroll.strings import parseTodayString
+from dateroll.strings import parseDateString
+from dateroll.strings import parseDurationString
+from dateroll.strings import parseDateMathString
 
 class ParserError(Exception):
     ...
@@ -82,35 +86,18 @@ class Parser:
     '''
     native_date = datetime.date
     native_delta = dateutil.relativedelta.relativedelta
-    possible_today_strings = ['t','t0','today']
-
-    @classmethod
-    def parseTodayString(cls,s,convention=DEFAULT_CONVENTION):
-        '''
-        this is [the] place where "t" is replaced
-        '''
-        today = datetime.date.today()
-        match convention:
-            case 'american': today_string = today.strftime(r'%m/%d/%Y')
-            case 'european': today_string = today.strftime(r'%d/%m/%Y')
-            case 'international': today_string = today.strftime(r'%Y/%m/%d')
-
-        for t in cls.possible_today_strings:
-            if t in s:
-                return s.replace(t,today_string)
-        return s
         
     def __new__(
             self,
             s,
-            convention = DEFAULT_CONVENTION,
+            convention = None, # inherits from strings
             use_native_types = False
         ):
         '''
         Algorithm works left to right implicitly:
             1 - make + -> ++ and - -> +- to avoid conflict (note below)
-            2 - convert tString into DateString, swap in prinary string
-            3 - Check for how many parts (1 or 3 allowed), For each part:
+            2 - convert TodayStrings into DateStrings
+            3 - Check for how many parts (1 or 3 allowed, "," separator), For each part:
                 3a. Match DateString's -> Date
                 3b. Match DurationString's -> Duration
                 3c. Match DateMathString -> Date or Duration
@@ -119,8 +106,6 @@ class Parser:
         if not isinstance(s,str):
             raise ParserError('Must be string')
 
-        if convention != 'american':
-            raise NotImplementedError('american only for now')
         if use_native_types:
             raise NotImplementedError('only dateroll types for now')
         
@@ -132,18 +117,14 @@ class Parser:
         s0 = s.replace('-','+-').replace('+','++')
 
         #2
-        s1 = Parser.parseTodayString(s0)
+        s1 = parseTodayString(s0)
 
         #3
         part = Parser.parse_maybe_many_parts(s1,convention=self.convention)        
         return part
     
     @classmethod
-    def parse_one_part(cls,untouched,convention=DEFAULT_CONVENTION):
-        ##### MOVE THESE HERE WHEN READY
-        from dateroll.strings import parseDateString
-        from dateroll.strings import parseDurationString
-        from dateroll.strings import parseDateMathString
+    def parse_one_part(cls,untouched,convention=None):
 
         #3a      
         dates, nodates = parseDateString(untouched,convention=convention)
@@ -161,7 +142,7 @@ class Parser:
         return processed_answer
     
     @classmethod
-    def parse_maybe_many_parts(cls,s,convention=DEFAULT_CONVENTION):
+    def parse_maybe_many_parts(cls,s,convention=None):
         parts = s.split(',')
         if not s:
             TypeError('No empty strings')
@@ -204,8 +185,8 @@ class Parser:
         raise ParserError(f"Sorry, can't understand {s}") from None
 
     
-def parse_to_native(string,convention=DEFAULT_CONVENTION):
+def parse_to_native(string,convention=None):
     return Parser(string,convention=convention,use_native_types=True)
 
-def parse_to_dateroll(string,convention=DEFAULT_CONVENTION):
+def parse_to_dateroll(string,convention=None):
     return Parser(string,convention=convention)
