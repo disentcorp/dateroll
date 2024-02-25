@@ -8,10 +8,7 @@ from dateroll import Duration
 from dateroll import Schedule
 
 
-from dateroll.strings import parseTodayString
-from dateroll.strings import parseDateString
-from dateroll.strings import parseDurationString
-from dateroll.strings import parseDateMathString
+from dateroll.strings import ParseStrings
 
 class ParserError(Exception):
     ...
@@ -117,7 +114,7 @@ class Parser:
         s0 = s.replace('-','+-').replace('+','++')
 
         #2
-        s1 = parseTodayString(s0)
+        s1 = ParseStrings.parseTodayString(s0)
 
         #3
         part = Parser.parse_maybe_many_parts(s1,convention=self.convention)        
@@ -127,18 +124,18 @@ class Parser:
     def parse_one_part(cls,untouched,convention=None):
 
         #3a      
-        dates, nodates = parseDateString(untouched,convention=convention)
+        dates, nodates = ParseStrings.parseDateString(untouched,convention=convention)
         if nodates=='X':
             return dates[0]
 
         #3b
-        durations, nodatesordurations = parseDurationString(nodates)
+        durations, nodatesordurations = ParseStrings.parseDurationString(nodates)
         if nodatesordurations=='X':
             return durations[0]
         dates_durations = dates + durations
 
         #3c
-        processed_answer = parseDateMathString(nodatesordurations,dates_durations)
+        processed_answer = ParseStrings.parseDateMathString(nodatesordurations,dates_durations)
         return processed_answer
     
     @classmethod
@@ -146,13 +143,16 @@ class Parser:
         parts = s.split(',')
         if not s:
             TypeError('No empty strings')
+            
         num_parts = len(parts)
 
         match num_parts:
+
             case 1:
                 part = parts[0]
                 date_or_period = cls.parse_one_part(part,convention=convention)
                 return date_or_period
+            
             case 3:
                 _maybe_start, _maybe_stop, _maybe_step = parts
                 
@@ -177,7 +177,7 @@ class Parser:
 
                 sch = Schedule(start=start,stop=stop,step=step)
                 return sch
-
+            
             case _:
                 # Must 
                 raise Exception(f'String must contain either 1 or 3 parts (not {num_parts})')

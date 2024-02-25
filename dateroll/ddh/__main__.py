@@ -36,9 +36,10 @@ class Tests(unittest.TestCase):
 if __name__ == '__main__':
     # unittest.main()
 
-    # print('3/1/24')
-    # print(ddh('t'))
-    # print(ddh('3m'))
-    # print(ddh('6m7y2d5q8w|NYuEUuWEuBRuMXuARuCONZ/MF'))
-    # print(ddh('3m+6m7y2d5q8w|NYuEUuWEuBRuMXuARuCONZ/MF'))
+    print('3/1/24')
+    print(ddh('t'))
+    print(ddh('3m'))
+    print(ddh('6m7y2d5q8w|NYuEUuWEuBRuMXuARuCONZ/MF'))
+    print(ddh('3m+6m7y2d5q8w|NYuEUuWEuBRuMXuARuCONZ/MF'))
+    print(ddh('t-0bd'))
     print(ddh('t+3m'))

@@ -2,17 +2,24 @@ import datetime
 import dateutil
 import dateutil.relativedelta
 
-
-# from dateutil.parser import parse
-# from dateutil.relativedelta import relativedelta
-
-# from dateroll.regex import PTN
-# from dateroll.utils import datePeriodStringToDatePeriod
-
-# order of periods for repr (bigger periods first)
-period_order = (*'yhsqmwd',)
+from dateroll.rolling import Rolling
+period_order = (*'yhsqmwd','cals','roll')
 
 PeriodLike = (dateutil.relativedelta,datetime.timedelta)
+
+def addNones(*args,zeros=False):
+    if zeros:
+        sum = 0
+    else:
+        sum = None
+        for arg in args:
+            if arg is not None:
+                if not sum:
+                    sum = arg
+                else:
+                    sum += arg
+    return sum
+
 
 class Duration:
     '''
@@ -48,25 +55,29 @@ class Duration:
         this could be extended: from 1582 AD to future if we have historical vectors for holiday calendar changes (i.e. juneteenth 1st occured on X, to map backwards math, and assume last forward for futuree math (e.g. last jubilee was 5cd, and happens every 50years..))
         realistically 5-7 year perfect lookup would be more than substantial for more use cases.
     '''
+
+    # on init, should we turn hemi/sem into 6mo and quarters into 3m?
+    collapse_hemi_sem_quart_on_init = True
+
     def __init__(self,
-        y=0,
-        Y=0,
-        h=0,
-        H=0,
-        s=0,
-        S=0,
-        q=0,
-        Q=0,
-        m=0,
-        M=0,
-        w=0,
-        W=0,
-        d=0,
-        D=0,
-        bd=0,
-        BD=0,
-        cals=[],
-        roll=None
+        y=None,
+        Y=None,
+        h=None,
+        H=None,
+        s=None,
+        S=None,
+        q=None,
+        Q=None,
+        m=None,
+        M=None,
+        w=None,
+        W=None,
+        d=None,
+        D=None,
+        cals=None,
+        bd=None,
+        BD=None,
+        roll=None,
     ):
         '''
         y = year
@@ -79,37 +90,100 @@ class Duration:
         bd = business days
         cals = list of 2-letter codes for calendars
         roll = roll convention (F,P,MF,MP)
-        '''
-        self.ny = y+Y
-        self.nm = m+M + 3*(q+Q) + 6*(s+S+h+H)
-        self.nw = w+W
-        self.nd = d+D
-        self.nbd = bd+BD
 
-        self.cals = cals
-        self.roll = roll
+        ^ non means not supplied, 0 means zero supplied
+
+        '''
+        self.y = addNones(y,Y)
+        if self.collapse_hemi_sem_quart_on_init:
+            _m = addNones(addNones(m,M),3*addNones(q,Q,zeros=True),6*addNones(s,S,h,H,zeros=True))
+            if _m > 0:
+                self.m = 0
+            else:
+                self.m = None
+        else:
+            self.m = addNones(m,M)
+        self.w = addNones(w,W)
+        self.d = addNones(d,D)
+        self.bd = addNones(bd,BD)
+
+        if cals is not None:
+            _cals = set()
+            if isinstance(cals,(list,tuple)):
+                for cal in cals:
+                    if isinstance(cal,str):
+                        if len(cal)==2:
+                            ... # tbd
+                            _cals | {cal,}
+                        else:
+                            raise Exception(f'Calendars must be 2-letter strings (not {cal})')
+                    else:
+                        raise Exception(f'Calendars must be strings (not {type(cal).__name__})')
+            self.cals = _cals
+        else:
+            self.cals = None
+
+        if (self.bd is None and cals and len(cals) > 0):
+            self.bd = 0
+
+        # add weekends if adjusting
+        if self.bd is not None:
+            if self.cals:
+                self.cals |= {'WE',}
+            else:
+                self.cals = {'WE',}
+
+        # now validate roll           
+        if roll is not None:
+            if isinstance(roll,str):
+                if roll in Rolling.__dict__:
+                    self.roll = roll
+                else:
+                    NotImplementedError(roll)
+            else:
+                raise Exception('roll must be a str')
+        else:
+            if self.bd is not None:
+                if self.bd >= 0:
+                    self.roll = 'F'
+                elif self.bd <0:
+                    self.roll = 'P'
+                else:
+                    raise NotImplementedError('n/a')
+            else:
+                self.roll = None
+
+
+
 
     @property
     def delta(self):
         '''
         '''
-        rd = dateutil.relativedelta.relativedelta(
-            years=self.ny,
-            months=self.nm,
-            weeks=self.nw,
-            days=self.nd
-        )
+        rd_args = {}
+        if self.y:
+            rd_args['years']=self.y
+        if self.m:
+            rd_args['months']=self.m
+        if self.w:
+            rd_args['weeks']=self.w
+        if self.d:
+            rd_args['days']=self.d
+        rd = dateutil.relativedelta.relativedelta(**rd_args)
         return rd
     
-    def apply_business_date_adjustment(self):
+    def apply_business_date_adjustment(self,from_date):
         '''
         '''
-        raise NotImplementedError
+        print('bd adj on',self.cals)
+        # raise NotImplementedError
     
-    def apply_roll_convention(self):
+    def apply_roll_convention(self,from_date):
         '''
         '''
-        raise NotImplementedError
+
+        print('rolling to ',self.roll)
+        # raise NotImplementedError
     
     def compute_business_days(self):
         '''
@@ -157,10 +231,16 @@ class Duration:
         y = x + direction*rd
 
         # bd adjustment
-        y_adj = self.apply_business_date_adjustment() if self.nbd >0 else y
+        if self.bd:
+            y_adj = self.apply_business_date_adjustment(y)
+        else:
+            y_adj = y
         
         # date rolling
-        y_rolled = self.apply_roll_convention() if self.roll else y_adj
+        if self.roll:
+            y_rolled = self.apply_roll_convention(y_adj) 
+        else:
+            y_rolled = y_adj
 
         return y_rolled
     
@@ -194,7 +274,9 @@ class Duration:
         items = {k: d[k] for k in period_order if k in d}
         constructor = ''
         for k,v in self.__dict__.items():
-            if v!=0:
+            if v!=None or (v==0 and k=='bd'):
+                if k =='roll':
+                    v = f'"{v}"'
                 constructor += f'{k}={v}, '
         return f'{self.__class__.__name__}({constructor.rstrip(", ")})'
 
