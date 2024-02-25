@@ -125,7 +125,6 @@ class Duration:
                 cals = [cals]
             elif hasattr(cals,'__iter__'):
                 for cal in cals:
-                    print('looking at',cal)
                     if isinstance(cal,str):
                         if len(cal)==2:
                             _cals |= {cal,}
@@ -180,7 +179,11 @@ class Duration:
             rd_args['weeks']=self.w
         if self.d:
             rd_args['days']=self.d
+
+        print(self)
+        print('creating rd',rd_args)
         rd = dateutil.relativedelta.relativedelta(**rd_args)
+
         return rd
     
     def apply_business_date_adjustment(self,from_date):
@@ -203,7 +206,7 @@ class Duration:
         '''
         '''
         print('adj bds')
-        raise from_date
+        return from_date
 
     def simmplify(self):
         '''
@@ -239,6 +242,13 @@ class Duration:
 
     @property
     def rough_days(self):
+        '''
+        convert duration units to "days" with non-anchored period approximations
+            e.g. 1y = 365.25 days
+                 1bd = 365/252 days
+        returns tuple (exact/approx,num days)
+        that is if an approximation is used, the 1st part of the return is true
+        '''
         exact = True
         days = 0
         if self.y is not None:
@@ -270,8 +280,12 @@ class Duration:
         '''
         c = a + b
         '''
+        from dateroll import Date
+        print('in math',self,type(self),b,type(b))
+
         a = self
 
+        # duration + duration
         if isinstance(b,Duration):
             '''
             combine both
@@ -314,7 +328,9 @@ class Duration:
                 
                 # not if net diff is positive, rolling forwards
                 if diff > 0:
-                    if 'M' in a.roll or 'M' in b.roll:
+                    _aroll = a.roll if a.roll is not None else ''
+                    _broll = a.roll if a.roll is not None else ''
+                    if 'M' in _aroll or 'M' in _broll:
                         roll = 'MF'
                     else:
                         roll = 'F'
@@ -331,21 +347,27 @@ class Duration:
             c = Duration(y=y,m=m,w=w,d=d,bd=bd,roll=roll,cals=cals)
             return c
 
-        if isinstance(b,dateutil.relativedelta.relativedelta):
-            raise NotImplementedError('need to cast rd')
+        # duration + rd() --- should not happen
+        elif isinstance(b,dateutil.relativedelta.relativedelta):
+            return self
+            # raise NotImplementedError('need to cast rd')
+        
 
+        elif isinstance(b,Date):
+            # adjust b for Non-bd's FIRST
+            b_moved = b + self.delta*direction
+
+            # # if you have bd's, then use bd adj and roll:
+            if self.bd or self.cals or self.roll:
+                shift_adj = self.apply_business_date_adjustment(b_moved)
+            else:
+                shift_adj = b_moved
+            
+            # convert back to dateroll.Date
+            return Date.from_datetime(shift_adj)
+        
         else:
-            # with date
-            b = self.delta*direction
-
-            c = a + b
-
-            # do adjustments
-            if self.bd:
-                c = self.apply_business_date_adjustment(c)
-
-            from dateroll import Date
-            return Date.from_datetime(c)
+            raise NotImplementedError
     
 
     @property

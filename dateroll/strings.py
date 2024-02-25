@@ -106,7 +106,6 @@ class ParseStrings:
 
                 duration_contructor_args[unit]=number
 
-        print(duration_contructor_args)
         # attach calendars if any
         cals = m[13:21]
         for cal in cals:
@@ -183,6 +182,9 @@ class ParseStrings:
             -X-X
         does the match..relies on items for the overload. invalid pairings will raise their own exeption.
         '''
+
+        for thing in things:
+            print('thing',thing,type(thing))
         #######
         ####### do more math, allow for repetitive patterns
         ###### use an eval context
@@ -206,11 +208,10 @@ class ParseStrings:
                 right_hand_side = things[1]
 
             if s=='X+X' or s=='+X+X':
-                print(left_hand_side,right_hand_side)
+                print(type(left_hand_side),type(right_hand_side))
                 total = left_hand_side + right_hand_side
                 return total
             elif s=='X-X' or s=='+X-X':
-                print(left_hand_side,right_hand_side)
                 total = left_hand_side - right_hand_side
                 return total
         raise ParserStringsError('Cannot recognize as date math',s)
