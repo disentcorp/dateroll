@@ -3,12 +3,12 @@ import dateutil
 import dateutil.relativedelta
 import dateutil.rrule
 
-from dateroll import Date
-from dateroll import Duration
-from dateroll import Schedule
+from dateroll.date.date import Date
+from dateroll.duration.duration import Duration
+from dateroll.schedule.schedule import Schedule
 
 
-from dateroll.strings import ParseStrings
+from dateroll.utils.strings import ParseStrings
 
 class ParserError(Exception):
     ...

@@ -2,7 +2,7 @@ import datetime
 import dateutil
 import dateutil.relativedelta
 
-from dateroll.rolling import Rolling
+from dateroll.duration.rolling import Rolling
 period_order = (*'yhsqmwd','cals','roll')
 
 PeriodLike = (dateutil.relativedelta,datetime.timedelta)
@@ -277,7 +277,7 @@ class Duration:
         '''
         c = a + b
         '''
-        from dateroll import Date
+        from dateroll.date.date import Date
 
         a = self
 

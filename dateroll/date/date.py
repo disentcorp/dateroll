@@ -1,7 +1,6 @@
 import datetime
 from datetime import timezone
-from dateroll.duration import Duration
-from dateroll.holidays import get_hol_list
+from dateroll.duration.duration import Duration
 from dateutil.parser import parse
 import calendar
 import numpy
@@ -10,23 +9,14 @@ import dateutil.relativedelta
 DateLike = (datetime.datetime,datetime.date)
 
 class Date(datetime.date):
-    def __new__(self, *args, **kwargs):
-        if isinstance(args[0], str):
-            if args[0] in ["0", "t0", "t", "T", "today", "Today", "TODAY"]:
-                val = datetime.date.today()
-            else:
-                val = parse(args[0])
-            y, m, d = val.year, val.month, val.day
-            return super().__new__(self, y, m, d)  # super().__new__(self,y,m,d,0,0,0)
-        elif isinstance(args[0], datetime.date):
-            y, m, d = args[0].year, args[0].month, args[0].day
-            return super().__new__(self, y, m, d)
-        else:
-            return super().__new__(self, *args, **kwargs)
+    ...
     
     
     @staticmethod
     def from_string(s,**dateparser_kwargs):
+        '''
+        if string provided use dateutil's parser
+        '''
         dt = parse(s,**dateparser_kwargs)
         return Date.from_datetime(dt)
 
@@ -39,20 +29,19 @@ class Date(datetime.date):
             y, m, d = dt.year, dt.month, dt.day
             return Date(y,m,d)
 
-    def __str__(self):
-        return f'{self.strftime("%d-%b-%Y")}'
-
     def __repr__(self):
         return f'{self.__class__.__name__}("{self.strftime("%Y-%m-%d")}")'
 
-    def isBd(self, cal="WE"):
-        hol_list = get_hol_list([self.year], cal=cal)
-        if self.weekday() in [5, 6] or self in hol_list:
-            return False
-        else:
-            return True
+    def isBd(self, cals=None):
+        '''
+        am i a business day?
+        '''
+        raise NotImplementedError
 
     def weekDay(self):
+        '''
+        which day of the week am i 
+        '''
         dt_mapping = {
             0: "Mon",
             1: "Tue",
@@ -66,12 +55,17 @@ class Date(datetime.date):
         return day_of_week
 
     def weekMonth(self):
+        '''
+        which week of the month, ie 1,2,3,4,5
+        '''
         d = numpy.array(calendar.monthcalendar(self.year, self.month))
         week_of_month = numpy.where(d == self.day)[0][0] + 1
-
         return week_of_month
 
     def weekYear(self):
+        '''
+        week of the year, iso 8601
+        '''
         return self.isocalendar()[1]
 
     def toExcel(self):
@@ -82,53 +76,55 @@ class Date(datetime.date):
 
     def toUnix(self):
         utc_time = datetime.datetime(self.year, self.month, self.day, tzinfo=timezone.utc)
-
         utc_timestamp = utc_time.timestamp()
         return utc_timestamp
 
-    def toStr(self):
-        return self.strftime("%Y%m%d")
+    @property
+    def iso(self):
+        return self.isoformat().split('T')[0]
 
     def isoStr(self):
         return self.datetime.isoformat(timespec="minutes")
-
-    def strftime(self, mask):
-        return datetime.datetime(self.year, self.month, self.day).strftime(mask)
     
     def __cmp__(self,b):
         return self.datetime == b
 
-
     @property
     def datetime(self):
         return datetime.datetime(self.year, self.month, self.day)
+    @property
+    def date(self):
+        return datetime.date(self.year, self.month, self.day)
+    @property
+    def dt(self):
+        return datetime.datetime(self.year, self.month, self.day)
     
-    def __sub__(self, lhs):
-        if isinstance(lhs, datetime.date) and isinstance(self, datetime.date):
-            dt1 = lhs.toStr()
-            dt2 = self.toStr()
-            str_ = f"{dt2}-{dt1}"
-            return Duration(str_)
-        else:
-            dt = self.strftime("%Y%m%d")
-            dr = lhs.__str__()
-            str_ = "".join([dt, dr])
-            rs = Duration(dr).__sub__(self)
+    # def __sub__(self, lhs):
+    #     if isinstance(lhs, datetime.date) and isinstance(self, datetime.date):
+    #         dt1 = lhs.toStr()
+    #         dt2 = self.toStr()
+    #         str_ = f"{dt2}-{dt1}"
+    #         return Duration(str_)
+    #     else:
+    #         dt = self.strftime("%Y%m%d")
+    #         dr = lhs.__str__()
+    #         str_ = "".join([dt, dr])
+    #         rs = Duration(dr).__sub__(self)
 
-            return rs 
+    #         return rs 
 
-    def __add__(self,o):
-        if isinstance(o,str):
-            try:
-                o_adj = Duration(o)
-            except:
-                o_adj = Date(o)
-            res = o_adj.__add__(self)
-            return res
-        return super().__add__(o)
+    # def __add__(self,o):
+    #     if isinstance(o,str):
+    #         try:
+    #             o_adj = Duration(o)
+    #         except:
+    #             o_adj = Date(o)
+    #         res = o_adj.__add__(self)
+    #         return res
+    #     return super().__add__(o)
     
-    def __radd__(self,o):
-        return self.__add__(o)
+    # def __radd__(self,o):
+    #     return self.__add__(o)
     
 DateLike = DateLike + (Date,)
 

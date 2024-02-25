@@ -1,9 +1,9 @@
 import re
 import datetime
-from dateroll import regex
-from dateroll import Date
-from dateroll import Duration
-from dateroll import Schedule
+from dateroll.date.date import Date
+from dateroll.duration.duration import Duration
+from dateroll.schedule.schedule import Schedule
+from dateroll.utils import regex
 
 DEFAULT_CONVENTION = 'american'
 TODAYSTRINGVALUES = ['t','t0','today']
