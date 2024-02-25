@@ -92,12 +92,12 @@ class Parser:
         ):
         '''
         Algorithm works left to right implicitly:
-            1 - make + -> ++ and - -> +- to avoid conflict (note below)
-            2 - convert TodayStrings into DateStrings
-            3 - Check for how many parts (1 or 3 allowed, "," separator), For each part:
-                3a. Match DateString's -> Date
-                3b. Match DurationString's -> Duration
-                3c. Match DateMathString -> Date or Duration
+            1 - convert TodayStrings into DateStrings
+            2 - Check for how many parts (1 or 3 allowed, "," separator)
+            3 - For each part
+                    3a. Match DateString's -> Date
+                    3b. Match DurationString's -> Duration
+                    3c. Match DateMathString -> Date or Duration
         '''
 
         if not isinstance(s,str):
@@ -109,14 +109,10 @@ class Parser:
         self.convention = convention
         self.use_native_types = use_native_types
 
-        #1 replace minus with plusminus and plus with plusplus, 
-        # this avoids conflict with DateMathString and DateDurationString
-        s0 = s.replace('-','+-').replace('+','++')
+        #1
+        s1 = ParseStrings.parseTodayString(s)
 
         #2
-        s1 = ParseStrings.parseTodayString(s0)
-
-        #3
         part = Parser.parse_maybe_many_parts(s1,convention=self.convention)        
         return part
     
@@ -125,16 +121,19 @@ class Parser:
 
         #3a      
         dates, nodates = ParseStrings.parseDateString(untouched,convention=convention)
+        # print('s before/after:', untouched,nodates)
         if nodates=='X':
             return dates[0]
 
         #3b
         durations, nodatesordurations = ParseStrings.parseDurationString(nodates)
+        # print('s before/after:', nodates,nodatesordurations)
         if nodatesordurations=='X':
             return durations[0]
         dates_durations = dates + durations
 
         #3c
+        # print('before pdms',nodatesordurations)
         processed_answer = ParseStrings.parseDateMathString(nodatesordurations,dates_durations)
         return processed_answer
     

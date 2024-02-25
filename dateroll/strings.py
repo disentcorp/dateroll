@@ -88,10 +88,10 @@ class ParseStrings:
         # get initial multplier (if any)
         op = m[1]
         match op:
-            case ''|'+': mult=1
+            case ''|'+': mult = 1
             case '-': mult = -1
             case '_': raise Exception('Unknown operator')
-        
+
         # get all the pairs
         for i in range(2,12,2):
             number = m[i] 
@@ -100,12 +100,13 @@ class ParseStrings:
             if number and unit:
                 # cast number to integer
                 number = int(number)
-                if i>2:
+                if i < 4:
                     # use multiplier on first pair
                     number *= mult
 
                 duration_contructor_args[unit]=number
 
+        print(duration_contructor_args)
         # attach calendars if any
         cals = m[13:21]
         for cal in cals:
@@ -115,6 +116,12 @@ class ParseStrings:
         roll = m[22]
         if roll:
             duration_contructor_args['roll']=roll
+        else:
+            if mult==-1:
+                # if -BD is specific and no specific roll, roll should
+                # should ALWAYS be P or previous business day
+                duration_contructor_args['roll']='P'
+
 
         duration = Duration(**duration_contructor_args)
         return duration
@@ -158,7 +165,8 @@ class ParseStrings:
         for m in matches:
             full = m[0]
             duration = ParseStrings.process_duration_match(m)
-            s = s.replace(m[0],'X')
+            # subs turn into addisions because Duration comes back with - inside
+            s = s.replace(m[0],f'+X')
             durations.append(duration)
 
         return durations,s
@@ -170,6 +178,9 @@ class ParseStrings:
             X
             X+X
             X-X
+            +X+X
+            -X+X
+            -X-X
         does the match..relies on items for the overload. invalid pairings will raise their own exeption.
         '''
         #######
@@ -178,19 +189,31 @@ class ParseStrings:
         ##### safety is X's and valid operators
         s = s.replace(' ','').replace('++','+')
 
-        if len(things)==1:
-            operand = things[0]
-            return operand
-        if len(things)==2:
-            left_hand_side = things[0]
-            right_hand_side = things[1]
-        if s=='X+X':
-            total = left_hand_side + right_hand_side
-            return total
-        if s=='X-X':
-            total = left_hand_side - right_hand_side
+        ident_matches = re.match(regex.IDENT,s)
+        if ident_matches:
+            if len(things)==1:
+                return things[0]
+            else:
+                raise NotImplementedError(f'Unhandled {s}')
+        
+        math_matches = re.match(regex.MATH,s)
+        if math_matches:
+            if len(things)==1:
+                operand = things[0]
+            
+            elif len(things)==2:
+                left_hand_side = things[0]
+                right_hand_side = things[1]
 
-        raise ParserStringsError('Cannot recognize as math',s)
+            if s=='X+X' or s=='+X+X':
+                print(left_hand_side,right_hand_side)
+                total = left_hand_side + right_hand_side
+                return total
+            elif s=='X-X' or s=='+X-X':
+                print(left_hand_side,right_hand_side)
+                total = left_hand_side - right_hand_side
+                return total
+        raise ParserStringsError('Cannot recognize as date math',s)
 
     @staticmethod
     def parseScheduleString(s):

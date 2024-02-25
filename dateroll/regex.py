@@ -37,5 +37,5 @@ PIPE_REPEAT_CAL_UNION_2 = f"(?:{REPEATING_CALUNIONS_2})?"
 COMPLETE_DURATION = re.compile(f"({OPERATOR}{REPEATING_DATE_PERIODS} ?{PIPE_REPEAT_CAL_UNION_2}{PIPE_ROLL_2})")
 
 # DateMathString Patterns
-ADD = re.compile(r'LHS\ ?\+\ ?RHS')
-SUB = re.compile(r'LHS\ ?\-\ ?RHS')
+IDENT = r'^ ?(\+|-) ?X ?$'
+MATH = r'^ ?((\+|-)? ?)?X(\+|-) ?X$'
