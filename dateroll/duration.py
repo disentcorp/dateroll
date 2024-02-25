@@ -180,8 +180,6 @@ class Duration:
         if self.d:
             rd_args['days']=self.d
 
-        print(self)
-        print('creating rd',rd_args)
         rd = dateutil.relativedelta.relativedelta(**rd_args)
 
         return rd
@@ -199,13 +197,13 @@ class Duration:
     def apply_roll_convention(self,from_date):
         '''
         '''
-        print('doing roll')
+        # print('doing roll')
         return from_date
         
     def adjust_bds(self,from_date):
         '''
         '''
-        print('adj bds')
+        # print('adj bds')
         return from_date
 
     def simmplify(self):
@@ -275,13 +273,11 @@ class Duration:
         else:
             return False
 
-
     def math(self,b,direction):
         '''
         c = a + b
         '''
         from dateroll import Date
-        print('in math',self,type(self),b,type(b))
 
         a = self
 

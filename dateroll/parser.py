@@ -113,7 +113,6 @@ class Parser:
         s1 = ParseStrings.parseTodayString(s)
 
         #2
-        print('about to process',s)
         part = Parser.parse_maybe_many_parts(s1,convention=self.convention)        
         return part
     

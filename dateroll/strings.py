@@ -183,8 +183,6 @@ class ParseStrings:
         does the match..relies on items for the overload. invalid pairings will raise their own exeption.
         '''
 
-        for thing in things:
-            print('thing',thing,type(thing))
         #######
         ####### do more math, allow for repetitive patterns
         ###### use an eval context
@@ -208,7 +206,6 @@ class ParseStrings:
                 right_hand_side = things[1]
 
             if s=='X+X' or s=='+X+X':
-                print(type(left_hand_side),type(right_hand_side))
                 total = left_hand_side + right_hand_side
                 return total
             elif s=='X-X' or s=='+X-X':
