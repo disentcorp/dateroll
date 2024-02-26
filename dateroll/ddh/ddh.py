@@ -12,6 +12,5 @@ ddh('t') +'3m' .... it's relaly close to the base but little extra.
 
 '''
 
-
 def ddh(string,convention=None):
     return parse_to_dateroll(string,convention=convention)

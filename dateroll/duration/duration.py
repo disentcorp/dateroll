@@ -308,6 +308,13 @@ class Duration:
 
             # roll adjustment form math (can be approx)
             # first compute diff, then roll
+            '''
+            add error tolerlance to rough days calc, return n + epsilon
+            if epsilon > tolerance, throw error11
+            tol = 366/365*y+31/28*m+7/7+1/1+365/252
+            see slack for c+b a/e - 8 scenarios, only 2 need approx
+            
+            '''
             if a.roll or b.roll or a.cals or b.cals:
                 abd = a.bd_only
                 bbd = b.bd_only
@@ -338,7 +345,6 @@ class Duration:
                         roll = 'P'
             else:
                 roll = None
-                
 
             c = Duration(y=y,m=m,w=w,d=d,bd=bd,roll=roll,cals=cals)
             return c
