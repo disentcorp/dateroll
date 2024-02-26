@@ -48,8 +48,10 @@ def load_sample_data(cals,n=DEFAULT_YEAR_RANGE):
     LN = BOE = generate_Workalendar(UnitedKingdom,n=n)
     BR = BCB = generate_Workalendar(Brazil,n=n)
 
-    cals['ALL'] = ALL
-    cals['WE'] = WE
+    if 'ALL' not in cals:
+        cals['ALL'] = ALL
+    if 'WE' not in cals:
+        cals['WE'] = WE
 
     cals['NY'] = NY
     cals['LN'] = LN

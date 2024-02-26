@@ -19,7 +19,12 @@ class TestStringMethods(unittest.TestCase):
         os.remove(filename)
 
 
-    def test_keys(self): k = self.cals.keys(); assert isinstance(k,list)
+    def test_keys(self):
+        '''
+        ensure the keys method is returing a list-like object
+        '''
+        k = self.cals.keys(); 
+        assert isinstance(k,list)
 
     @expectedFailure
     def test_tests1(self): self.cals['aaaa']=[]

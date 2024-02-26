@@ -2,23 +2,38 @@ import pathlib
 import shelve
 import datetime
 import pandas as pd
+import hashlib
+import os
 
 PARENT_LOCATION = pathlib.Path.home() / '.dateroll/'
 PARENT_LOCATION.mkdir(exist_ok=True)
 MODULE_LOCATION = PARENT_LOCATION / 'calendars/'
 MODULE_LOCATION.mkdir(exist_ok=True)
-DATA_LOCATION_FILE = MODULE_LOCATION / 'data'
+DATA_LOCATION_FILE = MODULE_LOCATION / 'holiday_lists'
 
 class Calendars:
     def __init__(self,home=DATA_LOCATION_FILE):
         self.home = home
         self.db = lambda :shelve.open(self.home)
+
+        with self.db() as db:
+            if 'WE' not in db and 'ALL' not in db:
+                self.load_all_and_we()
     
     def keys(self):
         with self.db() as db:
             return list(db.keys())
+        
+    @property
+    def hash(self):
+        with open(self.home.with_suffix('.db'),'rb') as f:
+            return hashlib.md5(f.read(),).hexdigest()
     
     def __setitem__(self,k,v):
+        from dateroll.calendars.calendarmath import DATA_LOCATION_FILE as calendar_math_file 
+        if calendar_math_file.exists():
+            os.remove(calendar_math_file)
+
         # key must be 2-3 letter string in uppercase
         if not isinstance(k,str):
             raise Exception(f'Cal name must be string (got {type(k).__name__})')
@@ -56,7 +71,7 @@ class Calendars:
     
     def __getattr__(self,k):
         return self.get(k)
-    
+       
     def __contains__(self,k):
         with self.db() as db:
             return str(k) in db
@@ -77,9 +92,15 @@ class Calendars:
         self.info
         return f'{self.__class__.__name__}(home="{self.home}.db")'
     
-    def load_sample_data(self,n=200):
-        from dateroll.calendars.sampledata import load_sample_data
-        load_sample_data(self,n=n)
+    def load_all_and_we(self):
+        from dateroll.calendars.sampledata import generate_ALL_and_WE
+        ALL, WE = generate_ALL_and_WE()
+        self['ALL'] = ALL
+        self['WE'] = WE
+
+    def load_sample_data(self):
+        from dateroll.calendars.sampledata import load_sample_data as lsd
+        lsd(self)
         self.info
 
     @property
@@ -94,12 +115,12 @@ class Calendars:
                 stat = {'name':i,'dates':n,'min':mn,'max':mx}
                 stats.append(stat)
             if len(stats)>0:
-                print(pd.DataFrame(stats))
+                print(pd.DataFrame(stats).to_string(index=False))
 
 if __name__ == '__main__':
     cals = Calendars()
-
-    # cals.load_sample_data()
+    print(cals.hash)
+    cals.load_sample_data()
 
     import code;code.interact(local=locals())
 
