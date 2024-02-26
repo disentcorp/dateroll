@@ -10,7 +10,7 @@ import uuid
 class TestStringMethods(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.filename_base = pathlib.Path(tempfile.gettempdir()) / f"dateroll.testing.{uuid.uuid4()}"
+        cls.filename_base = pathlib.Path(tempfile.gettempdir()) / f"dateroll.testing.{uuid.uuid4()}.cals"
         cls.cals = Calendars(home=cls.filename_base)
 
     @classmethod

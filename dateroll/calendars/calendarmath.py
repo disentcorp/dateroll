@@ -30,9 +30,9 @@ class CalendarMath:
     calenedar unions are handled automatically and cached, if a list of calendars is provided a new set of compiled calendars is created (doesn't impact Calendar's dict-on-disk representation
 
     '''
-    def __init__(self):
+    def __init__(self,home=DATA_LOCATION_FILE):
 
-        self.home = DATA_LOCATION_FILE
+        self.home = home
         self.cals = Calendars()
         self.hash = self.cals.hash
         self.ALL = self.cals['ALL']
@@ -48,7 +48,8 @@ class CalendarMath:
     def load_cache(self):
         if self.home.exists():
             file = open(self.home,'rb')
-            cached = pickle.load(file)
+            with file:
+                cached = pickle.load(file)
             return cached 
         else:
             return {'hash':None}
@@ -60,7 +61,8 @@ class CalendarMath:
         cached = {'fwd':self.fwd,'bck':self.bck,'prev':self.prev,'next':self.next,'hash':self.hash,'unions':self.unions}
         self.__dict__.update(cached)
         file = open(self.home,'wb')
-        pickle.dump(cached,file)
+        with file:
+            pickle.dump(cached,file)
         
     def cached_compile_all(self):
         '''
@@ -176,9 +178,6 @@ class CalendarMath:
             pass
         else:
             raise TypeError(f'Date must be date (got {type(d).__name__})')
-
-        print(cal_name,'fwd',type(A),len(A))
-        print(cal_name,'bck',type(B),len(B))
 
         bd_index = A[d]
         new_bd_index = bd_index + n
