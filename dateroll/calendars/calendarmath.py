@@ -1,3 +1,4 @@
+import datetime
 import pathlib
 import pickle
 from dateroll.calendars.calendars import Calendars
@@ -209,17 +210,24 @@ class CalendarMath:
         n = fwd[t2]-fwd[t1]
         return n
     
-    def next_bd(self,d,cals):
+    def next_bd(self,d,cals,mod=False):
         '''
         the next business date from d on calendars cals
         '''
+        if mod:
+            raise NotImplementedError('mod')
+
         cal_name = self.union_swap(cals)
         return self.prev[cal_name][d]
     
-    def prev_bd(self,d,cals):
+    def prev_bd(self,d,cals,mod=False):
         '''
         the previous business date from d on calendars cals
         '''
+
+        if mod:
+            raise NotImplementedError('mod')
+
         cal_name = self.union_swap(cals)
         return self.next[cal_name][d]
 
@@ -230,7 +238,7 @@ class CalendarMath:
         '''
         if isinstance(cals,str):
             return cals
-        elif isinstance(cals,(tuple,list)):
+        elif isinstance(cals,(tuple,list,set)):
             union_name = '_'.join(cals)
             if union_name in self.fwd:
                 return union_name
@@ -248,7 +256,7 @@ class CalendarMath:
         '''
         if isinstance(cals,str):
             return cals
-        elif isinstance(cals,(tuple,list)):
+        elif isinstance(cals,(tuple,list,set)):
             union = set()
             if len(cals)==1:
                 if isinstance(cals[0],str):
@@ -267,6 +275,8 @@ class CalendarMath:
             self.save_cache()
         else:
             raise TypeError('Union must be tuple or list of cal names')
+
+cm = CalendarMath()
 
 if __name__ == '__main__':
     cm = CalendarMath()
