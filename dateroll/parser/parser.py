@@ -7,7 +7,7 @@ import dateutil.rrule
 from dateroll.date.date import Date
 from dateroll.duration.duration import Duration
 from dateroll.schedule.schedule import Schedule
-from dateroll.utils.strings import ParseStrings
+from dateroll.parser import parsers
 
 
 class ParserError(Exception): ...
@@ -108,7 +108,7 @@ class Parser:
         self.use_native_types = use_native_types
 
         # 1
-        s1 = ParseStrings.parseTodayString(s)
+        s1 = parsers.parseTodayString(s)
 
         # 2
         part = Parser.parse_maybe_many_parts(s1, convention=self.convention)
@@ -118,13 +118,13 @@ class Parser:
     def parse_one_part(cls, untouched, convention=None):
 
         # 3a
-        dates, nodates = ParseStrings.parseDateString(untouched, convention=convention)
+        dates, nodates = parsers.parseDateString(untouched, convention=convention)
         # print('s before/after:', untouched,nodates)
         if nodates == "X":
             return dates[0]
 
         # 3b
-        durations, nodatesordurations = ParseStrings.parseDurationString(nodates)
+        durations, nodatesordurations = parsers.parseDurationString(nodates)
         # print('s before/after:', nodates,nodatesordurations)
         if nodatesordurations == "X":
             return durations[0]
@@ -132,7 +132,7 @@ class Parser:
 
         # 3c
         # print('before pdms',nodatesordurations)
-        processed_answer = ParseStrings.parseDateMathString(
+        processed_answer = parsers.parseDateMathString(
             nodatesordurations, dates_durations
         )
         return processed_answer
