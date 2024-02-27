@@ -1,47 +1,49 @@
+import calendar
 import datetime
 from datetime import timezone
-from dateroll.duration.duration import Duration
-from dateutil.parser import parse
-import calendar
-import numpy
-import dateutil.relativedelta
 
-DateLike = (datetime.datetime,datetime.date)
+import dateutil.relativedelta
+import numpy
+from dateutil.parser import parse
+
+from dateroll.duration.duration import Duration
+
+DateLike = (datetime.datetime, datetime.date)
+
 
 class Date(datetime.date):
     ...
-    
-    
+
     @staticmethod
-    def from_string(s,**dateparser_kwargs):
-        '''
+    def from_string(s, **dateparser_kwargs):
+        """
         if string provided use dateutil's parser
-        '''
-        dt = parse(s,**dateparser_kwargs)
+        """
+        dt = parse(s, **dateparser_kwargs)
         return Date.from_datetime(dt)
 
     @staticmethod
     def from_datetime(dt):
-        '''
+        """
         Create a Date instance from a datetime.datetime (drops time information), or datetime.date
-        '''
-        if isinstance(dt,DateLike):
+        """
+        if isinstance(dt, DateLike):
             y, m, d = dt.year, dt.month, dt.day
-            return Date(y,m,d)
+            return Date(y, m, d)
 
     def __repr__(self):
         return f'{self.__class__.__name__}("{self.strftime("%Y-%m-%d")}")'
 
     def isBd(self, cals=None):
-        '''
+        """
         am i a business day?
-        '''
+        """
         raise NotImplementedError
 
     def weekDay(self):
-        '''
-        which day of the week am i 
-        '''
+        """
+        which day of the week am i
+        """
         dt_mapping = {
             0: "Mon",
             1: "Tue",
@@ -55,17 +57,17 @@ class Date(datetime.date):
         return day_of_week
 
     def weekMonth(self):
-        '''
+        """
         which week of the month, ie 1,2,3,4,5
-        '''
+        """
         d = numpy.array(calendar.monthcalendar(self.year, self.month))
         week_of_month = numpy.where(d == self.day)[0][0] + 1
         return week_of_month
 
     def weekYear(self):
-        '''
+        """
         week of the year, iso 8601
-        '''
+        """
         return self.isocalendar()[1]
 
     def toExcel(self):
@@ -75,30 +77,39 @@ class Date(datetime.date):
         return rs
 
     def toUnix(self):
-        utc_time = datetime.datetime(self.year, self.month, self.day, tzinfo=timezone.utc)
+        utc_time = datetime.datetime(
+            self.year, self.month, self.day, tzinfo=timezone.utc
+        )
         utc_timestamp = utc_time.timestamp()
         return utc_timestamp
 
     @property
     def iso(self):
-        return self.isoformat().split('T')[0]
+        return self.isoformat().split("T")[0]
 
     def isoStr(self):
         return self.datetime.isoformat(timespec="minutes")
-    
-    def __cmp__(self,b):
+
+    def __cmp__(self, b):
         return self.datetime == b
 
     @property
     def datetime(self):
         return datetime.datetime(self.year, self.month, self.day)
+
     @property
     def date(self):
         return datetime.date(self.year, self.month, self.day)
+
     @property
     def dt(self):
         return datetime.datetime(self.year, self.month, self.day)
     
+
+    '''
+    need to test add,sub,iadd,isub,radd,rsub
+    '''
+
     # def __sub__(self, lhs):
     #     if isinstance(lhs, datetime.date) and isinstance(self, datetime.date):
     #         dt1 = lhs.toStr()
@@ -111,7 +122,7 @@ class Date(datetime.date):
     #         str_ = "".join([dt, dr])
     #         rs = Duration(dr).__sub__(self)
 
-    #         return rs 
+    #         return rs
 
     # def __add__(self,o):
     #     if isinstance(o,str):
@@ -122,11 +133,12 @@ class Date(datetime.date):
     #         res = o_adj.__add__(self)
     #         return res
     #     return super().__add__(o)
-    
+
     # def __radd__(self,o):
     #     return self.__add__(o)
-    
+
+
 DateLike = DateLike + (Date,)
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     ...

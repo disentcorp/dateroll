@@ -1,5 +1,5 @@
-class Schedule:
-    ...
+class Schedule: ...
+
 
 # from dateroll.date import Date, DateLike
 # from dateroll.period import Duration,PeriodLike
@@ -129,7 +129,7 @@ class Schedule:
 #         self.start = start
 #         self.stop = stop
 #         self.step = step
-        
+
 #         if start == stop:
 #             self.days = [start]
 #         elif start > stop:
@@ -148,7 +148,7 @@ class Schedule:
 #     def __repr__(self):
 #         s = f"{self.__class__.__name__}({repr(self.start)},{repr(self.stop)},{repr(self.step)})"
 #         return s
-    
+
 # if __name__ == '__main__':
 
 #     t1 = Date('t') + Duration('1m')

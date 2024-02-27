@@ -1,4 +1,3 @@
-
 # DATE_CONVERT_DICT = {
 #     "1w": {"d": {"7d": "perfect"}},
 #     "1m": {"d": {"30d": "approx"}, "w": {"4w": "approx"}},
@@ -90,25 +89,25 @@
 #         if perfect_or_approx == "approx":
 #             warnings.warn("roughly approximated, this may not be true as there is no anchor date")
 #         return converted_per
-    
+
 #     @staticmethod
 #     def from_relativedelta(rd_object):
 #         '''
 #         create Duration from dateutil.relativedelta.relativedelta
 #         '''
-    
+
 #     @staticmethod
 #     def from_timedelta(td_object):
 #         '''
 #         create Duration from datetime.timedelta
 #         '''
-    
+
 #     @staticmethod
 #     def from_string(td_object):
 #         '''
 #         create Duration from DurationString
 #         '''
-    
+
 
 #     def cd(self, ie="[)"):
 #         # self.stub='short',self.ret='l',self.monthEndRule='anniv',self.ie=NotImplementedError,self.dc=NotImplementedError
@@ -117,7 +116,7 @@
 
 #         n = (self.ed - self.st).days
 #         return n
-    
+
 #     def toDt(self):
 #         if isinstance(self.rs, str):
 #             self.rs = datetime.datetime.strptime(self.rs, "%Y%m%d")  # datetime.strptime(rs,'%Y%m%d')

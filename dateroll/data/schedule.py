@@ -1,9 +1,8 @@
-
 from dateroll.date import Date
 from dateroll.duration import Duration
-from dateroll.utils import fwd_or_bwd
-from dateroll.utils import datePeriodParse, genEndtoEnd
-from dateroll.utils import DATE_RANGE_HELPER_DICT, IERULE_MAPPING, LASTDATEOFMONTH
+from dateroll.utils import (DATE_RANGE_HELPER_DICT, IERULE_MAPPING,
+                            LASTDATEOFMONTH, datePeriodParse, fwd_or_bwd,
+                            genEndtoEnd)
 
 
 class Schedule:
@@ -32,8 +31,14 @@ class Schedule:
         self.per = Duration(per)
         self.bwd = bwd
 
-        if st1 != ed1:  # here applied ieRule; did not understand why self.st>self.ed runs a lot of code?
-            ed1, st1 = IERULE_MAPPING[ie](ed1, st1, Duration("1bd")) if "bd" in self.per.__str__().lower() else IERULE_MAPPING[ie](ed1, st1, Duration("1d"))
+        if (
+            st1 != ed1
+        ):  # here applied ieRule; did not understand why self.st>self.ed runs a lot of code?
+            ed1, st1 = (
+                IERULE_MAPPING[ie](ed1, st1, Duration("1bd"))
+                if "bd" in self.per.__str__().lower()
+                else IERULE_MAPPING[ie](ed1, st1, Duration("1d"))
+            )
 
         self.st = st1
         self.ed = ed1
@@ -58,7 +63,7 @@ class Schedule:
         dts = []
         dt = self.st
         done = False
-        max_iter = 365*100*4
+        max_iter = 365 * 100 * 4
         c = 0
         dt = dt + Duration("0bd")
         while not done:
@@ -69,7 +74,9 @@ class Schedule:
             dts.append(dt)
 
             dt += self.per
-            if not ("d" in self.per.__str__().lower() or "w" in self.per.__str__().lower()):
+            if not (
+                "d" in self.per.__str__().lower() or "w" in self.per.__str__().lower()
+            ):
                 dt_day = min(self.st.day, LASTDATEOFMONTH(dt).day)
                 dt = dt.replace(day=dt_day)
 
@@ -94,7 +101,9 @@ class Schedule:
                 dts.append(self.ed)
             else:
                 if self.stub != "long":
-                    raise Exception("Stub either short or full, please check the stub name")
+                    raise Exception(
+                        "Stub either short or full, please check the stub name"
+                    )
 
                 if len(dts) % 2 == 0:
                     dts[-1] = self.ed
@@ -102,7 +111,9 @@ class Schedule:
                     dts.append(self.ed)
         if not "d" in self.per.__str__().lower() and self.monthEndRule == "end-to-end":
             if self.st != LASTDATEOFMONTH(self.st):
-                raise Exception("MonthEndRule only applies when start date is end of month")
+                raise Exception(
+                    "MonthEndRule only applies when start date is end of month"
+                )
             dts = genEndtoEnd(dts)
         if "d" in self.per.__str__().lower() and "1" in self.per.__str__().lower():
             self.stub = "full"
@@ -113,10 +124,13 @@ class Schedule:
             print(rs)
             rs = list(sorted(rs))
         if self.ret.lower() == "df":
-            f = lambda p: f"-{p}" if ("-" in self.per_origin and not "-" in p) else f"{p}"
+            f = lambda p: (
+                f"-{p}" if ("-" in self.per_origin and not "-" in p) else f"{p}"
+            )
             rs["dur"] = rs["dur"].apply(f)
 
         return rs
-    
-if __name__ == '__main__':
+
+
+if __name__ == "__main__":
     ...

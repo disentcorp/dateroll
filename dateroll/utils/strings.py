@@ -1,38 +1,43 @@
-import re
 import datetime
+import re
+
 from dateroll.date.date import Date
 from dateroll.duration.duration import Duration
 from dateroll.schedule.schedule import Schedule
 from dateroll.utils import regex
 
-DEFAULT_CONVENTION = 'american'
-TODAYSTRINGVALUES = ['t','t0','today']
+DEFAULT_CONVENTION = "american"
+TODAYSTRINGVALUES = ["t", "t0", "today"]
 
-class ParserStringsError(Exception):
-    ...
+
+class ParserStringsError(Exception): ...
+
 
 class ParseStrings:
 
     @staticmethod
-    def parseTodayString(s,convention=DEFAULT_CONVENTION):
-        '''
+    def parseTodayString(s, convention=DEFAULT_CONVENTION):
+        """
         this is [the] place where "t" is replaced
-        '''
+        """
         today = datetime.date.today()
 
         match convention:
-            case 'american': today_string = today.strftime(r'%m/%d/%Y')
-            case 'european': today_string = today.strftime(r'%d/%m/%Y')
-            case 'international': today_string = today.strftime(r'%Y/%m/%d')
+            case "american":
+                today_string = today.strftime(r"%m/%d/%Y")
+            case "european":
+                today_string = today.strftime(r"%d/%m/%Y")
+            case "international":
+                today_string = today.strftime(r"%Y/%m/%d")
 
         for t in TODAYSTRINGVALUES:
             if t in s:
-                return s.replace(t,today_string)
+                return s.replace(t, today_string)
         return s
 
     @staticmethod
-    def parseDateString(s,convention):
-        '''
+    def parseDateString(s, convention):
+        """
         for a given convention, see if string contains 1 or 2 dates
         regex to extract string, and Date.from_string(), which calls dateutil.parser.parse
 
@@ -42,60 +47,63 @@ class ParseStrings:
             european: 1 or 2 digit day, 1 or 2 digit month, and 2 or 4 digit year
             international: 2 or 4 digit year, 1 or 2 digit month, 1 or 2 digit day
 
-        '''
+        """
 
         if convention is None:
             convention = DEFAULT_CONVENTION
 
         # switch from colloquial convention to python stdlib vernacular
         match convention:
-            case 'american': 
+            case "american":
                 pattern = regex.MDY
                 dateparser_kwargs = {}
-            case 'european': 
+            case "european":
                 pattern = regex.DMY
-                dateparser_kwargs = {'dayfirst':True}
-            case 'international': 
+                dateparser_kwargs = {"dayfirst": True}
+            case "international":
                 pattern = regex.YMD
-                dateparser_kwargs = {'yearfirst ':True}
+                dateparser_kwargs = {"yearfirst ": True}
             case _:
 
-                raise ParserStringsError('No convention provided!')
+                raise ParserStringsError("No convention provided!")
 
         dates = []
-        matches =re.findall(pattern,s)
+        matches = re.findall(pattern, s)
 
-        if len(matches)>2:
-            raise Exception('Too many dates')
-        
+        if len(matches) > 2:
+            raise Exception("Too many dates")
+
         for match in matches:
-            date = Date.from_string(match,**dateparser_kwargs)
-            s = s.replace(match,'X')
+            date = Date.from_string(match, **dateparser_kwargs)
+            s = s.replace(match, "X")
             dates.append(date)
 
-        return dates,s
+        return dates, s
 
     @staticmethod
-    def process_duration_match(m:tuple):
-        '''
+    def process_duration_match(m: tuple):
+        """
         COMPLETE_DURATION regex matches a 23-item tuple
         This function extracts the parts and calls the Duration contructor appropriately
         Starts with empty, and adds as finds from incoming tuple
-        '''
+        """
         # operator becomes multiplier
         duration_contructor_args = {}
 
         # get initial multplier (if any)
         op = m[1]
         match op:
-            case ''|'+': mult = 1
-            case '-': mult = -1
-            case '_': raise Exception('Unknown operator')
+            case "" | "+":
+                mult = 1
+            case "-":
+                mult = -1
+            case "_":
+                raise Exception("Unknown operator")
 
         # get all the pairs
-        for i in range(2,12,2):
-            number = m[i] 
-            unit = m[i+1]
+        for i in range(2, 12, 2):
+            number = m[i]
+            unit = m[i + 1]
 
             if number and unit:
                 # cast number to integer
@@ -104,30 +112,33 @@ class ParseStrings:
                     # use multiplier on first pair
                     number *= mult
 
-                duration_contructor_args[unit]=number
+                duration_contructor_args[unit] = number
 
         # attach calendars if any
         cals = m[13:21]
         for cal in cals:
-            duration_contructor_args.setdefault('cals',[]).append(cal) if cal and cal.isupper() else None
+            (
+                duration_contructor_args.setdefault("cals", []).append(cal)
+                if cal and cal.isupper()
+                else None
+            )
 
         # attach roll if any
         roll = m[22]
         if roll:
-            duration_contructor_args['roll']=roll
+            duration_contructor_args["roll"] = roll
         else:
-            if mult==-1:
+            if mult == -1:
                 # if -BD is specific and no specific roll, roll should
                 # should ALWAYS be P or previous business day
-                duration_contructor_args['roll']='P'
-
+                duration_contructor_args["roll"] = "P"
 
         duration = Duration(**duration_contructor_args)
         return duration
 
     @staticmethod
     def parseDurationString(s):
-        '''
+        """
         check for any DurationString:
 
             units:      1-9
@@ -154,25 +165,25 @@ class ParseStrings:
                 calender unions: repreating calendars with "u" for union
                     WEuNY -> all weekend holidays + NY holidays
                     WUuNYuEU -> union of all 3 sets
-        '''
+        """
         durations = []
-        matches = re.findall(regex.COMPLETE_DURATION,s)
+        matches = re.findall(regex.COMPLETE_DURATION, s)
 
-        if len(matches)>2:
-            raise Exception('Too many dates')
-        
+        if len(matches) > 2:
+            raise Exception("Too many dates")
+
         for m in matches:
             full = m[0]
             duration = ParseStrings.process_duration_match(m)
             # subs turn into addisions because Duration comes back with - inside
-            s = s.replace(m[0],f'+X')
+            s = s.replace(m[0], f"+X")
             durations.append(duration)
 
-        return durations,s
+        return durations, s
 
     @staticmethod
-    def parseDateMathString(s,things):
-        '''
+    def parseDateMathString(s, things):
+        """
         takes only date math strings using X placeholder:
             X
             X+X
@@ -181,40 +192,39 @@ class ParseStrings:
             -X+X
             -X-X
         does the match..relies on items for the overload. invalid pairings will raise their own exeption.
-        '''
+        """
 
         #######
         ####### do more math, allow for repetitive patterns
         ###### use an eval context
         ##### safety is X's and valid operators
-        s = s.replace(' ','').replace('++','+')
+        s = s.replace(" ", "").replace("++", "+")
 
-        ident_matches = re.match(regex.IDENT,s)
+        ident_matches = re.match(regex.IDENT, s)
         if ident_matches:
-            if len(things)==1:
+            if len(things) == 1:
                 return things[0]
             else:
-                raise NotImplementedError(f'Unhandled {s}')
-        
-        math_matches = re.match(regex.MATH,s)
+                raise NotImplementedError(f"Unhandled {s}")
+
+        math_matches = re.match(regex.MATH, s)
         if math_matches:
-            if len(things)==1:
+            if len(things) == 1:
                 operand = things[0]
-            
-            elif len(things)==2:
+
+            elif len(things) == 2:
                 left_hand_side = things[0]
                 right_hand_side = things[1]
 
-            if s=='X+X' or s=='+X+X':
+            if s == "X+X" or s == "+X+X":
                 total = left_hand_side + right_hand_side
                 return total
-            elif s=='X-X' or s=='+X-X':
+            elif s == "X-X" or s == "+X-X":
                 total = left_hand_side - right_hand_side
                 return total
-        raise ParserStringsError('Cannot recognize as date math',s)
+        raise ParserStringsError("Cannot recognize as date math", s)
 
     @staticmethod
     def parseScheduleString(s):
-        '''
-        '''
+        """ """
         raise NotImplementedError

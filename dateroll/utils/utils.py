@@ -1,23 +1,30 @@
-import math
+import calendar
 import datetime
+import math
 import re
 import time
 
 import numpy
 import pandas
-import calendar
-
-from dateutil.relativedelta import relativedelta
 from dateutil.parser import parse
+from dateutil.relativedelta import relativedelta
 
-from dateroll.regex import NUMBER, match_st_ed, date_matcher
 from dateroll.holidays import date_adjust, f_dates_in_year, generate_cal
+from dateroll.regex import NUMBER, date_matcher, match_st_ed
 
 units_rd_date = {
-    "BD": lambda date, sgn, num, hol, roll_conv: date_adjust(date, sgn, num, hol, roll_conv=roll_conv),  # BD always weekend adjusted so included WE
+    "BD": lambda date, sgn, num, hol, roll_conv: date_adjust(
+        date, sgn, num, hol, roll_conv=roll_conv
+    ),  # BD always weekend adjusted so included WE
     # if CD|NY means the calendar date should be adjusted by holiday only,
-    "CD": lambda date, sgn, num, hol, roll_conv: date + relativedelta(days=sgn * num),  # if len(hol_list)==0 else holiday_weekend_adjust(date + relativedelta(days=num),*get_holidays_list(date + relativedelta(days=num),hol_list),1),
-    "D": lambda date, sgn, num, hol, roll_conv: date + relativedelta(days=sgn * num),  # if len(hol_list)==0 else holiday_weekend_adjust(date + relativedelta(days=num),*get_holidays_list(date + relativedelta(days=num),hol_list),1),
+    "CD": lambda date, sgn, num, hol, roll_conv: date
+    + relativedelta(
+        days=sgn * num
+    ),  # if len(hol_list)==0 else holiday_weekend_adjust(date + relativedelta(days=num),*get_holidays_list(date + relativedelta(days=num),hol_list),1),
+    "D": lambda date, sgn, num, hol, roll_conv: date
+    + relativedelta(
+        days=sgn * num
+    ),  # if len(hol_list)==0 else holiday_weekend_adjust(date + relativedelta(days=num),*get_holidays_list(date + relativedelta(days=num),hol_list),1),
 }
 units_rd = {
     "W": relativedelta(days=7),
@@ -39,7 +46,11 @@ dtRange_mapping = {
 def generate_calWrapper(func):
     def Wrapper(*args, **kwargs):
         dtRange = func(*args, **kwargs)
-        dtRange = [datetime.date.strptime(k, "%Y%m%d") for k, v in dtRange.items() if list(v.keys())[0] == "r"]
+        dtRange = [
+            datetime.date.strptime(k, "%Y%m%d")
+            for k, v in dtRange.items()
+            if list(v.keys())[0] == "r"
+        ]
         return dtRange
 
     return Wrapper
@@ -139,7 +150,9 @@ f_getSemi = lambda s: float(s[:-1])
 f_getQuarter = lambda q: float(q[:-1])
 f_getMonth = lambda m: float(m[:-1])
 f_getWeek = lambda w: float(w[:-1])
-f_getDate = lambda d: float(d[:-1]) if not ("C" in d.upper() or "B" in d.upper()) else float(d[:-2])
+f_getDate = lambda d: (
+    float(d[:-1]) if not ("C" in d.upper() or "B" in d.upper()) else float(d[:-2])
+)
 
 
 def ymd_to_dates(txt):
@@ -178,8 +191,25 @@ def get_YMDs(txt):
     q_unit = Q_match[-1]
     m_unit = M_match[-1]
     w_unit = W_match[-1]
-    d_unit = D_match[-1] if not ("C" in D_match.upper() or "B" in D_match.upper()) else D_match[-2:]
-    return Y_matches, S_matches, Q_matches, M_matches, W_matches, D_matches, y_unit, s_unit, q_unit, m_unit, w_unit, d_unit
+    d_unit = (
+        D_match[-1]
+        if not ("C" in D_match.upper() or "B" in D_match.upper())
+        else D_match[-2:]
+    )
+    return (
+        Y_matches,
+        S_matches,
+        Q_matches,
+        M_matches,
+        W_matches,
+        D_matches,
+        y_unit,
+        s_unit,
+        q_unit,
+        m_unit,
+        w_unit,
+        d_unit,
+    )
 
 
 def dtYMD_convert(txt):
@@ -236,7 +266,20 @@ def negYMD_convert(numY, numM, numD, dt):
 
 def fractionYMD_convert(txt):
     """if fraction years, e.g. 3.4y2.3m3d, it will convert to integer years"""
-    Y_matches, S_matches, Q_matches, M_matches, W_matches, d, y_unit, s_unit, q_unit, m_unit, w_unit, d_unit = get_YMDs(txt)
+    (
+        Y_matches,
+        S_matches,
+        Q_matches,
+        M_matches,
+        W_matches,
+        d,
+        y_unit,
+        s_unit,
+        q_unit,
+        m_unit,
+        w_unit,
+        d_unit,
+    ) = get_YMDs(txt)
     ydec, ywho = math.modf(Y_matches)
     m_add = ydec * 12
     sdec, swho = math.modf(S_matches)
@@ -256,7 +299,9 @@ def fractionYMD_convert(txt):
         d = int(round(d, 0))
         mwho += m_add
 
-    mwho, ywho, swho, qwho = month_adjust(mwho, ywho, swho, qwho)  # if month is > 12 it will adjust month to become <= 12
+    mwho, ywho, swho, qwho = month_adjust(
+        mwho, ywho, swho, qwho
+    )  # if month is > 12 it will adjust month to become <= 12
     ymd = f"{ywho}{y_unit}{swho}{s_unit}{qwho}{q_unit}{mwho}{m_unit}{wwho}{w_unit}{d}{d_unit}"
     return ymd
 
@@ -299,7 +344,9 @@ def datePeriodStringToDatePeriod(date_period_string):
         raise Exception("DisentTenor", f"Format not valid #1 {date_period_string}")
 
     sgn = -1 if "-" in sgn else 1
-    numY, numS, numQ, numM, numW, numD, unitY, unitS, unitQ, unitM, unitW, unitD = get_YMDs(rd_tenor1)
+    numY, numS, numQ, numM, numW, numD, unitY, unitS, unitQ, unitM, unitW, unitD = (
+        get_YMDs(rd_tenor1)
+    )
     holidays_list = list(filter(lambda x: x != "", holidays_list))
 
     holidays = "u".join(holidays_list)
@@ -307,13 +354,23 @@ def datePeriodStringToDatePeriod(date_period_string):
     holidays = "WE" if holidays == "" else holidays
     roll_conv = roll
 
-    addition = numY * units_rd[unitY.upper()] + numS * units_rd[unitS.upper()] + numQ * units_rd[unitQ.upper()] + numM * units_rd[unitM.upper()] + numW * units_rd[unitW.upper()]
-    rs = lambda yr, sgn2: units_rd_date[unitD.upper()](yr + sgn * sgn2 * addition, sgn * sgn2, numD, holidays, roll_conv)
+    addition = (
+        numY * units_rd[unitY.upper()]
+        + numS * units_rd[unitS.upper()]
+        + numQ * units_rd[unitQ.upper()]
+        + numM * units_rd[unitM.upper()]
+        + numW * units_rd[unitW.upper()]
+    )
+    rs = lambda yr, sgn2: units_rd_date[unitD.upper()](
+        yr + sgn * sgn2 * addition, sgn * sgn2, numD, holidays, roll_conv
+    )
 
     return rs
 
 
-LASTDATEOFMONTH = lambda d: datetime.date(d.year, d.month, calendar.monthrange(d.year, d.month)[1])
+LASTDATEOFMONTH = lambda d: datetime.date(
+    d.year, d.month, calendar.monthrange(d.year, d.month)[1]
+)
 IERULE_MAPPING = {
     "()": lambda st, ed, dur: [st + dur, ed - dur],
     "(]": lambda st, ed, dur: [st + dur, ed],
@@ -329,7 +386,14 @@ def genEndtoEnd(l):
 
 
 def assign_kwargs(str_l):
-    per, stub, ret, monthEndRule, ie, dc = "1m", "short", "l", "anniv", "[)", NotImplementedError
+    per, stub, ret, monthEndRule, ie, dc = (
+        "1m",
+        "short",
+        "l",
+        "anniv",
+        "[)",
+        NotImplementedError,
+    )
     asof_ed, dur_ed = "", ""
     if len(str_l) > 1:
         for str_ in str_l[1:]:
@@ -407,7 +471,12 @@ def genLP(l):
     return l2
 
 
-DATE_RANGE_HELPER_DICT = {"l": lambda l, stub: l, "ll": lambda l, stub: genLL(l), "df": lambda l, stub: genDF(genLL(l), stub), "lp": lambda l, stub: genLP(genLL(l))}
+DATE_RANGE_HELPER_DICT = {
+    "l": lambda l, stub: l,
+    "ll": lambda l, stub: genLL(l),
+    "df": lambda l, stub: genDF(genLL(l), stub),
+    "lp": lambda l, stub: genLP(genLL(l)),
+}
 if __name__ == "__main__":
     dt = datetime.date(2022, 2, 20)
     rs = negYMD_convert(-2, 5, 3, dt)

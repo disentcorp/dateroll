@@ -1,20 +1,24 @@
-'''
+"""
 This is a scrip that will be used in the setup.py as an entry point.
 Instantiate all your classes here.
-'''
+"""
+
 import argparse
 import sys
+
 from main_project_package import project_root
 from main_project_package.SimpleClass import SimpleClass
 
 
 def parse_input_args(argv):
-    ''' Parses command line arguments '''
+    """Parses command line arguments"""
 
-    parser = argparse.ArgumentParser(description=
-            "Description of the app that will be displayed when the script is executed.")
-    parser.add_argument('--test', help="Test the app.", dest="test",
-                        action='store_true', required=False)
+    parser = argparse.ArgumentParser(
+        description="Description of the app that will be displayed when the script is executed."
+    )
+    parser.add_argument(
+        "--test", help="Test the app.", dest="test", action="store_true", required=False
+    )
 
 
 def execute_script(input_args):
