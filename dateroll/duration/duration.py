@@ -4,13 +4,19 @@ import dateutil
 import dateutil.relativedelta
 
 from dateroll.calendars.calendarmath import cm
-from dateroll.duration.rolling import Rolling
 
 cals = cm.cals
 
 period_order = (*"yhsqmwd", "cals", "roll")
 
 PeriodLike = (dateutil.relativedelta, datetime.timedelta)
+
+VALID_ROLL_CONVENTIONS = {
+    'F',
+    'P',
+    'MF',
+    'MP'
+}
 
 
 def addNones(*args, zeros=False):
@@ -170,7 +176,7 @@ class Duration(dateutil.relativedelta.relativedelta):
         # now validate roll
         if roll is not None:
             if isinstance(roll, str):
-                if roll in Rolling.__dict__:
+                if roll in VALID_ROLL_CONVENTIONS:
                     self.roll = roll
                 else:
                     NotImplementedError(roll)

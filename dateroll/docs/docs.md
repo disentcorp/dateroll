@@ -1,4 +1,11 @@
 <style>
+.bar{
+    color:blue;
+    /* text-decoration: underline !important; */
+    position:absolute;
+    top: 595px;
+    text-align:right;
+}
 .outer {
     font-family: helvetica; 
     padding-left: 12%;
@@ -6,15 +13,15 @@
 }
 a {
     color: blue !important;
-    text-decoration: underline !important;
+    /* text-decoration: underline !important; */
 }
 table {
   border-collapse: collapse !important;
 }
 table td, table th {
   border: 0px !important;
-  border-left: 1px dotted rgb(230,230,230) !important;
-  border-right: 1px dashed rgb(230,230,230) !important;
+  border-left: 1px dotted rgb(240,240,240) !important;
+  border-right: 1px dashed rgb(240,240,240) !important;
   border-top: 1px solid black !important;
   border-bottom: 1px solid black !important;
   padding-top:7px !important;
@@ -39,6 +46,17 @@ table tr th:last-child {
 
 </style>
 
+<!-- <div class="bar">
+<span style="font-size:130%;font-weight:bold;color:grey;">ddh</span><br>
+Date<br>
+Duration<br>
+Schedule<br>
+Calendars<br>
+CalendarMath<br>
+Parser<br>
+Day counters<br>
+</div> -->
+
 <div class="outer">
 
 <p align="center">
@@ -52,7 +70,9 @@ table tr th:last-child {
 
 <br />
 
-**`dateroll`** makes working with 📅 dates less painful.
+**`dateroll`** makes working with 📅 dates less painful. N
+
+Created for financial use cases in particular (global fixed income). As such, only use for Dates `-200y` ago and `+200y` ahead. If you need more coverage, don't use this. Will throw exception if out of range.
 <br />
 
 # reference guide
@@ -61,7 +81,7 @@ table tr th:last-child {
 
 [ddh](#ddh) | [Date](#Date) | [Duration](#Duration) | [Schedule](#Schedule) | [Calendars](#Calendars) | [CalendarMath](#CalendarMath) | [Parser](#Parser)
 
-Date duration helper `function` that takes a string and returns either a `Date`, `Duration`, or `Schedule`. See [Parser]() section for valid string formats
+Date duration helper `function` that takes a `str` and returns either a `Date`, `Duration`, or `Schedule`. 
 
 ##### Usage
 
@@ -72,7 +92,7 @@ ddh(some_string)
 
 ##### Examples
 
-|`some_string` "flavor"|In|Out|
+|Flavor|Input|Output|
 |-|-|-|
 |[Today string        ]()|`ddh('t')`|`Date(2024,2,2)`|
 |[Date string         ]()|`ddh('12/31/22')`|`Date(2022,12,31)`|
@@ -81,6 +101,9 @@ ddh(some_string)
 |[Date schedule string ]()|`ddh('t, t+5y, 1m')`|`[Date(2022,2,2),`...`]`|
 
 <br>
+
+See [Parser]() section for valid strings.
+
 
 ## Date <a name="Date"></a>
 [ddh](#ddh) | [Date](#Date) | [Duration](#Duration) | [Schedule](#Schedule) | [Calendars](#Calendars) | [CalendarMath](#CalendarMath) | [Parser](#Parser)
@@ -103,7 +126,7 @@ Date(year, month, day)
 *^3 integer args: year, month, and day
 
 ##### Properties/Methods
-|Name|In|Out|
+|Name|Input|Output|
 |-|-|-|
 |`.datetime`            | `Date(2024,7,2).datetime` | `datetime.datetime(2024, 7, 2, 0, 0)`|
 |`.date`                | `Date(2024,7,2).date` | `datetime.date(2024, 7, 2, 0, 0)`|
@@ -125,7 +148,7 @@ assume ```d = Date(2000,1,1)```
 
 ##### `Date` $+$/$-$ `Duration` or `Date`
 
-|LHS|Operator|RHS|Result|In|Out|
+|LHS|Operator|RHS|Result|Input|Output|
 |-|-|-|-|-|-|
 |`Date`|$+$|`Duration`  |`Date`     |`d + Duration(m=1)`|`Date(2000,2,1)`|
 |`Date`|$-$|`Duration`  |`Date`     |`d - Duration(y=1)`|`Date(1999,1,1)`|
@@ -133,17 +156,17 @@ assume ```d = Date(2000,1,1)```
 
 
 ##### `Date` $+$/$-$ `int` (for calendar days)
-|LHS|Operator|RHS|Result|In|Out|
+|LHS|Operator|RHS|Result|Input|Output|
 |-|-|-|-|-|-|
 |`Date`|$+$|`int`      |`Duration` |`d + 5`|`Date(2000,1,6)`|
 |`Date`|$-$|`int`      |`Duration` |`d - 1`|`Date(1999,12,31)`|
 
-##### `Date` $+$/$-$ *DateString* or *DurationString*
-|LHS|Operator|RHS|Result|In|Out|
+##### `Date` $+$/$-$ *Date string* or *Duration string*
+|LHS|Operator|RHS|Result|Input|Output|
 |-|-|-|-|-|-|
-|`Date`|$-$|*DateString*     |`Duration`|`d - "1/1/98"`|`Duration(d=730)`|
-|`Date`|$+$|*DurationString* |`Date`    |`d + "1m"`|`Date(2000,2,1)`|
-|`Date`|$-$|*DurationString* |`Date`    |`d - "1y"`|`Date(1999,1,1)`|
+|`Date`|$-$|*Date string*     |`Duration`|`d - "1/1/98"`|`Duration(d=730)`|
+|`Date`|$+$|*Duration string* |`Date`    |`d + "1m"`|`Date(2000,2,1)`|
+|`Date`|$-$|*Duration string* |`Date`    |`d - "1y"`|`Date(1999,1,1)`|
 
 
 ## Duration <a name="Duration"></a>
@@ -184,7 +207,7 @@ Optional `kwargs` for either `anchor_start=Date(...)` or `anchor_stop=Date(...)`
 <br>
 
 #### Properties/Methods
-|Name                       |In                     |Out        |
+|Name                       |Input                     |Output        |
 |-                          |-                      |-          | 
 |`.years               `      |`Duration(y=5,m=4,d=3,bd=2)`    |`5`        |
 |`.months              `      |`Duration(y=5,m=4,d=3,bd=2)`    |`4`        |
@@ -192,12 +215,10 @@ Optional `kwargs` for either `anchor_start=Date(...)` or `anchor_stop=Date(...)`
 |`.bds                 `      |`Duration(y=5,m=4,d=3,bd=2)`    |`2`        |
 |`.anchor_start        `      |`ddh('7/7/2000-7/5/2000')`      |`Dates(2000,7,7)`   |
 |`.anchor_stop         `      |`ddh('7/7/2000-7/5/2000')`      |`Dates(2000,7,5)`   |
-|`.num_days()         `¹        |`Duration(y=5,m=4,d=3,bd=2)`    |~`1478`    |
-|`.num_weeks()        `¹        |`Duration(y=5,m=4,d=3,bd=2)`    |~`211`     |
-|`.num_quarters()     `¹        |`Duration(y=5,m=4,d=3,bd=2)`    |~`16.67`   |
-|`.num_years(`counter`)`¹²    |`Duration(y=5,m=4,d=3,bd=2)`    |~`4.05`    |
+|`.ndays()         `¹        |`Duration(y=5,m=4,d=3,bd=2)`    |~`1478`    |
+|`.nyears(counter)`¹²    |`Duration(y=5,m=4,d=3,bd=2)`    |~`4.05`    |
 
-¹The `num_*` methods may require period conversion based upon approximation. see [Period Conversions](#PeriodConversions).
+¹The `n*` methods may require period conversion based upon approximation. see [Period Conversions](#PeriodConversions).
 
 ²`counter` is one of `"ACT/360"`, `"30/360"`, ... see [day counters]()
 
@@ -207,151 +228,296 @@ assume ```dur = Duration(years=1)```
 
 ##### `Duration` $+$/$-$ `Duration`
 
-|LHS|Operator|RHS|Result|In|Out|
+|LHS|Operator|RHS|Result|Input|Output|
 |-|-|-|-|-|-|
 |`Duration`|$+$|`Duration`|`Duration`|`d + Duration(m=1)`|`Duration(y=1,m=1)`|
 |`Duration`|$-$|`Duration`|`Duration`|`d - Duration(m=1)`|`Duration(m=11)`|
 
-##### `Duration` $+$/$-$ (*DateString* or *DurationString*)
-|LHS|Operator|RHS|Result|In|Out|
+##### `Duration` $+$/$-$ (*Date string* or *Duration string*)
+|LHS|Operator|RHS|Result|Input|Output|
 |-|-|-|-|-|-|
-|`Duration`|$+$|*DurationString* |`Date`    |`d + "1m"`|`Date(2000,2,1)`|
-|`Duration`|$-$|*DurationString* |`Date`    |`d - "1y"`|`Date(1999,1,1)`|
+|`Duration`|$+$|*Duration string* |`Date`    |`d + "1m"`|`Date(2000,2,1)`|
+|`Duration`|$-$|*Duration string* |`Date`    |`d - "1y"`|`Date(1999,1,1)`|
 
 #### Anchoring with `Date`
 
-When a `Durationn` is the result of an operation with `Date`(s), then an anchor start or stop may get set:
+When a `Duration` is the result of an operation with one or more `Date`, then 2 additional properties (`anchor_start` and/or `anchor_stop`) will be set automatically.
 
-Date()-Date()=Duration(anchor_start=Date(),anchor_end=date()
-date + duration =
+`Date(1999, 1, 1 )` $+$ `Duration(m=1)` $=$ `Duration(anchor_start=Date(1999, 1, 1)`
+`Date(2000, 1, 1)` $-$ `Date(1999, 1, 1)` $=$ `Duration(y=1, anchor_start=Date(1999,1,1), anchor_end=date(2000, 1, 1)`
+
+When present, these properties allow for more exact period conversion.
+
 
 #### Period Conversions <a name="PeriodConversions"></a>
 
-Exact always used first, then approx only if necessary. Will raise warning whenever approx is used.
+If an approximate conversion is required a warning will be raised.
 
 |From period|Calendar Days|
 |-|-|
-|`1y`|$12\times$`1m`$=365.242\ 500$
-|`1q`|$3\times$`1m`$=90.310\ 625$
-|`1m`|$\frac{(2,800\times31)+(1,600\times30)+(303\times28)+(97*29)}{4,800}=30.436\ 875$
-|`1w`|`7d`
-|`1d`|`1d`
-|`1bd`|$\frac{365.2425}{252¹}$
+|`1y`|$= 365.242\phantom{.}500 \ \times$ `1d`
+|`1q`|$= \phantom{3}90.310\phantom{.}625 \ \times$ `1d`
+|`1m`|$= \phantom{3}30.436\phantom{.}875 \ \times$ `1d`
+|`1w`|$=$ `7d`
+|`1d`|$=$ `1d`
+|`1bd`|$\approx 1.449\phantom{.}375$
 
-¹Commonly used in finance. If you want want `250` (or something else) let us know, we can make this a setting.
+¹Numerator is days in a year, denominator is `252bd`. Argument can be made for 250-260, just ask!
+
+==calcs in appends?==
 
 ## Schedule <a name="Schedule"></a>
 
 [ddh](#ddh) | [Date](#Date) | [Duration](#Duration) | [Schedule](#Schedule) | [Calendars](#Calendars) | [CalendarMath](#CalendarMath) | [Parser](#Parser)
 
-inherits from list
-start
-stop 
-step
+Schedule `class` inherits `list`.
 
+A schedule is a `list` of contiguous dates generated from some start date, stop date, and step increment.
+
+#### Usage
+```python
+>>> from dateroll import Schedule
+>>> sch = Schedule(start=Date(1984, 7 ,2), stop=Date(2024, 7 ,2), step=Duration(y=1)
+>>> sch.dates
+[Date(1984, 7, 2), Date(1985, 7, 2), ..., Date(2024, 7, 2)]
+```
+
+### Contructor args
+|Name|Description|Type
+|-|-|-|
+|`start`|First date in schedule|`Date`
+|`stop`|Last date in schedule|`Date`
+|`step`|Distance between dates in schedule|`Duration`
+
+<br>
+
+### Leftover days (a.k.a. stub handling)
+- if `step` $<0$, then schedule is generated **backwards** from last to first
+    -  Leftover days are on the interval **`sch[0:2]`**
+- if `step` $>0$, then the scheduled is generated **forwards** from first ot last
+    -  Leftover days are on the interval **`sch[-2:]`**
+
+<br />
+
+### Properties/Methods
+|Name|Input|Output|
+|-|-|-|
+|`.start`|`sch.start`|`Date(1984, 7 ,2)`|
+|`.stop`|`sch.start`|`Date(2024, 7 ,2)`|
+|`.step`|`sch.start`|`Duration(y=1)`|
+|`.dates`| `Schedule(start=Date(1984, 7...` | `[Date(1984, 7, 2), Date(...]` (sorted)|
+|`list.*`|see [list](https://docs.python.org/3/tutorial/datastructures.html)|
+ 
+<br>
 
 ## Calendars <a name="Calendars"></a>
 
 [ddh](#ddh) | [Date](#Date) | [Duration](#Duration) | [Schedule](#Schedule) | [Calendars](#Calendars) | [CalendarMath](#CalendarMath) | [Parser](#Parser)
 
-singleton
-inherits from dict
-saves to disk
-user space
-takes lists or schedules of dates
+Calendars is a database for your holidays. 
+It's a `dict` whose data is always saved for global access. Keys are calendar names, values are ordinary lists of dates.
 
-2-3 letter uppercase cal code per list of dates
+### Usage
 
-for sample date we use a pypi library workalenndar which admits their days may be wronng
-so please use at your own risk
+List calendars
+```python
+>>> cals.keys()
+['WE','ALL','NY']
+```
 
-note* we generator -100 to +100 years of holidays. our resaonsiing is that in finance nothing matters outside this window. if you have use cases outside this window, happy to talk to you.
+Get one
+```python
+>>> Duration(bd=0,cals=cals['NY']) # get / use#
+```
+
+```python
+>>> fed = cals.FED # "dot" notation works too
+```
+
+Create one
+```python
+>>> from dateroll import cals
+>>> cals['US'] = [Date(...), Date(...), ...] # add takes list of dates, or Schedule
+```
+Delete one
+```python
+>>> del cals['NY'] # delete
+```
+
+### Calendar name rules
+
+ - 2-3 letters (A-Z), all uppercase only.
+ - Examples: `WE` or `WKD` for weekend. `US` or `FED` or `NY` for US banking days.
+
+### Storage
+
+Saves in users's home folder
+
+- `pathlib.Path.home()`
+   - `Linux:` `~/.dateroll/calendars/holiday_lists.db`
+   - `Windows:` `C:/Users/[USERNAME]/.dateroll/calendars/holiday_lists.db`
+- Uses `shelve`
+
+<br>
+
+### Properties / Methods
+|Name|Descriptions|
+|-|-|
+|`.load_all_and_we()`|Creates `ALL` and `WE`¹|
+|`.load_sample_data()`|Creates `ALL`,`WE`,`LN`,`EU`,`BR`,`NY`,`FED`,`ECB`,`BOE`,`BCB` using `worklendar`|
+|`dict.*`|see [dict](https://docs.python.org/3/tutorial/datastructures.html#dictionaries) docs||
+
+<br>
+
+### Available calendars
+|Name|Description|Source|
+|-|-|-|
+|`ALL`|Everyday|Generated for the interval $[$`ddh(-200y)`,`ddh(+200y)` $]$|
+|`WE`|Saturday's and Sunday's|Generated for the interval $[$`ddh(-200y)`,`ddh(+200y)` $]$|
+|`NY` &`FED`|US banking holidays|`workalendar`
+|`EU` &`ECB`|ECB banking holidays|`workalendar`
+|`LN` &`BOE`|UK holidays|`workalendar`
+|`BR` &`BCB`|Brazil holidays|`workalendar`
+
+<span style="color:red;font-weight:900;">CAUTION</span> using when someone else's calendars! always verify
+<span style="color:red;font-weight:900;">CAUTION</span> using when someone else's calendars! always verify
+<span style="color:red;font-weight:900;">CAUTION</span> using when someone else's calendars! always verify
+
+See [workalendar](https://workalendar.github.io/workalendar/) for more details, they've got a lot of great coverage.
 
 
 ## Calendar math <a name="CalendarMath"></a>
 
 [ddh](#ddh) | [Date](#Date) | [Duration](#Duration) | [Schedule](#Schedule) | [Calendars](#Calendars) | [CalendarMath](#CalendarMath) | [Parser](#Parser)
 
-singleton caches and stores 'compiled' calendars
-allows $O(1)$ bd adjustments + - , next, prev.
-.size method 
+`CalendarMath` is an interim singelton `class` that "compiles" Calendar date lists into $O(1)$ hashes.
 
-unions
+If you use `ddh` predominately you'll never need to use this directly.
+
+### Usage
+
+```python
+>>> from dateroll import cm
+```
+
+### Properties / Methods
+|Name|Usage|Descriptions|
+|-|-|-|
+|`.add_bd(`|`cm.add_bd(from_date:Date, n:int, cals=calendar)`¹ $\to$ `Date`|Add n bd's|
+|`.sub_bd(`|`cm.sub_bd(from_date, n, cals=calendar)`¹ $\to$ `Date`|Subtract n bd's`|
+|`.is_bd(`|`cm.is_bd(from_date, cals=calendar)`¹ $\to$ `bool`|Is a bd?`|
+|`.prev_bd(`|`cm.prev_bd(from_date, cals=calendar)`¹ $\to$ `Date`|Advance to next bd|
+|`.next_bd(`|`cm.next_bd(from_date), cals=calendar`¹ $\to$ `Date`|Back up until previous bd|
 
 
+¹`calendar` can be of the form: `"NY"`, `["NY"]`, `"NYuLN"`, or `["NY","LN"]` (see [`Parser`]() for more details.).
+
+### Calendar unions
+
+A calendar "union" is simple a combination of two calendars (without duplication):
+
+$ \mathbb{X} = \Set{t_1, t_2, t_3,...}$
+$ \mathbb{Y} = \Set{t_2, t_4, t_5...}$
+$ \mathbb{Z} = \mathbb{X} \bigcup \mathbb{Y} $
+$ \mathbb{Z} = \Set{t_1, t_2, t_3, t_4, t_5} $
+
+The first time a calendar union is specified (i.e. list of calendars is sent to `CalendarMath`), then the  $O(1)$ hashes are created on the fly and cached. Local to `CalendarMath` instance (`dateroll.cm`), not `Calendars` instance (`dateroll.cals`).
+
+### Caching / Invalidation
+
+`CalendarMath` stores an in-memory cache of "compiled" calendars. A compiled calendar is simply a collection of hash tables to do business data movements in $O(1)$ time.
+
+There's several mutation checks, and whenever a `Calendars` value is written to, the the entire `CalendarMath` instance cache is purged for safety.
 
 ## Parser <a name="Parser"></a>
 
 [ddh](#ddh) | [Date](#Date) | [Duration](#Duration) | [Schedule](#Schedule) | [Calendars](#Calendars) | [CalendarMath](#CalendarMath) | [Parser](#Parser)
 
-str -> thing
+Parses `str` into a `thing`: can be either `Date`, `Duration`, `Schedule`.
 
-thing in {Date, duration, schedule}
+This is the 🧠 brains behind `ddh`. 
 
-algo
+It a combo of (1) really big `regex`, and (2) date validation with [`dateutil.parser.parse`](https://dateutil.readthedocs.io/en/stable/parser.html).
 
-1. comma in string?
-   - 0 -> either date, duration, or datemath
-     - datemath is dur+d or d+dur ->d2
-     - yield d2
-   - 2 -> 3 parts
-     - part 1 either date or datemath
-       - datemath is dur+d or d+dur -> d2, yield schedule.start
-     - part 2 either date or datemath
-       - datemath is dur+d or d+dur ->d2 , yield schedule.stop
-     - part 3 duration, yield schedule.step
-     - yield schedule
+### String Parsing Ontology
 
-ops none
-properties
-orig string, parts,...?
-
-+ add operator
-- substractor operator or negative in front of integer
-/ indicates start of a roll conventon followed by 1 of 4 possible literals: F P MP MF
-| indicates calendars, ends a set a of additive periods, followedd by 1 or more calendar codes
-XX or XXX A-Z upper case 2-3 letter calendar codes
-u or union operator separates two calendar codes to denote the matehmatical union of the two caalendars
-
-show a performance table of various parsings
-
-
-Caveats
-
-- calendars are political and chang with regimes and leadership.
-- the caelnndar system itself is political and chagnes with regimes adn lleadership
-- we use a rule based system as opposed to a more 'accurate' astronomica lobservation based system
-- our leap years concepts gets us 'close enough' to astronomical obversions withing a "human meansuable" time frame.
-- current rule based system has been in place since oct ?? 1582
-- mon/feb were added in ?? by the romans (cold winter months were not counnted as working days)
-- approx is necessary some times, some cal math is indeterminate
-- conventions are not standardized by any official global body other than 
-- 
-
-acknowledges meants
-
-iso 8601
-isda
-icma
-sia
-reingold
-
-python dateutil
-python timedelta
-python datetime
-(countlless other open source dat llibraries)
-
-for all their hardwork in making this library possible to hopefully extend their functionalities
-it is our hope that fixed income and fi math can be a little less scary because the
-conventions hidden behind strings just as the complexity of a computin gthe square root is hidden behind a radical sysmbol.
-
-\- the disent team
-
-
-add notebook with examples
+- `DateRollString` (any of the below)
+  - `TodayString` (represents TODAY's `Date`)
+     - Three literal values: `"t"`,` "t0"`, or `"today"`
+     - Converts to `Date`
+  - `DateString` (any `Date`)
+     - Supports 3 `conventions`: `'american'`, `'european'`, and `'international'`
+        - `american`: `month`$\to$`day`$\to$`year`, slashes/dashes/nothing
+           - e.g. `"7/2/84"` or `"07-02-1984"`
+        - `european`:  `day`$\to$`day`$\to$`year`, slashes/dashes/nothing
+           - e.g. `"2/7/1984"` or `"02-07-84"`
+        - `international`:  `year`$\to$`month`$\to$`day`, slashes/dashes/nothing
+           - e.g. `"19840702"` or `"19840702"`
+     - Converts to `Date`
+  - `DurationString` (any `Duration`)
+    - `DurationPeriodString`
+         - Can be $>1$ pairs of `unit` and `period`
+           - Unit must be `int`
+           - Valid periods: are `bd` `d` `w` `m` `q` `s` (semester) `h` (halves), and `y`
+           - Combos like `5y3m` or `7w2d` or `1y2bd` are allowed
+    - `CalendarString`
+       -  Any `DurationPeriodString` in a `DurationString` can be followed by the filtration (or pipe) operator `"|"` to denote information from calendar lists of holidays which must be used to perform date aritmetic.
+           - `CalendarString` follows rules of calendar (2-3 letters A-Z, all uppercase), and union operator `"u"`
+              -  Single calendar, e.g. `"|NY"` or `"|FED"`
+              -  Calendar union, e.g. `"|NY u LN"` (2) or `"|FED u BOE u BCB"` (3)
+                 -  it mathy like $\mathbb{E} [X_t|\mathscr{F_t}]$ where $\mathscr{F_t}=\Set{\text{NY}\bigcup\text{LN}}$
+    - `RollingConventionString`
+       - The rolling operator `"/"` can be followed by one of the 4 rolling methods:
+          - `"/F"` if all period adjustments to a date land on non-business day roll forward to next business day
+          - `"/P"` if all period adjustments to a date land on non-business day roll backwards to previous business day
+          - `"/MF"` similar to `"/F"` but if you cross a month boundary, go backwards to 1st business date in that month
+          - `"/MP"` similar to `"/P"` but if you cross a month boundary, go forwards to last business date in that month
+          - for reference [date rolling](https://en.wikipedia.org/wiki/Date_rolling), it's for when payment adjustments need to stay in a specific accounting period.
+  - Example with one of everything `"+ 1y 2h 3s 4q 5m 6w 7d 8bd | NY u LN u JP / MF"`
+- `ScheduleString` (any `Schedule`)
+     - 3 parts separated by two commas, e.g.  `"X, Y, Z"`
+        - `X` is `DateString`, `TodayString`, or `DateMathString`
+        - `Y` is is `DateString`, `TodayString`, or `DateMathString`
+        - `Z` is `DurationString`
+     - yields `Schedule(start=X, stop=Y, step=Z)`
+     - e.g. `"t-5y, 1/15/25, 1y"` (from 5 years ago to Jan 15 next year, give me all years)
+  - `DateMathString` (any datemath operation)
+     - 2 parts separated by math operator plus $+$  or minux $-$, e.g. `"X+Y"` or `"Y-X"`
+         - `X` or `Y` can be either `DateString` or `DurationString` and add/sub operation logic must be supported by `Date` and `Duration` objects
+         - e.g. `"t+1bd"` or `"t-5y"` or `"7/2/84+39y"`
+- Examples
+   - Unncessarily complicated
+     - `"t-1y2h3s4q5m6w7d8bd|NYuLNuJP/MF,07/02/1984+99y35bd|FED/P,3q7m5d|WE"`
+        - *^^ Note* on above, if you `ddh` it, all calendars -unioned (`"|NYuLNuJPuFEDuWE"`), modified convention would hold as it was specified once, and `P` or `F` whould depend on the direction of travel when being appled to a specific date. If approx is needed, it will `warn`.
+        -    For example, if you  do `"t+1m-21bd"`, if you have an anchor date, if `1m` > `21bd` it assumes you are rolling foward, and would impliy `"/MF"`, period conversion is used, see [period conversion rules](#PeriodConversions)
+   - Classic
+      - Client wants a 5 year loan from today, paid monthly, i need dates to structure it `ddh("t,t+5y,1m")`.
 
 
 # Appendix
+
+## Caveats
+
+- Calendars are political and change with regimes and leaders (months can be added or subtracted, rules can be modified, holidays can be fixed or variable)
+- This is only designed to be used for "human life" dates, such as -100y ago and +100y from now. In the future we might add support for sub-day time periods (hours, minutes, ...)
+- These conventions are not standardized by any official global body, all financial institutions and 3rd party vendors do their own reference implementations. Reliance on self regulatory agencies and legal jurisprudence is the standard. Typically the bigger bank/entity wins the subjective game.
+- 
+
+## Acknowledgements
+
+Thank you to the teams behind `dateutil` and `datetime`. Hopefully you might like how we extended you.
+
+It is our hope that fixed income and FI math can be a little less scary for everyone, because *every single person* in the world depends on it heavily. 
+
+- The [Disent](https://www.disent.com) Team
+
+## References
+
+- https://en.wikipedia.org/wiki/Date_rolling
+- https://en.wikipedia.org/wiki/ISO_8601
+- https://en.wikipedia.org/wiki/Day_count_convention
+- https://www.amazon.com/Calendrical-Calculations-Edward-M-Reingold/dp/0521771676
+
 
 #### Day counters <a name="DayCounters"></a>
 
@@ -363,11 +529,11 @@ add notebook with examples
 
 |Usage|Formula|
 |-|-|
-|`.num_years("30/360")`|$\displaystyle\frac{360\times (t_{2}^{y}-t_1^{y})+30\times(t_2^{m}-t_1^{m}) + (t_2^{d}-t_1^{d})}{360}$
-|`.num_years("30/360 BB")`|$\displaystyle\frac{360\times (t_{2}^{y}-t_1^{y})+30\times(t_2^{m}-t_1^{m}) + (t_2^{d}-t_1^{d})}{360}$
-|`.num_years("30/360")`|$\displaystyle\frac{360\times (t_{2}^{y}-t_1^{y})+30\times(t_2^{m}-t_1^{m}) + (t_2^{d}-t_1^{d})}{360}$
-|`.num_years("30E/360")`|$\displaystyle\frac{360\times (t_{2}^{y}-t_1^{y})+30\times(t_2^{m}-t_1^{m}) + (t_2^{d}-t_1^{d})}{360}$
-|`.num_years("30E/360 ISDA")`|$\displaystyle\frac{360\times (t_{2}^{y}-t_1^{y})+30\times(t_2^{m}-t_1^{m}) + (t_2^{d}-t_1^{d})}{360}$
+|`.nyears("30/360")`|$\displaystyle\frac{360\times (t_{2}^{y}-t_1^{y})+30\times(t_2^{m}-t_1^{m}) + (t_2^{d}-t_1^{d})}{360}$
+|`.nyears("30/360 BB")`|$\displaystyle\frac{360\times (t_{2}^{y}-t_1^{y})+30\times(t_2^{m}-t_1^{m}) + (t_2^{d}-t_1^{d})}{360}$
+|`.nyears("30/360")`|$\displaystyle\frac{360\times (t_{2}^{y}-t_1^{y})+30\times(t_2^{m}-t_1^{m}) + (t_2^{d}-t_1^{d})}{360}$
+|`.nyears("30E/360")`|$\displaystyle\frac{360\times (t_{2}^{y}-t_1^{y})+30\times(t_2^{m}-t_1^{m}) + (t_2^{d}-t_1^{d})}{360}$
+|`.nyears("30E/360 ISDA")`|$\displaystyle\frac{360\times (t_{2}^{y}-t_1^{y})+30\times(t_2^{m}-t_1^{m}) + (t_2^{d}-t_1^{d})}{360}$
 
 ### ACT/<span style="color:red;">???</span>
 
@@ -375,24 +541,24 @@ add notebook with examples
 
 |Usage|Formula|
 |-|-|
-|`.num_years("ACT/360")` | $\displaystyle\frac{n_d}{360}$
-|`.num_years("30E/364")` | $\displaystyle\frac{n_d}{364}$
-|`.num_years("ACT/365)`  | $\displaystyle\frac{n_d}{365}$
-|`.num_years("ACT/365F")`| $\displaystyle\frac{n_d}{365}$
-|`.num_years("ACT/365L")`| $\displaystyle\frac{n_d}{366}$
+|`.nyears("ACT/360")` | $\displaystyle\frac{n_d}{360}$
+|`.nyears("30E/364")` | $\displaystyle\frac{n_d}{364}$
+|`.nyears("ACT/365)`  | $\displaystyle\frac{n_d}{365}$
+|`.nyears("ACT/365F")`| $\displaystyle\frac{n_d}{365}$
+|`.nyears("ACT/365L")`| $\displaystyle\frac{n_d}{366}$
 
 /ACT's
 
 |Usage|Formula|
 |-|-|
-`.num_years("ACT/ACT AFB")` | $\displaystyle\frac{360\times (t_{2}^{y}-t_1^{y})+30\times(t_2^{m}-t_1^{m}) + (t_2^{d}-t_1^{d})}{360}$
-`.num_years("ACT/ACT ICMA")` | $\displaystyle\frac{360\times (t_{2}^{y}-t_1^{y})+30\times(t_2^{m}-t_1^{m}) + (t_2^{d}-t_1^{d})}{360}$
+`.nyears("ACT/ACT AFB")` | $\displaystyle\frac{360\times (t_{2}^{y}-t_1^{y})+30\times(t_2^{m}-t_1^{m}) + (t_2^{d}-t_1^{d})}{360}$
+`.nyears("ACT/ACT ICMA")` | $\displaystyle\frac{360\times (t_{2}^{y}-t_1^{y})+30\times(t_2^{m}-t_1^{m}) + (t_2^{d}-t_1^{d})}{360}$
 
 ### BD/252
 
 |Usage|Formula|
 |-|-|
-|`.num_years("BD/252")`|$\displaystyle\frac{360\times (t_{2}^{y}-t_1^{y})+30\times(t_2^{m}-t_1^{m}) + (t_2^{d}-t_1^{d})}{360}$
+|`.nyears("BD/252")`|$\displaystyle\frac{360\times (t_{2}^{y}-t_1^{y})+30\times(t_2^{m}-t_1^{m}) + (t_2^{d}-t_1^{d})}{360}$
 
 
 ### Terms
@@ -405,3 +571,11 @@ $t_1^d$ = `t1.days`, $t_1^d$ = `t1.days`
 
 
 </div>
+
+
+
+==add notebook with examples==
+==add repl examples==
+==verify all examples==
+==cross references features in doc not yet in code base==
+==finish daycounters==
