@@ -70,9 +70,10 @@ Day counters<br>
 
 <br />
 
-**`dateroll`** makes working with 📅 dates less painful. N
+**`dateroll`** makes working with 📅 dates less painful.
 
-Created for financial use cases in particular (global fixed income). As such, only use for Dates `-200y` ago and `+200y` ahead. If you need more coverage, don't use this. Will throw exception if out of range.
+Created for fixed income and more on human-life dates ($\pm200$`y`)
+
 <br />
 
 # reference guide
@@ -263,8 +264,6 @@ If an approximate conversion is required a warning will be raised.
 |`1bd`|$\approx 1.449\phantom{.}375$
 
 ¹Numerator is days in a year, denominator is `252bd`. Argument can be made for 250-260, just ask!
-
-==calcs in appends?==
 
 ## Schedule <a name="Schedule"></a>
 
@@ -496,30 +495,7 @@ It a combo of (1) really big `regex`, and (2) date validation with [`dateutil.pa
 
 # Appendix
 
-## Caveats
-
-- Calendars are political and change with regimes and leaders (months can be added or subtracted, rules can be modified, holidays can be fixed or variable)
-- This is only designed to be used for "human life" dates, such as -100y ago and +100y from now. In the future we might add support for sub-day time periods (hours, minutes, ...)
-- These conventions are not standardized by any official global body, all financial institutions and 3rd party vendors do their own reference implementations. Reliance on self regulatory agencies and legal jurisprudence is the standard. Typically the bigger bank/entity wins the subjective game.
-- 
-
-## Acknowledgements
-
-Thank you to the teams behind `dateutil` and `datetime`. Hopefully you might like how we extended you.
-
-It is our hope that fixed income and FI math can be a little less scary for everyone, because *every single person* in the world depends on it heavily. 
-
-- The [Disent](https://www.disent.com) Team
-
-## References
-
-- https://en.wikipedia.org/wiki/Date_rolling
-- https://en.wikipedia.org/wiki/ISO_8601
-- https://en.wikipedia.org/wiki/Day_count_convention
-- https://www.amazon.com/Calendrical-Calculations-Edward-M-Reingold/dp/0521771676
-
-
-#### Day counters <a name="DayCounters"></a>
+## Day counters <a name="DayCounters"></a>
 
 ==NEEDS WORK==
 
@@ -572,10 +548,34 @@ $t_1^d$ = `t1.days`, $t_1^d$ = `t1.days`
 
 </div>
 
+## Caveats
 
+- Calendars are political and change with regimes and leaders (months can be added or subtracted, rules can be modified, holidays can be fixed or variable)
+- This is only designed to be used for "human life" dates, such as -100y ago and +100y from now. In the future we might add support for sub-day time periods (hours, minutes, ...)
+- These conventions are not standardized by any official global body, all financial institutions and 3rd party vendors do their own reference implementations. Reliance on self regulatory agencies and legal jurisprudence is the standard. Typically the bigger bank/entity wins the subjective game.
+- 
 
-==add notebook with examples==
-==add repl examples==
-==verify all examples==
-==cross references features in doc not yet in code base==
-==finish daycounters==
+## Acknowledgements
+
+Thank you to the teams behind `dateutil`, `datetime`, ICMA, ISDA, and the countless traders and bond/derivatives accountants worldwide. Hopefully you might like how we extended you.
+
+It is our hope that fixed income and FI math can be a little less scary for everyone, because *every single person* in the world depends on it heavily. 
+
+- The [Disent](https://www.disent.com) Team
+
+## References
+
+- https://en.wikipedia.org/wiki/Date_rolling
+- https://en.wikipedia.org/wiki/ISO_8601
+- https://en.wikipedia.org/wiki/Day_count_convention
+- https://www.amazon.com/Calendrical-Calculations-Edward-M-Reingold/dp/0521771676 (thanks Prof Reingold!)
+- https://www.amazon.com/Fixed-Income-Mathematics-Fifth-Statistical/dp/1264258275
+
+## Documentation Todo's
+
+- Add notebook with examples
+- Add repl examples
+- Verify all examples
+- Cross references features in doc not yet in code base
+- Finish daycounters
+- add period conversion formulas to recalc the decimals
