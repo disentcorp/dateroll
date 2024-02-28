@@ -35,7 +35,7 @@ def addNones(*args, zeros=False):
     return sum
 
 
-class Duration:
+class Duration(dateutil.relativedelta.relativedelta):
     """
     we do not inherit from relativedelta or timedelta, it is something to be considered
 
