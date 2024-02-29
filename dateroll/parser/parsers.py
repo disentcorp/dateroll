@@ -58,10 +58,10 @@ def parseDateString(s, convention):
         dateparser_kwargs = {}
     elif convention == "european":
         pattern = patterns.DMY
-        dateparser_kwargs = {"dayfirst": True}
+        dateparser_kwargs = {"dayFirst": True}
     elif convention == "international":
         pattern = patterns.YMD
-        dateparser_kwargs = {"yearfirst ": True}
+        dateparser_kwargs = {"yearFirst ": True}
     else:
         raise ParserStringsError("No convention provided!")
 
@@ -179,6 +179,8 @@ def parseDateMathString(s, things):
     Uses substitution and evaluation. Safe because wouldn't get here if *things were not validated, and regex didn't match.
     """
     s = s.replace(" ", "").replace("++", "+").replace('+-','-').replace('-+','-')
+    if s=='+X':
+        s = "X"
 
     math_matches = re.match(patterns.MATH, s)
     if math_matches:

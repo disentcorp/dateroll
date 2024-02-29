@@ -4,7 +4,6 @@ from datetime import timezone
 
 import dateutil.relativedelta
 from dateutil.parser import parse
-
 from dateroll.duration.duration import Duration
 
 DateLike = (datetime.datetime, datetime.date)
@@ -100,32 +99,42 @@ class Date(datetime.date):
     need to test add,sub,iadd,isub,radd,rsub
     """
 
-    # def __sub__(self, lhs):
-    #     if isinstance(lhs, datetime.date) and isinstance(self, datetime.date):
-    #         dt1 = lhs.toStr()
-    #         dt2 = self.toStr()
-    #         str_ = f"{dt2}-{dt1}"
-    #         return Duration(str_)
-    #     else:
-    #         dt = self.strftime("%Y%m%d")
-    #         dr = lhs.__str__()
-    #         str_ = "".join([dt, dr])
-    #         rs = Duration(dr).__sub__(self)
+    def __sub__(self, o):
+        if isinstance(o, DateLike):
+            td = o - self.dt
+            print(o,self.dt,td)
+        elif isinstance(o,str):
+            from dateroll.ddh.ddh import ddh
+            td = ddh(o)-self.dt
+            print(o,self.dt,ddh(o),td)
+        else:
+            td = super().__sub__(o)
+        if not isinstance(td,Duration):
+            print(td,type(td))
+            dur = Duration(d=td.days)
+        else:
+            dur = td
+        return dur
 
-    #         return rs
-
-    # def __add__(self,o):
-    #     if isinstance(o,str):
-    #         try:
-    #             o_adj = Duration(o)
-    #         except:
-    #             o_adj = Date(o)
-    #         res = o_adj.__add__(self)
-    #         return res
-    #     return super().__add__(o)
-
-    # def __radd__(self,o):
-    #     return self.__add__(o)
+    def __add__(self, o):
+        if isinstance(o, DateLike):
+            td = o + self.dt
+            print(o,self.dt,td)
+        elif isinstance(o,str):
+            from dateroll.ddh.ddh import ddh         
+            td = ddh(o) + self.dt
+            print(o,self.dt,ddh(o),td)
+        else:
+            td = super().__sub__(o)
+        if not isinstance(td,Duration):
+            print(td,type(td))
+            dur = Duration(d=td.days)
+        else:
+            dur = td
+        return dur
+    
+    def __radd__(self,o):
+        return self.__add__(o)
 
 
 DateLike = DateLike + (Date,)

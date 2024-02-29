@@ -316,7 +316,7 @@ class Duration(dateutil.relativedelta.relativedelta):
         """
         c = a + b
         """
-        from dateroll.date.date import Date
+        from dateroll.date.date import Date,DateLike
 
         a = self
 
@@ -394,7 +394,7 @@ class Duration(dateutil.relativedelta.relativedelta):
             return self
             # raise NotImplementedError('need to cast rd')
 
-        elif isinstance(b, Date):
+        elif isinstance(b, DateLike):
             # adjust b for Non-bd's FIRST
             b_moved = b + self.delta * direction
 
@@ -408,6 +408,7 @@ class Duration(dateutil.relativedelta.relativedelta):
             return Date.from_datetime(shift_adj)
 
         else:
+            print(type(b),'!!!!!!!!!!!!!!!!!!!!')
             raise NotImplementedError
 
     @property
@@ -424,22 +425,35 @@ class Duration(dateutil.relativedelta.relativedelta):
     # m, ...
 
     def __radd__(self, x):
+        print(type(x),'radd')
         return self.math(x, 1)
 
     def __rsub__(self, x):
+        print(type(x),'rsub')
         return self.math(x, -1)
 
     def __add__(self, x):
+        print(type(x),'add')
         return self.math(x, 1)
 
     def __sub__(self, x):
+        print(type(x),'sub')
         return self.math(x, -1)
 
     def __iadd__(self, x):
+        print(type(x),'iadd')
         return self.math(x, 1)
 
     def __isub__(self, x):
+        print(type(x),'isub')
         return self.math(x, -1)
+    
+    def __neg__(self):
+        raise NotImplementedError('need unary -negative on duration')
+        return self
+    
+    def __pos__(self):
+        return self
 
     def __repr__(self):
         """

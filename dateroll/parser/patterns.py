@@ -41,7 +41,7 @@ COMPLETE_DURATION = (
 )
 
 # DateMathString Patterns
-MATH = r"^ ?((\+|-)? ?)?X( ?(\+|-) ?X)+$"
+MATH = r"^ ?((\+|-)? ?)?X( ?(\+|-) ?X)?$"
 
 # Compile
 YMD = re.compile(DMY)
