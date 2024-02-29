@@ -1,30 +1,39 @@
-from setuptools import setup, find_packages
-
-# https://www.digitalocean.com/community/tutorials/how-to-package-and-distribute-python-applications
+from setuptools import find_packages, setup
 
 setup(
-    name="python-project-skeleton",
-    version="0.1",
-    description="""This is a template description for a new project.""",
-    author="Oksana Korol",
-    author_email="okorol@gmail.com",
-    url="https://github.com/oxyko/python-project-skeleton",
-    classifiers=(
-        "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: MIT License",
-    ),
-    packages=find_packages(exclude=["test*", "Test*"]),
-    package_data={
-        "": ["README.md", "LICENSE"],
-        "python-project-skeleton": ["config.yaml.sample"],
-    },
-    scripts=["main.py"],
-    entry_points={
-        "console_scripts": [
-            "python-project-skeleton = main:main",
-        ],
-    },
-    install_requires=[
-        "PyYAML==4.2b1",
+    name="dateroll",
+    version="0.0.20",
+    description="""dateroll makes working with dates less painful.""",
+    author="Anthony Malizzio",
+    author_email="anthony.malizzio@disent.com",
+    license = "Apache Software License",
+    url="https://github.com/disentcorp/dateroll",
+    classifiers=[
+        "Development Status :: 3 - Alpha",
+        'Intended Audience :: Science/Research',
+        'Intended Audience :: Developers',
+        'Programming Language :: Python',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
+        'Programming Language :: Python :: 3.12',
+        'Programming Language :: Python :: 3 :: Only',
+        'Topic :: Software Development',
+        'Topic :: Scientific/Engineering',
+        "License :: OSI Approved :: Apache Software License",
+        "Topic :: Utilities",
+        'Operating System :: Unix',
     ],
+    packages=['dateroll','dateroll.ddh','dateroll.calendars','dateroll.duration','dateroll.parser','dateroll.schedule','dateroll.date'],
+    include_package_data=True,
+    package_data={
+        'dateroll':['sampledata/*.csv','tests/*']
+    },
+    install_requires=["python-dateutil"],
+    license_files = ('LICENSE',),
+    python_requires=">=3.7",
+    zip_safe=False
 )
