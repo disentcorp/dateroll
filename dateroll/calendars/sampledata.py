@@ -1,4 +1,10 @@
+"""
+used to generate dateroll/sampledata/*.csv before packaging wheel
+"""
+
 import datetime
+import os
+import pathlib
 
 from dateutil.relativedelta import relativedelta as rd
 from workalendar.america.brazil import Brazil
@@ -8,6 +14,19 @@ from workalendar.europe.united_kingdom import UnitedKingdom
 from workalendar.usa import FederalReserveSystem
 
 DEFAULT_YEAR_RANGE = 200
+
+
+def generate_Workalendar(cls, n=DEFAULT_YEAR_RANGE):
+    """
+    use 3rd party library to get set of use federal holidays, return as set
+    """
+    y = datetime.datetime.today().year
+    l = set()
+    inst = cls()
+    for year in range(y - n, y + n):
+        hols = inst.holidays(year)
+        l |= set(_[0] for _ in hols)
+    return l
 
 
 def generate_ALL_and_WE(n=DEFAULT_YEAR_RANGE):
@@ -35,42 +54,26 @@ def generate_ALL_and_WE(n=DEFAULT_YEAR_RANGE):
     return ALL, WE
 
 
-def generate_Workalendar(cls, n=DEFAULT_YEAR_RANGE):
-    """
-    use 3rd party library to get set of use federal holidays, return as set
-    """
-    y = datetime.datetime.today().year
-    l = set()
-    inst = cls()
-    for year in range(y - n, y + n):
-        hols = inst.holidays(year)
-        l |= set(_[0] for _ in hols)
-    return l
-
-
-def load_sample_data(cals, n=DEFAULT_YEAR_RANGE):
+def generate_sample_data(cals, n=DEFAULT_YEAR_RANGE):
     ALL, WE = generate_ALL_and_WE(n)
-    NY = FED = generate_Workalendar(FederalReserveSystem, n=n)
-    EU = ECB = generate_Workalendar(EuropeanCentralBank, n=n)
-    LN = BOE = generate_Workalendar(UnitedKingdom, n=n)
-    BR = BCB = generate_Workalendar(Brazil, n=n)
+    data = {
+        "ALL": ALL,
+        "WE": WE,
+        "NY": generate_Workalendar(FederalReserveSystem, n=n),
+        "EU": generate_Workalendar(EuropeanCentralBank, n=n),
+        "LN": generate_Workalendar(UnitedKingdom, n=n),
+        "BR": generate_Workalendar(Brazil, n=n),
+    }
 
-    if "ALL" not in cals:
-        cals["ALL"] = ALL
-    if "WE" not in cals:
-        cals["WE"] = WE
-
-    cals["NY"] = NY
-    cals["LN"] = LN
-    cals["BR"] = BR
-
-    cals["ECB"] = ECB
-    cals["FED"] = FED
+    for calendar_name, list_of_dates in data.items():
+        filename = pathlib.Path(ROOT_DIR / "sampledata/" / f"{calendar_name}.csv")
+        with open(filename, "w") as f:
+            l = [i.isoformat() + "\n" for i in list_of_dates]
+            f.writelines(l)
 
 
 if __name__ == "__main__":
-    from dateroll.calendars.calendars import Calendars
-
-    cals = Calendars()
-
-    load_sample_data(cals, n=200)
+    ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+    data = generate_sample_data
+    for k, v in data.items():
+        print(k, len(v))

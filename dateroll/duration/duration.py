@@ -3,20 +3,15 @@ import datetime
 import dateutil
 import dateutil.relativedelta
 
-from dateroll.calendars.calendarmath import cm
+from dateroll.calendars.calendarmath import calmath
 
-cals = cm.cals
+cals = calmath.cals
 
 period_order = (*"yhsqmwd", "cals", "roll")
 
 PeriodLike = (dateutil.relativedelta, datetime.timedelta)
 
-VALID_ROLL_CONVENTIONS = {
-    'F',
-    'P',
-    'MF',
-    'MP'
-}
+VALID_ROLL_CONVENTIONS = {"F", "P", "MF", "MP"}
 
 
 def addNones(*args, zeros=False):
@@ -233,13 +228,13 @@ class Duration(dateutil.relativedelta.relativedelta):
         """
         roll = self.roll
         if roll == "P":
-            return cm.prev_bd(from_date, cals=self.cals)
+            return calmath.prev_bd(from_date, cals=self.cals)
         elif roll == "MP":
-            return cm.prev_bd(from_date, cals=self.cals, mod=True)
+            return calmath.prev_bd(from_date, cals=self.cals, mod=True)
         elif roll == "F":
-            return cm.next_bd(from_date, cals=self.cals)
+            return calmath.next_bd(from_date, cals=self.cals)
         elif roll == "MF":
-            return cm.next_bd(from_date, cals=self.cals, mod=True)
+            return calmath.next_bd(from_date, cals=self.cals, mod=True)
         else:
             raise Exception("Unhandled roll: Must be /F, /P / MF/ /MP")
 
@@ -247,7 +242,7 @@ class Duration(dateutil.relativedelta.relativedelta):
         """
         uses CalendarMath for bd adjustment
         """
-        _d = cm.add_bd(from_date, self.bd, cals=self.cals)
+        _d = calmath.add_bd(from_date, self.bd, cals=self.cals)
         return _d
 
     def simmplify(self):

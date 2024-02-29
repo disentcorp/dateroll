@@ -1,6 +1,8 @@
+import time
 import datetime
 import pathlib
 import pickle
+import warnings
 
 from dateroll.calendars.calendars import Calendars
 
@@ -8,7 +10,7 @@ PARENT_LOCATION = pathlib.Path.home() / ".dateroll/"
 PARENT_LOCATION.mkdir(exist_ok=True)
 MODULE_LOCATION = PARENT_LOCATION / "calendars/"
 MODULE_LOCATION.mkdir(exist_ok=True)
-DATA_LOCATION_FILE = MODULE_LOCATION / "compiled_cals.db"
+DATA_LOCATION_FILE = MODULE_LOCATION / "compiled_cals"
 
 
 DEFAULT_IE = "(]"
@@ -35,7 +37,6 @@ class CalendarMath:
     """
 
     def __init__(self, home=DATA_LOCATION_FILE):
-
         self.home = home
         self.cals = Calendars()
         self.hash = self.cals.hash
@@ -44,8 +45,6 @@ class CalendarMath:
 
         self.fwd = {}
         self.bck = {}
-        self.prev = {}
-        self.next = {}
 
         self.cached_compile_all()
 
@@ -65,12 +64,9 @@ class CalendarMath:
         cached = {
             "fwd": self.fwd,
             "bck": self.bck,
-            "prev": self.prev,
-            "next": self.next,
             "hash": self.hash,
             "unions": self.unions,
         }
-        self.__dict__.update(cached)
         file = open(self.home, "wb")
         with file:
             pickle.dump(cached, file)
@@ -88,22 +84,20 @@ class CalendarMath:
                 return
             else:
                 # cache invalidation
-                print(
-                    "[dateroll] calendar mutation detected, triggering re-compliation"
-                )
-
+                pass
         # compile
         self.compile_all()
 
     def compile_all(self):
         print("[dateroll] compiling calendars")
-        cals = self.cals
-        keys = cals.keys()
-        for name in keys:
-            dates = self.cals[name]
-            self.gen_dicts(name, dates)
+        d=self.cals.copy()
+        for k,v in d.items():
+            if k=='WE':
+                dates = v
+                self.fwd[k], self.bck[k] = self.gen_dicts(k,v,self.ALL)
 
         self.save_cache()
+        self.hash = self.cals.hash #8 ms
 
     @property
     def has_mutated(self):
@@ -125,7 +119,8 @@ class CalendarMath:
         if not self.home.exists():
             self.recompile_if_mutated()
 
-    def gen_dicts(self, name, dates):
+    @staticmethod
+    def gen_dicts(name, dates, all):
         """
         generates 4 dictionaries for a given calendar
         fwd[date]->#bds from inception
@@ -134,40 +129,42 @@ class CalendarMath:
         next[date]->next bus date
         """
         cal = sorted(dates)
-        all = sorted(self.ALL)
 
         fwd = {}
         bck = {}
-        prev = {}
-        next = {}
 
         if len(cal) == 0:
             return
 
-        last_cal = cal[0]
+        last_cal = cal.pop(0)
         last_idx = 0
         last_good = None
-        for idx, dt in enumerate(all):
+        for idx, dt in enumerate(sorted(all)):
+            goodbad = None
             if dt == last_cal:
+                gb = 'holiday'
                 # is holiday
                 fwd[dt] = last_idx
-                bck[last_idx] = dt
+                if last_idx not in bck:
+                    bck[last_idx] = dt
                 try:
                     last_cal = cal.pop(0)
                 except:
+                    print('exc')
                     break
             else:
                 # is good bd
+                gb = 'working day'
                 last_idx += 1
                 fwd[dt] = last_idx
-                bck[last_idx] = dt
-                prev[dt] = last_good
+                if last_idx not in bck:
+                    bck[last_idx] = dt
                 last_good = dt
+            f = lambda x: f"{x.month}/{x.day}" if x is not None else "?"
+            if (dt.year==2024 and dt.month in (2,3)) or idx < 10 and name=='WE':
+                print(name,f'{idx=},{f(dt)},{f(last_cal)},{last_idx=},{f(last_good)},{gb=}')
 
-        self.fwd[name] = fwd
-        self.bck[name] = bck
-        self.prev[name] = prev
-        self.next[name] = {v: k for k, v in prev.items()}
+        return fwd,bck
 
     def add_bd(self, d, n, cals, mod=False):
         """
@@ -197,6 +194,7 @@ class CalendarMath:
         new_bd_index = bd_index + n
         new_dt = B[new_bd_index]
 
+        # import code;code.interact(local=locals())
         return new_dt
 
     def sub_bd(self, d, n, cal, mod=False):
@@ -228,10 +226,10 @@ class CalendarMath:
         the next business date from d on calendars cals
         """
         if mod:
-            raise NotImplementedError("mod")
-
+            raise NotImplementedError("next_bd")
+        warnings.warn('next bd not implemented yet')
         cal_name = self.union_swap(cals)
-        return self.prev[cal_name][d]
+        return d
 
     def prev_bd(self, d, cals, mod=False):
         """
@@ -239,28 +237,34 @@ class CalendarMath:
         """
 
         if mod:
-            raise NotImplementedError("mod")
+            raise NotImplementedError("prev_bd")
+        warnings.warn('next bd not implemented yet')
 
         cal_name = self.union_swap(cals)
-        return self.next[cal_name][d]
+        return d
 
     def union_swap(self, cals):
         """
         check calendar list or str is valid
         and if not copmiled (in self.unions) call self.union to compile the union
+
+        presumes unions are sorted
         """
+        if cals is None:
+            cals = ['WE']
         if isinstance(cals, str):
             return cals
         elif isinstance(cals, (tuple, list, set)):
-            union_name = "_".join(cals)
-            if union_name in self.fwd:
+            cals = sorted(cals)
+            union_name = 'u'.join(cals)
+            if cals in self.unions:
                 return union_name
             else:
                 self.union(cals)
                 return union_name
         else:
             raise TypeError("Calendars must be a valid calendar name or list of names")
-
+           
     def union(self, cals):
         """
         validate cals passed is in correct format
@@ -269,7 +273,7 @@ class CalendarMath:
         if isinstance(cals, str):
             return cals
         elif isinstance(cals, (tuple, list, set)):
-            union = set()
+            union = list()
             if len(cals) == 1:
                 if isinstance(cals[0], str):
                     return cals[0]
@@ -277,22 +281,30 @@ class CalendarMath:
                 if not isinstance(cal, str):
                     raise TypeError(f"Calendar name must be string")
                 if cal not in self.cals:
-                    raise KeyError(f"There is no calendar {cal}")
-                union |= set(self.cals[cal])
-            union_name = "_".join(cals)
-            self.unions.append(cals)
+                    raise KeyError(
+                        f"There is no calendar {cal}"
+                    )
+                union += set(self.cals[cal])
+            union_name = "u".join(cals)
+            self.unions.append(sorted(cals))
             dates = list(union)
             print(f"[dateroll] compiling new union [{union_name}]")
-            self.gen_dicts(union_name, dates)
+            self.fwd[union_name], self.bck[union_name] = self.gen_dicts(union_name, dates, self.ALL)
             self.save_cache()
         else:
             raise TypeError("Union must be tuple or list of cal names")
 
+    def __repr__(self):
+        """
+        Show names of cals and unions
+        """
+        return f'{self.__class__.__name__}(home="{self.home}")\nCals: {self.cals.keys()}\nUnions: {self.unions}'
 
-cm = CalendarMath()
+
+calmath = CalendarMath()
 
 if __name__ == "__main__":
-    cm = CalendarMath()
+    calmath = CalendarMath()
 
     import datetime
     import time
@@ -304,16 +316,16 @@ if __name__ == "__main__":
     a = time.time()
 
     print(t)
-    # cm.add_bd(t,1,cals=['WE','NY'])
+    # calmath.add_bd(t,1,cals=['WE','NY'])
 
-    t2 = cm.add_bd(t, 1, cals=["WE"])
+    t2 = calmath.add_bd(t, 1, cals=["WE"])
     print(t2)
 
-    t2 = cm.add_bd(t, 100, cals=["WE"])
+    t2 = calmath.add_bd(t, 100, cals=["WE"])
     print(t2)
-    print(cm.diff(t, t2, cals=["WE"]))
+    print(calmath.diff(t, t2, cals=["WE"]))
     t2 = t + rd(days=31)
-    print(cm.diff(t, t2, cals=["WE"]))
+    print(calmath.diff(t, t2, cals=["WE"]))
 
     b = time.time()
     print((b - a) * 1000, "ms")

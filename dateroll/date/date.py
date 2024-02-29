@@ -3,7 +3,6 @@ import datetime
 from datetime import timezone
 
 import dateutil.relativedelta
-import numpy
 from dateutil.parser import parse
 
 from dateroll.duration.duration import Duration
@@ -56,14 +55,6 @@ class Date(datetime.date):
         day_of_week = dt_mapping[self.weekday()]
         return day_of_week
 
-    def weekMonth(self):
-        """
-        which week of the month, ie 1,2,3,4,5
-        """
-        d = numpy.array(calendar.monthcalendar(self.year, self.month))
-        week_of_month = numpy.where(d == self.day)[0][0] + 1
-        return week_of_month
-
     def weekYear(self):
         """
         week of the year, iso 8601
@@ -104,11 +95,10 @@ class Date(datetime.date):
     @property
     def dt(self):
         return datetime.datetime(self.year, self.month, self.day)
-    
 
-    '''
+    """
     need to test add,sub,iadd,isub,radd,rsub
-    '''
+    """
 
     # def __sub__(self, lhs):
     #     if isinstance(lhs, datetime.date) and isinstance(self, datetime.date):

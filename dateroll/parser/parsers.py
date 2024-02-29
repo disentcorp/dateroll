@@ -3,14 +3,17 @@ import re
 
 from dateroll.date.date import Date
 from dateroll.duration.duration import Duration
-from dateroll.schedule.schedule import Schedule
 from dateroll.parser import patterns
+from dateroll.schedule.schedule import Schedule
 
 DEFAULT_CONVENTION = "american"
-TODAYSTRINGVALUES = ["t", "t0", "today"]
+TODAYSTRINGVALUES = ["today",'t0','t']
+
+AtoZ = tuple(chr(i) for i in range(65,65+26))
 
 
 class ParserStringsError(Exception): ...
+
 
 def parseTodayString(s, convention=DEFAULT_CONVENTION):
     """
@@ -18,18 +21,21 @@ def parseTodayString(s, convention=DEFAULT_CONVENTION):
     """
     today = datetime.date.today()
 
-    match convention:
-        case "american":
-            today_string = today.strftime(r"%m/%d/%Y")
-        case "european":
-            today_string = today.strftime(r"%d/%m/%Y")
-        case "international":
-            today_string = today.strftime(r"%Y/%m/%d")
+    if convention == "american":
+        today_string = today.strftime(r"%m/%d/%Y")
+    elif convention == "european":
+        today_string = today.strftime(r"%d/%m/%Y")
+    elif convention == "international":
+        today_string = today.strftime(r"%Y/%m/%d")
+    else:
+        raise ValueError(convention)
 
     for t in TODAYSTRINGVALUES:
+        # search order matters in TODAYSTRINGVALUES
         if t in s:
             return s.replace(t, today_string)
     return s
+
 
 def parseDateString(s, convention):
     """
@@ -47,26 +53,20 @@ def parseDateString(s, convention):
     if convention is None:
         convention = DEFAULT_CONVENTION
 
-    # switch from colloquial convention to python stdlib vernacular
-    match convention:
-        case "american":
-            pattern = patterns.MDY
-            dateparser_kwargs = {}
-        case "european":
-            pattern = patterns.DMY
-            dateparser_kwargs = {"dayfirst": True}
-        case "international":
-            pattern = patterns.YMD
-            dateparser_kwargs = {"yearfirst ": True}
-        case _:
-
-            raise ParserStringsError("No convention provided!")
+    if convention == "american":
+        pattern = patterns.MDY
+        dateparser_kwargs = {}
+    elif convention == "european":
+        pattern = patterns.DMY
+        dateparser_kwargs = {"dayfirst": True}
+    elif convention == "international":
+        pattern = patterns.YMD
+        dateparser_kwargs = {"yearfirst ": True}
+    else:
+        raise ParserStringsError("No convention provided!")
 
     dates = []
     matches = re.findall(pattern, s)
-
-    if len(matches) > 2:
-        raise Exception("Too many dates")
 
     for match in matches:
         date = Date.from_string(match, **dateparser_kwargs)
@@ -74,6 +74,7 @@ def parseDateString(s, convention):
         dates.append(date)
 
     return dates, s
+
 
 def process_duration_match(m: tuple):
     """
@@ -86,13 +87,12 @@ def process_duration_match(m: tuple):
 
     # get initial multplier (if any)
     op = m[1]
-    match op:
-        case "" | "+":
-            mult = 1
-        case "-":
-            mult = -1
-        case "_":
-            raise Exception("Unknown operator")
+    if op == "+" or op == "":
+        mult = 1
+    elif op == "-":
+        mult = -1
+    else:
+        raise Exception("Unknown operator")
 
     # get all the pairs
     for i in range(2, 12, 2):
@@ -130,6 +130,7 @@ def process_duration_match(m: tuple):
     duration = Duration(**duration_contructor_args)
     return duration
 
+
 def parseDurationString(s):
     """
     check for any DurationString:
@@ -162,9 +163,6 @@ def parseDurationString(s):
     durations = []
     matches = re.findall(patterns.COMPLETE_DURATION, s)
 
-    if len(matches) > 2:
-        raise Exception("Too many dates")
-
     for m in matches:
         full = m[0]
         duration = process_duration_match(m)
@@ -177,44 +175,28 @@ def parseDurationString(s):
 
 def parseDateMathString(s, things):
     """
-    takes only date math strings using X placeholder:
-        X
-        X+X
-        X-X
-        +X+X
-        -X+X
-        -X-X
-    does the match..relies on items for the overload. invalid pairings will raise their own exeption.
+    Looks for any linear formula with plus or minus
+    Uses substitution and evaluation. Safe because wouldn't get here if *things were not validated, and regex didn't match.
     """
-
-    #######
-    ####### do more math, allow for repetitive patterns
-    ###### use an eval context
-    ##### safety is X's and valid operators
-    s = s.replace(" ", "").replace("++", "+")
-
-    ident_matches = re.match(patterns.IDENT, s)
-    if ident_matches:
-        if len(things) == 1:
-            return things[0]
-        else:
-            raise NotImplementedError(f"Unhandled {s}")
+    s = s.replace(" ", "").replace("++", "+").replace('+-','-').replace('-+','-')
 
     math_matches = re.match(patterns.MATH, s)
     if math_matches:
-        if len(things) == 1:
-            operand = things[0]
+        n1 = len(things)
+        n2 = s.count('X')
+        if n1 != n2:
+            raise Exception(f'Unmatched math ({s})')
+               
+        if n1 > len(AtoZ):
+            raise ParserStringsError("Cannot recognize as date math", s)
+        
+        for idx in range(n2):
+            s = s.replace('X',AtoZ[idx],1)
 
-        elif len(things) == 2:
-            left_hand_side = things[0]
-            right_hand_side = things[1]
-
-        if s == "X+X" or s == "+X+X":
-            total = left_hand_side + right_hand_side
-            return total
-        elif s == "X-X" or s == "+X-X":
-            total = left_hand_side - right_hand_side
-            return total
+        gs = {k:v for k,v in zip(AtoZ[:len(things)],things)}
+        total = eval(s,gs)
+        
+        return total
     raise ParserStringsError("Cannot recognize as date math", s)
 
 

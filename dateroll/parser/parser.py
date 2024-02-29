@@ -6,8 +6,8 @@ import dateutil.rrule
 
 from dateroll.date.date import Date
 from dateroll.duration.duration import Duration
-from dateroll.schedule.schedule import Schedule
 from dateroll.parser import parsers
+from dateroll.schedule.schedule import Schedule
 
 
 class ParserError(Exception): ...
@@ -86,19 +86,19 @@ class Parser:
     native_delta = dateutil.relativedelta.relativedelta
 
     def __new__(
-        self, s, convention=None, use_native_types=False  # inherits from strings
+        self, string, convention=None, use_native_types=False  # inherits from strings
     ):
         """
         Algorithm works left to right implicitly:
+        Check for how many parts (1 or 3 allowed, "," separator)
+        For each part
             1 - convert TodayStrings into DateStrings
-            2 - Check for how many parts (1 or 3 allowed, "," separator)
-            3 - For each part
-                    3a. Match DateString's -> Date
-                    3b. Match DurationString's -> Duration
-                    3c. Match DateMathString -> Date or Duration
+            2 Match DateString's -> Date
+            3 Match DurationString's -> Duration
+            4 Match DateMathString -> Date or Duration
         """
 
-        if not isinstance(s, str):
+        if not isinstance(string, str):
             raise ParserError("Must be string")
 
         if use_native_types:
@@ -107,30 +107,29 @@ class Parser:
         self.convention = convention
         self.use_native_types = use_native_types
 
-        # 1
-        s1 = parsers.parseTodayString(s)
-
-        # 2
-        part = Parser.parse_maybe_many_parts(s1, convention=self.convention)
+        part = Parser.parse_maybe_many_parts(string, convention=self.convention)
         return part
 
     @classmethod
     def parse_one_part(cls, untouched, convention=None):
 
-        # 3a
-        dates, nodates = parsers.parseDateString(untouched, convention=convention)
+        # 1
+        notoday = parsers.parseTodayString(untouched)
+
+        # 2
+        dates, nodates = parsers.parseDateString(notoday, convention=convention)
         # print('s before/after:', untouched,nodates)
         if nodates == "X":
             return dates[0]
 
-        # 3b
+        # 3
         durations, nodatesordurations = parsers.parseDurationString(nodates)
         # print('s before/after:', nodates,nodatesordurations)
         if nodatesordurations == "X":
             return durations[0]
         dates_durations = dates + durations
 
-        # 3c
+        # 4
         # print('before pdms',nodatesordurations)
         processed_answer = parsers.parseDateMathString(
             nodatesordurations, dates_durations
@@ -145,43 +144,41 @@ class Parser:
 
         num_parts = len(parts)
 
-        match num_parts:
+        if num_parts == 1:
+            part = parts[0]
+            date_or_period = cls.parse_one_part(part, convention=convention)
+            return date_or_period
 
-            case 1:
-                part = parts[0]
-                date_or_period = cls.parse_one_part(part, convention=convention)
-                return date_or_period
+        elif num_parts == 3:
+            _maybe_start, _maybe_stop, _maybe_step = parts
 
-            case 3:
-                _maybe_start, _maybe_stop, _maybe_step = parts
+            maybe_start = cls.parse_one_part(_maybe_start, convention=convention)
+            maybe_stop = cls.parse_one_part(_maybe_stop, convention=convention)
+            maybe_step = cls.parse_one_part(_maybe_step, convention=convention)
 
-                maybe_start = cls.parse_one_part(_maybe_start, convention=convention)
-                maybe_stop = cls.parse_one_part(_maybe_stop, convention=convention)
-                maybe_step = cls.parse_one_part(_maybe_step, convention=convention)
+            if isinstance(maybe_start, Date):
+                start = maybe_start
+            else:
+                raise TypeError("Start of generation must be a valid Date")
 
-                if isinstance(maybe_start, Date):
-                    start = maybe_start
-                else:
-                    raise TypeError("Start of generation must be a valid Date")
+            if isinstance(maybe_stop, Date):
+                stop = maybe_stop
+            else:
+                raise TypeError("Stop of generation must be a valid Date")
 
-                if isinstance(maybe_stop, Date):
-                    stop = maybe_stop
-                else:
-                    raise TypeError("Stop of generation must be a valid Date")
+            if isinstance(maybe_step, Duration):
+                step = maybe_step
+            else:
+                raise TypeError("Step of generation must be a valid Duration")
 
-                if isinstance(maybe_step, Duration):
-                    step = maybe_step
-                else:
-                    raise TypeError("Step of generation must be a valid Duration")
+            sch = Schedule(start=start, stop=stop, step=step)
+            return sch
 
-                sch = Schedule(start=start, stop=stop, step=step)
-                return sch
-
-            case _:
-                # Must
-                raise Exception(
-                    f"String must contain either 1 or 3 parts (not {num_parts})"
-                )
+        else:
+            # Must
+            raise Exception(
+                f"String must contain either 1 or 3 parts (not {num_parts})"
+            )
 
         raise ParserError(f"Sorry, can't understand {s}") from None
 
