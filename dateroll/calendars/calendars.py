@@ -1,9 +1,14 @@
+import time
 import datetime
 import glob
 import hashlib
 import os
 import pathlib
 import pickle
+from random import choice
+import fcntl
+
+from dateroll.utils import safe_open
 
 ROOT_DIR = pathlib.Path(__file__).parents[2]
 PARENT_LOCATION = pathlib.Path.home() / ".dateroll/"
@@ -13,12 +18,14 @@ MODULE_LOCATION.mkdir(exist_ok=True)
 DATA_LOCATION_FILE = MODULE_LOCATION / "holiday_lists"
 SAMPLE_DATA_PATH = ROOT_DIR / "dateroll" / "sampledata" / "*.csv"
 
+SLEEP_TIMES = [25/1000,50/1000,100/1000,300/1000]
+
 def load_sample_data():
     files = glob.glob(str(SAMPLE_DATA_PATH))
     data = {}
     for file in files:
         name = pathlib.Path(file).stem
-        with open(file) as f:
+        with safe_open(file) as f:
             ls = f.readlines()
             ld = []
             for i in ls:
@@ -30,24 +37,26 @@ def load_sample_data():
 
 class Drawer:
     def __init__(self, filename):
-        self.filename = filename
+        self.path = pathlib.Path(filename)
+        self.lock = self.path.with_suffix('.lock')
 
     def __enter__(self):
-        if pathlib.Path(self.filename).exists():
-            with open(self.filename, "rb") as f:
+        if self.path.exists():
+            with safe_open(self.path, "rb") as f:
                 self.data = pickle.load(f)
         else:
             print(f'[dateroll] no saved calendars, loading sample data')
             data = load_sample_data()
             self.data = data
-            with open(self.filename, "wb") as f:
+            with safe_open(self.path, "wb") as f:
                 pickle.dump(self.data, f)
         return self.data
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         if exc_type is None:
-            with open(self.filename, "wb") as f:
+            with safe_open(self.path, "wb") as f:
                 pickle.dump(self.data, f)
+            
         else:
             return True
 
@@ -73,7 +82,7 @@ class Calendars:
             filename = filenames[0]
         else:
             return None
-        with open(filename, "rb") as f:
+        with safe_open(filename, "rb") as f:
             return hashlib.md5(
                 f.read(),
             ).hexdigest()

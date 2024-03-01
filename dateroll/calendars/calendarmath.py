@@ -4,6 +4,7 @@ import pathlib
 import pickle
 import warnings
 
+from dateroll.utils import safe_open
 from dateroll.calendars.calendars import Calendars
 
 PARENT_LOCATION = pathlib.Path.home() / ".dateroll/"
@@ -50,9 +51,8 @@ class CalendarMath:
 
     def load_cache(self):
         if self.home.exists():
-            file = open(self.home, "rb")
-            with file:
-                cached = pickle.load(file)
+            with safe_open(self.home, "rb") as f:
+                cached = pickle.load(f)
             return cached
         else:
             return {"hash": None}
@@ -67,9 +67,8 @@ class CalendarMath:
             "hash": self.hash,
             "unions": self.unions,
         }
-        file = open(self.home, "wb")
-        with file:
-            pickle.dump(cached, file)
+        with safe_open(self.home, "wb") as f:
+            pickle.dump(cached, f)
 
     def cached_compile_all(self):
         """

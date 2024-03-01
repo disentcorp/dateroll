@@ -1,6 +1,10 @@
 Metadata-Version: 2.1
 Name: dateroll
+<<<<<<< HEAD
 Version: 0.0.21
+=======
+Version: 0.0.22
+>>>>>>> dev-anthony
 Summary: dateroll makes working with dates less painful.
 Home-page: https://github.com/disentcorp/dateroll
 Author: Anthony Malizzio
