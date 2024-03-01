@@ -5,6 +5,7 @@ README.md
 setup.py
 dateroll/__init__.py
 dateroll/__main__.py
+dateroll/utils.py
 dateroll.egg-info/PKG-INFO
 dateroll.egg-info/SOURCES.txt
 dateroll.egg-info/dependency_links.txt
@@ -49,6 +50,7 @@ dateroll/tests/calendars.py
 dateroll/tests/date.py
 dateroll/tests/ddh.py
 dateroll/tests/duration.py
+dateroll/tests/operations.py
 dateroll/tests/parser.py
 dateroll/tests/parsers.py
 dateroll/tests/patterns.py

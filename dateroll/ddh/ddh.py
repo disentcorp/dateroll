@@ -1,4 +1,6 @@
 import datetime
+import shutil
+import pathlib
 
 from dateroll.parser.parser import parse_to_dateroll, parse_to_native
 
@@ -26,3 +28,11 @@ class ddh:
             self.convention = convention
         obj = parse_to_dateroll(string, convention=self.convention)
         return obj
+
+    @staticmethod
+    def purge_all():
+        '''
+        dangerous, deletes all calendars and lockfiles
+        '''
+        p = pathlib.Path('~/.dateroll').expanduser()
+        shutil.rmtree(p)
