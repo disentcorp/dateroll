@@ -149,7 +149,6 @@ class CalendarMath:
                 try:
                     last_cal = cal.pop(0)
                 except:
-                    print('exc')
                     break
             else:
                 # is good bd
