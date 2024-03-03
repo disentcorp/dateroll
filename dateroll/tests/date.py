@@ -1,6 +1,7 @@
 import unittest
 import datetime
-from dateroll import Date
+from dateroll import Date,Duration
+from dateutil.relativedelta import relativedelta
 
 class TestDDH(unittest.TestCase):
     @classmethod
@@ -61,7 +62,7 @@ class TestDDH(unittest.TestCase):
         d3 = Date.from_string('1/1/1900')
         self.assertEqual(ref,d3)
 
-    def test_isBd(self):
+    def test_is_bd(self):
         '''
         check if day is a business day given a specific calendar
         '''
@@ -97,12 +98,102 @@ class TestDDH(unittest.TestCase):
         self.assertEqual(woty,9)
 
 
-    def test___radd__(self):
-        pass
-    def test___repr__(self):
-        pass
-    def test___sub__(self):
-        pass
+    def test_operations(self):
+        '''
+        add, iadd, sub, rsub
+        '''        
+        d1 = Date(2024,1,3)
+        d2 = Date(2024,4,3)
+        dur = Duration(m=3)
+        rd = relativedelta(months=3)
+        td = datetime.timedelta(days=91)
+        str_d1 = '1/3/24'
+        str_dur = '+3m'
+        int_dur = 91
+
+        # add
+        self.assertRaises(TypeError,lambda :d1+d2)
+        self.assertRaises(TypeError,lambda :d1+str_d1)
+        self.assertEqual(d1+str_dur,d2)
+        self.assertEqual(d1+dur,d2)
+        self.assertEqual(d1+int_dur,d2)
+        self.assertEqual(d1+rd,d2)
+        self.assertEqual(d1+td,d2)
+
+        # # sub
+        self.assertEqual(d2-d1,dur)
+        self.assertEqual(d2-dur,d1)
+        self.assertEqual(d2-str_d1,dur)
+        self.assertEqual(d2-str_dur,d1)
+        self.assertEqual(d2-int_dur,d1)
+        self.assertEqual(d2-rd,d1)
+        self.assertEqual(d2-td,d1)
+
+        # iadd
+        _d1=d1
+        try:
+            _d1+=d2
+            assert False
+        except TypeError:
+            assert True
+
+        _d1=d1
+        _d1+=dur
+        self.assertEqual(_d1,d2)
+
+        _d1=d1
+        try:
+            _d1+=str_d1
+            assert False
+        except TypeError:
+            assert True
+
+        _d1=d1
+        _d1+=int_dur
+
+        self.assertEqual(_d1,d2)
+
+        _d1=d1
+        _d1+=rd
+        self.assertEqual(_d1,d2)
+
+        _d1=d1
+        _d1+=td
+        self.assertEqual(_d1,d2)
+
+        # isub
+        _d2=d2
+        _d2-=d1
+        self.assertEqual(_d2,d1)
+
+        _d2=d2
+        _d2-=str_d1
+        self.assertEqual(_d2,d1)
+
+        _d2=d2
+        _d2-=dur
+        self.assertEqual(_d2,d1)
+
+        _d2=d2
+        _d2-=str_dur
+        self.assertEqual(_d2,d1)
+
+        _d2=d2
+        _d2-=int_dur
+        self.assertEqual(_d2,d1)
+
+        _d2=d2
+        _d2-=td
+        self.assertEqual(_d2,d1)
+
+        _d2=d2
+        _d2-=rd
+        self.assertEqual(_d2,d1)
+
+
+
+        
+
 
 if __name__ == "__main__":
     unittest.main()

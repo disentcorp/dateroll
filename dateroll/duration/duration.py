@@ -189,6 +189,54 @@ class Duration(dateutil.relativedelta.relativedelta):
                 self.roll = None
 
     @property
+    def years(self):
+        return self.y
+    @property
+    def months(self):
+        return self.m
+    @property
+    def weeks(self):
+        return self.w
+    @property
+    def days(self):
+        return self.d
+    @property
+    def year(self):
+        return self.y
+    @property
+    def month(self):
+        return self.m
+    @property
+    def week(self):
+        return self.w
+    @property
+    def day(self):
+        return self.d
+    
+    def __eq__(self,o):
+        '''
+        equality
+        '''
+        # convert td to rd
+        if isinstance(o,datetime.timedelta):
+            o = dateutil.relativedelta.relativedelta(o.days)
+        elif isinstance(o,dateutil.relativedelta.relativedelta):
+            if self.years == o.years:
+                if self.months == o.months:
+                    if self.weeks == o.weeks:
+                        if self.days == o.days:
+                            if isinstance(o,Duration):
+                                if self.bd == o.bd:
+                                    if self.cals == o.cals:
+                                        if self.roll == o.roll:
+                                            return True
+                            else:
+                                return True
+            return False
+        else:
+            return False
+
+    @property
     def delta(self):
         """ """
         rd_args = {}
@@ -396,7 +444,7 @@ class Duration(dateutil.relativedelta.relativedelta):
 
         elif isinstance(b, DateLike):
             # adjust b for Non-bd's FIRST
-            b_moved = b + self.delta * direction
+            b_moved = b.date + self.delta * direction
 
             # # if you have bd's, then use bd adj and roll:
             if self.bd or self.cals or self.roll:
@@ -405,11 +453,13 @@ class Duration(dateutil.relativedelta.relativedelta):
                 shift_adj = b_moved
 
             # convert back to dateroll.Date
-            return Date.from_datetime(shift_adj)
+            dt = Date.from_datetime(shift_adj)
+            return dt
 
         else:
             print(type(b),'!!!!!!!!!!!!!!!!!!!!')
             raise NotImplementedError
+        
 
     @property
     def q(self):
