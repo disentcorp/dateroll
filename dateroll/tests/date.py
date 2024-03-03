@@ -190,10 +190,5 @@ class TestDDH(unittest.TestCase):
         _d2-=rd
         self.assertEqual(_d2,d1)
 
-
-
-        
-
-
 if __name__ == "__main__":
     unittest.main()
