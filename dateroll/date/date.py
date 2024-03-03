@@ -140,4 +140,4 @@ class Date(datetime.date):
 DateLike = DateLike + (Date,)
 
 if __name__ == "__main__":
-    ...
+    pass
