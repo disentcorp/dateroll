@@ -6,7 +6,7 @@ from dateutil.relativedelta import relativedelta
 from dateroll import Date, Duration
 
 
-class TestDDH(unittest.TestCase):
+class TestDate(unittest.TestCase):
     @classmethod
     def setUpClass(cls): ...
 

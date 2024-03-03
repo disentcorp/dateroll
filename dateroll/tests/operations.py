@@ -1,3 +1,12 @@
+import unittest
+
+class TestOperations(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls): ...
+
+    @classmethod
+    def tearDownClass(self): ...
+
 # no fol
 
 # sunday
