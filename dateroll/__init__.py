@@ -1,8 +1,7 @@
 from dateroll.date.date import Date
+from dateroll.ddh.ddh import calmath, cals, ddh
 from dateroll.duration.duration import Duration
 from dateroll.schedule.schedule import Schedule
-from dateroll.ddh.ddh import ddh, calmath, cals
-
 
 # for backwards compatibility testing
 # import sys

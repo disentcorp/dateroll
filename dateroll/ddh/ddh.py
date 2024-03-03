@@ -1,6 +1,6 @@
 import datetime
-import shutil
 import pathlib
+import shutil
 
 from dateroll.parser.parser import parse_to_dateroll, parse_to_native
 
@@ -13,10 +13,11 @@ ddh('t') +'3m' .... it's relaly close to the base but little extra.
 
 """
 
-from dateroll.parser.parsers import DEFAULT_CONVENTION
 from dateroll.calendars.calendarmath import calmath
+from dateroll.parser.parsers import DEFAULT_CONVENTION
 
 cals = calmath.cals
+
 
 class ddh:
     convention = DEFAULT_CONVENTION
@@ -31,8 +32,8 @@ class ddh:
 
     @staticmethod
     def purge_all():
-        '''
+        """
         dangerous, deletes all calendars and lockfiles
-        '''
-        p = pathlib.Path('~/.dateroll').expanduser()
+        """
+        p = pathlib.Path("~/.dateroll").expanduser()
         shutil.rmtree(p)

@@ -1,12 +1,12 @@
-import time
 import datetime
+import fcntl
 import glob
 import hashlib
 import os
 import pathlib
 import pickle
+import time
 from random import choice
-import fcntl
 
 from dateroll.utils import safe_open
 
@@ -18,7 +18,8 @@ MODULE_LOCATION.mkdir(exist_ok=True)
 DATA_LOCATION_FILE = MODULE_LOCATION / "holiday_lists"
 SAMPLE_DATA_PATH = ROOT_DIR / "dateroll" / "sampledata" / "*.csv"
 
-SLEEP_TIMES = [25/1000,50/1000,100/1000,300/1000]
+SLEEP_TIMES = [25 / 1000, 50 / 1000, 100 / 1000, 300 / 1000]
+
 
 def load_sample_data():
     files = glob.glob(str(SAMPLE_DATA_PATH))
@@ -29,7 +30,7 @@ def load_sample_data():
             ls = f.readlines()
             ld = []
             for i in ls:
-                dt = datetime.date(int(i[0:4]),int(i[5:7]),int(i[8:10]))
+                dt = datetime.date(int(i[0:4]), int(i[5:7]), int(i[8:10]))
                 ld.append(dt)
             data[name] = ld
     return data
@@ -38,25 +39,25 @@ def load_sample_data():
 class Drawer:
     def __init__(self, cals):
         self.path = pathlib.Path(cals.home)
-        self.lock = self.path.with_suffix('.lock')
+        self.lock = self.path.with_suffix(".lock")
         self.cals = cals
 
     def __enter__(self):
         if self.cals.hash == self.cals.db_hash:
             return self.cals.db
-        
+
         if self.path.exists():
             with safe_open(self.path, "rb") as f:
                 self.data = pickle.load(f)
                 self.cals.db_hash = self.cals.hash
                 self.cals.db = self.data
         else:
-            print(f'[dateroll] no saved calendars, loading sample data')
+            print(f"[dateroll] no saved calendars, loading sample data")
             data = load_sample_data()
             self.cals.db = data
             with safe_open(self.path, "wb") as f:
                 pickle.dump(self.cals.db, f)
-        
+
         return self.cals.db
 
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -70,19 +71,20 @@ class Drawer:
 
 
 class Calendars(dict):
-    '''
+    """
     dict-like dictionary of calendars
-    '''
+    """
+
     def __init__(self, home=DATA_LOCATION_FILE):
-        self.home = str(home) # on disk location
-        self.db_hash = None # initial hash
-        self.db = {} # cache
-        self.write = False # sentinel to invalidate cache
+        self.home = str(home)  # on disk location
+        self.db_hash = None  # initial hash
+        self.db = {}  # cache
+        self.write = False  # sentinel to invalidate cache
 
         with Drawer(self) as db:
             pass
 
-    def __contains__(self,k):
+    def __contains__(self, k):
         return k in self.keys()
 
     def keys(self):
@@ -185,7 +187,7 @@ class Calendars(dict):
     def __repr__(self):
         self.info
         return f'{self.__class__.__name__}(home="{self.home}")'
-    
+
     def copy(self):
         with Drawer(self) as db:
             return db

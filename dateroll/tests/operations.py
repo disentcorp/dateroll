@@ -1,5 +1,3 @@
-
-
 # no fol
 
 # sunday

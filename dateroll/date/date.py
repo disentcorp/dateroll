@@ -4,8 +4,9 @@ from datetime import timezone
 
 import dateutil.relativedelta
 from dateutil.parser import parse
-from dateroll.duration.duration import Duration
+
 from dateroll.calendars.calendarmath import calmath
+from dateroll.duration.duration import Duration
 
 DateLike = (datetime.datetime, datetime.date)
 
@@ -48,8 +49,8 @@ class Date(datetime.date):
         """
         am i a business day?
         """
-        return calmath.is_bd(self.date,cals=cals)
-    
+        return calmath.is_bd(self.date, cals=cals)
+
     @property
     def dotw(self):
         """
@@ -90,19 +91,20 @@ class Date(datetime.date):
         return self.isoformat().split("T")[0]
 
     def __add__(self, o):
-        '''
+        """
         add
-        '''
+        """
         # convert string if first
-        if isinstance(o,str):
-            from dateroll.ddh.ddh import ddh         
+        if isinstance(o, str):
+            from dateroll.ddh.ddh import ddh
+
             o = ddh(o)
 
         # apply rules by type
         if isinstance(o, DateLike):
             # date + date
             raise TypeError("unsupported operand type(s) for +: 'Date' and 'Date'")
-        elif isinstance(o,Duration):
+        elif isinstance(o, Duration):
             # date + duration
             # goes to __radd__ of Duration
             return o.__radd__(self)
@@ -110,41 +112,43 @@ class Date(datetime.date):
             # date + int, int -> duration, -> date + duration -> __radd__ duration
             # goes to __radd__ of Duration
             return Duration(d=o).__radd__(self)
-        elif isinstance(o,datetime.timedelta):
+        elif isinstance(o, datetime.timedelta):
             return Date.from_datetime(self.date + o)
-        elif isinstance(o,dateutil.relativedelta.relativedelta):
+        elif isinstance(o, dateutil.relativedelta.relativedelta):
             return Date.from_datetime(self.date + o)
         else:
-            raise TypeError(f"unsupported operand type(s) for +: 'Date' and {type(o).__name__}")
-        
+            raise TypeError(
+                f"unsupported operand type(s) for +: 'Date' and {type(o).__name__}"
+            )
 
     @staticmethod
-    def minus(a,b):
+    def minus(a, b):
         if a.year != b.year:
             if a.month == b.month:
                 if a.day == b.day:
-                    return Duration(y=a.year-b.year)
-                
+                    return Duration(y=a.year - b.year)
+
         elif a.month != b.month and a.day == b.day:
-            return Duration(m=(a.month-b.month))
-    
-        return Duration(days=(a-b).days)    
+            return Duration(m=(a.month - b.month))
+
+        return Duration(days=(a - b).days)
 
     def __sub__(self, o):
-        '''
+        """
         sub
-        '''
+        """
         # convert string if first
-        if isinstance(o,str):
-            from dateroll.ddh.ddh import ddh         
+        if isinstance(o, str):
+            from dateroll.ddh.ddh import ddh
+
             o = ddh(o)
 
         # apply rules by type
         if isinstance(o, DateLike):
             # date - date
-            result =self.minus(self.date,o.date)
-            return result       
-        elif isinstance(o,Duration):
+            result = self.minus(self.date, o.date)
+            return result
+        elif isinstance(o, Duration):
             # date + duration
             # goes to __radd__ of Duration
             return o.__rsub__(self)
@@ -152,29 +156,33 @@ class Date(datetime.date):
             # date + int, int -> duration, -> date + duration -> __radd__ duration
             # goes to __rsub__ of Duration
             return Duration(d=o).__rsub__(self)
-        elif isinstance(o,datetime.timedelta):
+        elif isinstance(o, datetime.timedelta):
             return Date.from_datetime(self.date - o)
-        elif isinstance(o,dateutil.relativedelta.relativedelta):
+        elif isinstance(o, dateutil.relativedelta.relativedelta):
             return Date.from_datetime(self.date - o)
         else:
-            raise TypeError(f"unsupported operand type(s) for : 'Date' and {type(o).__name__}")
-        
-    def __iadd__(self,o):
-        if isinstance(o,str):
-            from dateroll.ddh.ddh import ddh         
+            raise TypeError(
+                f"unsupported operand type(s) for : 'Date' and {type(o).__name__}"
+            )
+
+    def __iadd__(self, o):
+        if isinstance(o, str):
+            from dateroll.ddh.ddh import ddh
+
             o = ddh(o)
         self = self + o
         return self
-    def __isub__(self,o):
-        if isinstance(o,str):
-            from dateroll.ddh.ddh import ddh         
-            o = ddh(o)       
-        if isinstance(o,DateLike):
+
+    def __isub__(self, o):
+        if isinstance(o, str):
+            from dateroll.ddh.ddh import ddh
+
+            o = ddh(o)
+        if isinstance(o, DateLike):
             self = self - (self - o)
         else:
             self = self - o
         return self
-
 
     # what about relative deltas?
 
