@@ -149,7 +149,6 @@ class CalendarMath:
                 try:
                     last_cal = cal.pop(0)
                 except:
-                    print('exc')
                     break
             else:
                 # is good bd
@@ -160,8 +159,8 @@ class CalendarMath:
                     bck[last_idx] = dt
                 last_good = dt
             f = lambda x: f"{x.month}/{x.day}" if x is not None else "?"
-            if (dt.year==2024 and dt.month in (2,3)) or idx < 10 and name=='WE':
-                print(name,f'{idx=},{f(dt)},{f(last_cal)},{last_idx=},{f(last_good)},{gb=}')
+            # if (dt.year==2024 and dt.month in (2,3)) or idx < 10 and name=='WE':
+            #     print(name,f'{idx=},{f(dt)},{f(last_cal)},{last_idx=},{f(last_good)},{gb=}')
 
         return fwd,bck
 
