@@ -43,7 +43,6 @@ class TestDDH(unittest.TestCase):
         c = datetime.datetime(1900,1,1)        
 
         self.assertEqual(b,a.date)
-        self.assertEqual(c,a.dt)
         self.assertEqual(c,a.datetime)
 
     def test_from_dateti(self):
@@ -63,26 +62,40 @@ class TestDDH(unittest.TestCase):
         self.assertEqual(ref,d3)
 
     def test_isBd(self):
+        '''
+        check if day is a business day given a specific calendar
+        '''
         sunday = Date.from_string('3/3/24')
         monday = Date.from_string('3/4/24')
         christmas = Date.from_string('12/25/23')
 
-        self.assertFalse(sunday.isBd(cals='WEuLN'))
-        self.assertTrue(monday.isBd(cals='WEuNYuBR'))
-        self.assertFalse(christmas.isBd(cals='WEuNYuBR'))
+        self.assertFalse(sunday.is_bd(cals='WEuLN'))
+        self.assertTrue(monday.is_bd(cals='WEuNYuBR'))
+        self.assertFalse(christmas.is_bd(cals='WEuNYuBR'))
+
+    def test_conversions_out(self):
+        '''
+        various properties
+        '''
+        d = Date.from_string('3/3/24')
+        # iso
+        self.assertEqual(d.iso,'2024-03-03')
+
+        # xls
+        self.assertEqual(d.xls,45354)
+
+        # unix
+        ts = d.datetime.timestamp()
+        self.assertEqual(d.unix,ts)
+
+        # #dotw
+        dotw = d.dotw
+        self.assertEqual(dotw,'Sun')
         
-    def test_iso(self):
-        pass
-    def test_isoStr(self):
-        pass
-    def test_toExcel(self):
-        pass
-    def test_toUnix(self):
-        pass
-    def test_weekDay(self):
-        pass
-    def test_weekYear(self):
-        pass
+        # woty
+        woty = d.woty
+        self.assertEqual(woty,9)
+
 
     def test___radd__(self):
         pass

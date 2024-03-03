@@ -137,7 +137,6 @@ Date(year, month, day)
 |`.xls`                 | `Date(2024,7,2).xls`| `45475`|
 |`.unix`                | `Date(2024,7,2).unix`| `1719892800`|
 |`.dotw`                | `Date(2024,7,2).dotw`| `"Tue"`|
-|`.wotm`                | `Date(2024,7,2).wotm`| `1`|
 |`.woty`                | `Date(2024,7,2).woty`| `27`|                                                    |
 |`.is_bd(calendar)`¹    | `Date(2024,7,2).is_bd("NY")`|`False`|
 |`datetime.date.*`|see [datetime](https://docs.python.org/3/library/datetime.html#datetime.date)|see [datetime](https://docs.python.org/3/library/datetime.html#datetime.date)

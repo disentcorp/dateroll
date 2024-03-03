@@ -33,13 +33,25 @@ class Date(datetime.date):
     def __repr__(self):
         return f'{self.__class__.__name__}("{self.strftime("%Y-%m-%d")}")'
 
-    def isBd(self, cals=None):
+    def __cmp__(self, b):
+        return self.datetime == b
+
+    @property
+    def datetime(self):
+        return datetime.datetime(self.year, self.month, self.day)
+
+    @property
+    def date(self):
+        return datetime.date(self.year, self.month, self.day)
+
+    def is_bd(self, cals=None):
         """
         am i a business day?
         """
         return calmath.is_bd(self.date,cals=cals)
-
-    def weekDay(self):
+    
+    @property
+    def dotw(self):
         """
         which day of the week am i
         """
@@ -55,50 +67,27 @@ class Date(datetime.date):
         day_of_week = dt_mapping[self.weekday()]
         return day_of_week
 
-    def weekYear(self):
+    @property
+    def woty(self):
         """
         week of the year, iso 8601
         """
         return self.isocalendar()[1]
 
-    def toExcel(self):
+    @property
+    def xls(self):
         offset = 693594
         n = self.toordinal()
         rs = n - offset
         return rs
 
-    def toUnix(self):
-        utc_time = datetime.datetime(
-            self.year, self.month, self.day, tzinfo=timezone.utc
-        )
-        utc_timestamp = utc_time.timestamp()
-        return utc_timestamp
+    @property
+    def unix(self):
+        return self.datetime.timestamp()
 
     @property
     def iso(self):
         return self.isoformat().split("T")[0]
-
-    def isoStr(self):
-        return self.datetime.isoformat(timespec="minutes")
-
-    def __cmp__(self, b):
-        return self.datetime == b
-
-    @property
-    def datetime(self):
-        return datetime.datetime(self.year, self.month, self.day)
-
-    @property
-    def date(self):
-        return datetime.date(self.year, self.month, self.day)
-
-    @property
-    def dt(self):
-        return datetime.datetime(self.year, self.month, self.day)
-
-    """
-    need to test add,sub,iadd,isub,radd,rsub
-    """
 
     def __sub__(self, o):
         if isinstance(o, DateLike):
