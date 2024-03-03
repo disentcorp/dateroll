@@ -5,6 +5,7 @@ from datetime import timezone
 import dateutil.relativedelta
 from dateutil.parser import parse
 from dateroll.duration.duration import Duration
+from dateroll.calendars.calendarmath import calmath
 
 DateLike = (datetime.datetime, datetime.date)
 
@@ -36,7 +37,7 @@ class Date(datetime.date):
         """
         am i a business day?
         """
-        raise NotImplementedError
+        return calmath.is_bd(self.date,cals=cals)
 
     def weekDay(self):
         """

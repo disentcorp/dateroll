@@ -205,9 +205,16 @@ class CalendarMath:
     def is_bd(self, d, cals):
         """am i business day?"""
         self.recompile_if_mutated
-        cal_name = self.union_swap(cals)
-        CAL = self.fwd
-        return d in CAL
+
+        ''' cals can come in as str or list'''
+        cals = CalendarMath.reverse_calstring(cals)
+
+        for name in cals:
+            cal = self.cals[name]
+            if d in cal:
+                return False
+            
+        return True
 
     def diff(self, t1, t2, cals, ie=DEFAULT_IE):
         """
@@ -241,6 +248,26 @@ class CalendarMath:
 
         cal_name = self.union_swap(cals)
         return d
+
+    @staticmethod
+    def reverse_calstring(cals):
+        '''
+        cals can be:
+            'WE'
+            ['WE']
+            'WEuNY'
+            ['WE','NY']
+
+        always return list of individuals (decompose unions)
+        '''
+
+        if isinstance(cals,str):
+            if 'u' in cals:
+                cals = cals.split('u')
+            else:
+                cals = [cals]
+        return cals
+
 
     def union_swap(self, cals):
         """
