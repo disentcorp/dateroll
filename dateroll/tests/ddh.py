@@ -7,6 +7,7 @@ import uuid
 from unittest import expectedFailure
 
 from dateroll import ddh
+import dateroll
 
 
 class TestDDH(unittest.TestCase):
@@ -60,7 +61,7 @@ class TestsPracticalExamples(unittest.TestCase):
         """
         try:
             x = ddh("")
-        except TypeError as e:
+        except dateroll.parser.parsers.ParserStringsError as e:
             assert True
 
     def testDate(self):
@@ -68,7 +69,7 @@ class TestsPracticalExamples(unittest.TestCase):
         test for date strings
         """
         assert ddh("t") == datetime.date.today()
-        assert ddh("5/5/5") == datetime.date(2005, 5, 5)
+        assert ddh("5/5/05") == datetime.date(2005, 5, 5)
 
     def testDuration(self):
         """

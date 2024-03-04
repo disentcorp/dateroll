@@ -3,3 +3,44 @@
     Summary:
         # 1 Fixed few typos in DOCS
         # 2 Still reading and learning Docs and calendars, calendarmath
+
+########## batu 2024/3/4 9:00 AM EST
+
+    Name                                 Stmts   Miss  Cover   Missing
+------------------------------------------------------------------
+dateroll/__init__.py                     4      0   100%
+dateroll/calendars/__init__.py           0      0   100%
+dateroll/calendars/calendarmath.py     199     92    54%   79-83, 118-119, 136, 172-196, 202, 222-227, 233-237, 244-249, 267, 277-290, 297-319, 325, 331-359
+dateroll/calendars/calendars.py        148      0   100%
+dateroll/date/__init__.py                0      0   100%
+dateroll/date/date.py                  107      8    93%   35, 38, 120, 127-129, 134, 164
+dateroll/ddh/__init__.py                 0      0   100%
+dateroll/ddh/ddh.py                     20      3    85%   29, 38-39
+dateroll/duration/__init__.py            0      0   100%
+dateroll/duration/duration.py          250    133    47%   129, 135-153, 158, 162-167, 173-179, 182-187, 209, 213, 217, 221, 229, 241-244, 251, 255, 269-278, 284-294, 300-301, 328, 344-361, 365-368, 383-445, 449, 458, 467-468, 473, 478, 493, 497, 501, 505, 508-509, 512, 521-529
+dateroll/parser/__init__.py              0      0   100%
+dateroll/parser/parser.py               65     23    65%   102, 105, 129, 143, 152-183, 187
+dateroll/parser/parsers.py              98     23    77%   26-31, 36, 54, 59-66, 92-95, 123, 128, 190, 193, 202, 207
+dateroll/parser/patterns.py             37      0   100%
+dateroll/schedule/__init__.py            0      0   100%
+dateroll/schedule/schedule.py            1      0   100%
+dateroll/tests/__init__.py               0      0   100%
+dateroll/tests/calendarmath.py          25      1    96%   142
+dateroll/tests/calendars.py            145      1    99%   252
+dateroll/tests/date.py                 126      3    98%   138, 149, 197
+dateroll/tests/ddh.py                   33      8    76%   62-65, 71-72, 83, 87
+dateroll/tests/duration.py               8      1    88%   11
+dateroll/tests/operations.py             8      1    88%   48
+dateroll/tests/parser.py                 8      1    88%   11
+dateroll/tests/parsers.py                8      1    88%   11
+dateroll/tests/patterns.py              11      1    91%   17
+dateroll/tests/schedule.py               8      1    88%   11
+dateroll/tests/suite.py                 28      0   100%
+dateroll/utils.py                       17      0   100%
+------------------------------------------------------------------
+TOTAL                                 1354    301    78%
+
+    Summary:
+        # 1 Learning the code (in progress)
+        # 2 Added TestSuite in suite.py and run coverage.py
+        # 3 Made calendar unittests 100%

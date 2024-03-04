@@ -9,7 +9,7 @@ from unittest import expectedFailure
 from dateroll.calendars.calendarmath import CalendarMath
 
 
-class TestStringMethods(unittest.TestCase):
+class TestStringMathMethods(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.filename_base = (

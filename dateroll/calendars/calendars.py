@@ -6,6 +6,7 @@ import os
 import pathlib
 import pickle
 import time
+import code
 from random import choice
 
 from dateroll.utils import safe_open
@@ -38,6 +39,7 @@ def load_sample_data():
 
 class Drawer:
     def __init__(self, cals):
+        # print(f'in cals----------- {cals}')
         self.path = pathlib.Path(cals.home)
         self.lock = self.path.with_suffix(".lock")
         self.cals = cals
@@ -67,6 +69,7 @@ class Drawer:
                     pickle.dump(self.cals.db, f)
                 self.cals.write = False
         else:
+
             return True
 
 
@@ -84,11 +87,13 @@ class Calendars(dict):
         with Drawer(self) as db:
             pass
 
-    def __contains__(self, k):
-        return k in self.keys()
+    # def __contains__(self, k):
+    #     return k in self.keys()
 
     def keys(self):
-        with Drawer(self.home) as db:
+        # with Drawer(self.home) as db:
+        #     return list(db.keys())
+        with Drawer(self) as db:
             return list(db.keys())
 
     @property
@@ -129,26 +134,28 @@ class Calendars(dict):
 
         processed = []
         for i in v:
+            
             if isinstance(i, datetime.datetime):
                 dt = datetime.date(i.year, i.month, i.day)
                 processed.append(dt)
             elif isinstance(i, datetime.date):
                 dt = i
                 processed.append(dt)
-            elif hasattr(type(i), "__class__") and type(i).__class__.__name__ == "Date":
-                dt = dt.date
-                processed.append(dt)
+            # elif hasattr(type(i), "__class__") and i.__class__.__name__ == "Date":
+            #     code.interact(local=locals())
+            #     dt = i.date
+            #     processed.append(dt)
             else:
                 raise Exception(
                     f"All cal dates must be of dateroll.Date or datetime.date{{time}} (got {type(i).__name__})"
                 )
 
         self.write = True
+        if k in self.db.keys():
+            raise Exception(
+                f"{k} exists already, delete first.if you want to replace."
+            )
         with Drawer(self) as db:
-            if k in db.keys():
-                raise Exception(
-                    f"{k} exists already, delete first.if you want to replace."
-                )
             s = list(sorted(list(set(processed))))
             db[k] = s
 
@@ -180,7 +187,7 @@ class Calendars(dict):
         return result
 
     def clear(self):
-        self.wite = True
+        self.write = True
         with Drawer(self) as db:
             db.clear()
 
@@ -200,6 +207,7 @@ class Calendars(dict):
             print(pattern("name", "#dates", "min date", "max date"))
             print(pattern("-" * 6, "-" * 8, "-" * 12, "-" * 12))
             for i in db.keys():
+                
                 l = db.get(i)
                 if len(l) > 0:
                     n = len(l)
@@ -209,6 +217,3 @@ class Calendars(dict):
                     n, mn, mx = 0, None, None
                 print(pattern(str(i), str(n), str(mn), str(mx)))
 
-
-if __name__ == "__main__":
-    cals = Calendars()

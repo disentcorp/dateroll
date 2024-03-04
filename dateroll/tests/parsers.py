@@ -6,3 +6,6 @@ class TestParsers(unittest.TestCase):
 
     @classmethod
     def tearDownClass(self): ...
+
+if __name__=='__main__':
+    unittest.main()
