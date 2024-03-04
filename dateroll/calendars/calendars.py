@@ -1,12 +1,12 @@
-import time
 import datetime
+import fcntl
 import glob
 import hashlib
 import os
 import pathlib
 import pickle
+import time
 from random import choice
-import fcntl
 
 from dateroll.utils import safe_open
 
@@ -18,7 +18,8 @@ MODULE_LOCATION.mkdir(exist_ok=True)
 DATA_LOCATION_FILE = MODULE_LOCATION / "holiday_lists"
 SAMPLE_DATA_PATH = ROOT_DIR / "dateroll" / "sampledata" / "*.csv"
 
-SLEEP_TIMES = [25/1000,50/1000,100/1000,300/1000]
+SLEEP_TIMES = [25 / 1000, 50 / 1000, 100 / 1000, 300 / 1000]
+
 
 def load_sample_data():
     files = glob.glob(str(SAMPLE_DATA_PATH))
@@ -29,44 +30,62 @@ def load_sample_data():
             ls = f.readlines()
             ld = []
             for i in ls:
-                dt = datetime.date(int(i[0:4]),int(i[5:7]),int(i[8:10]))
+                dt = datetime.date(int(i[0:4]), int(i[5:7]), int(i[8:10]))
                 ld.append(dt)
             data[name] = ld
     return data
 
 
 class Drawer:
-    def __init__(self, filename):
-        self.path = pathlib.Path(filename)
-        self.lock = self.path.with_suffix('.lock')
+    def __init__(self, cals):
+        self.path = pathlib.Path(cals.home)
+        self.lock = self.path.with_suffix(".lock")
+        self.cals = cals
 
     def __enter__(self):
+        if self.cals.hash == self.cals.db_hash:
+            return self.cals.db
+
         if self.path.exists():
             with safe_open(self.path, "rb") as f:
                 self.data = pickle.load(f)
+                self.cals.db_hash = self.cals.hash
+                self.cals.db = self.data
         else:
-            print(f'[dateroll] no saved calendars, loading sample data')
+            print(f"[dateroll] no saved calendars, loading sample data")
             data = load_sample_data()
-            self.data = data
+            self.cals.db = data
             with safe_open(self.path, "wb") as f:
-                pickle.dump(self.data, f)
-        return self.data
+                pickle.dump(self.cals.db, f)
+
+        return self.cals.db
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         if exc_type is None:
-            with safe_open(self.path, "wb") as f:
-                pickle.dump(self.data, f)
-            
+            if self.cals.write:
+                with safe_open(self.path, "wb") as f:
+                    pickle.dump(self.cals.db, f)
+                self.cals.write = False
         else:
             return True
 
 
-class Calendars:
-    def __init__(self, home=DATA_LOCATION_FILE):
-        self.home = str(home)
+class Calendars(dict):
+    """
+    dict-like dictionary of calendars
+    """
 
-        with Drawer(self.home) as db:
+    def __init__(self, home=DATA_LOCATION_FILE):
+        self.home = str(home)  # on disk location
+        self.db_hash = None  # initial hash
+        self.db = {}  # cache
+        self.write = False  # sentinel to invalidate cache
+
+        with Drawer(self) as db:
             pass
+
+    def __contains__(self, k):
+        return k in self.keys()
 
     def keys(self):
         with Drawer(self.home) as db:
@@ -77,15 +96,16 @@ class Calendars:
         """
         generate hash
         """
-        filenames = glob.glob(f"{self.home}*")
+        result = -1
+        filenames = glob.glob(f"{self.home}")
         if len(filenames) == 1:
             filename = filenames[0]
-        else:
-            return None
-        with safe_open(filename, "rb") as f:
-            return hashlib.md5(
-                f.read(),
-            ).hexdigest()
+            with safe_open(filename, "rb") as f:
+                result = hashlib.md5(
+                    f.read(),
+                ).hexdigest()
+
+        return result
 
     def __setitem__(self, k, v):
         from dateroll.calendars.calendarmath import \
@@ -123,7 +143,8 @@ class Calendars:
                     f"All cal dates must be of dateroll.Date or datetime.date{{time}} (got {type(i).__name__})"
                 )
 
-        with Drawer(self.home) as db:
+        self.write = True
+        with Drawer(self) as db:
             if k in db.keys():
                 raise Exception(
                     f"{k} exists already, delete first.if you want to replace."
@@ -139,38 +160,42 @@ class Calendars:
         allows for dot notation
         """
         if k in ("hash", "home"):
-            return super().__getattribute__(k)
+            result = super().__getattribute__(k)
         else:
-            return self.get(k)
+            result = self.get(k)
+        return result
 
     def __contains__(self, k):
-        with Drawer(self.home) as db:
+        with Drawer(self) as db:
             return str(k) in db
 
     def __delitem__(self, k):
-        with Drawer(self.home) as db:
+        self.write = True
+        with Drawer(self) as db:
             del db[k]
 
     def get(self, k):
-        with Drawer(self.home) as db:
-            return db[k]
+        with Drawer(self) as db:
+            result = db[k]
+        return result
 
     def clear(self):
-        with Drawer(self.home) as db:
+        self.wite = True
+        with Drawer(self) as db:
             db.clear()
 
     def __repr__(self):
         self.info
         return f'{self.__class__.__name__}(home="{self.home}")'
-    
+
     def copy(self):
-        with Drawer(self.home) as db:
+        with Drawer(self) as db:
             return db
 
     @property
     def info(self):
         pattern = lambda a, b, c, d: f"{a:6}|{b:>8}|{c:12}|{d:12}"
-        with Drawer(self.home) as db:
+        with Drawer(self) as db:
             stats = []
             print(pattern("name", "#dates", "min date", "max date"))
             print(pattern("-" * 6, "-" * 8, "-" * 12, "-" * 12))

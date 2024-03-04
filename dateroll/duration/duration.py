@@ -189,6 +189,61 @@ class Duration(dateutil.relativedelta.relativedelta):
                 self.roll = None
 
     @property
+    def years(self):
+        return self.y
+
+    @property
+    def months(self):
+        return self.m
+
+    @property
+    def weeks(self):
+        return self.w
+
+    @property
+    def days(self):
+        return self.d
+
+    @property
+    def year(self):
+        return self.y
+
+    @property
+    def month(self):
+        return self.m
+
+    @property
+    def week(self):
+        return self.w
+
+    @property
+    def day(self):
+        return self.d
+
+    def __eq__(self, o):
+        """
+        equality
+        """
+        # convert td to rd
+        if isinstance(o, datetime.timedelta):
+            o = dateutil.relativedelta.relativedelta(o.days)
+        elif isinstance(o, dateutil.relativedelta.relativedelta):
+            if self.years == o.years:
+                if self.months == o.months:
+                    if self.weeks == o.weeks:
+                        if self.days == o.days:
+                            if isinstance(o, Duration):
+                                if self.bd == o.bd:
+                                    if self.cals == o.cals:
+                                        if self.roll == o.roll:
+                                            return True
+                            else:
+                                return True
+            return False
+        else:
+            return False
+
+    @property
     def delta(self):
         """ """
         rd_args = {}
@@ -316,7 +371,7 @@ class Duration(dateutil.relativedelta.relativedelta):
         """
         c = a + b
         """
-        from dateroll.date.date import Date,DateLike
+        from dateroll.date.date import Date, DateLike
 
         a = self
 
@@ -396,7 +451,7 @@ class Duration(dateutil.relativedelta.relativedelta):
 
         elif isinstance(b, DateLike):
             # adjust b for Non-bd's FIRST
-            b_moved = b + self.delta * direction
+            b_moved = b.date + self.delta * direction
 
             # # if you have bd's, then use bd adj and roll:
             if self.bd or self.cals or self.roll:
@@ -405,10 +460,11 @@ class Duration(dateutil.relativedelta.relativedelta):
                 shift_adj = b_moved
 
             # convert back to dateroll.Date
-            return Date.from_datetime(shift_adj)
+            dt = Date.from_datetime(shift_adj)
+            return dt
 
         else:
-            print(type(b),'!!!!!!!!!!!!!!!!!!!!')
+            print(type(b), "!!!!!!!!!!!!!!!!!!!!")
             raise NotImplementedError
 
     @property
@@ -425,33 +481,33 @@ class Duration(dateutil.relativedelta.relativedelta):
     # m, ...
 
     def __radd__(self, x):
-        print(type(x),'radd')
+        # print(type(x), "radd")
         return self.math(x, 1)
 
     def __rsub__(self, x):
-        print(type(x),'rsub')
+        # print(type(x), "rsub")
         return self.math(x, -1)
 
     def __add__(self, x):
-        print(type(x),'add')
+        # print(type(x), "add")
         return self.math(x, 1)
 
     def __sub__(self, x):
-        print(type(x),'sub')
+        # print(type(x), "sub")
         return self.math(x, -1)
 
     def __iadd__(self, x):
-        print(type(x),'iadd')
+        # print(type(x), "iadd")
         return self.math(x, 1)
 
     def __isub__(self, x):
-        print(type(x),'isub')
+        # print(type(x), "isub")
         return self.math(x, -1)
-    
+
     def __neg__(self):
-        raise NotImplementedError('need unary -negative on duration')
+        raise NotImplementedError("need unary -negative on duration")
         return self
-    
+
     def __pos__(self):
         return self
 

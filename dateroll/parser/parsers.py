@@ -7,9 +7,9 @@ from dateroll.parser import patterns
 from dateroll.schedule.schedule import Schedule
 
 DEFAULT_CONVENTION = "american"
-TODAYSTRINGVALUES = ["today",'t0','t']
+TODAYSTRINGVALUES = ["today", "t0", "t"]
 
-AtoZ = tuple(chr(i) for i in range(65,65+26))
+AtoZ = tuple(chr(i) for i in range(65, 65 + 26))
 
 
 class ParserStringsError(Exception): ...
@@ -178,26 +178,26 @@ def parseDateMathString(s, things):
     Looks for any linear formula with plus or minus
     Uses substitution and evaluation. Safe because wouldn't get here if *things were not validated, and regex didn't match.
     """
-    s = s.replace(" ", "").replace("++", "+").replace('+-','-').replace('-+','-')
-    if s=='+X':
+    s = s.replace(" ", "").replace("++", "+").replace("+-", "-").replace("-+", "-")
+    if s == "+X":
         s = "X"
 
     math_matches = re.match(patterns.MATH, s)
     if math_matches:
         n1 = len(things)
-        n2 = s.count('X')
+        n2 = s.count("X")
         if n1 != n2:
-            raise Exception(f'Unmatched math ({s})')
-               
+            raise Exception(f"Unmatched math ({s})")
+
         if n1 > len(AtoZ):
             raise ParserStringsError("Cannot recognize as date math", s)
-        
-        for idx in range(n2):
-            s = s.replace('X',AtoZ[idx],1)
 
-        gs = {k:v for k,v in zip(AtoZ[:len(things)],things)}
-        total = eval(s,gs)
-        
+        for idx in range(n2):
+            s = s.replace("X", AtoZ[idx], 1)
+
+        gs = {k: v for k, v in zip(AtoZ[: len(things)], things)}
+        total = eval(s, gs)
+
         return total
     raise ParserStringsError("Cannot recognize as date math", s)
 

@@ -1,11 +1,11 @@
-import time
 import datetime
 import pathlib
 import pickle
+import time
 import warnings
 
-from dateroll.utils import safe_open
 from dateroll.calendars.calendars import Calendars
+from dateroll.utils import safe_open
 
 PARENT_LOCATION = pathlib.Path.home() / ".dateroll/"
 PARENT_LOCATION.mkdir(exist_ok=True)
@@ -89,14 +89,14 @@ class CalendarMath:
 
     def compile_all(self):
         print("[dateroll] compiling calendars")
-        d=self.cals.copy()
-        for k,v in d.items():
-            if k=='WE':
+        d = self.cals.copy()
+        for k, v in d.items():
+            if k == "WE":
                 dates = v
-                self.fwd[k], self.bck[k] = self.gen_dicts(k,v,self.ALL)
+                self.fwd[k], self.bck[k] = self.gen_dicts(k, v, self.ALL)
 
         self.save_cache()
-        self.hash = self.cals.hash #8 ms
+        self.hash = self.cals.hash  # 8 ms
 
     @property
     def has_mutated(self):
@@ -141,7 +141,7 @@ class CalendarMath:
         for idx, dt in enumerate(sorted(all)):
             goodbad = None
             if dt == last_cal:
-                gb = 'holiday'
+                gb = "holiday"
                 # is holiday
                 fwd[dt] = last_idx
                 if last_idx not in bck:
@@ -152,17 +152,17 @@ class CalendarMath:
                     break
             else:
                 # is good bd
-                gb = 'working day'
+                gb = "working day"
                 last_idx += 1
                 fwd[dt] = last_idx
                 if last_idx not in bck:
                     bck[last_idx] = dt
                 last_good = dt
             f = lambda x: f"{x.month}/{x.day}" if x is not None else "?"
-            if (dt.year==2024 and dt.month in (2,3)) or idx < 10 and name=='WE':
-                print(name,f'{idx=},{f(dt)},{f(last_cal)},{last_idx=},{f(last_good)},{gb=}')
+            # if (dt.year==2024 and dt.month in (2,3)) or idx < 10 and name=='WE':
+            #     print(name,f'{idx=},{f(dt)},{f(last_cal)},{last_idx=},{f(last_good)},{gb=}')
 
-        return fwd,bck
+        return fwd, bck
 
     def add_bd(self, d, n, cals, mod=False):
         """
@@ -204,9 +204,16 @@ class CalendarMath:
     def is_bd(self, d, cals):
         """am i business day?"""
         self.recompile_if_mutated
-        cal_name = self.union_swap(cals)
-        CAL = self.fwd
-        return d in CAL
+
+        """ cals can come in as str or list"""
+        cals = CalendarMath.reverse_calstring(cals)
+
+        for name in cals:
+            cal = self.cals[name]
+            if d in cal:
+                return False
+
+        return True
 
     def diff(self, t1, t2, cals, ie=DEFAULT_IE):
         """
@@ -225,7 +232,7 @@ class CalendarMath:
         """
         if mod:
             raise NotImplementedError("next_bd")
-        warnings.warn('next bd not implemented yet')
+        warnings.warn("next bd not implemented yet")
         cal_name = self.union_swap(cals)
         return d
 
@@ -236,10 +243,29 @@ class CalendarMath:
 
         if mod:
             raise NotImplementedError("prev_bd")
-        warnings.warn('next bd not implemented yet')
+        warnings.warn("next bd not implemented yet")
 
         cal_name = self.union_swap(cals)
         return d
+
+    @staticmethod
+    def reverse_calstring(cals):
+        """
+        cals can be:
+            'WE'
+            ['WE']
+            'WEuNY'
+            ['WE','NY']
+
+        always return list of individuals (decompose unions)
+        """
+
+        if isinstance(cals, str):
+            if "u" in cals:
+                cals = cals.split("u")
+            else:
+                cals = [cals]
+        return cals
 
     def union_swap(self, cals):
         """
@@ -249,12 +275,12 @@ class CalendarMath:
         presumes unions are sorted
         """
         if cals is None:
-            cals = ['WE']
+            cals = ["WE"]
         if isinstance(cals, str):
             return cals
         elif isinstance(cals, (tuple, list, set)):
             cals = sorted(cals)
-            union_name = 'u'.join(cals)
+            union_name = "u".join(cals)
             if cals in self.unions:
                 return union_name
             else:
@@ -262,7 +288,7 @@ class CalendarMath:
                 return union_name
         else:
             raise TypeError("Calendars must be a valid calendar name or list of names")
-           
+
     def union(self, cals):
         """
         validate cals passed is in correct format
@@ -279,15 +305,15 @@ class CalendarMath:
                 if not isinstance(cal, str):
                     raise TypeError(f"Calendar name must be string")
                 if cal not in self.cals:
-                    raise KeyError(
-                        f"There is no calendar {cal}"
-                    )
+                    raise KeyError(f"There is no calendar {cal}")
                 union += set(self.cals[cal])
             union_name = "u".join(cals)
             self.unions.append(sorted(cals))
             dates = list(union)
             print(f"[dateroll] compiling new union [{union_name}]")
-            self.fwd[union_name], self.bck[union_name] = self.gen_dicts(union_name, dates, self.ALL)
+            self.fwd[union_name], self.bck[union_name] = self.gen_dicts(
+                union_name, dates, self.ALL
+            )
             self.save_cache()
         else:
             raise TypeError("Union must be tuple or list of cal names")
