@@ -3,6 +3,8 @@ import pathlib
 import pickle
 import time
 import warnings
+import code
+import numpy as np
 
 from dateroll.calendars.calendars import Calendars
 from dateroll.utils import safe_open
@@ -115,8 +117,12 @@ class CalendarMath:
         originally i checked "recompile_if_mutated" before calendar ops, but adds 89ms to do the unix checksome.
         This is a faster check for the existence of the data.
         """
+        # print('in backend0')
+        # code.interact(local=dict(globals(),**locals()))
         if not self.home.exists():
-            self.recompile_if_mutated()
+            # print('in backend')
+            # code.interact(local=dict(globals(),**locals()))
+            self.recompile_if_mutated
 
     @staticmethod
     def gen_dicts(name, dates, all):
@@ -127,44 +133,51 @@ class CalendarMath:
         prev[date]->prev bus date
         next[date]->next bus date
         """
+        # remove duplicates from dates
+        # make sure dates starts after all date starting date, TODO cut it when generate sample data, not here
+        sorted_all = sorted(all)
+        dates = [t for t in dates if t>=sorted_all[0]]
+        dates = set(dates)
         cal = sorted(dates)
 
         fwd = {}
         bck = {}
 
         if len(cal) == 0:
-            return
+            return fwd, bck
 
         last_cal = cal.pop(0)
         last_idx = 0
-        last_good = None
-        for idx, dt in enumerate(sorted(all)):
-            goodbad = None
+        # last_good = None
+        for idx, dt in enumerate(sorted_all):
+            # goodbad = None
             if dt == last_cal:
-                gb = "holiday"
+                # gb = "holiday"
                 # is holiday
                 fwd[dt] = last_idx
                 if last_idx not in bck:
                     bck[last_idx] = dt
+                # bck[last_idx] = dt
                 try:
                     last_cal = cal.pop(0)
                 except:
                     break
             else:
                 # is good bd
-                gb = "working day"
+                # gb = "working day"
                 last_idx += 1
                 fwd[dt] = last_idx
                 if last_idx not in bck:
                     bck[last_idx] = dt
-                last_good = dt
-            f = lambda x: f"{x.month}/{x.day}" if x is not None else "?"
+                # bck[last_idx] = dt
+                # last_good = dt
+            # f = lambda x: f"{x.month}/{x.day}" if x is not None else "?"
             # if (dt.year==2024 and dt.month in (2,3)) or idx < 10 and name=='WE':
             #     print(name,f'{idx=},{f(dt)},{f(last_cal)},{last_idx=},{f(last_good)},{gb=}')
 
         return fwd, bck
 
-    def add_bd(self, d, n, cals, mod=False):
+    def add_bd(self, d, n, cals, mod=False, sign=1):
         """
         add's n business days on cal to d
         careful, if n==0, B should auto backtrack, need to verify
@@ -187,21 +200,29 @@ class CalendarMath:
             pass
         else:
             raise TypeError(f"Date must be date (got {type(d).__name__})")
-
+        # when it is holiday n at least 1
+        # print('herrr')
+        # code.interact(local=dict(globals(),**locals()))
+        n = sign * n
+        if not self.is_bd(d,cals) and n==0:
+            n = 1 if sign>0 else 0
+            
         bd_index = A[d]
         new_bd_index = bd_index + n
         new_dt = B[new_bd_index]
 
-        # import code;code.interact(local=locals())
+        # code.interact(local=locals())
         return new_dt
 
     def sub_bd(self, d, n, cal, mod=False):
         """
         subtract (opposed of add)
         """
-        return self.add_bd(self, d, -1 * n, cal, mod=mod)
+        if n<0:
+            raise ValueError(f'n needs to be positive number')
+        return self.add_bd(d, n, cal, mod=mod, sign=-1)
 
-    def is_bd(self, d, cals):
+    def is_bd(self, d, cals='WE'):
         """am i business day?"""
         self.recompile_if_mutated
 
@@ -230,23 +251,23 @@ class CalendarMath:
         """
         the next business date from d on calendars cals
         """
-        if mod:
-            raise NotImplementedError("next_bd")
-        warnings.warn("next bd not implemented yet")
-        cal_name = self.union_swap(cals)
-        return d
+        # if mod:
+        #     raise NotImplementedError("next_bd")
+        # warnings.warn("next bd not implemented yet")
+        # cal_name = self.union_swap(cals)
+        # return d
 
     def prev_bd(self, d, cals, mod=False):
         """
         the previous business date from d on calendars cals
         """
 
-        if mod:
-            raise NotImplementedError("prev_bd")
-        warnings.warn("next bd not implemented yet")
+        # if mod:
+        #     raise NotImplementedError("prev_bd")
+        # warnings.warn("next bd not implemented yet")
 
-        cal_name = self.union_swap(cals)
-        return d
+        # cal_name = self.union_swap(cals)
+        # return d
 
     @staticmethod
     def reverse_calstring(cals):
@@ -270,13 +291,17 @@ class CalendarMath:
     def union_swap(self, cals):
         """
         check calendar list or str is valid
-        and if not copmiled (in self.unions) call self.union to compile the union
+        and if not compiled (in self.unions) call self.union to compile the union
 
         presumes unions are sorted
         """
         if cals is None:
             cals = ["WE"]
         if isinstance(cals, str):
+            if 'u' in cals:
+                cals = sorted(cals.split('u'))
+                self.union(cals)
+                cals = 'u'.join(cals)
             return cals
         elif isinstance(cals, (tuple, list, set)):
             cals = sorted(cals)
@@ -307,7 +332,7 @@ class CalendarMath:
                 if cal not in self.cals:
                     raise KeyError(f"There is no calendar {cal}")
                 union += set(self.cals[cal])
-            union_name = "u".join(cals)
+            union_name = "u".join(sorted(cals))
             self.unions.append(sorted(cals))
             dates = list(union)
             print(f"[dateroll] compiling new union [{union_name}]")
@@ -327,33 +352,33 @@ class CalendarMath:
 
 calmath = CalendarMath()
 
-if __name__ == "__main__":
-    calmath = CalendarMath()
+# if __name__ == "__main__":
+#     calmath = CalendarMath()
 
-    import datetime
-    import time
+#     import datetime
+#     import time
 
-    from dateutil.relativedelta import relativedelta as rd
+#     from dateutil.relativedelta import relativedelta as rd
 
-    t = datetime.date(2024, 2, 25)
+#     t = datetime.date(2024, 2, 25)
 
-    a = time.time()
+#     a = time.time()
 
-    print(t)
-    # calmath.add_bd(t,1,cals=['WE','NY'])
+#     print(t)
+#     # calmath.add_bd(t,1,cals=['WE','NY'])
 
-    t2 = calmath.add_bd(t, 1, cals=["WE"])
-    print(t2)
+#     t2 = calmath.add_bd(t, 1, cals=["WE"])
+#     print(t2)
 
-    t2 = calmath.add_bd(t, 100, cals=["WE"])
-    print(t2)
-    print(calmath.diff(t, t2, cals=["WE"]))
-    t2 = t + rd(days=31)
-    print(calmath.diff(t, t2, cals=["WE"]))
+#     t2 = calmath.add_bd(t, 100, cals=["WE"])
+#     print(t2)
+#     print(calmath.diff(t, t2, cals=["WE"]))
+#     t2 = t + rd(days=31)
+#     print(calmath.diff(t, t2, cals=["WE"]))
 
-    b = time.time()
-    print((b - a) * 1000, "ms")
+#     b = time.time()
+#     print((b - a) * 1000, "ms")
 
-    import code
+#     import code
 
-    code.interact(local=locals())
+#     code.interact(local=locals())
