@@ -82,3 +82,57 @@ TOTAL                                 1408    223    84%
     Summary:
         # 1 Fixed some bugs in calendarmath
         # 2 Still in the progress of calendarmath where the unittest is 92%
+
+
+
+
+########## anthony 3/5/24 9AM
+
+Code review:
+
+
+dateroll/calendars/calendarmath.py:
+
+120-125:
+
+# print('in backend0')
+# code.interact(local=dict(globals(),**locals()))
+if not self.home.exists():
+    # print('in backend')
+    # code.interact(local=dict(globals(),**locals()))
+same for 1774-176
+
+I understand you add prints and test /debugging comments, code, interact, but WHEN do we remove them?
+we cannot allow commented out print and code.interact to be on github, it add clutter and will confuse people trying to udnerstand the code
+
+A) before each each commit? , B) before a merge? C) other?
+
+
+
+sorted_all = sorted(all)
+
+1 - Can you sort ALL in calendars.py, so it doesn't need to be sorted here?
+
+dates = [t for t in dates if t>=sorted_all[0]]
+^ this does nothing (items in a sorted list are >= the first value)
+
+
+180 def add_bd(self, d, n, cals, mod=False, sign=1):
+
+why did you add a new kwarg for sign? can't n be negative?
+
+
+ef is_bd(self, d, cals='WE'):
+
+You added default cals = 'WE', i understand why you did it, but i it seems "unclean", maybe we keep global for "default calendars"?
+
+
+you forgot to uncomment these lines in is_bd,
+
+# cal_name = self.union_swap(cals)
+# return d
+
+^^ same, no return in prev_bd... is this because it is a work in progress?
+
+
+Question for union_swap, i think we need to document / rewrite this,   logic is non-obivous, let's discuss
