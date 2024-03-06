@@ -4,6 +4,7 @@ import dateutil
 import dateutil.relativedelta
 
 from dateroll.calendars.calendarmath import calmath
+import dateroll.parser.parsers as parsers
 
 cals = calmath.cals
 
@@ -131,28 +132,9 @@ class Duration(dateutil.relativedelta.relativedelta):
         self.d = addNones(d, D)
         self.bd = addNones(bd, BD)
 
-        if cals is not None:
-            _cals = set()
-            if isinstance(cals, str):
-                cals = [cals]
-            elif hasattr(cals, "__iter__"):
-                for cal in cals:
-                    if isinstance(cal, str):
-                        if len(cal) == 2:
-                            _cals |= {
-                                cal,
-                            }
-                        else:
-                            raise Exception(
-                                f"Calendars must be 2-letter strings (not {cal})"
-                            )
-                    else:
-                        raise Exception(
-                            f"Calendars must be strings (not {type(cal).__name__})"
-                        )
-            self.cals = _cals
-        else:
-            self.cals = None
+        # self._validated_periodunits(bd) ## need to pass all stuff above!!! TBD
+        self._validate_cals(cals)
+        # self._validated_roll(roll)
 
         if self.bd is None and cals and len(cals) > 0:
             self.bd = 0
@@ -187,6 +169,46 @@ class Duration(dateutil.relativedelta.relativedelta):
                     raise NotImplementedError("n/a")
             else:
                 self.roll = None
+
+    def _validate_cals(self,cals):
+        '''
+        
+        '''
+        _cals = set()
+        
+        if cals is not None:
+              
+            # str parser if required
+            if isinstance(cals, str):
+                cals = parsers.parseCalendarUnionString(cals)
+            
+            # process normally
+            if hasattr(cals, (list,set,tuple)):
+                for cal in cals:
+                    if isinstance(cal, str):
+                        if len(cal) in (2,3):
+                            _cals |= {
+                                cal,
+                            }
+                        else:
+                            raise Exception(
+                                f"Calendars must be 2 or 3 letter strings (not {cal})"
+                            )
+                    else:
+                        raise Exception(
+                            f"Calendars must be strings (not {type(cal).__name__})"
+                        )
+            
+            _cals = tuple(sorted(_cals))
+        else:
+            _cals = None
+
+        self.cals = _cals
+
+    def _validated_periodunits(self,stuff):
+        raise NotImplementedError
+    def _validated_roll(self,roll):
+        raise NotImplementedError
 
     @property
     def years(self):
@@ -425,7 +447,7 @@ class Duration(dateutil.relativedelta.relativedelta):
                         )
 
                 # not if net diff is positive, rolling forwards
-                if diff > 0:
+                if diff > 0 or (diff==0 and direction==1):
                     _aroll = a.roll if a.roll is not None else ""
                     _broll = a.roll if a.roll is not None else ""
                     if "M" in _aroll or "M" in _broll:

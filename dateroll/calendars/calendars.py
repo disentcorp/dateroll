@@ -22,6 +22,9 @@ SAMPLE_DATA_PATH = ROOT_DIR / "dateroll" / "sampledata" / "*.csv"
 SLEEP_TIMES = [25 / 1000, 50 / 1000, 100 / 1000, 300 / 1000]
 
 
+INCEPTION = datetime.date(1824,2,29)
+
+
 def load_sample_data():
     files = glob.glob(str(SAMPLE_DATA_PATH))
     data = {}
@@ -87,12 +90,11 @@ class Calendars(dict):
         with Drawer(self) as db:
             pass
 
-    # def __contains__(self, k):
-    #     return k in self.keys()
 
     def keys(self):
-        # with Drawer(self.home) as db:
-        #     return list(db.keys())
+        '''
+            return date keys
+        '''
         with Drawer(self) as db:
             return list(db.keys())
 
@@ -137,18 +139,17 @@ class Calendars(dict):
             
             if isinstance(i, datetime.datetime):
                 dt = datetime.date(i.year, i.month, i.day)
-                processed.append(dt)
             elif isinstance(i, datetime.date):
                 dt = i
-                processed.append(dt)
-            # elif hasattr(type(i), "__class__") and i.__class__.__name__ == "Date":
-            #     code.interact(local=locals())
-            #     dt = i.date
-            #     processed.append(dt)
             else:
                 raise Exception(
                     f"All cal dates must be of dateroll.Date or datetime.date{{time}} (got {type(i).__name__})"
                 )
+            
+            if dt >= INCEPTION:
+                
+                processed.append(dt) 
+
 
         self.write = True
         if k in self.db.keys():
@@ -197,7 +198,7 @@ class Calendars(dict):
 
     def copy(self):
         with Drawer(self) as db:
-            return db
+            return db.copy()
 
     @property
     def info(self):
@@ -216,4 +217,5 @@ class Calendars(dict):
                 else:
                     n, mn, mx = 0, None, None
                 print(pattern(str(i), str(n), str(mn), str(mx)))
+
 
