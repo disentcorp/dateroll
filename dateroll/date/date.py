@@ -34,9 +34,6 @@ class Date(datetime.date):
     def __repr__(self):
         return f'{self.__class__.__name__}("{self.strftime("%Y-%m-%d")}")'
 
-    def __cmp__(self, b):
-        return self.datetime == b
-
     @property
     def datetime(self):
         return datetime.datetime(self.year, self.month, self.day)
@@ -121,18 +118,6 @@ class Date(datetime.date):
                 f"unsupported operand type(s) for +: 'Date' and {type(o).__name__}"
             )
 
-    @staticmethod
-    def minus(a, b):
-        if a.year != b.year:
-            if a.month == b.month:
-                if a.day == b.day:
-                    return Duration(y=a.year - b.year)
-
-        elif a.month != b.month and a.day == b.day:
-            return Duration(m=(a.month - b.month))
-
-        return Duration(d=(a - b).days)
-
     def __sub__(self, o):
         """
         sub
@@ -146,8 +131,20 @@ class Date(datetime.date):
         # apply rules by type
         if isinstance(o, DateLike):
             # date - date
-            result = self.minus(self.date, o.date)
+        
+            if isinstance(o,Date):
+                oDate = o
+            else:
+                oDate = Date.from_datetime(o)
+            
+            result = Duration(
+                d=(self.date - o.date).days,
+                anchor_start=self.date,
+                anchor_end=oDate
+                              )
+            
             return result
+        
         elif isinstance(o, Duration):
             # date + duration
             # goes to __radd__ of Duration
@@ -164,6 +161,14 @@ class Date(datetime.date):
             raise TypeError(
                 f"unsupported operand type(s) for : 'Date' and {type(o).__name__}"
             )
+        
+    def __rsub__(self,o):
+        if isinstance(o,(datetime.date,datetime.datetime)):
+            return Date.from_datetime(o) - self
+        elif isinstance(o,Date):
+            raise NotImplementedError('should not get here')
+        elif isinstance(o,Duration):
+            raise TypeError('Cannot subtract Date from Duration, what are you trying to do?')
 
     def __iadd__(self, o):
         if isinstance(o, str):
@@ -183,8 +188,6 @@ class Date(datetime.date):
         else:
             self = self - o
         return self
-
-    # what about relative deltas?
 
 
 DateLike = DateLike + (Date,)

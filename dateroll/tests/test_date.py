@@ -106,6 +106,8 @@ class TestDate(unittest.TestCase):
         """
         d1 = Date(2024, 1, 3)
         d2 = Date(2024, 4, 3)
+        d3 = datetime.date(2024,4,3)
+        d4 = datetime.datetime(2024,4,3)
         dur = Duration(m=3)
         rd = relativedelta(months=3)
         td = datetime.timedelta(days=91)
@@ -122,14 +124,22 @@ class TestDate(unittest.TestCase):
         self.assertEqual(d1 + rd, d2)
         self.assertEqual(d1 + td, d2)
 
+        self.assertRaises(TypeError,lambda: d1+3.0)
+
         # # sub
-        self.assertEqual(d2 - d1, dur)
+        dur91d = Duration(d=91)
+        self.assertEqual(d2 - d1, dur91d)
         self.assertEqual(d2 - dur, d1)
-        self.assertEqual(d2 - str_d1, dur)
+        self.assertEqual(d2 - str_d1, dur91d)
         self.assertEqual(d2 - str_dur, d1)
         self.assertEqual(d2 - int_dur, d1)
         self.assertEqual(d2 - rd, d1)
         self.assertEqual(d2 - td, d1)
+
+        self.assertEqual(d2-d2,d3-d2)
+        self.assertEqual(d2-d2,d4-d2)
+
+        self.assertRaises(TypeError,lambda: d1-3.0)
 
         # iadd
         _d1 = d1
