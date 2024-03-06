@@ -137,8 +137,9 @@ class Date(datetime.date):
             else:
                 oDate = Date.from_datetime(o)
             
+            td = self.date - oDate.date
             result = Duration(
-                d=(self.date - o.date).days,
+                d=td.days,
                 anchor_start=self.date,
                 anchor_end=oDate
                               )
@@ -165,10 +166,8 @@ class Date(datetime.date):
     def __rsub__(self,o):
         if isinstance(o,(datetime.date,datetime.datetime)):
             return Date.from_datetime(o) - self
-        elif isinstance(o,Date):
-            raise NotImplementedError('should not get here')
-        elif isinstance(o,Duration):
-            raise TypeError('Cannot subtract Date from Duration, what are you trying to do?')
+
+        raise TypeError(f'Cannot subtract Date from {type(o).__name__}, what are you trying to do?')
 
     def __iadd__(self, o):
         if isinstance(o, str):
@@ -192,5 +191,5 @@ class Date(datetime.date):
 
 DateLike = DateLike + (Date,)
 
-if __name__ == "__main__":
+if __name__ == "__main__": # pragma: no cover
     pass

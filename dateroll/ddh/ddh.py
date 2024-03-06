@@ -1,3 +1,4 @@
+import os
 import datetime
 import pathlib
 import shutil
@@ -36,4 +37,12 @@ class ddh:
         dangerous, deletes all calendars and lockfiles
         """
         p = pathlib.Path("~/.dateroll").expanduser()
-        shutil.rmtree(p)
+        import glob
+        files = glob.glob(str(p)+'/**/*',recursive=True)
+        for file in files:
+            if not file.endswith('lockfile'):
+                if pathlib.Path(file).is_file():
+                    os.remove(file)
+        cals._purge_all()
+        calmath._purge_all()
+        

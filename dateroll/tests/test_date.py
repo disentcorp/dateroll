@@ -125,6 +125,7 @@ class TestDate(unittest.TestCase):
         self.assertEqual(d1 + td, d2)
 
         self.assertRaises(TypeError,lambda: d1+3.0)
+        self.assertRaises(TypeError,lambda: 3.0-d1)
 
         # # sub
         dur91d = Duration(d=91)
@@ -138,7 +139,10 @@ class TestDate(unittest.TestCase):
 
         self.assertEqual(d2-d2,d3-d2)
         self.assertEqual(d2-d2,d4-d2)
+        self.assertEqual(d2-d2,d2-d4)
 
+        self.assertRaises(TypeError,lambda: dur-d1)
+        self.assertRaises(TypeError,lambda: 3.0-d1)
         self.assertRaises(TypeError,lambda: d1-3.0)
 
         # iadd

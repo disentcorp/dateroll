@@ -7,7 +7,7 @@ import dateroll.duration.duration as dur
 from dateroll.parser import patterns
 from dateroll.schedule.schedule import Schedule
 
-DEFAULT_CONVENTION = "american"
+DEFAULT_CONVENTION = "MDY"
 TODAYSTRINGVALUES = ["today", "t0", "t"]
 
 AtoZ = tuple(chr(i) for i in range(65, 65 + 26))
@@ -22,11 +22,11 @@ def parseTodayString(s, convention=DEFAULT_CONVENTION):
     """
     today = datetime.date.today()
 
-    if convention == "american":
+    if convention == "MDY":
         today_string = today.strftime(r"%m/%d/%Y")
-    elif convention == "european":
+    elif convention == "DMY":
         today_string = today.strftime(r"%d/%m/%Y")
-    elif convention == "international":
+    elif convention == "YMD":
         today_string = today.strftime(r"%Y/%m/%d")
     else:
         raise ValueError(convention)
@@ -45,36 +45,37 @@ def parseDateString(s, convention):
 
     valid DateStrings for refence:
 
-        american: 1 or 2 digit month, 1 or 2 digit day, and 2 or 4 digit year
-        european: 1 or 2 digit day, 1 or 2 digit month, and 2 or 4 digit year
-        international: 2 or 4 digit year, 1 or 2 digit month, 1 or 2 digit day
+        MDY: american: 1 or 2 digit month, 1 or 2 digit day, and 2 or 4 digit year
+        DMY: european: 1 or 2 digit day, 1 or 2 digit month, and 2 or 4 digit year
+        YMD: international: 2 or 4 digit year, 1 or 2 digit month, 1 or 2 digit day
 
     """
     
     if convention is None:
         convention = DEFAULT_CONVENTION
 
-    if convention == "american":
+    if convention == "MDY":
         pattern = patterns.MDY
         dateparser_kwargs = {}
-    elif convention == "european":
+    elif convention == "DMY":
         pattern = patterns.DMY
-        dateparser_kwargs = {"dayFirst": True}
-    elif convention == "international":
+        dateparser_kwargs = {"dayfirst": True}
+    elif convention == "YMD":
         pattern = patterns.YMD
-        dateparser_kwargs = {"yearFirst ": True}
+        dateparser_kwargs = {"yearfirst": True}
     else:
         raise ParserStringsError("No convention provided!")
 
     dates = []
     matches = re.findall(pattern, s)
 
+    res = s
     for match in matches:
         date = dt.Date.from_string(match, **dateparser_kwargs)
-        s = s.replace(match, "X")
+        res = res.replace(match, "X")
         dates.append(date)
 
-    return dates, s
+    return dates, res
 
 
 def process_duration_match(m: tuple):

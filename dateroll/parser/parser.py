@@ -114,7 +114,7 @@ class Parser:
     def parse_one_part(cls, untouched, convention=None):
 
         # 1
-        notoday = parsers.parseTodayString(untouched)
+        notoday = parsers.parseTodayString(untouched,convention=convention)
 
         # 2
         dates, nodates = parsers.parseDateString(notoday, convention=convention)
@@ -129,6 +129,8 @@ class Parser:
             return durations[0]
         dates_durations = dates + durations
 
+
+        print('before datetmath',nodatesordurations,dates_durations)
         # 4
         # print('before pdms',nodatesordurations)
         processed_answer = parsers.parseDateMathString(

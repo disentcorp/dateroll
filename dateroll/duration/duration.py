@@ -2,7 +2,6 @@ import datetime
 
 import dateutil
 import dateutil.relativedelta
-
 from dateroll.calendars.calendarmath import calmath
 import dateroll.parser.parsers as parsers
 
@@ -510,6 +509,9 @@ class Duration(dateutil.relativedelta.relativedelta):
 
     def __sub__(self, x):
         # print(type(x), "sub")
+        from dateroll import Date
+        if isinstance(x,Date):
+            raise TypeError('Cannot sub Date from Duration')
         return self.math(x, -1)
 
     def __iadd__(self, x):
