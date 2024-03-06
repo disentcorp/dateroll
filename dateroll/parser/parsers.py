@@ -49,7 +49,7 @@ def parseDateString(s, convention):
         international: 2 or 4 digit year, 1 or 2 digit month, 1 or 2 digit day
 
     """
-
+    
     if convention is None:
         convention = DEFAULT_CONVENTION
 
