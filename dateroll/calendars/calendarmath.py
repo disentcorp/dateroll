@@ -4,7 +4,8 @@ import pickle
 import time
 import warnings
 import code
-import numpy as np
+import math
+
 
 from dateroll.calendars.calendars import Calendars
 from dateroll.utils import safe_open
@@ -15,7 +16,7 @@ MODULE_LOCATION = PARENT_LOCATION / "calendars/"
 MODULE_LOCATION.mkdir(exist_ok=True)
 DATA_LOCATION_FILE = MODULE_LOCATION / "compiled_cals"
 
-
+WEEKEND_CALENDAR = 'WE'
 DEFAULT_IE = "(]"
 
 
@@ -117,11 +118,7 @@ class CalendarMath:
         originally i checked "recompile_if_mutated" before calendar ops, but adds 89ms to do the unix checksome.
         This is a faster check for the existence of the data.
         """
-        # print('in backend0')
-        # code.interact(local=dict(globals(),**locals()))
         if not self.home.exists():
-            # print('in backend')
-            # code.interact(local=dict(globals(),**locals()))
             self.recompile_if_mutated
 
     @staticmethod
@@ -135,8 +132,8 @@ class CalendarMath:
         """
         # remove duplicates from dates
         # make sure dates starts after all date starting date, TODO cut it when generate sample data, not here
-        sorted_all = sorted(all)
-        dates = [t for t in dates if t>=sorted_all[0]]
+        # dates = [t for t in dates if t>=sorted_all[0]]  # 1850 1827 in dates  
+
         dates = set(dates)
         cal = sorted(dates)
 
@@ -149,8 +146,9 @@ class CalendarMath:
         last_cal = cal.pop(0)
         last_idx = 0
         # last_good = None
-        for idx, dt in enumerate(sorted_all):
+        for idx, dt in enumerate(sorted(all)):
             # goodbad = None
+        
             if dt == last_cal:
                 # gb = "holiday"
                 # is holiday
@@ -177,19 +175,26 @@ class CalendarMath:
 
         return fwd, bck
 
-    def add_bd(self, d, n, cals, mod=False, sign=1):
+    def add_bd(self, d, n, cals, mod=False):
         """
         add's n business days on cal to d
         careful, if n==0, B should auto backtrack, need to verify
         """
-        cal_name = self.union_swap(cals)
+        
+        if n==0 and math.copysign(1,n)==1:
+            # if zero return original date as there is nothing to adjust
+            # when n=-0.0 has negative sign, in this case we would like to get the roll/P of date
+            return d
+        cals = CalendarMath.reverse_calstring(cals)
+        cal_name = self.union_key(cals)
 
         if mod:
             raise NotImplementedError("mod")
 
         A = self.fwd[cal_name]
         B = self.bck[cal_name]
-
+        if len(A)==0:
+            raise ValueError('Please provide holidays')
         from dateroll.date.date import Date
 
         if isinstance(d, datetime.datetime):
@@ -200,29 +205,26 @@ class CalendarMath:
             pass
         else:
             raise TypeError(f"Date must be date (got {type(d).__name__})")
-        # when it is holiday n at least 1
-        # print('herrr')
-        # code.interact(local=dict(globals(),**locals()))
-        n = sign * n
-        if not self.is_bd(d,cals) and n==0:
-            n = 1 if sign>0 else 0
             
         bd_index = A[d]
         new_bd_index = bd_index + n
         new_dt = B[new_bd_index]
-
-        # code.interact(local=locals())
         return new_dt
 
-    def sub_bd(self, d, n, cal, mod=False):
+    def sub_bd(self, d, n, cals, mod=False):
         """
         subtract (opposed of add)
         """
         if n<0:
             raise ValueError(f'n needs to be positive number')
-        return self.add_bd(d, n, cal, mod=mod, sign=-1)
+        if math.copysign(1,n)<0 and n==0:
+            # when it is -0.0 we do not want to mult by -1 to make it 0.0, because we use the - sign
+            pass
+        else:
+            n = -1 * n
+        return self.add_bd(d, n, cals, mod=mod)
 
-    def is_bd(self, d, cals='WE'):
+    def is_bd(self, d, cals):
         """am i business day?"""
         self.recompile_if_mutated
 
@@ -240,7 +242,8 @@ class CalendarMath:
         """
         compute business days between two dates
         """
-        cal_name = self.union_swap(cals)
+        cals = CalendarMath.reverse_calstring(cals)
+        cal_name = self.union_key(cals)
         print(f"[dateroll] IE rules not implemented...warning")
 
         fwd = self.fwd[cal_name]
@@ -251,23 +254,28 @@ class CalendarMath:
         """
         the next business date from d on calendars cals
         """
-        # if mod:
-        #     raise NotImplementedError("next_bd")
+        if mod:
+            raise NotImplementedError("next_bd")
         # warnings.warn("next bd not implemented yet")
-        # cal_name = self.union_swap(cals)
-        # return d
+        new_d = self.add_bd(d,1,cals)
+        return new_d
 
     def prev_bd(self, d, cals, mod=False):
         """
         the previous business date from d on calendars cals
         """
 
-        # if mod:
-        #     raise NotImplementedError("prev_bd")
-        # warnings.warn("next bd not implemented yet")
+        if mod:
+            raise NotImplementedError("prev_bd")
+        # warnings.warn("prev bd not implemented yet")
+        # code.interact(local=locals())
+        if self.is_bd(d,cals):
+            new_d = self.sub_bd(d,1,cals)
+        else:
+            # when holiday, to get prev_db we should subtract 0 from the date because of fwd,bck property
+            new_d = self.sub_bd(d,-0.0,cals)
+        return new_d
 
-        # cal_name = self.union_swap(cals)
-        # return d
 
     @staticmethod
     def reverse_calstring(cals):
@@ -280,68 +288,59 @@ class CalendarMath:
 
         always return list of individuals (decompose unions)
         """
+        if cals is None:
+            cals = [WEEKEND_CALENDAR]  # define at top of file..future user might want WKD instad of WE
 
         if isinstance(cals, str):
             if "u" in cals:
-                cals = cals.split("u")
+                cals = tuple(sorted(cals.split("u")))
             else:
                 cals = [cals]
         return cals
 
-    def union_swap(self, cals):
+    def union_key(self, cals):
         """
-        check calendar list or str is valid
-        and if not compiled (in self.unions) call self.union to compile the union
+        takes a cals as either  str of 1 cal or a list of str cals and return a sorted tuple, if empty list assume weekends
+        
+        """
+        # cals always come as a tuple,list,set, no need to raise error here
+        # print('in union key')
+        # code.interact(local=locals())
+        try:
+            cal_union_key = 'u'.join(cals)
+        except:
+            raise TypeError(f"Calendar name must be string")
 
-        presumes unions are sorted
-        """
-        if cals is None:
-            cals = ["WE"]
-        if isinstance(cals, str):
-            if 'u' in cals:
-                cals = sorted(cals.split('u'))
-                self.union(cals)
-                cals = 'u'.join(cals)
-            return cals
-        elif isinstance(cals, (tuple, list, set)):
-            cals = sorted(cals)
-            union_name = "u".join(cals)
-            if cals in self.unions:
-                return union_name
-            else:
-                self.union(cals)
-                return union_name
-        else:
-            raise TypeError("Calendars must be a valid calendar name or list of names")
+        if cal_union_key not in self.unions:
+            # union dates wasnt' cached, call _generate_union
+            self._generate_union(cal_union_key)
+        
+        return cal_union_key
+        
 
-    def union(self, cals):
+    def _generate_union(self, cal_union_key):
         """
-        validate cals passed is in correct format
-        union all the cals into a superset, then call gen_dicts and save_cache (no need to tell self.cals/Calendars)
+        creates a union from sorted tuple of cals
         """
-        if isinstance(cals, str):
-            return cals
-        elif isinstance(cals, (tuple, list, set)):
-            union = list()
-            if len(cals) == 1:
-                if isinstance(cals[0], str):
-                    return cals[0]
-            for cal in cals:
-                if not isinstance(cal, str):
-                    raise TypeError(f"Calendar name must be string")
-                if cal not in self.cals:
-                    raise KeyError(f"There is no calendar {cal}")
-                union += set(self.cals[cal])
-            union_name = "u".join(sorted(cals))
-            self.unions.append(sorted(cals))
-            dates = list(union)
-            print(f"[dateroll] compiling new union [{union_name}]")
-            self.fwd[union_name], self.bck[union_name] = self.gen_dicts(
-                union_name, dates, self.ALL
-            )
-            self.save_cache()
-        else:
-            raise TypeError("Union must be tuple or list of cal names")
+        unioned_dates = set()
+        cals = CalendarMath.reverse_calstring(cal_union_key)
+        for cal in cals:
+            # saftey checks
+            if cal not in self.cals:
+                raise KeyError(f"There is no calendar {cal}")
+            
+            # the union operation
+            unioned_dates |= set(self.cals[cal])
+
+        # self.unions.append(cal_union_key) <## you can delete self.unions, are references used anywhere? user can check fwd.keys()
+        # compile into large dicts
+
+        print(f"[dateroll] compiling new union [{cal_union_key}]")
+        dict_tuple = self.gen_dicts(cal_union_key, unioned_dates, self.ALL)
+        self.fwd[cal_union_key], self.bck[cal_union_key] = dict_tuple
+
+        # save cache
+        self.save_cache()
 
     def __repr__(self):
         """

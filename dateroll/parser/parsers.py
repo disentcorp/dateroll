@@ -1,8 +1,9 @@
 import datetime
 import re
 
-from dateroll.date.date import Date
-from dateroll.duration.duration import Duration
+# from dateroll.date.date import Date
+import dateroll.date.date as dt
+import dateroll.duration.duration as dur
 from dateroll.parser import patterns
 from dateroll.schedule.schedule import Schedule
 
@@ -17,7 +18,7 @@ class ParserStringsError(Exception): ...
 
 def parseTodayString(s, convention=DEFAULT_CONVENTION):
     """
-    this is [the] place where "t" is replaced
+        this is [the] place where "t" is replaced
     """
     today = datetime.date.today()
 
@@ -69,7 +70,7 @@ def parseDateString(s, convention):
     matches = re.findall(pattern, s)
 
     for match in matches:
-        date = Date.from_string(match, **dateparser_kwargs)
+        date = dt.Date.from_string(match, **dateparser_kwargs)
         s = s.replace(match, "X")
         dates.append(date)
 
@@ -127,9 +128,19 @@ def process_duration_match(m: tuple):
             # should ALWAYS be P or previous business day
             duration_contructor_args["roll"] = "P"
 
-    duration = Duration(**duration_contructor_args)
+    duration = dur.Duration(**duration_contructor_args)
     return duration
 
+def parseCalendarUnionString(s):
+    '''
+    use regex for validation of calendar string, if valid, then split on 'u' is SAFE
+    '''
+    matches = re.match(patterns.CALS,s)
+    if matches:
+        cals = tuple(sorted(s.split('u')))
+        return cals
+    else:
+        raise Exception(f'{s} not a valid calendar string')
 
 def parseDurationString(s):
     """
