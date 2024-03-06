@@ -189,3 +189,10 @@ TOTAL                                 1477    215    85%
 
     TODO:
         #1 Need to add mod in calendarmath
+
+
+################## anthony march 6 3pm
+
+
+please switch to the new thing
+/home/amalizzio/github/dateroll/dateroll/tests/suite.py:27: DeprecationWarning: unittest.makeSuite() is deprecated and will be removed in Python 3.13. Please use unittest.TestLoader.loadTestsFromTestCase() instead.
