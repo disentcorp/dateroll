@@ -235,21 +235,21 @@ assume ```dur = Duration(years=1)```
 
 |LHS|Operator|RHS|Result|Input|Output|
 |-|-|-|-|-|-|
-|`Duration`|$+$|`Duration`|`Duration`|`d + Duration(m=1)`|`Duration(y=1,m=1)`|
-|`Duration`|$-$|`Duration`|`Duration`|`d - Duration(m=1)`|`Duration(m=11)`|
+|`Duration`|$+$|`Duration`|`Duration`|`dur + Duration(m=1)`|`Duration(y=1,m=1)`|
+|`Duration`|$-$|`Duration`|`Duration`|`dur - Duration(m=1)`|`Duration(m=11)`|
 
 ##### `Duration` $+$/$-$ (*Date string* or *Duration string*)
 |LHS|Operator|RHS|Result|Input|Output|
 |-|-|-|-|-|-|
-|`Duration`|$+$|*Duration string* |`Date`    |`d + "1m"`|`Date(2000,2,1)`|
-|`Duration`|$-$|*Duration string* |`Date`    |`d - "1y"`|`Date(1999,1,1)`|
+|`Duration`|$+$|*Duration string* |`Date`    |`dur + "1m"`|`Date(2000,2,1)`|
+|`Duration`|$-$|*Duration string* |`Date`    |`dur - "1y"`|`Date(1999,1,1)`|
 
 #### Anchoring with `Date`
 
 When a `Duration` is the result of an operation with one or more `Date`, then 2 additional properties (`anchor_start` and/or `anchor_stop`) will be set automatically.
 
 `Date(1999, 1, 1 )` $+$ `Duration(m=1)` $=$ `Duration(anchor_start=Date(1999, 1, 1)`
-`Date(2000, 1, 1)` $-$ `Date(1999, 1, 1)` $=$ `Duration(y=1, anchor_start=Date(1999,1,1), anchor_end=date(2000, 1, 1)`
+`Date(2000, 1, 1)` $-$ `Date(1999, 1, 1)` $=$ `Duration(y=1, anchor_start=Date(1999,1,1), anchor_stop=date(2000, 1, 1)`
 
 When present, these properties allow for more exact period conversion.
 
@@ -367,7 +367,7 @@ Saves in users's home folder
 |Name|Descriptions|
 |-|-|
 |`.load_all_and_we()`|Creates `ALL` and `WE`¹|
-|`.load_sample_data()`|Creates `ALL`,`WE`,`LN`,`EU`,`BR`,`NY`,`FED`,`ECB`,`BOE`,`BCB` using `worklendar`|
+|`.load_sample_data()`|Creates `ALL`,`WE`,`LN`,`EU`,`BR`,`NY`,`FED`,`ECB`,`BOE`,`BCB` using `workalendar`|
 |`dict.*`|see [dict](https://docs.python.org/3/tutorial/datastructures.html#dictionaries) docs||
 
 <br>
@@ -464,7 +464,7 @@ It a combo of (1) really big `regex`, and (2) date validation with [`dateutil.pa
            - Valid periods: are `bd` `d` `w` `m` `q` `s` (semester) `h` (halves), and `y`
            - Combos like `5y3m` or `7w2d` or `1y2bd` are allowed
     - `CalendarString`
-       -  Any `DurationPeriodString` in a `DurationString` can be followed by the filtration (or pipe) operator `"|"` to denote information from calendar lists of holidays which must be used to perform date aritmetic.
+       -  Any `DurationPeriodString` in a `DurationString` can be followed by the filtration (or pipe) operator `"|"` to denote information from calendar lists of holidays which must be used to perform date arithmetic.
            - `CalendarString` follows rules of calendar (2-3 letters A-Z, all uppercase), and union operator `"u"`
               -  Single calendar, e.g. `"|NY"` or `"|FED"`
               -  Calendar union, e.g. `"|NY u LN"` (2) or `"|FED u BOE u BCB"` (3)
@@ -492,7 +492,7 @@ It a combo of (1) really big `regex`, and (2) date validation with [`dateutil.pa
    - Unncessarily complicated
      - `"t-1y2h3s4q5m6w7d8bd|NYuLNuJP/MF,07/02/1984+99y35bd|FED/P,3q7m5d|WE"`
         - *^^ Note* on above, if you `ddh` it, all calendars -unioned (`"|NYuLNuJPuFEDuWE"`), modified convention would hold as it was specified once, and `P` or `F` whould depend on the direction of travel when being appled to a specific date. If approx is needed, it will `warn`.
-        -    For example, if you  do `"t+1m-21bd"`, if you have an anchor date, if `1m` > `21bd` (net adjustment is in the future as opposed to past) it assumes you are rolling foward, and would impliy a following (`"/F"`), period conversion is used, see [period conversion rules](#PeriodConversions). If modified was specified it would be inherited as well.
+        -    For example, if you  do `"t+1m-21bd"`, if you have an anchor date, if `1m` > `21bd` (net adjustment is in the future as opposed to past) it assumes you are rolling foward, and would imply a following (`"/F"`), period conversion is used, see [period conversion rules](#PeriodConversions). If modified was specified it would be inherited as well.
    - Classic
       - Client wants a 5 year loan from today, paid monthly, i need dates to structure it `ddh("t,t+5y,1m")`.
 

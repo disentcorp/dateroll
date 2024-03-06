@@ -1,4 +1,4 @@
-<span style="color:red;">THIS IS PRERELEASE SOFTWARE - CREATE ISSES ON GITHUB!!!</span>
+<span style="color:red;">PRE-RELEASE</span>
 
 <div style="padding-left:12%;padding-right:12%;">
 

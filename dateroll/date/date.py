@@ -131,7 +131,7 @@ class Date(datetime.date):
         elif a.month != b.month and a.day == b.day:
             return Duration(m=(a.month - b.month))
 
-        return Duration(days=(a - b).days)
+        return Duration(d=(a - b).days)
 
     def __sub__(self, o):
         """
