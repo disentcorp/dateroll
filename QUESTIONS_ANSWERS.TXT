@@ -194,5 +194,39 @@ TOTAL                                 1477    215    85%
 ################## anthony march 6 3pm
 
 
+4 commands:
+    coverage run --omit="dateroll/tests/*.py" -m unittest discover
+    coverage report -m 
+    coverage html
+    xdg-open htmlcov/index.html
+
+^ notice 2 things, --omit excludes the test files, and html/xdg-open give pretty report!
+
+Name                                 Stmts   Miss  Cover   Missing
+------------------------------------------------------------------
+dateroll/__init__.py                     4      0   100%
+dateroll/calendars/__init__.py           0      0   100%
+dateroll/calendars/calendarmath.py     178      3    98%   89, 258, 269
+dateroll/calendars/calendars.py        149      0   100%
+dateroll/date/__init__.py                0      0   100%
+dateroll/date/date.py                  108      8    93%   38, 120, 127-129, 134, 164, 193
+dateroll/ddh/__init__.py                 0      0   100%
+dateroll/ddh/ddh.py                     21      3    86%   29, 38-39
+dateroll/duration/__init__.py            0      0   100%
+dateroll/duration/duration.py          260    135    48%   130, 140, 144-149, 155-161, 164-169, 182-202, 209, 211, 231, 235, 239, 243, 251, 263-266, 273, 277, 291-300, 306-316, 322-323, 350, 366-383, 387-390, 405-467, 471, 480, 489-490, 495, 500, 515, 519, 523, 527, 530, 534, 543-551, 558
+dateroll/parser/__init__.py              0      0   100%
+dateroll/parser/parser.py               64     21    67%   102, 105, 129, 152-179, 187
+dateroll/parser/parsers.py             104     26    75%   27-32, 55, 60-67, 93-96, 124, 129, 138-143, 201, 204, 218
+dateroll/parser/patterns.py             29      0   100%
+dateroll/schedule/__init__.py            0      0   100%
+dateroll/schedule/schedule.py            1      0   100%
+dateroll/utils.py                       17      0   100%
+------------------------------------------------------------------
+TOTAL                                  935    196    79%
+
+
+@batu, i get different results for calendarmath.py
+
 please switch to the new thing
 /home/amalizzio/github/dateroll/dateroll/tests/suite.py:27: DeprecationWarning: unittest.makeSuite() is deprecated and will be removed in Python 3.13. Please use unittest.TestLoader.loadTestsFromTestCase() instead.
+
