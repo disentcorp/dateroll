@@ -6,7 +6,7 @@ import unittest
 import uuid
 from unittest import expectedFailure
 
-from dateroll import ddh
+from dateroll import ddh,cals
 import dateroll
 
 
@@ -53,16 +53,32 @@ class TestDDH(unittest.TestCase):
         str->Schedule (1bd,1d,1w,1m,1y)
         """
 
+    def testPurge(self):
+        '''
+        purge all
+        '''
+        ddh.purge_all()
+        base_cals = ['BR', 'WE', 'ECB', 'FED', 'NY', 'LN', 'ALL']
+        self.assertEqual(list(cals.keys()),base_cals)
+
+    def testConvention(self):
+        a = ddh('12/4/24',convention='MDY')
+        b = ddh('04/12/24',convention='DMY')
+        c = ddh('20241204',convention='YMD')
+        
+        self.assertEqual(a,b)
+        self.assertEqual(a,c)
+        self.assertEqual(a,b)
+
+        # RESET CONVENTION
+        ddh.convention = 'MDY'
 
 class TestsPracticalExamples(unittest.TestCase):
     def testNothing(self):
         """
         empty string
         """
-        try:
-            x = ddh("")
-        except dateroll.parser.parsers.ParserStringsError as e:
-            assert True
+        self.assertRaises(dateroll.parser.parsers.ParserStringsError,lambda: ddh(""))
 
     def testDate(self):
         """

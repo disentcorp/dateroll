@@ -342,6 +342,9 @@ class CalendarMath:
         # save cache
         self.save_cache()
 
+    def _purge_all(self):
+        self.__init__()
+
     def __repr__(self):
         """
         Show names of cals and unions
@@ -351,33 +354,33 @@ class CalendarMath:
 
 calmath = CalendarMath()
 
-# if __name__ == "__main__":
-#     calmath = CalendarMath()
+if __name__ == "__main__": # pragma: no cover
+    calmath = CalendarMath()
 
-#     import datetime
-#     import time
+    import datetime
+    import time
 
-#     from dateutil.relativedelta import relativedelta as rd
+    from dateutil.relativedelta import relativedelta as rd
 
-#     t = datetime.date(2024, 2, 25)
+    t = datetime.date(2024, 2, 25)
 
-#     a = time.time()
+    a = time.time()
 
-#     print(t)
-#     # calmath.add_bd(t,1,cals=['WE','NY'])
+    print(t)
+    # calmath.add_bd(t,1,cals=['WE','NY'])
 
-#     t2 = calmath.add_bd(t, 1, cals=["WE"])
-#     print(t2)
+    t2 = calmath.add_bd(t, 1, cals=["WE"])
+    print(t2)
 
-#     t2 = calmath.add_bd(t, 100, cals=["WE"])
-#     print(t2)
-#     print(calmath.diff(t, t2, cals=["WE"]))
-#     t2 = t + rd(days=31)
-#     print(calmath.diff(t, t2, cals=["WE"]))
+    t2 = calmath.add_bd(t, 100, cals=["WE"])
+    print(t2)
+    print(calmath.diff(t, t2, cals=["WE"]))
+    t2 = t + rd(days=31)
+    print(calmath.diff(t, t2, cals=["WE"]))
 
-#     b = time.time()
-#     print((b - a) * 1000, "ms")
+    b = time.time()
+    print((b - a) * 1000, "ms")
 
-#     import code
+    import code
 
-#     code.interact(local=locals())
+    code.interact(local=locals())

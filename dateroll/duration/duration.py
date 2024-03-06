@@ -2,7 +2,6 @@ import datetime
 
 import dateutil
 import dateutil.relativedelta
-
 from dateroll.calendars.calendarmath import calmath
 import dateroll.parser.parsers as parsers
 
@@ -79,10 +78,6 @@ class Duration(dateutil.relativedelta.relativedelta):
         self,
         y=None,
         Y=None,
-        h=None,
-        H=None,
-        s=None,
-        S=None,
         q=None,
         Q=None,
         m=None,
@@ -91,15 +86,17 @@ class Duration(dateutil.relativedelta.relativedelta):
         W=None,
         d=None,
         D=None,
-        cals=None,
         bd=None,
+
         BD=None,
+        cals=None,
         roll=None,
+        
+        anchor_start=None,
+        anchor_end=None
     ):
         """
         y = year
-        h = half year
-        s = semester = half year
         q = quarter
         m = month
         w = week
@@ -115,12 +112,16 @@ class Duration(dateutil.relativedelta.relativedelta):
 
         class instance keeps one of each, None if no value
         """
+        self._validated_periodunits(y,Y,q,Q,m,M,w,W,d,D,bd,BD)
+        self._validate_cals(cals)
+        self._validate_adj_roll(cals,roll)
+
+    def _validated_periodunits(self,y,Y,q,Q,m,M,w,W,d,D,bd,BD):
         self.y = addNones(y, Y)
         if self.collapse_hemi_sem_quart_on_init:
             _m = addNones(
                 addNones(m, M),
                 3 * addNones(q, Q, zeros=True),
-                6 * addNones(s, S, h, H, zeros=True),
             )
             if _m != 0:
                 self.m = _m
@@ -132,10 +133,7 @@ class Duration(dateutil.relativedelta.relativedelta):
         self.d = addNones(d, D)
         self.bd = addNones(bd, BD)
 
-        # self._validated_periodunits(bd) ## need to pass all stuff above!!! TBD
-        self._validate_cals(cals)
-        # self._validated_roll(roll)
-
+    def _validate_adj_roll(self,cals,roll):
         if self.bd is None and cals and len(cals) > 0:
             self.bd = 0
 
@@ -204,11 +202,6 @@ class Duration(dateutil.relativedelta.relativedelta):
             _cals = None
 
         self.cals = _cals
-
-    def _validated_periodunits(self,stuff):
-        raise NotImplementedError
-    def _validated_roll(self,roll):
-        raise NotImplementedError
 
     @property
     def years(self):
@@ -516,6 +509,9 @@ class Duration(dateutil.relativedelta.relativedelta):
 
     def __sub__(self, x):
         # print(type(x), "sub")
+        from dateroll import Date
+        if isinstance(x,Date):
+            raise TypeError('Cannot sub Date from Duration')
         return self.math(x, -1)
 
     def __iadd__(self, x):
@@ -550,6 +546,13 @@ class Duration(dateutil.relativedelta.relativedelta):
                 constructor += f"{k}={v}, "
         return f'{self.__class__.__name__}({constructor.rstrip(", ")})'
 
+    def just_days(self):
+        if self.anchor_start and self.anchor_end:
+            return (self.anchor_end-self.anchor_start).days
+            
+
+    def simplify(self):
+        ...
 
 PeriodLike = PeriodLike + (Duration,)
 

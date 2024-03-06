@@ -44,7 +44,6 @@ class Drawer:
     def __init__(self, cals):
         # print(f'in cals----------- {cals}')
         self.path = pathlib.Path(cals.home)
-        self.lock = self.path.with_suffix(".lock")
         self.cals = cals
 
     def __enter__(self):
@@ -200,6 +199,9 @@ class Calendars(dict):
         with Drawer(self) as db:
             return db.copy()
 
+    def _purge_all(self):
+        self.__init__()
+
     @property
     def info(self):
         pattern = lambda a, b, c, d: f"{a:6}|{b:>8}|{c:12}|{d:12}"
@@ -219,3 +221,5 @@ class Calendars(dict):
                 print(pattern(str(i), str(n), str(mn), str(mx)))
 
 
+if __name__ == '__main__': # pragma: no cover
+    pass

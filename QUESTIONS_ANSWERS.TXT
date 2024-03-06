@@ -230,3 +230,21 @@ TOTAL                                  935    196    79%
 please switch to the new thing
 /home/amalizzio/github/dateroll/dateroll/tests/suite.py:27: DeprecationWarning: unittest.makeSuite() is deprecated and will be removed in Python 3.13. Please use unittest.TestLoader.loadTestsFromTestCase() instead.
 
+we need to implement better public/private member names
+
+class A:
+    def public(self):
+        ...
+    def _private(self):
+        ...
+
+^ public means it will not be called manually by a user ever
+
+private functions only need to be tested in the unique way they are called
+public functions need rigorious testing of many possible arg/kwarg permutations
+
+you do not and shouldn't comment out your __main__ blocks:
+https://stackoverflow.com/questions/64611388/exclude-a-function-from-coverage
+
+if __name__ == '__main__': # pragma: no cover
+    pass
