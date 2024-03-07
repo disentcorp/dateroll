@@ -7,4 +7,3 @@ dist/*
 NotExist
 NotExist.lockfile
 .coverage
-
