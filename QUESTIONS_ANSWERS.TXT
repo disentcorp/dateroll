@@ -283,3 +283,32 @@ TOTAL                                  979     49    95%
             compare this duration with dateutile.relativedelta where y=0,m=0,w=0,d=14
             As a result, always m=0 when I initialize duration, e.g Duration(d=14)--> Duration(m=0,d=14) because of the line 151:154
             (i changed None to 0) if we put None there, Date(2024,3,15) - Date(2024,3,1)--> y=0,m=None,w=0,d=14 which cause problem
+
+
+############ anthony 2024/3/7 9AM
+
+When i ran the tests with:
+
+coverage run --omit="dateroll/tests/*.py" -m unittest discover
+
+I get 4 failures in test_calendarmath Did all the test pass on your side? 
+
+
+    1 File "/home/amalizzio/github/dateroll/dateroll/tests/test_calendarmath.py", line 161, in test_diffbd
+        self.assertEqual(b_minus_a,9)
+    AssertionError: 11 != 9
+
+    2 File "/home/amalizzio/github/dateroll/dateroll/tests/test_calendarmath.py", line 288, in test_nextBd
+        self.assertEqual(d,Date(2024,1,2))
+    AssertionError: datetime.date(2024, 1, 1) != Date("2024-01-02")
+
+    3 File "/home/amalizzio/github/dateroll/dateroll/tests/test_calendarmath.py", line 306, in test_prevBd
+        self.assertEqual(d,Date(2023,12,29))
+    AssertionError: datetime.date(2024, 1, 1) != Date("2023-12-29")
+
+    4 File "/home/amalizzio/github/dateroll/dateroll/tests/test_calendarmath.py", line 277, in test_repr
+        self.assertEqual(repr(calmath).split('.dateroll')[1],expected_str)
+    AssertionError: '/cal[28 chars]: [\'BR\', \'WE\', \'ECB\', \'FED\', \'NY\', \[31 chars]: []' != '/cal[28 chars]: [\'FED\', \'ECB\', \'LN\', \'WE\', \'ALL\', [31 chars]: []'
+    /calendars/compiled_cals")
+    - Cals: ['BR', 'WE', 'ECB', 'FED', 'NY', 'LN', 'ALL', 'AA']
+    + Cals: ['FED', 'ECB', 'LN', 'WE', 'ALL', 'BR', 'NY', 'AA']
