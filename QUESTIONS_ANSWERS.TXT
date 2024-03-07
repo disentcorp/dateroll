@@ -287,51 +287,33 @@ TOTAL                                  979     49    95%
 
 ############ anthony 2024/3/7 9AM
 
-i updated .gitignore to ignore coverage and non-exist, please pull
-
-When i ran the tests with:
-
-coverage run --omit="dateroll/tests/*.py" -m unittest discover
-
-I get 4 failures in test_calendarmath Did all the test pass on your side? 
+I get 4 failures in test_calendarmath Did all the test pass on your side before you ran the coverage report?
 
 
-    1 File "/home/amalizzio/github/dateroll/dateroll/tests/test_calendarmath.py", line 161, in test_diffbd
-        self.assertEqual(b_minus_a,9)
-    AssertionError: 11 != 9
+Our reports were different, i think its a version issue, here's mine as of 5pm today:
 
-    2 File "/home/amalizzio/github/dateroll/dateroll/tests/test_calendarmath.py", line 288, in test_nextBd
-        self.assertEqual(d,Date(2024,1,2))
-    AssertionError: datetime.date(2024, 1, 1) != Date("2024-01-02")
+Name                                 Stmts   Miss  Cover   Missing
+------------------------------------------------------------------
+dateroll/__init__.py                     4      0   100%
+dateroll/calendars/__init__.py           0      0   100%
+dateroll/calendars/calendarmath.py     186      7    96%   89, 261-265, 284-287
+dateroll/calendars/calendars.py        159      8    95%   207-216
+dateroll/date/__init__.py                0      0   100%
+dateroll/date/date.py                  104      0   100%
+dateroll/ddh/__init__.py                 0      0   100%
+dateroll/ddh/ddh.py                     29      0   100%
+dateroll/duration/__init__.py            0      0   100%
+dateroll/duration/duration.py          253     16    94%   215, 414, 423, 456, 460, 463, 467, 482, 487-488, 492, 518-523
+dateroll/parser/__init__.py              0      0   100%
+dateroll/parser/parser.py               65     21    68%   102, 105, 129, 154-181, 189
+dateroll/parser/parsers.py             105     12    89%   32, 55, 67, 94-97, 125, 130, 144, 202, 205, 219
+dateroll/parser/patterns.py             29      0   100%
+dateroll/schedule/__init__.py            0      0   100%
+dateroll/schedule/schedule.py            1      0   100%
+dateroll/utils.py                       17      0   100%
+------------------------------------------------------------------
+TOTAL                                  952     64    93%
 
-    3 File "/home/amalizzio/github/dateroll/dateroll/tests/test_calendarmath.py", line 306, in test_prevBd
-        self.assertEqual(d,Date(2023,12,29))
-    AssertionError: datetime.date(2024, 1, 1) != Date("2023-12-29")
 
-    4 File "/home/amalizzio/github/dateroll/dateroll/tests/test_calendarmath.py", line 277, in test_repr
-        self.assertEqual(repr(calmath).split('.dateroll')[1],expected_str)
-    AssertionError: '/cal[28 chars]: [\'BR\', \'WE\', \'ECB\', \'FED\', \'NY\', \[31 chars]: []' != '/cal[28 chars]: [\'FED\', \'ECB\', \'LN\', \'WE\', \'ALL\', [31 chars]: []'
-    /calendars/compiled_cals")
-    - Cals: ['BR', 'WE', 'ECB', 'FED', 'NY', 'LN', 'ALL', 'AA']
-    + Cals: ['FED', 'ECB', 'LN', 'WE', 'ALL', 'BR', 'NY', 'AA']
+Question on zero vs none, that's good, i finished the changes.
 
-
-Our coverage reports do not match:
-
-
-your dateroll/calendars/calendarmath.py     184      0   100%
-mine dateroll/calendars/calendarmath.py     186      7    96%   89, 261-265, 284-287
-your dateroll/calendars/calendars.py        159      0   100%
-mine dateroll/calendars/calendars.py        159      8    95%   207-216
-your dateroll/date/date.py                  103      0   100%
-mine dateroll/date/date.py                  104      0   100%
-your dateroll/ddh/ddh.py                     28      0   100%
-mine dateroll/ddh/ddh.py                     29      0   100%
-your dateroll/duration/duration.py          283     15    95%   495, 504, 537, 541, 544-545, 548, 563, 568-569, 573, 581-584
-mine dateroll/duration/duration.py          286     15    95%   495, 504, 537, 541, 544, 548, 563, 568-569, 573, 579-584
-mine dateroll/parser/parser.py               65     21    68%   102, 105, 129, 154-181, 189
-your dateroll/parser/parser.py               66     22    67%   102, 105, 129, 154-185, 189
-
-I don't know... could be python version / coverage.py version difference
-
-Question on Duration None vs Zero, let me see.
