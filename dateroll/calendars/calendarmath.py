@@ -45,7 +45,7 @@ class CalendarMath:
         self.cals = Calendars()
         self.hash = self.cals.hash
         self.ALL = self.cals["ALL"]
-        self.unions = []
+        # self.unions = []
 
         self.fwd = {}
         self.bck = {}
@@ -68,7 +68,7 @@ class CalendarMath:
             "fwd": self.fwd,
             "bck": self.bck,
             "hash": self.hash,
-            "unions": self.unions,
+            # "unions": self.unions,
         }
         with safe_open(self.home, "wb") as f:
             pickle.dump(cached, f)
@@ -320,7 +320,8 @@ class CalendarMath:
             cal_union_key = 'u'.join(cals)
         except:
             raise TypeError(f"Calendar name must be string")
-        if cal_union_key not in self.unions:
+        # if cal_union_key not in self.unions:
+        if cal_union_key not in self.bck:
             # union dates wasnt' cached, call _generate_union
             self._generate_union(cal_union_key)
         
@@ -347,7 +348,6 @@ class CalendarMath:
         print(f"[dateroll] compiling new union [{cal_union_key}]")
         dict_tuple = self.gen_dicts(cal_union_key, unioned_dates, self.ALL)
         self.fwd[cal_union_key], self.bck[cal_union_key] = dict_tuple
-
         # save cache
         self.save_cache()
 
@@ -358,13 +358,12 @@ class CalendarMath:
         """
         Show names of cals and unions
         """
-        return f'{self.__class__.__name__}(home="{self.home}")\nCals: {self.cals.keys()}\nUnions: {self.unions}'
+        return f'{self.__class__.__name__}(home="{self.home}")\nCals: {self.cals.keys()}\nUnions: {list(self.fwd.keys())}'
 
 
 calmath = CalendarMath()
 
 if __name__ == "__main__": # pragma: no cover
-    calmath = CalendarMath()
 
     import datetime
     import time
