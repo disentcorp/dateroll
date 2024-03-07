@@ -287,6 +287,8 @@ TOTAL                                  979     49    95%
 
 ############ anthony 2024/3/7 9AM
 
+i updated .gitignore to ignore coverage and non-exist, please pull
+
 When i ran the tests with:
 
 coverage run --omit="dateroll/tests/*.py" -m unittest discover
@@ -312,3 +314,24 @@ I get 4 failures in test_calendarmath Did all the test pass on your side?
     /calendars/compiled_cals")
     - Cals: ['BR', 'WE', 'ECB', 'FED', 'NY', 'LN', 'ALL', 'AA']
     + Cals: ['FED', 'ECB', 'LN', 'WE', 'ALL', 'BR', 'NY', 'AA']
+
+
+Our coverage reports do not match:
+
+
+your dateroll/calendars/calendarmath.py     184      0   100%
+mine dateroll/calendars/calendarmath.py     186      7    96%   89, 261-265, 284-287
+your dateroll/calendars/calendars.py        159      0   100%
+mine dateroll/calendars/calendars.py        159      8    95%   207-216
+your dateroll/date/date.py                  103      0   100%
+mine dateroll/date/date.py                  104      0   100%
+your dateroll/ddh/ddh.py                     28      0   100%
+mine dateroll/ddh/ddh.py                     29      0   100%
+your dateroll/duration/duration.py          283     15    95%   495, 504, 537, 541, 544-545, 548, 563, 568-569, 573, 581-584
+mine dateroll/duration/duration.py          286     15    95%   495, 504, 537, 541, 544, 548, 563, 568-569, 573, 579-584
+mine dateroll/parser/parser.py               65     21    68%   102, 105, 129, 154-181, 189
+your dateroll/parser/parser.py               66     22    67%   102, 105, 129, 154-185, 189
+
+I don't know... could be python version / coverage.py version difference
+
+Question on Duration None vs Zero, let me see.

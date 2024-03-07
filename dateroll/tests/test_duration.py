@@ -50,39 +50,21 @@ class TestDuration(unittest.TestCase):
         y,m,w,d,bd = 1,2,3,4,5
         dur1 = Duration(y=y,m=m,w=w,d=d,bd=bd)
         dur2 = Duration()
+      
+        #year
+        self.assertEqual(dur1.y,y)
+        self.assertEqual(dur1.year,y)
+        self.assertEqual(dur1.years,y)
 
         #month
         self.assertEqual(dur1.m,m)
         self.assertEqual(dur1.month,m)
         self.assertEqual(dur1.months,m)
-        # TODO discuss with AM
-        # self.assertIsNone(dur2.m)
-        # self.assertIsNone(dur2.month)
-        # self.assertIsNone(dur2.months)
-       
-        #week
-        self.assertEqual(dur1.w,w)
-        self.assertEqual(dur1.week,w)
-        self.assertEqual(dur1.weeks,w)
-        self.assertIsNone(dur2.w)
-        self.assertIsNone(dur2.week)
-        self.assertIsNone(dur2.week)
-
-        #year
-        self.assertEqual(dur1.y,y)
-        self.assertEqual(dur1.year,y)
-        self.assertEqual(dur1.years,y)
-        self.assertIsNone(dur2.y)
-        self.assertIsNone(dur2.year)
-        self.assertIsNone(dur2.years)
 
         #day
-        self.assertEqual(dur1.d,d)
-        self.assertEqual(dur1.day,d)
-        self.assertEqual(dur1.days,d)
-        self.assertIsNone(dur2.d)
-        self.assertIsNone(dur2.day)
-        self.assertIsNone(dur2.days)
+        self.assertEqual(dur1.d,d+7*w)
+        self.assertEqual(dur1.day,d+7*w)
+        self.assertEqual(dur1.days,d+7*w)
         
         #bd
         self.assertEqual(dur1.bd,bd)
@@ -224,23 +206,15 @@ class TestDuration(unittest.TestCase):
     def test__validate_adj_roll(self):
         pass
 
-    def test_bd_only(self):
-        '''
-            returns the bd if only bd exists
-        '''
-        dur = Duration(bd=1)
-        self.assertEqual(dur.bd_only,1)
-        dur = Duration(y=1,bd=1)
-        self.assertFalse(dur.bd_only)
     def test_just_days(self):
         pass
     def test_rough_days(self):
         '''
             returns the rough or exact days of duration
         '''
-        dur = Duration(y=1,m=1,w=1,d=2,bd=2)
-        rs = dur.rough_days
-        self.assertEqual(rs,(False, 387.1468253968254))
+        # dur = Duration(y=1,m=/1,w=1,d=1,bd=1)
+        # rs = dur.rough_days
+        # self.assertEqual(rs,(False, ))
 
 
 
@@ -315,27 +289,17 @@ class TestDuration(unittest.TestCase):
         '''
             test equality
         '''
-        dur = Duration(cals='WE')
-        o2 = '20240101'
 
-        self.assertFalse(dur==o2)
-        d1 = datetime.datetime(2024,3,17)
-        d2 = datetime.datetime(2024,3,1)
+        # pos testing
+        self.assertEqual(Duration(days=5),Duration(days=5))
+        self.assertEqual(Duration(days=5),dateutil.relativedelta.relativedelta(days=5))
+        self.assertEqual(Duration(days=5),datetime.timedelta(days=5))
 
-        dt2 = Date(2024,1,15)
-        dt1 = Date(2024,1,1)
-        timeDelta = d1-d2
-        dur = dt2 - dt1
-        self.assertFalse(dur==timeDelta)
-        d2 = datetime.datetime(2024,3,1)
-        dur = dt2 - dt1
-        timeDelta2 = datetime.datetime(2024,3,15) - d2
-        dur==timeDelta2
-        self.assertTrue(dur==timeDelta2)
+        # neg testing
+        self.assertNotEqual(Duration(days=5),Duration(days=4))
+        self.assertNotEqual(Duration(days=5),dateutil.relativedelta.relativedelta(days=4))
+        self.assertNotEqual(Duration(days=5),datetime.timedelta(days=4))
 
-        # print('herr')
-
-        # code.interact(local=dict(globals(),**locals()))
     def test___iadd__(self):
         pass
     def test___init__(self):

@@ -15,48 +15,23 @@ PeriodLike = (dateutil.relativedelta, datetime.timedelta)
 WEEKEND_CALENDAR = 'WE'
 VALID_ROLL_CONVENTIONS = {"F", "P", "MF", "MP"}
 
-
-def addNones(*args, zeros=False):
-    """
-    helper to add None's with numbers
-    None+0 = 0
-    None+1 = 1
-    0 + None = 0
-    None+None = None (if zeros=False)
-    None+None = 0 (if zeros = True)
-    """
-    if zeros:
-        sum = 0
-    else:
-        sum = None
-        for arg in args:
-            if arg is not None:
-                if not sum:
-                    sum = arg
-                else:
-                    sum += arg
-    return sum
-
-
 class Duration(dateutil.relativedelta.relativedelta):
     """
-    we do not inherit from relativedelta or timedelta, it is something to be considered
+    inherits from relativedelta
 
-    Duration class represents a period of time, a duration of time, an interval of time
-    i.e. some distance of time between two specific (yet unknown) dates
+    Duration class represents a distance between two dates. The two dates MAY or MAY NOT be known.
 
-    there's implicitly 2 modes:
+    3 modes of operation:
 
-    calendar day mode - no knowledge of holidays or non-working days
-        When counting days, there is no skipping over some days over others because a governing body declares that the offices are closed.
-
-    business day mode -
-        a) implicit assumption that 'WE' is always used in bd calcs
-            'WE' stands for [W]eek[End] which is our internal two-letter code for the holiday of Saturdays and Sunday's during the "reasonable business period"
-        b) user supplied holiday vectors can be unioned for adjusting accordingly
-
-        bd adjustment is O(1) assuming the calenders are in memory or the unions are cached, worst
-        bd adjustment is O(n) on bd's between two dates.
+        1 - Distance ignoring holidays
+            e.g. 3 months from today, or t+3m
+                why? normal parlance: 3 months from now
+        2 - Distance of only non-holidays
+            e.g. 2 business days from today (skip weekends and federal holidays), or t+2bd|WEuNY
+                why? payment adjustment; bond settlement is t+2bd|WEuFED
+        3 - Distance ignoring holidays + distance of only non-holidays
+            e.g. 1 months from today and then 2 business days, or t+1m2bd|WEuNY
+                why? payment adjustment: credit card is due on the 2nd business day in one month
 
     A duration can have a number of:
         business days
@@ -77,22 +52,27 @@ class Duration(dateutil.relativedelta.relativedelta):
         self,
 
         # switch mdy to days, months, years to match td and rd
-        y=None,
-        Y=None,
-        q=None,
-        Q=None,
-        m=None,
-        M=None,
-        w=None,
-        W=None,
-        d=None,
-        D=None,
-        bd=None,
 
+        # primary initialization properties (match dateutil.relativedelta)
+        years=0, months=0, weeks=0, days=0,
+
+        # auxlillary initializers
+        y=0, Y=0, year=0,
+        q=0, Q=0, quarter=0, quarters=0,
+        m=0, M=0, month=0,
+        w=0, W=0, week=0,
+        d=0, D=0, day=0,
+        
+        # bd initializer, must be none as 0 and no zero are different
+        bd=None,
+        # axuliliary bd initi
         BD=None,
+
+        # bd adjustment initializer
         cals=None,
         roll=None,
         
+        # anchor dates (if duration is the result of math with some date)
         anchor_start=None,
         anchor_end=None
     ):
@@ -104,14 +84,14 @@ class Duration(dateutil.relativedelta.relativedelta):
         d = day
         bd = business days
         cals = list of 2-letter codes for calendars
-        roll = roll convention (F,P,MF,MP)
-
-        ^ non means not supplied, 0 means zero supplied
-
-        class instance keeps one of each, None if no value
+        roll = roll convention (F,P,MF,MP) <-non means not supplied, 0 means zero supplied
         """
 
-        self._validated_periodunits(y,Y,q,Q,m,M,w,W,d,D,bd,BD)
+        self.years = years + year + y + Y
+        self.months = months + month + m + M
+        self.days = days + day + d + D + 7*(weeks+week+W+w)
+        self.bd = None if (bd is None and BD is None) else bd or BD
+
         self._validate_cals(cals)
         self._validate_adj_roll(cals,roll)
 
@@ -140,22 +120,6 @@ class Duration(dateutil.relativedelta.relativedelta):
             return Duration(d=td.days)
         else:
             raise TypeError(f'Must be timedelta not {type(td).__name__}') 
-
-    def _validated_periodunits(self,y,Y,q,Q,m,M,w,W,d,D,bd,BD):
-        self.y = addNones(y, Y)
-
-        _m = addNones(
-            addNones(m, M),
-            3 * addNones(q, Q, zeros=True),
-        )
-        if _m != 0:
-            self.m = _m
-        else:
-            self.m = 0
-        
-        self.w = addNones(w, W)
-        self.d = addNones(d, D)
-        self.bd = addNones(bd, BD)
 
     def _validate_adj_roll(self,cals,roll):
         if self.bd is None and cals and len(cals) > 0:
@@ -225,38 +189,6 @@ class Duration(dateutil.relativedelta.relativedelta):
 
         self.cals = _cals
 
-    @property
-    def years(self):
-        return self.y
-
-    @property
-    def months(self):
-        return self.m
-
-    @property
-    def weeks(self):
-        return self.w
-
-    @property
-    def days(self):
-        return self.d
-
-    @property
-    def year(self):
-        return self.y
-
-    @property
-    def month(self):
-        return self.m
-
-    @property
-    def week(self):
-        return self.w
-
-    @property
-    def day(self):
-        return self.d
-
     def __eq__(self, o):
         """
         equality
@@ -286,14 +218,12 @@ class Duration(dateutil.relativedelta.relativedelta):
     def delta(self):
         """ """
         rd_args = {}
-        if self.y:
-            rd_args["years"] = self.y 
-        if self.m:
-            rd_args["months"] = self.m 
-        if self.w:
-            rd_args["weeks"] = self.w 
-        if self.d:
-            rd_args["days"] = self.d 
+        if self.years:
+            rd_args["years"] = self.years 
+        if self.months:
+            rd_args["months"] = self.months 
+        if self.days:
+            rd_args["days"] = self.days 
 
         rd = dateutil.relativedelta.relativedelta(**rd_args)
 
@@ -384,29 +314,19 @@ class Duration(dateutil.relativedelta.relativedelta):
         """
         exact = True
         days = 0
-        if self.y is not None:
+        if self.years is not None:
             exact = exact and False
-            days += 365.25 * self.y
-        if self.m is not None:
+            days += 365.25 * self.years
+        if self.months is not None:
             exact = exact and True
-            days += 12 * self.m
-        if self.w is not None:
+            days += 12 * self.months
+        if self.days is not None:
             exact = exact and True
-            days += 7 * self.w
-        if self.d is not None:
-            exact = exact and True
-            days + self.d
+            days + self.days
         if self.bd is not None:
             exact = exact and False
             days += 365 / 252 * self.bd
         return exact, days
-
-    @property
-    def bd_only(self):
-        if self.y is None and (self.m is None or self.m==0) and self.w is None and self.bd is not None:
-            return self.bd
-        else:
-            return False
 
     def math(self, b, direction):
         """
@@ -420,11 +340,10 @@ class Duration(dateutil.relativedelta.relativedelta):
             """
             combine both
             """
-            y = addNones(a.y, b.y)
-            m = addNones(a.m, b.m)
-            w = addNones(a.w, b.w)
-            d = addNones(a.d, b.d)
-            bd = addNones(a.bd, b.bd)
+            years = a.years+b.years
+            months = a.months+b.months
+            days = a.days+b.days
+            bd = None if a.bd is None and b.bd is None else (0 if a.bd is None else a.bd) + (0 if b.bd is None else b.bd)
             # union cal sets
             # future, switch these to orNone
             
@@ -450,8 +369,8 @@ class Duration(dateutil.relativedelta.relativedelta):
             
             """
             if a.roll or b.roll or a.cals or b.cals:
-                abd = a.bd_only
-                bbd = b.bd_only
+                abd = a.bd
+                bbd = b.bd
                 if abd and bbd:
                     # only bd's so EXACT diff
                     diff = abd + bbd
@@ -487,7 +406,7 @@ class Duration(dateutil.relativedelta.relativedelta):
             else:
                 roll = None
 
-            c = Duration(y=y, m=m, w=w, d=d, bd=bd, roll=roll, cals=cals)
+            c = Duration(years=years, months=months, days=days, bd=bd, roll=roll, cals=cals)
             return c
 
         # duration + rd() --- should not happen
@@ -571,6 +490,26 @@ class Duration(dateutil.relativedelta.relativedelta):
 
     def simplify(self):
         ...
+
+    @property
+    def y(self): return self.years
+    @property
+    def Y(self): return self.years
+    @property
+    def year(self): return self.years
+    @property
+    def M(self): return self.months
+    @property
+    def m(self): return self.months
+    @property
+    def month(self): return self.months
+    @property
+    def D(self): return self.days
+    @property
+    def d(self): return self.days
+    @property
+    def day(self): return self.days
+    
 
 PeriodLike = PeriodLike + (Duration,)
 
