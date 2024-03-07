@@ -60,13 +60,8 @@ class TestDDH(unittest.TestCase):
         purge all
         '''
         ddh.purge_all()
-        base_cals = ['FED', 'ECB', 'LN', 'WE', 'ALL', 'BR', 'NY']
-        self.assertEqual(list(cals.keys()),base_cals)
-
-        # after purging all create new calendar data
-        cal = calendars.Calendars()
-        cal.recreate_data()
-
+        base_cals = sorted(['FED', 'ECB', 'LN', 'WE', 'ALL', 'BR', 'NY'])
+        self.assertEqual(sorted(cals.keys()),base_cals)
 
     def testConvention(self):
         a = ddh('12/4/24',convention='MDY')

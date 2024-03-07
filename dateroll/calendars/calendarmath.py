@@ -99,7 +99,7 @@ class CalendarMath:
                 self.fwd[k], self.bck[k] = self.gen_dicts(k, v, self.ALL)
 
         self.save_cache()
-        self.hash = self.cals.hash  # 8 ms
+        self.hash = self.cals.hash
 
     @property
     def has_mutated(self):

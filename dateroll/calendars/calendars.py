@@ -35,7 +35,8 @@ def load_sample_data():
             ld = []
             for i in ls:
                 dt = datetime.date(int(i[0:4]), int(i[5:7]), int(i[8:10]))
-                ld.append(dt)
+                if dt > INCEPTION:
+                    ld.append(dt)
             data[name] = ld
     return data
 
@@ -200,20 +201,6 @@ class Calendars(dict):
     def _purge_all(self):
         self.__init__()
 
-    def recreate_data(self):
-        '''
-            when the data is mutated we create new holiday data from csv files
-        '''
-        data = load_sample_data()
-        # in data new we cut the dates before Inception dates
-        data_new = {}
-        for k in data:
-            v = data[k]
-            v = [d for d in v if d>=INCEPTION]
-            data_new[k] = v
-
-        with safe_open(self.home, "wb") as f:
-            pickle.dump(data_new, f)
     @property
     def info(self):
         pattern = lambda a, b, c, d: f"{a:6}|{b:>8}|{c:12}|{d:12}"
