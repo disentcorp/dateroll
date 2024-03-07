@@ -248,3 +248,38 @@ https://stackoverflow.com/questions/64611388/exclude-a-function-from-coverage
 
 if __name__ == '__main__': # pragma: no cover
     pass
+
+
+############ batu 2024/3/7 7:30 AM EST
+Name                                 Stmts   Miss  Cover   Missing
+------------------------------------------------------------------
+dateroll/__init__.py                     4      0   100%
+dateroll/calendars/__init__.py           0      0   100%
+dateroll/calendars/calendarmath.py     184      0   100%
+dateroll/calendars/calendars.py        159      0   100%
+dateroll/date/__init__.py                0      0   100%
+dateroll/date/date.py                  103      0   100%
+dateroll/ddh/__init__.py                 0      0   100%
+dateroll/ddh/ddh.py                     28      0   100%
+dateroll/duration/__init__.py            0      0   100%
+dateroll/duration/duration.py          283     15    95%   495, 504, 537, 541, 544-545, 548, 563, 568-569, 573, 581-584
+dateroll/parser/__init__.py              0      0   100%
+dateroll/parser/parser.py               66     22    67%   102, 105, 129, 154-185, 189
+dateroll/parser/parsers.py             105     12    89%   32, 55, 67, 94-97, 125, 130, 144, 202, 205, 219
+dateroll/parser/patterns.py             29      0   100%
+dateroll/schedule/__init__.py            0      0   100%
+dateroll/schedule/schedule.py            1      0   100%
+dateroll/utils.py                       17      0   100%
+------------------------------------------------------------------
+TOTAL                                  979     49    95%
+
+    Summary:
+        #1 Duration 95 pct
+        #2 Fixed related bugs
+    
+    Question:
+        #1 I made y,m,w,d = 0 when it is needed NOT None 
+            because it caused a problem Date(2024,3,15) - Date(2024,3,1) which will give me y=None,m=None,w=None, d=14 and I could not
+            compare this duration with dateutile.relativedelta where y=0,m=0,w=0,d=14
+            As a result, always m=0 when I initialize duration, e.g Duration(d=14)--> Duration(m=0,d=14) because of the line 151:154
+            (i changed None to 0) if we put None there, Date(2024,3,15) - Date(2024,3,1)--> y=0,m=None,w=0,d=14 which cause problem

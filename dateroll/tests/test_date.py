@@ -1,5 +1,6 @@
 import datetime
 import unittest
+import code
 
 from dateutil.relativedelta import relativedelta
 
@@ -128,7 +129,8 @@ class TestDate(unittest.TestCase):
         self.assertRaises(TypeError,lambda: 3.0-d1)
 
         # # sub
-        dur91d = Duration(d=91)
+        dur91d = Duration(y=0,m=3,w=0,d=0)
+        # code.interact(local=dict(globals(),**locals()))
         self.assertEqual(d2 - d1, dur91d)
         self.assertEqual(d2 - dur, d1)
         self.assertEqual(d2 - str_d1, dur91d)
@@ -206,6 +208,14 @@ class TestDate(unittest.TestCase):
         _d2 -= rd
         self.assertEqual(_d2, d1)
 
+    def test_repr(self):
+        '''
+            test the repr of date
+        '''
+        a = Date(2024, 12, 5)
+        rs = repr(a)
+        self.assertEqual(rs,'Date("2024-12-05")')
+        
 
 if __name__ == "__main__":
     unittest.main()

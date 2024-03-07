@@ -1,6 +1,7 @@
 import calendar
 import datetime
 from datetime import timezone
+import code
 
 import dateutil.relativedelta
 from dateutil.parser import parse
@@ -137,9 +138,15 @@ class Date(datetime.date):
             else:
                 oDate = Date.from_datetime(o)
             
-            td = self.date - oDate.date
+            # td = self.date - oDate.date
+            rd = dateutil.relativedelta.relativedelta(self.date,oDate.date)
+            # print('in sub')
+            # code.interact(local=dict(globals(),**locals()))
             result = Duration(
-                d=td.days,
+                y=rd.years,
+                m=rd.months,
+                w=rd.weeks,
+                d=rd.days,
                 anchor_start=self.date,
                 anchor_end=oDate
                               )

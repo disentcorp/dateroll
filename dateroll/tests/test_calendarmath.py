@@ -287,8 +287,10 @@ class TestStringMathMethods(unittest.TestCase):
         d2 = calmath.next_bd(nonhol,'NYuWE')
         self.assertEqual(d,Date(2024,1,2))
         self.assertEqual(d2,Date(2024,1,2))
-        with self.assertRaises(NotImplementedError):
-            calmath.next_bd(hol,'NYuWE',mod=True)
+        d3 = calmath.next_bd(hol,'NYuWE',mod=True)
+        d4 = calmath.next_bd(nonhol,'NYuWE',mod=True)
+        self.assertEqual(d3,Date(2023,12,29))
+        self.assertEqual(d4,datetime.datetime(2023,12,29))
     
     def test_prevBd(self):
         '''
@@ -303,8 +305,10 @@ class TestStringMathMethods(unittest.TestCase):
         d2 = calmath.prev_bd(nonhol,'NYuWE')
         self.assertEqual(d,Date(2023,12,29))
         self.assertEqual(d2,Date(2023,12,29))
-        with self.assertRaises(NotImplementedError):
-            calmath.prev_bd(hol,'NYuWE',mod=True)
+        d3 = calmath.prev_bd(hol,'NYuWE',mod=True)
+        d4 = calmath.prev_bd(nonhol,'NYuWE',mod=True)
+        self.assertEqual(d3,Date(2024,1,2))
+        self.assertEqual(d4,datetime.datetime(2024,1,2))
         
 
 

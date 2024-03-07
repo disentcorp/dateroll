@@ -5,6 +5,7 @@ import tempfile
 import unittest
 import uuid
 from unittest import expectedFailure
+import dateroll.calendars.calendars as calendars
 import code
 
 from dateroll import ddh,cals
@@ -61,6 +62,11 @@ class TestDDH(unittest.TestCase):
         ddh.purge_all()
         base_cals = ['FED', 'ECB', 'LN', 'WE', 'ALL', 'BR', 'NY']
         self.assertEqual(list(cals.keys()),base_cals)
+
+        # after purging all create new calendar data
+        cal = calendars.Calendars()
+        cal.recreate_data()
+
 
     def testConvention(self):
         a = ddh('12/4/24',convention='MDY')

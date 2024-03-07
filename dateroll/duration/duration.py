@@ -4,6 +4,7 @@ import dateutil
 import dateutil.relativedelta
 from dateroll.calendars.calendarmath import calmath
 import dateroll.parser.parsers as parsers
+import code
 
 cals = calmath.cals
 
@@ -109,6 +110,7 @@ class Duration(dateutil.relativedelta.relativedelta):
 
         class instance keeps one of each, None if no value
         """
+
         self._validated_periodunits(y,Y,q,Q,m,M,w,W,d,D,bd,BD)
         self._validate_cals(cals)
         self._validate_adj_roll(cals,roll)
@@ -149,8 +151,8 @@ class Duration(dateutil.relativedelta.relativedelta):
         if _m != 0:
             self.m = _m
         else:
-            self.m = None
-
+            self.m = 0
+        
         self.w = addNones(w, W)
         self.d = addNones(d, D)
         self.bd = addNones(bd, BD)
@@ -173,10 +175,11 @@ class Duration(dateutil.relativedelta.relativedelta):
                 if roll in VALID_ROLL_CONVENTIONS:
                     self.roll = roll
                 else:
-                     raise ValueError("F, P, MF, or MP, not {self.roll}")
+                     raise ValueError(f"F, P, MF, or MP, not {roll}")
             else:
                 raise TypeError("Roll must be a str")
         else:
+            ...
             if self.bd is not None:
                 if self.bd >= 0:
                     self.roll = "F"
@@ -190,7 +193,6 @@ class Duration(dateutil.relativedelta.relativedelta):
         
         '''
         _cals = set()
-        
         if cals is not None:
               
             # str parser if required
@@ -260,9 +262,11 @@ class Duration(dateutil.relativedelta.relativedelta):
         equality
         """
         # convert td to rd
+        
         if isinstance(o, datetime.timedelta):
-            o = dateutil.relativedelta.relativedelta(o.days)
-        elif isinstance(o, dateutil.relativedelta.relativedelta):
+            o = dateutil.relativedelta.relativedelta(days = o.days)
+        if isinstance(o, dateutil.relativedelta.relativedelta):
+            
             if self.years == o.years:
                 if self.months == o.months:
                     if self.weeks == o.weeks:
@@ -283,13 +287,13 @@ class Duration(dateutil.relativedelta.relativedelta):
         """ """
         rd_args = {}
         if self.y:
-            rd_args["years"] = self.y
+            rd_args["years"] = self.y 
         if self.m:
-            rd_args["months"] = self.m
+            rd_args["months"] = self.m 
         if self.w:
-            rd_args["weeks"] = self.w
+            rd_args["weeks"] = self.w 
         if self.d:
-            rd_args["days"] = self.d
+            rd_args["days"] = self.d 
 
         rd = dateutil.relativedelta.relativedelta(**rd_args)
 
@@ -305,11 +309,12 @@ class Duration(dateutil.relativedelta.relativedelta):
             adjusted = self.adjust_bds(from_date)
         else:
             adjusted = from_date
-        if self.roll is not None:
+        if self.roll is not None and self.bd is None:
+            # if self.bd is not None, it will add another 1 bd which is wrong
             rolled_and_adjusted = self.apply_roll_convention(adjusted)
         else:
             rolled_and_adjusted = adjusted
-
+        
         return rolled_and_adjusted
 
     def apply_roll_convention(self, from_date):
@@ -332,6 +337,7 @@ class Duration(dateutil.relativedelta.relativedelta):
         """
         uses CalendarMath for bd adjustment
         """
+        
         _d = calmath.add_bd(from_date, self.bd, cals=self.cals)
         return _d
 
@@ -360,7 +366,7 @@ class Duration(dateutil.relativedelta.relativedelta):
         note: q, s, and h are automatically converted to more senior buckets
 
         """
-        ...
+        
 
     """
     if 3m with calenda
@@ -397,7 +403,7 @@ class Duration(dateutil.relativedelta.relativedelta):
 
     @property
     def bd_only(self):
-        if self.y is None and self.m is None and self.w is None and self.bd is not None:
+        if self.y is None and (self.m is None or self.m==0) and self.w is None and self.bd is not None:
             return self.bd
         else:
             return False
@@ -409,7 +415,6 @@ class Duration(dateutil.relativedelta.relativedelta):
         from dateroll.date.date import Date, DateLike
 
         a = self
-
         # duration + duration
         if isinstance(b, Duration):
             """
@@ -420,12 +425,13 @@ class Duration(dateutil.relativedelta.relativedelta):
             w = addNones(a.w, b.w)
             d = addNones(a.d, b.d)
             bd = addNones(a.bd, b.bd)
-
             # union cal sets
             # future, switch these to orNone
+            
             if a.cals is not None:
                 if b.cals is not None:
-                    cals = a.cals | b.cals
+                    
+                    cals = tuple(set(a.cals) | set(b.cals))
                 else:
                     cals = a.cals
             else:
@@ -453,6 +459,7 @@ class Duration(dateutil.relativedelta.relativedelta):
                     ae, adays = a.rough_days
                     be, bdays = b.rough_days
                     diff = adays + bdays
+                    
                     if not (ae and be) and diff < 0:
                         # EXACT diff failed, need to tell user approx is involved
                         print(
@@ -460,16 +467,20 @@ class Duration(dateutil.relativedelta.relativedelta):
                         )
 
                 # not if net diff is positive, rolling forwards
+                _aroll = a.roll if a.roll is not None else ""
+                _broll = a.roll if a.roll is not None else ""
                 if diff > 0 or (diff==0 and direction==1):
-                    _aroll = a.roll if a.roll is not None else ""
-                    _broll = a.roll if a.roll is not None else ""
+                    if 'P' in _aroll or 'P' in _broll:
+                        raise ValueError('In the positive direction, roll should not be P')
                     if "M" in _aroll or "M" in _broll:
                         roll = "MF"
                     else:
                         roll = "F"
                 # if net diff is negative, rolling backwards
                 else:
-                    if "M" in a.roll or "M" in b.roll:
+                    if 'F' in _aroll or 'F' in _broll:
+                        raise ValueError('In the negative direction, roll should not be F')
+                    if "M" in _aroll or "M" in _broll:
                         roll = "MP"
                     else:
                         roll = "P"
@@ -507,6 +518,7 @@ class Duration(dateutil.relativedelta.relativedelta):
 
     def __rsub__(self, x):
         # print(type(x), "rsub")
+        
         return self.math(x, -1)
 
     def __add__(self, x):
@@ -565,3 +577,9 @@ PeriodLike = PeriodLike + (Duration,)
 
 if __name__ == "__main__":
     ...
+    # dur2 = Duration()
+    from dateroll.date.date import Date
+    dt2 = Date(2024,1,15)
+    dt1 = Date(2024,1,1)
+    dur = dt2 - dt1
+

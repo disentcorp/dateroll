@@ -251,10 +251,18 @@ class CalendarMath:
         """
         the next business date from d on calendars cals
         """
-        if mod:
-            raise NotImplementedError("next_bd")
+        # if mod:
+        #     raise NotImplementedError("next_bd")
         # warnings.warn("next bd not implemented yet")
         new_d = self.add_bd(d,1,cals)
+        if mod:
+            if new_d.month!=d.month:
+                # when month is different new d should be within the previous month
+                if self.is_bd(d,cals):
+                    new_d =d
+                else:
+                    # if it is holiday, we should prev bd
+                    new_d = self.sub_bd(d,-0.0,cals)
         return new_d
 
     def prev_bd(self, d, cals, mod=False):
@@ -262,14 +270,21 @@ class CalendarMath:
         the previous business date from d on calendars cals
         """
 
-        if mod:
-            raise NotImplementedError("prev_bd")
+        # if mod:
+        #     raise NotImplementedError("prev_bd")
         # warnings.warn("prev bd not implemented yet")
         if self.is_bd(d,cals):
             new_d = self.sub_bd(d,1,cals)
         else:
             # when holiday, to get prev_db we should subtract 0 from the date because of fwd,bck property
             new_d = self.sub_bd(d,-0.0,cals)
+        if mod:
+            if new_d.month!=d.month:
+                # when month differs, new_d month should be within the next month
+                if self.is_bd(d,cals):
+                    new_d = d
+                else:
+                    new_d = self.add_bd(d,1,cals)
         return new_d
 
 
