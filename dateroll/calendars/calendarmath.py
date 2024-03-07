@@ -360,7 +360,6 @@ class CalendarMath:
 calmath = CalendarMath()
 
 if __name__ == "__main__": # pragma: no cover
-    calmath = CalendarMath()
 
     import datetime
     import time

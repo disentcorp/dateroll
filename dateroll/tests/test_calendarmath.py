@@ -183,7 +183,7 @@ class TestStringMathMethods(unittest.TestCase):
         p = pathlib.Path('NonExist')
         if p.exists():
             os.remove(p)
-        calmath = CalendarMath()
+        calmath = self.cals
         hash = calmath.hash
         calmath.home = pathlib.Path('NonExist')
         calmath.data_backend_present
@@ -195,11 +195,11 @@ class TestStringMathMethods(unittest.TestCase):
         '''
             when the dates are empty, e.g cals['AA'] = []
         '''
-        cal = calendars.Calendars()
+        cal = self.cals.cals
         if 'AA' in cal.keys():
             del cal['AA']
         cal['AA'] = []
-        calmath = CalendarMath()
+        calmath = self.cals
         nonhol = Date(2023,1,3)
         with self.assertRaises(Exception) as cm:
             calmath.add_bd(nonhol,2,'AA')
@@ -209,7 +209,7 @@ class TestStringMathMethods(unittest.TestCase):
         '''
             it is temporary, right now we do not support Mod
         '''
-        calmath = CalendarMath()
+        calmath = self.cals
         nonhol = Date(2023,1,3)
         with self.assertRaises(NotImplementedError):
             calmath.add_bd(nonhol,2,'WE',mod=True)
@@ -218,7 +218,7 @@ class TestStringMathMethods(unittest.TestCase):
         '''
             when pass datetime and date
         '''
-        calmath = CalendarMath()
+        calmath = self.cals
         nonhol = datetime.datetime(2023,1,3)
         d = calmath.add_bd(nonhol,1,None)
         self.assertEqual(d,Date(2023,1,4))
@@ -232,7 +232,7 @@ class TestStringMathMethods(unittest.TestCase):
         '''
             when add non date should raise typeerror
         '''
-        calmath = CalendarMath()
+        calmath = self.cals
         dt = 10
         with self.assertRaises(Exception) as cm:
             calmath.add_bd(dt,2,'WE')
@@ -243,7 +243,7 @@ class TestStringMathMethods(unittest.TestCase):
             when calendar is not in the Calendar instance
         
         '''
-        calmath = CalendarMath()
+        calmath = self.cals
         nonhol = datetime.datetime(2023,1,3)
         with self.assertRaises(Exception) as cm:
             calmath.add_bd(nonhol,1,'AB')
@@ -253,7 +253,7 @@ class TestStringMathMethods(unittest.TestCase):
         '''
             calendar must be a string
         '''
-        calmath = CalendarMath()
+        calmath = self.cals
         nonhol = datetime.datetime(2023,1,3)
         with self.assertRaises(Exception) as cm:
             calmath.add_bd(nonhol,2,[10])
@@ -263,21 +263,21 @@ class TestStringMathMethods(unittest.TestCase):
         '''
             when we try to pass n<0 in sub_bd, should raise error
         '''
-        calmath = CalendarMath()
+        calmath = self.cals
         nonhol = datetime.datetime(2023,1,3)
         with self.assertRaises(Exception) as cm:
                     calmath.sub_bd(nonhol,-1,'WE')
                 
         self.assertEqual(str(cm.exception),'n needs to be positive number')
     def test_repr(self):
-        calmath = CalendarMath()
+        calmath = self.cals
         x = repr(calmath)
 
     def test_nextBd(self):
         '''
             find the next bd, when pass mod=True should raise NotImplemented error
         '''
-        calmath = CalendarMath()
+        calmath = self.cals
         nonhol = datetime.datetime(2023,12,29)
         hol = Date(2023,12,31)
         d = calmath.next_bd(hol,'NYuWE')
@@ -295,7 +295,7 @@ class TestStringMathMethods(unittest.TestCase):
             find the previous bd, when pass mod=True should raise NotImplemented error
         '''
         
-        calmath = CalendarMath()
+        calmath = self.cals
         nonhol = datetime.datetime(2024,1,2)
         hol = Date(2024,1,1)
         d = calmath.prev_bd(hol,'NYuWE')
