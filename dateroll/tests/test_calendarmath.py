@@ -17,7 +17,7 @@ class TestStringMathMethods(unittest.TestCase):
     def setUpClass(cls):
         cls.filename_base = (
             pathlib.Path(tempfile.gettempdir())
-            / f"dateroll.testing.calmath.{uuid.uuid4()}"
+            / f"dateroll.testing.self.cals.{uuid.uuid4()}"
         )
         cls.cals = CalendarMath(home=cls.filename_base)
 
@@ -183,11 +183,18 @@ class TestStringMathMethods(unittest.TestCase):
         p = pathlib.Path('NonExist')
         if p.exists():
             os.remove(p)
+<<<<<<< HEAD
         calmath = self.cals
         hash = calmath.hash
         calmath.home = pathlib.Path('NonExist')
         calmath.data_backend_present
         hash2 = calmath.hash
+=======
+        hash = self.cals.hash
+        self.cals.home = pathlib.Path('NonExist')
+        self.cals.data_backend_present
+        hash2 = self.cals.hash
+>>>>>>> dev
         self.assertEqual(hash,hash2)
 
     
@@ -199,43 +206,55 @@ class TestStringMathMethods(unittest.TestCase):
         if 'AA' in cal.keys():
             del cal['AA']
         cal['AA'] = []
+<<<<<<< HEAD
         calmath = self.cals
+=======
+>>>>>>> dev
         nonhol = Date(2023,1,3)
         with self.assertRaises(Exception) as cm:
-            calmath.add_bd(nonhol,2,'AA')
+            self.cals.add_bd(nonhol,2,'AA')
         self.assertEqual(str(cm.exception),'Please provide holidays')
 
     def test_NotImplementMod(self):
         '''
             it is temporary, right now we do not support Mod
         '''
+<<<<<<< HEAD
         calmath = self.cals
+=======
+>>>>>>> dev
         nonhol = Date(2023,1,3)
         with self.assertRaises(NotImplementedError):
-            calmath.add_bd(nonhol,2,'WE',mod=True)
+            self.cals.add_bd(nonhol,2,'WE',mod=True)
     
     def test_datetime(self):
         '''
             when pass datetime and date
         '''
+<<<<<<< HEAD
         calmath = self.cals
+=======
+>>>>>>> dev
         nonhol = datetime.datetime(2023,1,3)
-        d = calmath.add_bd(nonhol,1,None)
+        d = self.cals.add_bd(nonhol,1,None)
         self.assertEqual(d,Date(2023,1,4))
 
         # date
         nonhol2 = datetime.date(2023,1,3)
-        d = calmath.add_bd(nonhol2,1,'WE')
+        d = self.cals.add_bd(nonhol2,1,'WE')
         self.assertEqual(d,Date(2023,1,4))
     
     def test_NonDate(self):
         '''
             when add non date should raise typeerror
         '''
+<<<<<<< HEAD
         calmath = self.cals
+=======
+>>>>>>> dev
         dt = 10
         with self.assertRaises(Exception) as cm:
-            calmath.add_bd(dt,2,'WE')
+            self.cals.add_bd(dt,2,'WE')
         self.assertEqual(str(cm.exception),'Date must be date (got int)')
     
     def test_calNotInCalKeys(self):
@@ -243,49 +262,73 @@ class TestStringMathMethods(unittest.TestCase):
             when calendar is not in the Calendar instance
         
         '''
+<<<<<<< HEAD
         calmath = self.cals
+=======
+
+>>>>>>> dev
         nonhol = datetime.datetime(2023,1,3)
         with self.assertRaises(Exception) as cm:
-            calmath.add_bd(nonhol,1,'AB')
+            self.cals.add_bd(nonhol,1,'AB')
         self.assertEqual(str(cm.exception),"'There is no calendar AB'")
     
     def test_NonStringCal(self):
         '''
             calendar must be a string
         '''
+<<<<<<< HEAD
         calmath = self.cals
+=======
+        
+>>>>>>> dev
         nonhol = datetime.datetime(2023,1,3)
         with self.assertRaises(Exception) as cm:
-            calmath.add_bd(nonhol,2,[10])
+            self.cals.add_bd(nonhol,2,[10])
         
         self.assertEqual(str(cm.exception),'Calendar name must be string')
     def test_negativeN(self):
         '''
             when we try to pass n<0 in sub_bd, should raise error
         '''
+<<<<<<< HEAD
         calmath = self.cals
+=======
+        
+>>>>>>> dev
         nonhol = datetime.datetime(2023,1,3)
         with self.assertRaises(Exception) as cm:
-                    calmath.sub_bd(nonhol,-1,'WE')
+                    self.cals.sub_bd(nonhol,-1,'WE')
                 
         self.assertEqual(str(cm.exception),'n needs to be positive number')
     def test_repr(self):
+<<<<<<< HEAD
         calmath = self.cals
         x = repr(calmath)
 
+=======
+        expected_str = '/calendars/compiled_cals")\nCals: [\'FED\', \'ECB\', \'LN\', \'WE\', \'ALL\', \'BR\', \'NY\', \'AA\']\nUnions: []'
+        x = repr(self.cals)
+        # we dont want to see home/batu in the expected str to be able to test in any computer
+        # self.assertEqual(repr(self.cals).split('.dateroll')[1],expected_str)
+    
+>>>>>>> dev
     def test_nextBd(self):
         '''
             find the next bd, when pass mod=True should raise NotImplemented error
         '''
+<<<<<<< HEAD
         calmath = self.cals
+=======
+        
+>>>>>>> dev
         nonhol = datetime.datetime(2023,12,29)
         hol = Date(2023,12,31)
-        d = calmath.next_bd(hol,'NYuWE')
-        d2 = calmath.next_bd(nonhol,'NYuWE')
+        d = self.cals.next_bd(hol,'NYuWE')
+        d2 = self.cals.next_bd(nonhol,'NYuWE')
         self.assertEqual(d,Date(2024,1,2))
         self.assertEqual(d2,Date(2024,1,2))
-        d3 = calmath.next_bd(hol,'NYuWE',mod=True)
-        d4 = calmath.next_bd(nonhol,'NYuWE',mod=True)
+        d3 = self.cals.next_bd(hol,'NYuWE',mod=True)
+        d4 = self.cals.next_bd(nonhol,'NYuWE',mod=True)
         self.assertEqual(d3,Date(2023,12,29))
         self.assertEqual(d4,datetime.datetime(2023,12,29))
     
@@ -295,15 +338,19 @@ class TestStringMathMethods(unittest.TestCase):
             find the previous bd, when pass mod=True should raise NotImplemented error
         '''
         
+<<<<<<< HEAD
         calmath = self.cals
+=======
+
+>>>>>>> dev
         nonhol = datetime.datetime(2024,1,2)
         hol = Date(2024,1,1)
-        d = calmath.prev_bd(hol,'NYuWE')
-        d2 = calmath.prev_bd(nonhol,'NYuWE')
+        d = self.cals.prev_bd(hol,'NYuWE')
+        d2 = self.cals.prev_bd(nonhol,'NYuWE')
         self.assertEqual(d,Date(2023,12,29))
         self.assertEqual(d2,Date(2023,12,29))
-        d3 = calmath.prev_bd(hol,'NYuWE',mod=True)
-        d4 = calmath.prev_bd(nonhol,'NYuWE',mod=True)
+        d3 = self.cals.prev_bd(hol,'NYuWE',mod=True)
+        d4 = self.cals.prev_bd(nonhol,'NYuWE',mod=True)
         self.assertEqual(d3,Date(2024,1,2))
         self.assertEqual(d4,datetime.datetime(2024,1,2))
         

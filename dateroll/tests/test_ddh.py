@@ -61,7 +61,12 @@ class TestDDH(unittest.TestCase):
         '''
         ddh.purge_all()
         base_cals = sorted(['FED', 'ECB', 'LN', 'WE', 'ALL', 'BR', 'NY'])
+<<<<<<< HEAD
         self.assertEqual(sorted(cals.keys()),base_cals)
+=======
+        self.assertEqual(sorted(list(cals.keys())),base_cals)
+
+>>>>>>> dev
 
     def testConvention(self):
         a = ddh('12/4/24',convention='MDY')

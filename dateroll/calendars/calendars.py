@@ -35,7 +35,11 @@ def load_sample_data():
             ld = []
             for i in ls:
                 dt = datetime.date(int(i[0:4]), int(i[5:7]), int(i[8:10]))
+<<<<<<< HEAD
                 if dt > INCEPTION:
+=======
+                if dt>INCEPTION:
+>>>>>>> dev
                     ld.append(dt)
             data[name] = ld
     return data
@@ -222,5 +226,5 @@ class Calendars(dict):
 
 if __name__ == '__main__': # pragma: no cover
     ...
-    # print('in calendars')
-    # code.interact(local=dict(globals(),**locals()))
+    print('in calendars')
+    code.interact(local=dict(globals(),**locals()))

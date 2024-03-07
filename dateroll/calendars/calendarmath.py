@@ -343,7 +343,6 @@ class CalendarMath:
         print(f"[dateroll] compiling new union [{cal_union_key}]")
         dict_tuple = self.gen_dicts(cal_union_key, unioned_dates, self.ALL)
         self.fwd[cal_union_key], self.bck[cal_union_key] = dict_tuple
-
         # save cache
         self.save_cache()
 
