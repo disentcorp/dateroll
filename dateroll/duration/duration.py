@@ -11,6 +11,7 @@ period_order = (*"yhsqmwd", "cals", "roll")
 
 PeriodLike = (dateutil.relativedelta, datetime.timedelta)
 
+WEEKEND_CALENDAR = 'WE'
 VALID_ROLL_CONVENTIONS = {"F", "P", "MF", "MP"}
 
 
@@ -71,11 +72,10 @@ class Duration(dateutil.relativedelta.relativedelta):
         realistically 5-7 year perfect lookup would be more than substantial for more use cases.
     """
 
-    # on init, should we turn hemi/sem into 6mo and quarters into 3m?
-    collapse_hemi_sem_quart_on_init = True
-
     def __init__(
         self,
+
+        # switch mdy to days, months, years to match td and rd
         y=None,
         Y=None,
         q=None,
@@ -107,28 +107,50 @@ class Duration(dateutil.relativedelta.relativedelta):
 
         ^ non means not supplied, 0 means zero supplied
 
-        collapse_hemi_sem_quart_on_init keeps just:
-        y,m,w,d (for dateutil support)
-
         class instance keeps one of each, None if no value
         """
         self._validated_periodunits(y,Y,q,Q,m,M,w,W,d,D,bd,BD)
         self._validate_cals(cals)
         self._validate_adj_roll(cals,roll)
 
+    @staticmethod
+    def from_string(string):
+        if isinstance(string,str):
+            from dateroll.parser.parsers import parseDurationString
+            durs,s = parseDurationString(string)
+            if len(durs)==1 and s in ('+X','X'):
+                return durs[0]
+            else:
+                raise TypeError(f'Could not validate duration string: {string}')
+        else:
+            raise TypeError(f'Must be string not {type(string).__name__}') 
+
+    @staticmethod
+    def from_relativedelta(rd):
+        if isinstance(rd,dateutil.relativedelta.relativedelta):
+            return Duration(d=rd.days,m=rd.months,y=rd.years)
+        else:
+            raise TypeError(f'Must be relativedelta not {type(rd).__name__}') 
+    
+    @staticmethod
+    def from_timedelta(td):
+        if isinstance(td,datetime.timedelta):
+            return Duration(d=td.days)
+        else:
+            raise TypeError(f'Must be timedelta not {type(td).__name__}') 
+
     def _validated_periodunits(self,y,Y,q,Q,m,M,w,W,d,D,bd,BD):
         self.y = addNones(y, Y)
-        if self.collapse_hemi_sem_quart_on_init:
-            _m = addNones(
-                addNones(m, M),
-                3 * addNones(q, Q, zeros=True),
-            )
-            if _m != 0:
-                self.m = _m
-            else:
-                self.m = None
+
+        _m = addNones(
+            addNones(m, M),
+            3 * addNones(q, Q, zeros=True),
+        )
+        if _m != 0:
+            self.m = _m
         else:
-            self.m = addNones(m, M)
+            self.m = None
+
         self.w = addNones(w, W)
         self.d = addNones(d, D)
         self.bd = addNones(bd, BD)
@@ -137,16 +159,13 @@ class Duration(dateutil.relativedelta.relativedelta):
         if self.bd is None and cals and len(cals) > 0:
             self.bd = 0
 
-        # add weekends if adjusting
+        # clean calendars, add weekends
         if self.bd is not None:
             if self.cals:
-                self.cals |= {
-                    "WE",
-                }
+                # sort and add weekends
+                self.cals = tuple(sorted(set([*self.cals,WEEKEND_CALENDAR,])))
             else:
-                self.cals = {
-                    "WE",
-                }
+                self.cals = (WEEKEND_CALENDAR,)
 
         # now validate roll
         if roll is not None:
@@ -154,17 +173,15 @@ class Duration(dateutil.relativedelta.relativedelta):
                 if roll in VALID_ROLL_CONVENTIONS:
                     self.roll = roll
                 else:
-                    NotImplementedError(roll)
+                     raise ValueError("F, P, MF, or MP, not {self.roll}")
             else:
-                raise Exception("roll must be a str")
+                raise TypeError("Roll must be a str")
         else:
             if self.bd is not None:
                 if self.bd >= 0:
                     self.roll = "F"
-                elif self.bd < 0:
-                    self.roll = "P"
                 else:
-                    raise NotImplementedError("n/a")
+                    self.roll = "P"
             else:
                 self.roll = None
 
@@ -181,13 +198,16 @@ class Duration(dateutil.relativedelta.relativedelta):
                 cals = parsers.parseCalendarUnionString(cals)
             
             # process normally
-            if hasattr(cals, (list,set,tuple)):
+            if isinstance(cals, (list,set,tuple)):
                 for cal in cals:
                     if isinstance(cal, str):
                         if len(cal) in (2,3):
-                            _cals |= {
-                                cal,
-                            }
+                            if cal in calmath.cals:
+                                _cals |= {
+                                    cal,
+                                }
+                            else:
+                                raise ValueError(f'Calendar {cal} not found')
                         else:
                             raise Exception(
                                 f"Calendars must be 2 or 3 letter strings (not {cal})"
@@ -479,21 +499,7 @@ class Duration(dateutil.relativedelta.relativedelta):
             return dt
 
         else:
-            print(type(b), "!!!!!!!!!!!!!!!!!!!!")
             raise NotImplementedError
-
-    @property
-    def q(self):
-        """equiv quarters"""
-        raise NotImplementedError
-
-    @property
-    def s(self):
-        """equiv semesters"""
-        raise NotImplementedError
-
-    ...  # q, w, h, d, bd(with cal), y {implicit act/365, can be setting,} y(with counter)
-    # m, ...
 
     def __radd__(self, x):
         # print(type(x), "radd")
