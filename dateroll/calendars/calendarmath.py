@@ -131,9 +131,6 @@ class CalendarMath:
         next[date]->next bus date
         """
         # remove duplicates from dates
-        # make sure dates starts after all date starting date, TODO cut it when generate sample data, not here
-        # dates = [t for t in dates if t>=sorted_all[0]]  # 1850 1827 in dates  
-
         dates = set(dates)
         cal = sorted(dates)
 
@@ -148,7 +145,7 @@ class CalendarMath:
         # last_good = None
         for idx, dt in enumerate(sorted(all)):
             # goodbad = None
-        
+
             if dt == last_cal:
                 # gb = "holiday"
                 # is holiday
@@ -268,7 +265,6 @@ class CalendarMath:
         if mod:
             raise NotImplementedError("prev_bd")
         # warnings.warn("prev bd not implemented yet")
-        # code.interact(local=locals())
         if self.is_bd(d,cals):
             new_d = self.sub_bd(d,1,cals)
         else:
@@ -304,13 +300,11 @@ class CalendarMath:
         
         """
         # cals always come as a tuple,list,set, no need to raise error here
-        # print('in union key')
-        # code.interact(local=locals())
+        
         try:
             cal_union_key = 'u'.join(cals)
         except:
             raise TypeError(f"Calendar name must be string")
-
         if cal_union_key not in self.unions:
             # union dates wasnt' cached, call _generate_union
             self._generate_union(cal_union_key)
@@ -334,7 +328,7 @@ class CalendarMath:
 
         # self.unions.append(cal_union_key) <## you can delete self.unions, are references used anywhere? user can check fwd.keys()
         # compile into large dicts
-
+        
         print(f"[dateroll] compiling new union [{cal_union_key}]")
         dict_tuple = self.gen_dicts(cal_union_key, unioned_dates, self.ALL)
         self.fwd[cal_union_key], self.bck[cal_union_key] = dict_tuple

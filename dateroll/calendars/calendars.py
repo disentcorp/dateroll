@@ -42,7 +42,7 @@ def load_sample_data():
 
 class Drawer:
     def __init__(self, cals):
-        # print(f'in cals----------- {cals}')
+        
         self.path = pathlib.Path(cals.home)
         self.cals = cals
 
@@ -144,11 +144,9 @@ class Calendars(dict):
                 raise Exception(
                     f"All cal dates must be of dateroll.Date or datetime.date{{time}} (got {type(i).__name__})"
                 )
-            
             if dt >= INCEPTION:
                 
                 processed.append(dt) 
-
 
         self.write = True
         if k in self.db.keys():
@@ -202,6 +200,20 @@ class Calendars(dict):
     def _purge_all(self):
         self.__init__()
 
+    def recreate_data(self):
+        '''
+            when the data is mutated we create new holiday data from csv files
+        '''
+        data = load_sample_data()
+        # in data new we cut the dates before Inception dates
+        data_new = {}
+        for k in data:
+            v = data[k]
+            v = [d for d in v if d>=INCEPTION]
+            data_new[k] = v
+
+        with safe_open(self.home, "wb") as f:
+            pickle.dump(data_new, f)
     @property
     def info(self):
         pattern = lambda a, b, c, d: f"{a:6}|{b:>8}|{c:12}|{d:12}"
@@ -222,4 +234,6 @@ class Calendars(dict):
 
 
 if __name__ == '__main__': # pragma: no cover
-    pass
+    ...
+    # print('in calendars')
+    # code.interact(local=dict(globals(),**locals()))

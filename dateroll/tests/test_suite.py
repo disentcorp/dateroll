@@ -1,14 +1,14 @@
 import unittest
-from dateroll.tests.calendarmath import TestStringMathMethods
-from dateroll.tests.calendars import TestStringMethods
-from dateroll.tests.date import TestDate
-from dateroll.tests.ddh import TestDDH
-from dateroll.tests.duration import TestDuration
-from dateroll.tests.operations import TestOperations
-from dateroll.tests.parser import TestParser
-from dateroll.tests.parsers import TestParsers
-from dateroll.tests.patterns import TestPatterns
-from dateroll.tests.schedule import TestSchedule
+from dateroll.tests.test_calendarmath import TestStringMathMethods
+from dateroll.tests.test_calendars import TestStringMethods
+from dateroll.tests.test_date import TestDate
+from dateroll.tests.test_ddh import TestDDH
+from dateroll.tests.test_duration import TestDuration
+from dateroll.tests.test_operations import TestOperations
+from dateroll.tests.test_parser import TestParser
+from dateroll.tests.test_parsers import TestParsers
+from dateroll.tests.test_patterns import TestPatterns
+from dateroll.tests.test_schedule import TestSchedule
 
 def test_suite():
     '''

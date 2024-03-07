@@ -5,6 +5,7 @@ import tempfile
 import unittest
 import uuid
 from unittest import expectedFailure
+import code
 
 from dateroll import ddh,cals
 import dateroll
@@ -58,7 +59,7 @@ class TestDDH(unittest.TestCase):
         purge all
         '''
         ddh.purge_all()
-        base_cals = ['BR', 'WE', 'ECB', 'FED', 'NY', 'LN', 'ALL']
+        base_cals = ['FED', 'ECB', 'LN', 'WE', 'ALL', 'BR', 'NY']
         self.assertEqual(list(cals.keys()),base_cals)
 
     def testConvention(self):

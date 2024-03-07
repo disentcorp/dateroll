@@ -176,47 +176,6 @@ class TestStringMathMethods(unittest.TestCase):
 
     
 
-
-    # def test_nextbd(self):
-    #     """
-
-    #     w/o mod
-
-    #     from non-bd to bd on 1 cal
-    #     from non-bd to bd on 2 cal union
-    #     from bd to bd on 1 cal
-    #     from bd to bd on 2 cal union
-
-    #     w/ mod
-
-    #     from non-bd to bd on 1 cal
-    #     from non-bd to bd on 2 cal union
-    #     from bd to bd on 1 cal
-    #     from bd to bd on 2 cal union
-
-    #     measure performance, put a threshold
-    #     """
-
-    # def test_prevbd(self):
-    #     """
-
-    #     w/o mod
-
-    #     from non-bd to bd on 1 cal
-    #     from non-bd to bd on 2 cal union
-    #     from bd to bd on 1 cal
-    #     from bd to bd on 2 cal union
-
-    #     w/ mod
-
-    #     from non-bd to bd on 1 cal
-    #     from non-bd to bd on 2 cal union
-    #     from bd to bd on 1 cal
-    #     from bd to bd on 2 cal union
-
-    #     measure performance, put a threshold
-    #     """
-
     def test_dataBackendPresent(self):
         '''
             test data_backend_present function
@@ -346,8 +305,48 @@ class TestStringMathMethods(unittest.TestCase):
         self.assertEqual(d2,Date(2023,12,29))
         with self.assertRaises(NotImplementedError):
             calmath.prev_bd(hol,'NYuWE',mod=True)
+        
 
 
+    # def test_nextbd(self):
+    #     """
+
+    #     w/o mod
+
+    #     from non-bd to bd on 1 cal
+    #     from non-bd to bd on 2 cal union
+    #     from bd to bd on 1 cal
+    #     from bd to bd on 2 cal union
+
+    #     w/ mod
+
+    #     from non-bd to bd on 1 cal
+    #     from non-bd to bd on 2 cal union
+    #     from bd to bd on 1 cal
+    #     from bd to bd on 2 cal union
+
+    #     measure performance, put a threshold
+    #     """
+
+    # def test_prevbd(self):
+    #     """
+
+    #     w/o mod
+
+    #     from non-bd to bd on 1 cal
+    #     from non-bd to bd on 2 cal union
+    #     from bd to bd on 1 cal
+    #     from bd to bd on 2 cal union
+
+    #     w/ mod
+
+    #     from non-bd to bd on 1 cal
+    #     from non-bd to bd on 2 cal union
+    #     from bd to bd on 1 cal
+    #     from bd to bd on 2 cal union
+
+    #     measure performance, put a threshold
+    #     """
 
 
 
