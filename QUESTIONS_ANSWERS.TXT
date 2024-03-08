@@ -357,9 +357,14 @@ TOTAL                                  950      5    99%
 
 
     we can compare eachothers code changes with github:
+    we can compare eachothers code changes with github:
+    we can compare eachothers code changes with github:
+    we can compare eachothers code changes with github:
 
     use this link:
 
+    https://github.com/disentcorp/dateroll/compare/batu_dev...dev
+    https://github.com/disentcorp/dateroll/compare/batu_dev...dev
     https://github.com/disentcorp/dateroll/compare/batu_dev...dev
 
     you can review our changes each day, and we can review your changes each day
