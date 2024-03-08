@@ -503,3 +503,24 @@ TOTAL                                  950      5    99%
         schedule returns list of lists .lists property  # we have .dates propery for list of dates, i changed name from range, because range should be a generator function, and i don't think we need to do a generator yet
         schedule returns dataframe .df property
         daycounters
+        END OF MONTH RULE
+        t,t+5y where t is last date of month, end of month rule goes last date of month to last date of month
+
+        date adjustment rules
+            FST = first day of current month
+            LST = last day of current month
+            NXX = XXth day of the current month
+            AB = Ath B of the currenth month
+                A = 1,2,3,4,5
+                B = U,M,T,W,R,F,S
+            
+        example for SOFR futures maturity:
+        monday preceding the 3rd wed
+        T|3W-1bd
+        first 4 months, qtr for the next 10 years
+        Quarterly contracts (Mar, Jun, Sep, Dec) listed for 39 consecutive quarters and the nearest 6 serial contract months
+        Trading terminates on the business day prior to the 3rd Wednesday of contract delivery month.
+
+
+            rules=[...]
+            Date(2024,1,15,adj=rules)
