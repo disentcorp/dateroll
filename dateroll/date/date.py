@@ -132,27 +132,18 @@ class Date(datetime.date):
         # apply rules by type
         if isinstance(o, DateLike):
             # date - date
-        
+            # convert all datetimes to datetime.date for sub to be timedelta, then create Duration from timedelta
             if isinstance(o,Date):
-                oDate = o
+                dt = o.dt
+            elif isinstance(datetime.datetime):
+                # truncates time!
+                dt = datetime.date(o.year,o.month,o.date) 
+            elif isinstance(datetime.date):
+                dt = o
             else:
-                oDate = Date.from_datetime(o)
+                raise TypeError(f'Unknown datetype')
             
-            # td = self.date - oDate.date
-            rd = dateutil.relativedelta.relativedelta(self.date,oDate.date)
-            # print('in sub')
-            # code.interact(local=dict(globals(),**locals()))
-            result = Duration(
-                y=rd.years,
-                m=rd.months,
-                w=rd.weeks,
-                d=rd.days,
-                anchor_start=self.date,
-                anchor_end=oDate
-                              )
-            
-            return result
-        
+            return Duration.from_timedelta(self.dt-dt)
         elif isinstance(o, Duration):
             # date + duration
             # goes to __radd__ of Duration

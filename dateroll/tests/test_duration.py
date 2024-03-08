@@ -138,7 +138,7 @@ class TestDuration(unittest.TestCase):
                     w=2,
                     d=11
         )
-        rd = dur.delta
+        rd = dur.relativedelta
         expected_rd = dateutil.relativedelta.relativedelta(years=1,months=1,weeks=2,days=11)
         self.assertEqual(rd,expected_rd)
 

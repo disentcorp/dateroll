@@ -1,5 +1,6 @@
 import datetime
 
+import warnings
 import dateutil
 import dateutil.relativedelta
 from dateroll.calendars.calendarmath import calmath
@@ -14,6 +15,11 @@ PeriodLike = (dateutil.relativedelta, datetime.timedelta)
 
 WEEKEND_CALENDAR = 'WE'
 VALID_ROLL_CONVENTIONS = {"F", "P", "MF", "MP"}
+
+APPROX = {
+    '1y1d' : 14610/4000, # exact average length for post 1582AD change
+    '1bd1d' : 14610/4000/252 # assuming 252 denominator
+}
 
 class Duration(dateutil.relativedelta.relativedelta):
     """
@@ -54,13 +60,12 @@ class Duration(dateutil.relativedelta.relativedelta):
         # switch mdy to days, months, years to match td and rd
 
         # primary initialization properties (match dateutil.relativedelta)
-        years=0, months=0, weeks=0, days=0,
+        years=0, months=0, weeks=0, days=0, w=0, W=0, week=0,
 
         # auxlillary initializers
         y=0, Y=0, year=0,
         q=0, Q=0, quarter=0, quarters=0,
         m=0, M=0, month=0,
-        w=0, W=0, week=0,
         d=0, D=0, day=0,
         
         # bd initializer, must be none as 0 and no zero are different
@@ -89,7 +94,9 @@ class Duration(dateutil.relativedelta.relativedelta):
 
         self.years = years + year + y + Y
         self.months = months + month + m + M
-        self.days = days + day + d + D + 7*(weeks+week+W+w)
+        self.weeks = + 7*(weeks+week+W+w)
+        self.days = days + day + d + D 
+        # ^ rd.days included weeks so no need to add again weeks
         self.bd = None if (bd is None and BD is None) else bd or BD
 
         self._validate_cals(cals)
@@ -110,9 +117,11 @@ class Duration(dateutil.relativedelta.relativedelta):
     @staticmethod
     def from_relativedelta(rd):
         if isinstance(rd,dateutil.relativedelta.relativedelta):
-            return Duration(d=rd.days,m=rd.months,y=rd.years)
+            return Duration(years=rd.years,months=rd.months,weeks=rd.weeks,days=rd.days)
+        elif isinstance(rd,datetime.timedelta):
+            return Duration.from_timedelta(rd)
         else:
-            raise TypeError(f'Must be relativedelta not {type(rd).__name__}') 
+            raise TypeError(f'Must be relativedelta (or timedelta) not {type(rd).__name__}') 
     
     @staticmethod
     def from_timedelta(td):
@@ -197,8 +206,7 @@ class Duration(dateutil.relativedelta.relativedelta):
         
         if isinstance(o, datetime.timedelta):
             o = dateutil.relativedelta.relativedelta(days = o.days)
-        if isinstance(o, dateutil.relativedelta.relativedelta):
-            
+        elif isinstance(o,( dateutil.relativedelta.relativedelta,Duration)):
             if self.years == o.years:
                 if self.months == o.months:
                     if self.weeks == o.weeks:
@@ -207,25 +215,20 @@ class Duration(dateutil.relativedelta.relativedelta):
                                 if self.bd == o.bd:
                                     if self.cals == o.cals:
                                         if self.roll == o.roll:
-                                            return True
-                            else:
-                                return True
+                                            if self.anchor_end == o.anchor_end and self.anchor_start == o.anchor_start:
+                                                return True
+                        else:
+                            return True
             return False
         else:
-            return False
+            raise TypeError(f'Cannot compare with {type(o).__name__}')
 
     @property
-    def delta(self):
-        """ """
-        rd_args = {}
-        if self.years:
-            rd_args["years"] = self.years 
-        if self.months:
-            rd_args["months"] = self.months 
-        if self.days:
-            rd_args["days"] = self.days 
-
-        rd = dateutil.relativedelta.relativedelta(**rd_args)
+    def relativedelta(self):
+        '''
+        create relativedelta
+        '''
+        rd = dateutil.relativedelta.relativedelta(years=self.years,months=self.months,weeks=self.weeks,days=self.days)
 
         return rd
 
@@ -271,62 +274,58 @@ class Duration(dateutil.relativedelta.relativedelta):
         _d = calmath.add_bd(from_date, self.bd, cals=self.cals)
         return _d
 
-    def simmplify(self):
-        """
-        excluding business days, from smallest unit (d) to largest (y)
-        if units is larger than the next largest unit, and it is perfectly divisible,
-        subtract equivalent units from smaller and increment the larger
-
-        e.g.
-
-        25mo = 2y1m (exact)
-        5w = 1m1w (approx)
-        28d = 1m (approx)
-
-        make a setting to enable approx calculations
-
-        approx:
-            28-31 days is 1m
-            4w is 1m
-        exact:
-            12m is 1y
-
-        note - we skip 1w = exactly 7d, because no human knows what 2w3d but they know 17d is roughly 1/2 a month in their head
-
-        note: q, s, and h are automatically converted to more senior buckets
-
-        """
-        
-
-    """
-    if 3m with calenda
-    
-    """
 
     @property
-    def rough_days(self):
+    def just_days(self):
         """
-        convert duration units to "days" with non-anchored period approximations
-            e.g. 1y = 365.25 days
-                 1bd = 365/252 days
-        returns tuple (exact/approx,num days)
-        that is if an approximation is used, the 1st part of the return is true
+        if Duration is anchored (it's the result of date math)
+            We know the EXACT days implied, so return the count
+
+        If not,
+            We MAY or MAY NOT be able to know the exact days
+
+            years, months, and non-None BD's trigger approx calcs, and a WARNING is issued
+            pure days and weeks is exact always       
         """
-        exact = True
-        days = 0
-        if self.years is not None:
-            exact = exact and False
-            days += 365.25 * self.years
-        if self.months is not None:
-            exact = exact and True
-            days += 12 * self.months
-        if self.days is not None:
-            exact = exact and True
-            days + self.days
-        if self.bd is not None:
-            exact = exact and False
-            days += 365 / 252 * self.bd
-        return exact, days
+
+        just_days = 0
+        
+        if self.anchor_start and self.anchor_end:
+            # i am anchored
+            just_days += (self.anchor_end-self.anchor_start).days
+        else:      
+            # i am not anchored
+            warns = []  
+            if self.years > 0:
+                yeardays = APPROX['1y1d']
+                just_days += yeardays
+                warns.append(f"1y≈{yeardays:.6f}d")
+
+            if self.months >0:
+                monthdays = APPROX['1y1d'] / 12
+                just_days += monthdays
+                warns.append(f"1m≈{monthdays:.6f}m")
+
+            if self.weeks > 0:
+                # exact
+                just_days += 7
+            
+            if self.days >0:
+                # exact
+                just_days += self.days
+            
+            if self.bd is not None:
+                dbds = APPROX['1bd1d']
+                just_days += dbds
+                warns.append(f"1bd≈{dbds:.6f}d")
+
+        if len(warns)>0:
+            w = ','.join(warns)
+            message = f'[dateroll] just_days using approx: {w} '
+            warnings.warn(message)
+        
+        return just_days
+
 
     def math(self, b, direction):
         """
@@ -416,7 +415,7 @@ class Duration(dateutil.relativedelta.relativedelta):
 
         elif isinstance(b, DateLike):
             # adjust b for Non-bd's FIRST
-            b_moved = b.date + self.delta * direction
+            b_moved = b.date + self.relativedelta * direction
 
             # # if you have bd's, then use bd adj and roll:
             if self.bd or self.cals or self.roll:
@@ -483,13 +482,7 @@ class Duration(dateutil.relativedelta.relativedelta):
                 constructor += f"{k}={v}, "
         return f'{self.__class__.__name__}({constructor.rstrip(", ")})'
 
-    def just_days(self):
-        if self.anchor_start and self.anchor_end:
-            return (self.anchor_end-self.anchor_start).days
-            
 
-    def simplify(self):
-        ...
 
     @property
     def y(self): return self.years
@@ -509,7 +502,12 @@ class Duration(dateutil.relativedelta.relativedelta):
     def d(self): return self.days
     @property
     def day(self): return self.days
-    
+    @property
+    def w(self): return self.weeks
+    @property
+    def W(self): return self.weeks
+    @property
+    def week(self): return self.weeks
 
 PeriodLike = PeriodLike + (Duration,)
 
