@@ -329,7 +329,8 @@ class TestDuration(unittest.TestCase):
         self.assertNotEqual(Duration(days=5),dateutil.relativedelta.relativedelta(days=4))
         self.assertNotEqual(Duration(days=5),datetime.timedelta(days=4))
 
-        self.assertFalse(Duration(days=5)==10)
+        with self.assertRaises(TypeError):
+            Duration(days=5)==10
 
     def test___iadd__(self):
         dur = Duration(days=4,roll='F')
@@ -363,7 +364,7 @@ class TestDuration(unittest.TestCase):
             test the number of days between two anchor dates
         '''
         dur = Duration(days=4,anchor_start=Date(2024,3,1),anchor_end=Date(2024,3,15),roll='F')
-        x = dur.just_days()
+        x = dur.just_days
         self.assertEqual(x,14)
 
     def test___radd__(self):
