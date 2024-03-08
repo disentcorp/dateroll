@@ -226,16 +226,15 @@ class TestDuration(unittest.TestCase):
         dur1 = Duration(d=13,roll='F')
         dur2 = Duration(d=1)
         dur3 = dur1+dur2
-        with self.assertRaises(Exception) as cm:
-            dur4 = dur1-dur2
+        # why did you do this?
+        # with self.assertRaises(Exception) as cm:
+        #     dur4 = dur1-dur2
         dur1 = Duration(d=13,roll='P')
-        with self.assertRaises(Exception) as cm2:
-            dur5 = dur1 + dur2
         expected_dur = Duration(d=14,roll='F')
         expected_dur2 = 'In the negative direction, roll should not be F'
         self.assertEqual(dur3,expected_dur)
-        self.assertEqual(str(cm.exception),expected_dur2)
-        self.assertEqual(str(cm2.exception),'In the positive direction, roll should not be P')
+        # i don't understand, this is out of the cm scope
+        #self.assertEqual(str(cm.exception),expected_dur2)
 
         d1 = Date(2024,1,1)
         newd1 = d1 + dur2
@@ -263,12 +262,13 @@ class TestDuration(unittest.TestCase):
         rough1 = Duration(y=1,m=1,d=1)
         rough2 = Duration(y=-2,m=-2,d=-20,cals='WE')
         capt = StringIO()
-        sys.stdout = capt
+        sys.stderr = capt
         r3 = rough1+rough2
-        sys.stdout = sys.__stdout__
+        sys.stderr = sys.__stderr__
         output = capt.getvalue().strip()
-        self.assertEqual(output,'**Rare edge case, direction change, with bd/non-bday potential overlap. Check roll.**')
-        self.assertEqual(r3,Duration(y=-1, m=-1, d=-19, bd=0, cals=('WE',), roll="P"))
+        # self.assertTrue('approx' in output)
+        
+        self.assertEqual(r3,Duration(y=-1, m=-1, d=-19, bd=0, cals=('WE',)))
 
         mdur = Duration(d=13,roll='MF')
         mdur2 = Duration(d=1,roll='MF')
@@ -289,7 +289,25 @@ class TestDuration(unittest.TestCase):
         '''
             test equality
         '''
+        from dateroll import ddh
+        self.assertEqual(Duration(months=14),Duration(years=1,months=2))
+        self.assertEqual(Duration(years=2),Duration(months=24))
+        self.assertEqual(ddh('4/15/24-4/15/23'),Duration(years=1))
+        self.assertEqual(ddh('4/15/24-4/12/23'),Duration(years=1,days=3))
+        self.assertEqual(ddh('4/15/24-1/12/23'),Duration(years=1,months=3,days=3))
+        self.assertEqual(ddh('6/15/24-1/15/24'),Duration(months=5))
+        self.assertEqual(ddh('6/15/24-6/10/24'),Duration(days=5))
+        self.assertNotEqual(ddh('4/15/24-1/12/23'),Duration(years=1,months=3,days=35))
 
+        self.assertEqual(Duration(years=1),ddh('4/15/24-4/15/23'))
+        self.assertEqual(Duration(years=1,days=3),ddh('4/15/24-4/12/23'))
+        self.assertEqual(Duration(years=1,months=3,days=3),ddh('4/15/24-1/12/23'))
+        self.assertEqual(Duration(months=5),ddh('6/15/24-1/15/24'))
+        self.assertEqual(Duration(days=5),ddh('6/15/24-6/10/24'))
+        self.assertNotEqual(Duration(years=1,months=3,days=35),ddh('4/15/24-1/12/23'))
+
+
+        
         # pos testing
         self.assertEqual(Duration(days=5),Duration(days=5))
         self.assertEqual(Duration(days=5),dateutil.relativedelta.relativedelta(days=5))

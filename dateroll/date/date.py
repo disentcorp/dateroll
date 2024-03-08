@@ -109,7 +109,7 @@ class Date(datetime.date):
         elif isinstance(o, int):
             # date + int, int -> duration, -> date + duration -> __radd__ duration
             # goes to __radd__ of Duration
-            return Duration(d=o).__radd__(self)
+            return Duration(days=o).__radd__(self)
         elif isinstance(o, datetime.timedelta):
             return Date.from_datetime(self.date + o)
         elif isinstance(o, dateutil.relativedelta.relativedelta):
@@ -134,16 +134,15 @@ class Date(datetime.date):
             # date - date
             # convert all datetimes to datetime.date for sub to be timedelta, then create Duration from timedelta
             if isinstance(o,Date):
-                dt = o.dt
-            elif isinstance(datetime.datetime):
+                dt = o.date
+            elif isinstance(o,datetime.datetime):
                 # truncates time!
-                dt = datetime.date(o.year,o.month,o.date) 
+                dt = datetime.date(o.year,o.month,o.day) 
             elif isinstance(datetime.date):
                 dt = o
             else:
                 raise TypeError(f'Unknown datetype')
-            
-            return Duration.from_timedelta(self.dt-dt)
+            return Duration.from_timedelta(self.date-dt,anchor_start=dt,anchor_end=self.date)
         elif isinstance(o, Duration):
             # date + duration
             # goes to __radd__ of Duration
@@ -151,7 +150,7 @@ class Date(datetime.date):
         elif isinstance(o, int):
             # date + int, int -> duration, -> date + duration -> __radd__ duration
             # goes to __rsub__ of Duration
-            return Duration(d=o).__rsub__(self)
+            return Duration(days=o).__rsub__(self)
         elif isinstance(o, datetime.timedelta):
             return Date.from_datetime(self.date - o)
         elif isinstance(o, dateutil.relativedelta.relativedelta):

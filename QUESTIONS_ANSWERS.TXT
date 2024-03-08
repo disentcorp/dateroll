@@ -352,16 +352,18 @@ TOTAL                                  950      5    99%
 
         i did some testing and the behavior is not exactly this.
 
-        rd behavior:
-            if weeks is supplied, repr auto converteds to 7 days, BUT weeks is still there (PS 14 not 15 :-))
-            if weeks and days are supplied [THEY DO ADD] weeks=1,days=7 = days=15, but is stored as weeks=1,days=7
-            ^^ i do not like this behavior ^^
-
-            logic in __eq__ shows great improvement of your understanding of OOP and type inheritance
-
-            __sub__ i because i put weeks as a primary in Duraiton, we can then use Duration.from_relativedelta
+        rd behavior is WRONG, there is a bug in relative delta, .weeks is exact to set, but approx to use, and no warning
+        we keep weeks as auxilary, and when comparing days*7 in days. so we are good
+        can you write enough test cases to cover this functionality?
 
         that means we should add weeks back as regular, and not auxliary/helpers, repr can show weeks for us
 
 
     PS: While testing, as I learn about the design, so good and easy to understand
+
+    2 of your test_math test cases didn't work/make sense i deleted them.
+
+    please put more comments on your test cases and i will do the same, when a big happens i can't tell what the test cases are supposed to do so i have to relearn
+    each time.
+
+    we need to think more carefully on test cases for duration, it's not trivial
