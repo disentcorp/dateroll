@@ -370,3 +370,62 @@ TOTAL                                  950      5    99%
     Did you figure out the mutated test and the bck.pop ?? they are still showing as missing on my side. 
 
     I have a feeling were are not following the same workflow and have to reset again.
+    PS: While testing, as I learn about the design, so good and easy to understand
+
+    
+    
+
+
+############ batu 2024/3/8 9 AM EST
+Name                                 Stmts   Miss  Cover   Missing
+------------------------------------------------------------------
+dateroll/__init__.py                     4      0   100%
+dateroll/calendars/__init__.py           0      0   100%
+dateroll/calendars/calendarmath.py     182      0   100%
+dateroll/calendars/calendars.py        151      0   100%
+dateroll/date/__init__.py                0      0   100%
+dateroll/date/date.py                  105      0   100%
+dateroll/ddh/__init__.py                 0      0   100%
+dateroll/ddh/ddh.py                     29      0   100%
+dateroll/duration/__init__.py            0      0   100%
+dateroll/duration/duration.py          251      0   100%
+dateroll/parser/__init__.py              0      0   100%
+dateroll/parser/parser.py               67      5    93%   164, 169, 174, 182, 190
+dateroll/parser/parsers.py             103      0   100%
+dateroll/parser/patterns.py             29      0   100%
+dateroll/schedule/__init__.py            0      0   100%
+dateroll/schedule/schedule.py           12      0   100%
+dateroll/utils.py                       17      0   100%
+------------------------------------------------------------------
+TOTAL                                  950      5    99%
+
+    Summary:
+
+        #1 Duration and parsers 100%
+        #2 Little bit wrote on Schedule to pass parser test maybe_many_parts
+    
+    Question:
+        dateutil.relativedelta days does not include its week, e.g, w=2, days=15 means days 15, NOT 7*2+15
+        which is different than our Duration where  w=2, days=15 means days 15, 7*2+15
+        to fix this problem I changed date.py/sub line 145 and duration.py/__eq__/ line:208,please review this patterns
+
+        i did some testing and the behavior is not exactly this.
+
+        rd behavior is WRONG, there is a bug in relative delta, .weeks is exact to set, but approx to use, and no warning
+        we keep weeks as auxilary, and when comparing days*7 in days. so we are good
+        can you write enough test cases to cover this functionality?
+
+        that means we should add weeks back as regular, and not auxliary/helpers, repr can show weeks for us
+
+
+    PS: While testing, as I learn about the design, so good and easy to understand
+
+    ############ batu 2024/3/8 9 AM EST
+
+    again i didn't 100% pass on the first pull, i commented out your test cases that were failing, can you pleae put more specific comments on what your test cases are testing? it wasn't obvious.
+
+    there was a lot of bugs and non-handled cases. 
+
+    Did you figure out the mutated test and the bck.pop ?? they are still showing as missing on my side. 
+
+    I have a feeling were are not following the same workflow and have to reset again.

@@ -295,7 +295,7 @@ class TestStringMathMethods(unittest.TestCase):
             find the previous bd, when pass mod=True should raise NotImplemented error
         '''
         
-        calmath = self.cals
+        
         nonhol = datetime.datetime(2024,1,2)
         hol = Date(2024,1,1)
         d = self.cals.prev_bd(hol,'NYuWE')
@@ -306,7 +306,9 @@ class TestStringMathMethods(unittest.TestCase):
         d4 = self.cals.prev_bd(nonhol,'NYuWE',mod=True)
         self.assertEqual(d3,Date(2024,1,2))
         self.assertEqual(d4,datetime.datetime(2024,1,2))
-        
+    
+    def test_compileAll(self):
+        self.cals.cached_compile_all()
 
 
     # def test_nextbd(self):

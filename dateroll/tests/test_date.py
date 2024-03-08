@@ -131,7 +131,6 @@ class TestDate(unittest.TestCase):
 
         # # sub
         dur91d = Duration(y=0,m=3,w=0,d=0)
-        # code.interact(local=dict(globals(),**locals()))
         self.assertEqual(d2 - d1, dur91d)
         self.assertEqual(d2 - dur, d1)
         self.assertEqual(d2 - str_d1, dur91d)

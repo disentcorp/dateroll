@@ -153,6 +153,26 @@ class Duration(dateutil.relativedelta.relativedelta):
             else:
                 self._anchor_days=(b-(a+delta)).days
 
+    def process_anchor_dates(self):
+        from dateroll.date.date import Date
+        if self.anchor_start and self.anchor_end:
+            # anchor months -- month diff without days and years collapses into months
+            self.anchor_start=Date.from_datetime(self.anchor_start)
+            self.anchor_end=Date.from_datetime(self.anchor_end)
+            ydiff = self.anchor_end.year - self.anchor_start.year
+            mdiff = self.anchor_end.month - self.anchor_start.month
+            diff = mdiff + ydiff*12
+            self_anchor_years = ydiff
+            self._anchor_months = diff        
+            #anchor days  --- date diff but WITHOUT dates
+            b = self.anchor_end.date
+            a = self.anchor_start.date
+            delta = dateutil.relativedelta.relativedelta(months=diff)
+            if a.day==b.day:
+                self._anchor_days=0
+            else:
+                self._anchor_days=(b-(a+delta)).days
+
     @staticmethod
     def from_string(string):
         if isinstance(string,str):
@@ -524,7 +544,7 @@ class Duration(dateutil.relativedelta.relativedelta):
 
     def __neg__(self):
         raise NotImplementedError("need unary -negative on duration")
-        return self
+        
 
     def __pos__(self):
         return self
@@ -545,6 +565,7 @@ class Duration(dateutil.relativedelta.relativedelta):
                     v = f'"{v}"'
                 constructor += f"{k}={v}, "
         return f'{self.__class__.__name__}({constructor.rstrip(", ")})'
+
 
 
 
@@ -570,11 +591,14 @@ class Duration(dateutil.relativedelta.relativedelta):
 PeriodLike = PeriodLike + (Duration,)
 
 
-if __name__ == "__main__":
+if __name__ == "__main__": # pragma: no cover
     ...
     # dur2 = Duration()
     from dateroll.date.date import Date
-    dt2 = Date(2024,1,15)
-    dt1 = Date(2024,1,1)
-    dur = dt2 - dt1
+    
+    
+    dur = Duration(days=4,anchor_start=Date(2024,3,1),anchor_end=Date(2024,3,15),roll='F')
+    x = dur.just_days()
+    print('end-----')
+    code.interact(local=dict(globals(),**locals()))
 

@@ -82,6 +82,7 @@ class CalendarMath:
                 cached = self.load_cache()
                 self.__dict__.update(cached)
                 return
+         
         # compile
         self.compile_all()
 
@@ -143,27 +144,22 @@ class CalendarMath:
 
             if dt == last_cal:
                 # gb = "holiday"
-                # is holiday
                 fwd[dt] = last_idx
-                if last_idx not in bck:
-                    bck[last_idx] = dt
-                # bck[last_idx] = dt
+                # Batu: we should not add date here when it is holiday
+                # if last_idx not in bck:
+                #     bck[last_idx] = dt
+                
                 try:
                     last_cal = cal.pop(0)
                 except:
                     break
             else:
                 # is good bd
-                # gb = "working day"
                 last_idx += 1
                 fwd[dt] = last_idx
                 if last_idx not in bck:
                     bck[last_idx] = dt
-                # bck[last_idx] = dt
-                # last_good = dt
-            # f = lambda x: f"{x.month}/{x.day}" if x is not None else "?"
-            # if (dt.year==2024 and dt.month in (2,3)) or idx < 10 and name=='WE':
-            #     print(name,f'{idx=},{f(dt)},{f(last_cal)},{last_idx=},{f(last_good)},{gb=}')
+                
 
         return fwd, bck
 

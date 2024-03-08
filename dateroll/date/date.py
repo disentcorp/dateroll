@@ -141,8 +141,10 @@ class Date(datetime.date):
             elif isinstance(datetime.date):
                 dt = o
             else:
-                raise TypeError(f'Unknown datetype')
+                raise TypeError(f'Unknown date type')
+
             return Duration.from_timedelta(self.date-dt,anchor_start=dt,anchor_end=self.date)
+        
         elif isinstance(o, Duration):
             # date + duration
             # goes to __radd__ of Duration

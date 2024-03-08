@@ -278,13 +278,24 @@ class TestDuration(unittest.TestCase):
         self.assertEqual(mdur3-mdur4,Duration(m=0, d=14, roll="MP"))
         
         nonedur1 = Duration(d=14)
-        nondure2 = Duration(d=1)
-        self.assertEqual(nonedur1+nondure2,Duration(m=0, d=15))
-        
+        nonedur2 = Duration(d=1)
+        self.assertEqual(nonedur1+nonedur2,Duration(m=0, d=15))
 
-        
-    # def test___add__(self):
-    #     pass
+        # test dur + rd, should not add rd, should return dur only
+        rd = dateutil.relativedelta.relativedelta(days=3)
+        dur = Duration(days=4)
+        x = dur + rd
+        self.assertEqual(x,dur)
+
+        # test dur +datelike and adjust business date if necessary
+        dur = Duration(days=4,roll='F')
+        dt = Date(2024,1,1)
+        x = dur+dt
+        self.assertEqual(x,datetime.date(2024,1,8))
+
+
+
+
     def test___eq__(self):
         '''
             test equality
@@ -318,20 +329,51 @@ class TestDuration(unittest.TestCase):
         self.assertNotEqual(Duration(days=5),dateutil.relativedelta.relativedelta(days=4))
         self.assertNotEqual(Duration(days=5),datetime.timedelta(days=4))
 
+        self.assertFalse(Duration(days=5)==10)
+
     def test___iadd__(self):
-        pass
+        dur = Duration(days=4,roll='F')
+        dt = Date(2024,1,1)
+        dur+=dt
+        self.assertEqual(dur,datetime.date(2024,1,8))
     def test___init__(self):
         pass
     def test___isub__(self):
-        pass
+        dur = Duration(days=4,roll='F')
+        dt = Date(2024,1,1)
+        dur-=dt
+        self.assertEqual(dur,datetime.date(2023,12,29))
     def test___neg__(self):
-        pass
+        '''
+            test __neg__ means -dur
+        '''
+        dur = Duration(days=4,roll='F')
+        with self.assertRaises(NotImplementedError):
+            dur = -dur
     def test___pos__(self):
-        pass
+        '''
+            test __pos__ means +dur
+        '''
+        dur = Duration(days=4,roll='F')
+        dur2 = +dur
+        self.assertEqual(dur2,dur)
+    
+    def test_justDays(self):
+        '''
+            test the number of days between two anchor dates
+        '''
+        dur = Duration(days=4,anchor_start=Date(2024,3,1),anchor_end=Date(2024,3,15),roll='F')
+        x = dur.just_days()
+        self.assertEqual(x,14)
+
     def test___radd__(self):
         pass
     def test___repr__(self):
-        pass
+        '''
+            test repr of Duration instance
+        '''
+        dur = Duration(days=4,roll='F')
+        repr(dur)
     def test___rsub__(self):
         pass
     def test___sub__(self):
