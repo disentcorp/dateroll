@@ -90,10 +90,12 @@ class Duration(dateutil.relativedelta.relativedelta):
         self.years = years + year + y + Y
         self.months = months + month + m + M
         self.days = days + day + d + D + 7*(weeks+week+W+w)
+        # ^ rd.days included weeks so no need to add again weeks
         self.bd = None if (bd is None and BD is None) else bd or BD
-
         self._validate_cals(cals)
         self._validate_adj_roll(cals,roll)
+        self.anchor_start = anchor_start
+        self.anchor_end = anchor_end
 
     @staticmethod
     def from_string(string):
@@ -198,10 +200,17 @@ class Duration(dateutil.relativedelta.relativedelta):
         if isinstance(o, datetime.timedelta):
             o = dateutil.relativedelta.relativedelta(days = o.days)
         if isinstance(o, dateutil.relativedelta.relativedelta):
-            
+            # relativedelta weeks always include the days, unlike month year
+            # so need to handle weeks
+            if not isinstance(o,Duration):
+                # means this is not from disent package where week included dates so make it 0
+                # because Duration does not include days in weeks
+                oweeks = 0 if o.days>0 else o.weeks
+            else:
+                oweeks = o.weeks
             if self.years == o.years:
                 if self.months == o.months:
-                    if self.weeks == o.weeks:
+                    if self.weeks == oweeks:
                         if self.days == o.days:
                             if isinstance(o, Duration):
                                 if self.bd == o.bd:
@@ -461,7 +470,7 @@ class Duration(dateutil.relativedelta.relativedelta):
 
     def __neg__(self):
         raise NotImplementedError("need unary -negative on duration")
-        return self
+        
 
     def __pos__(self):
         return self
@@ -484,12 +493,15 @@ class Duration(dateutil.relativedelta.relativedelta):
         return f'{self.__class__.__name__}({constructor.rstrip(", ")})'
 
     def just_days(self):
+        '''
+            just number of days between two dates
+        '''
         if self.anchor_start and self.anchor_end:
             return (self.anchor_end-self.anchor_start).days
             
 
     def simplify(self):
-        ...
+        '''todo'''
 
     @property
     def y(self): return self.years
@@ -514,11 +526,14 @@ class Duration(dateutil.relativedelta.relativedelta):
 PeriodLike = PeriodLike + (Duration,)
 
 
-if __name__ == "__main__":
+if __name__ == "__main__": # pragma: no cover
     ...
     # dur2 = Duration()
     from dateroll.date.date import Date
-    dt2 = Date(2024,1,15)
-    dt1 = Date(2024,1,1)
-    dur = dt2 - dt1
+    
+    
+    dur = Duration(days=4,anchor_start=Date(2024,3,1),anchor_end=Date(2024,3,15),roll='F')
+    x = dur.just_days()
+    print('end-----')
+    code.interact(local=dict(globals(),**locals()))
 

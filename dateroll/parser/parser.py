@@ -1,8 +1,8 @@
 import datetime
-
 import dateutil
 import dateutil.relativedelta
 import dateutil.rrule
+import code
 
 from dateroll.date.date import Date
 from dateroll.duration.duration import Duration
@@ -101,7 +101,7 @@ class Parser:
         if not isinstance(string, str):
             raise ParserError("Must be string")
 
-        if use_native_types:
+        if use_native_types: 
             raise NotImplementedError("only dateroll types for now")
 
         self.convention = convention
@@ -125,7 +125,7 @@ class Parser:
         # 3
         durations, nodatesordurations = parsers.parseDurationString(nodates)
         # print('s before/after:', nodates,nodatesordurations)
-        if nodatesordurations == "X":
+        if nodatesordurations == "+X":
             return durations[0]
         dates_durations = dates + durations
 
@@ -174,7 +174,8 @@ class Parser:
                 raise TypeError("Step of generation must be a valid Duration")
 
             sch = Schedule(start=start, stop=stop, step=step)
-            return sch
+            dts = sch.range()
+            return dts
 
         else:
             # Must

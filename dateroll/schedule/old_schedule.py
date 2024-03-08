@@ -1,5 +1,5 @@
-from dateroll.date import Date
-from dateroll.duration import Duration
+from dateroll.date.date import Date
+from dateroll.duration.duration import Duration
 from dateroll.utils import (DATE_RANGE_HELPER_DICT, IERULE_MAPPING,
                             LASTDATEOFMONTH, datePeriodParse, fwd_or_bwd,
                             genEndtoEnd)

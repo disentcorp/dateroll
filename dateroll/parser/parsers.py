@@ -1,7 +1,9 @@
 import datetime
 import re
+import code
 
 # from dateroll.date.date import Date
+
 import dateroll.date.date as dt
 import dateroll.duration.duration as dur
 from dateroll.parser import patterns
@@ -21,7 +23,6 @@ def parseTodayString(s, convention=DEFAULT_CONVENTION):
         this is [the] place where "t" is replaced
     """
     today = datetime.date.today()
-
     if convention == "MDY":
         today_string = today.strftime(r"%m/%d/%Y")
     elif convention == "DMY":
@@ -102,7 +103,7 @@ def process_duration_match(m: tuple):
         unit = m[i + 1]
 
         if number and unit:
-            # cast number to integer
+            # cast number to integer y,s,q,m,w,d
             number = int(number)
             if i < 4:
                 # use multiplier on first pair
@@ -176,7 +177,6 @@ def parseDurationString(s):
     matches = re.findall(patterns.COMPLETE_DURATION, s)
 
     for m in matches:
-        full = m[0]
         duration = process_duration_match(m)
         # subs turn into addisions because Duration comes back with - inside
         s = s.replace(m[0], f"+X")
@@ -191,29 +191,35 @@ def parseDateMathString(s, things):
     Uses substitution and evaluation. Safe because wouldn't get here if *things were not validated, and regex didn't match.
     """
     s = s.replace(" ", "").replace("++", "+").replace("+-", "-").replace("-+", "-")
+    
     if s == "+X":
         s = "X"
-
     math_matches = re.match(patterns.MATH, s)
+    
     if math_matches:
         n1 = len(things)
         n2 = s.count("X")
-        if n1 != n2:
-            raise Exception(f"Unmatched math ({s})")
-
+        
         if n1 > len(AtoZ):
             raise ParserStringsError("Cannot recognize as date math", s)
+        
+        if n1 != n2:
+            raise Exception(f"Unmatched math ({s})")
 
         for idx in range(n2):
             s = s.replace("X", AtoZ[idx], 1)
 
         gs = {k: v for k, v in zip(AtoZ[: len(things)], things)}
-        total = eval(s, gs)
+        total = eval(s,{},gs)
 
         return total
     raise ParserStringsError("Cannot recognize as date math", s)
 
 
-def parseScheduleString(s):
+def parseScheduleString(s):  # pragma: no cover
     """ """
     raise NotImplementedError
+
+if __name__=='__main__':  # pragma: no cover
+    ...
+    code.interact(local=dict(globals(),**locals()))

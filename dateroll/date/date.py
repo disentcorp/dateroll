@@ -139,13 +139,14 @@ class Date(datetime.date):
                 oDate = Date.from_datetime(o)
             
             # td = self.date - oDate.date
+            # rd.days included weeks so no need to add again weeks
+
             rd = dateutil.relativedelta.relativedelta(self.date,oDate.date)
-            # print('in sub')
-            # code.interact(local=dict(globals(),**locals()))
+            wk = rd.weeks if rd.days==0 else 0
             result = Duration(
                 y=rd.years,
                 m=rd.months,
-                w=rd.weeks,
+                w=wk,
                 d=rd.days,
                 anchor_start=self.date,
                 anchor_end=oDate
