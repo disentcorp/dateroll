@@ -28,13 +28,13 @@ def combine_none(a,b):
     b = [] if b is None else b
     return tuple(sorted(set(a)|set(b)))
 
-def add_none(a,b):
+def add_none(a,b,dir=1):
     if a is None and b is None:
         return None
     else:
         a = 0 if a is None else a
         b = 0 if b is None else b
-        return a + b
+        return a + b*dir
 
 class Duration(dateutil.relativedelta.relativedelta):
     """
@@ -94,8 +94,8 @@ class Duration(dateutil.relativedelta.relativedelta):
         roll=None,
         
         # anchor dates (if duration is the result of math with some date)
-        anchor_start=None,
-        anchor_end=None,
+        _anchor_start=None,
+        _anchor_end=None,
         _anchor_months=None,
         _anchor_days=None,
     ):
@@ -110,8 +110,8 @@ class Duration(dateutil.relativedelta.relativedelta):
         roll = roll convention (F,P,MF,MP) <-non means not supplied, 0 means zero supplied
         """
 
-        self.anchor_start = anchor_start
-        self.anchor_end = anchor_end
+        self._anchor_start = _anchor_start
+        self._anchor_end = _anchor_end
 
         # merge y/m/w/d
         self.years = years + year + y + Y
@@ -124,49 +124,36 @@ class Duration(dateutil.relativedelta.relativedelta):
 
         self.process_anchor_dates()
 
-        # merge bd
-        self.bd = None if (bd is None and BD is None) else bd or BD
-
         # valid cals
         self._validate_cals(cals)
+
+        # merge bd
+        if bd is not None and BD is not None:
+            self.bd = bd + BD
+        elif bd is not None:
+            self.bd = bd
+        elif BD is not None:
+            self.bd = BD
+        else:
+            self.bd = None
 
         # valid adj
         self._validate_adj_roll(cals,roll)
 
     def process_anchor_dates(self):
         from dateroll.date.date import Date
-        if self.anchor_start and self.anchor_end:
+        if self._anchor_start and self._anchor_end:
             # anchor months -- month diff without days and years collapses into months
-            self.anchor_start=Date.from_datetime(self.anchor_start)
-            self.anchor_end=Date.from_datetime(self.anchor_end)
-            ydiff = self.anchor_end.year - self.anchor_start.year
-            mdiff = self.anchor_end.month - self.anchor_start.month
+            self._anchor_start=Date.from_datetime(self._anchor_start)
+            self._anchor_end=Date.from_datetime(self._anchor_end)
+            ydiff = self._anchor_end.year - self._anchor_start.year
+            mdiff = self._anchor_end.month - self._anchor_start.month
             diff = mdiff + ydiff*12
             self_anchor_years = ydiff
             self._anchor_months = diff        
             #anchor days  --- date diff but WITHOUT dates
-            b = self.anchor_end.date
-            a = self.anchor_start.date
-            delta = dateutil.relativedelta.relativedelta(months=diff)
-            if a.day==b.day:
-                self._anchor_days=0
-            else:
-                self._anchor_days=(b-(a+delta)).days
-
-    def process_anchor_dates(self):
-        from dateroll.date.date import Date
-        if self.anchor_start and self.anchor_end:
-            # anchor months -- month diff without days and years collapses into months
-            self.anchor_start=Date.from_datetime(self.anchor_start)
-            self.anchor_end=Date.from_datetime(self.anchor_end)
-            ydiff = self.anchor_end.year - self.anchor_start.year
-            mdiff = self.anchor_end.month - self.anchor_start.month
-            diff = mdiff + ydiff*12
-            self_anchor_years = ydiff
-            self._anchor_months = diff        
-            #anchor days  --- date diff but WITHOUT dates
-            b = self.anchor_end.date
-            a = self.anchor_start.date
+            b = self._anchor_end.date
+            a = self._anchor_start.date
             delta = dateutil.relativedelta.relativedelta(months=diff)
             if a.day==b.day:
                 self._anchor_days=0
@@ -186,26 +173,26 @@ class Duration(dateutil.relativedelta.relativedelta):
             raise TypeError(f'Must be string not {type(string).__name__}') 
 
     @staticmethod
-    def from_relativedelta(rd,anchor_start=None,anchor_end=None):
+    def from_relativedelta(rd,_anchor_start=None,_anchor_end=None):
         if isinstance(rd,dateutil.relativedelta.relativedelta):
-            return Duration(years=rd.years,months=rd.months,days=rd.days,anchor_start=anchor_start,anchor_end=anchor_end)
+            return Duration(years=rd.years,months=rd.months,days=rd.days,_anchor_start=_anchor_start,_anchor_end=_anchor_end)
         elif isinstance(rd,datetime.timedelta):
-            return Duration.from_timedelta(rd,anchor_start=anchor_start,anchor_end=anchor_end)
+            return Duration.from_timedelta(rd,_anchor_start=_anchor_start,_anchor_end=_anchor_end)
         else:
             raise TypeError(f'Must be relativedelta (or timedelta) not {type(rd).__name__}') 
     
     @staticmethod
-    def from_timedelta(td,anchor_start=None,anchor_end=None):
+    def from_timedelta(td,_anchor_start=None,_anchor_end=None):
         if isinstance(td,datetime.timedelta):
-            return Duration(days=td.days,anchor_start=anchor_start,anchor_end=anchor_end)
+            return Duration(days=td.days,_anchor_start=_anchor_start,_anchor_end=_anchor_end)
         else:
             raise TypeError(f'Must be timedelta not {type(td).__name__}') 
 
     def _validate_adj_roll(self,cals,roll):
 
         # if roll and 0 raise error
-        if self.bd==0 and roll:
-            raise Exception('cannot have bd=0 and roll at same time')
+        if self.bd==0 and roll is not None:
+            self.bd = None
 
         if self.bd is None and cals and len(cals) > 0:
             self.bd = 0
@@ -280,6 +267,9 @@ class Duration(dateutil.relativedelta.relativedelta):
         """
         # convert td to rd
         
+        if isinstance(o,int):
+            return self.just_exact_days==o
+        
         if isinstance(o, datetime.timedelta):
             o = dateutil.relativedelta.relativedelta(days = o.days)
         
@@ -291,7 +281,7 @@ class Duration(dateutil.relativedelta.relativedelta):
                             if self.bd == o.bd:
                                 if self.cals == o.cals:
                                     if self.roll == o.roll:
-                                        if self.anchor_end == o.anchor_end and self.anchor_start == o.anchor_start:
+                                        if self._anchor_end == o._anchor_end and self._anchor_start == o._anchor_start:
                                             return True   
                         else:
                             return True
@@ -402,28 +392,29 @@ class Duration(dateutil.relativedelta.relativedelta):
         """
         warns = [] 
         just_days = 0
-        
-        if self.anchor_start and self.anchor_end and not _force_approx:
+       
+        if self._anchor_start and self._anchor_end and not _force_approx:
             # i am anchored
-            just_days += (self.anchor_end-self.anchor_start).days
+            just_days += (self._anchor_end-self._anchor_start).days
         else:      
             # i am not anchored 
             if self.years != 0:
                 yeardays = APPROX['1y1d']*self.years
                 just_days += yeardays
-                warns.append(f"1y≈{yeardays:.6f}d")
+                warns.append(f"≈{yeardays:.6f}d")
 
             if self.months != 0:
                 monthdays = APPROX['1y1d'] / 12 * self.months
                 just_days += monthdays
-                warns.append(f"1m≈{monthdays:.6f}m")
+                warns.append(f"≈{monthdays:.6f}m")
 
             just_days += self.days
             
             if self.bd is not None:
-                dbds = APPROX['1bd1d']*self.bd
-                just_days += dbds
-                warns.append(f"1bd≈{dbds:.6f}d")
+                if self.bd !=0:
+                    dbds = APPROX['1bd1d']*self.bd
+                    just_days += dbds
+                    warns.append(f"≈{dbds:.6f}d")
 
         if len(warns)>0:
             w = ','.join(warns)
@@ -448,46 +439,51 @@ class Duration(dateutil.relativedelta.relativedelta):
             """
             combine both
             """
-            years   = a.years   +   b.years
-            months  = a.months  +   b.months
-            days    = a.days    +   b.days
-            bd = add_none(a.bd,b.bd) # none or add
+            years   = a.years   +   direction*b.years
+            months  = a.months  +   direction*b.months
+            days    = a.days    +   direction*b.days
+            bd = add_none(a.bd,b.bd,direction) # none or add
             cals = combine_none(a.cals,b.cals) # union
 
-            if a.roll == b.roll:
-                # covers both none or both same
-                roll = a.roll
-            else:
-                if a and not b:
-                    # a rolls, b doesn't use a
+            if a.roll or b.roll:
+                if a.roll == b.roll:
+                    # covers both none or both same
                     roll = a.roll
-                elif b and not a:
-                    # b rolls, a doesn't use b
-                    roll = b.roll
                 else:
-                    # both roll, but differently
-                    # BIGGER dominates, use just day to approxmate, if just_days needs conversion, warn
-
-                    a_days , b_days = a.just_days, b.just_days
-                    if (a_days+b_days) > 0:
-                        # a dominates
+                    if a.roll is not None and b.roll is None:
+                        # a rolls, b doesn't use a
                         roll = a.roll
-                        if b.roll and 'M' in b.roll:
-                            if 'M' not in roll:
-                                roll = f'M{roll}'
-                        if isinstance(a_days+b_days,float):
-                            warnings.warn(f"[dateroll] Using approx for roll dermination")
-                    elif (a_days+b_days) < 0:
-                        # b dominates
+                    elif b.roll is not None and a.roll is None:
+                        # b rolls, a doesn't use b
                         roll = b.roll
-                        if a.roll and 'M' in a.roll:
-                            if 'M' not in roll:
-                                roll = f'M{roll}'
-                        if isinstance(a_days+b_days,float):
-                            warnings.warn(f"[dateroll] Using approx for roll dermination")
                     else:
-                        # perfect offset, indeterminate roll
-                        raise ValueError('Dates offset, cannot determine roll direction')
+                        # both roll, but differently
+                        # BIGGER dominates, use just day to approxmate, if just_days needs conversion, warn
+
+                        a_days , b_days = a.just_days, b.just_days
+                        diff = a_days + direction*b_days
+
+                        if diff > 0:
+                            # a dominates
+                            roll = a.roll
+                            if b.roll and 'M' in b.roll:
+                                if 'M' not in roll:
+                                    roll = f'M{roll}'
+                            if isinstance(diff,float):
+                                warnings.warn(f"[dateroll] Using approx for roll dermination")
+                        elif diff < 0:
+                            # b dominates
+                            roll = b.roll
+                            if a.roll and 'M' in a.roll:
+                                if 'M' not in roll:
+                                    roll = f'M{roll}'
+                            if isinstance(diff,float):
+                                warnings.warn(f"[dateroll] Using approx for roll dermination")
+                        else:
+                            roll = 'F'
+                            warnings.warn(f"[dateroll] Perfect offset, using first")
+            else:
+                roll = None
 
             c = Duration(years=years, months=months, days=days, bd=bd, roll=roll, cals=cals)
             return c
@@ -566,6 +562,29 @@ class Duration(dateutil.relativedelta.relativedelta):
                 constructor += f"{k}={v}, "
         return f'{self.__class__.__name__}({constructor.rstrip(", ")})'
 
+    def __gt__(a,b):
+        if isinstance(b,int):
+            b = Duration(days=b)
+        
+        return a.just_days > b.just_days
+
+    def __ge__(a,b):
+        if isinstance(b,int):
+            b = Duration(days=b)
+
+        return a.just_days >= b.just_days
+    
+    def __lt__(a,b):
+        if isinstance(b,int):
+            b = Duration(days=b)
+
+        return a.just_days < b.just_days
+    
+    def __le__(a,b):
+        if isinstance(b,int):
+            b = Duration(days=b)
+        
+        return a.just_days <= b.just_days
 
 
 
@@ -597,7 +616,7 @@ if __name__ == "__main__": # pragma: no cover
     from dateroll.date.date import Date
     
     
-    dur = Duration(days=4,anchor_start=Date(2024,3,1),anchor_end=Date(2024,3,15),roll='F')
+    dur = Duration(days=4,_anchor_start=Date(2024,3,1),_anchor_end=Date(2024,3,15),roll='F')
     x = dur.just_days()
     print('end-----')
     code.interact(local=dict(globals(),**locals()))

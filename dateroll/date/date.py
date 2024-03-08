@@ -138,12 +138,11 @@ class Date(datetime.date):
             elif isinstance(o,datetime.datetime):
                 # truncates time!
                 dt = datetime.date(o.year,o.month,o.day) 
-            elif isinstance(datetime.date):
-                dt = o
             else:
-                raise TypeError(f'Unknown date type')
+                if isinstance(o, datetime.date):
+                    dt = o
 
-            return Duration.from_timedelta(self.date-dt,anchor_start=dt,anchor_end=self.date)
+            return Duration.from_timedelta(self.date-dt,_anchor_start=dt,_anchor_end=self.date)
         
         elif isinstance(o, Duration):
             # date + duration

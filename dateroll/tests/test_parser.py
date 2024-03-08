@@ -51,15 +51,26 @@ class TestParser(unittest.TestCase):
         dt = Parser.parse_maybe_many_parts('20240101',convention=convention)
         self.assertEqual(dt,Date(2024,1,1))
 
-        # 3 parts
+        # 3 parts - valid schedule generation
         dts = Parser.parse_maybe_many_parts('20240101,20240201,1bd',convention=convention)
-        
         self.assertEqual(dts[0],Date(2024,1,1))
         self.assertEqual(dts[-1],Date(2024,2,1))
         self.assertEqual(len(dts),24)
 
-        
+        # 3 parts 1st part wrong
+        with self.assertRaises(TypeError):
+            dt = Parser.parse_maybe_many_parts('3m,t,1m',convention=convention)
 
+        # 3 parts 2nd part wrong
+        with self.assertRaises(TypeError):
+            dt = Parser.parse_maybe_many_parts('t,3m,1m',convention=convention)
+
+        # 3 parts 3rd part wrong
+        with self.assertRaises(TypeError):
+            dt = Parser.parse_maybe_many_parts('t,t+3m,t-1d',convention=convention)
+            
+        # parts stub
+        dt = Parser.parse_maybe_many_parts('t,t+2m15d,1m',convention=convention)
 
     
 

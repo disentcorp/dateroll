@@ -39,7 +39,9 @@ class TestDuration(unittest.TestCase):
         '''
         td = datetime.timedelta(weeks=1,days=12)
         x = Duration.from_timedelta(td)
+        y = Duration.from_relativedelta(td)
         self.assertIsInstance(x,Duration)
+        self.assertIsInstance(y,Duration)
         self.assertRaises(TypeError,lambda :Duration.from_timedelta('garbage'))
 
     def test_period_units(self):
@@ -206,18 +208,6 @@ class TestDuration(unittest.TestCase):
     def test__validate_adj_roll(self):
         pass
 
-    def test_just_days(self):
-        pass
-    def test_rough_days(self):
-        '''
-            returns the rough or exact days of duration
-        '''
-        # dur = Duration(y=1,m=/1,w=1,d=1,bd=1)
-        # rs = dur.rough_days
-        # self.assertEqual(rs,(False, ))
-
-
-
     def test_math(self):
         # coveraged by all dunder methods
         '''
@@ -275,7 +265,7 @@ class TestDuration(unittest.TestCase):
         self.assertEqual(mdur+mdur2,Duration(m=0, d=14, roll="MF"))
         mdur3 = Duration(d=13,roll = 'MP')
         mdur4 = Duration(d=1,roll='MP')
-        self.assertEqual(mdur3-mdur4,Duration(m=0, d=14, roll="MP"))
+        self.assertEqual(mdur3-mdur4,Duration(m=0, d=12, roll="MP"))
         
         nonedur1 = Duration(d=14)
         nonedur2 = Duration(d=1)
@@ -330,7 +320,7 @@ class TestDuration(unittest.TestCase):
         self.assertNotEqual(Duration(days=5),datetime.timedelta(days=4))
 
         with self.assertRaises(TypeError):
-            Duration(days=5)==10
+            Duration(days=5)=='23423'
 
     def test___iadd__(self):
         dur = Duration(days=4,roll='F')
@@ -359,13 +349,34 @@ class TestDuration(unittest.TestCase):
         dur2 = +dur
         self.assertEqual(dur2,dur)
     
-    def test_justDays(self):
+    def test_just_days(self):
         '''
             test the number of days between two anchor dates
         '''
-        dur = Duration(days=4,anchor_start=Date(2024,3,1),anchor_end=Date(2024,3,15),roll='F')
+        from dateroll import ddh
+        dur = ddh('4/15/24-1/15/24')
         x = dur.just_days
-        self.assertEqual(x,14)
+        self.assertEqual(x,91)
+        y = dur.just_approx_days
+        self.assertEqual(y,91)
+        z = dur.just_exact_days
+        self.assertEqual(z,91)
+
+
+        z = Duration(months=3).just_days
+        self.assertAlmostEqual(z,91.3125,2)
+
+        z = Duration(year=1).just_days
+        self.assertAlmostEqual(z,365.25,2)
+
+        dur = Duration(bd=1)
+        x = dur.just_days
+        self.assertAlmostEqual(365.25/252,x,2)
+
+        with self.assertRaises(ValueError):
+            dur = Duration(years=1)
+            dur.just_exact_days
+
 
     def test___radd__(self):
         pass
@@ -379,6 +390,115 @@ class TestDuration(unittest.TestCase):
         pass
     def test___sub__(self):
         pass
+
+    def test_anchor(self):
+        from dateroll import ddh
+        dur = ddh('4/15/24-1/12/23')
+        self.assertEqual(dur._anchor_months,15)
+        self.assertEqual(dur._anchor_days,3)
+
+    def test_bd0_and_roll(self):
+        dur = Duration(bd=0,roll='F')
+        self.assertEqual(dur.bd,None)
+        dur = Duration(BD=0,roll='F')
+        self.assertEqual(dur.bd,None)
+        dur = Duration(BD=1,bd=2,roll='F')
+        self.assertEqual(dur.bd,3)
+
+    def test_roll(self):
+        
+        from dateroll import ddh
+
+        # check which roll wins if adding left and right
+
+        # same roll
+        dur = ddh('+5bd/F')+ddh('+3bd/F')
+        self.assertTrue(dur.roll,'F')
+
+        # left only
+        dur = ddh('+5bd/F')+ddh('+3bd')
+        self.assertTrue(dur.roll,'F')
+
+        dur = ddh('+5bd/P')+ddh('+3bd')
+        self.assertTrue(dur.roll,'P')
+
+        dur = ddh('+5bd/P')+ddh('+3bd')
+        self.assertTrue(dur.roll,'P')
+
+        # right only
+        dur = ddh('+5bd')+ddh('+3bd/F')
+        self.assertTrue(dur.roll,'F')
+
+        dur = ddh('+5bd')+ddh('+3bd/F')
+        self.assertTrue(dur.roll,'F')
+
+        dur = ddh('+5bd')+ddh('+3bd/P')
+        self.assertTrue(dur.roll,'P')
+
+        dur = ddh('+5bd')+ddh('+3bd/P')
+        self.assertTrue(dur.roll,'P')
+
+        # both left wins
+        dur = ddh('+10bd/F')+ddh('+3bd/P')
+        self.assertTrue(dur.roll,'F')
+
+        # both right wins
+        dur = ddh('+10bd/F')+ddh('+300bd/MP')
+        self.assertTrue(dur.roll,'P')
+
+        # both right wins, modifier from left
+        dur = ddh('+100bd/F')+ddh('+3bd/P')
+        self.assertTrue(dur.roll,'MF')
+
+        # both right wins
+        dur = ddh('+10bd/F')+ddh('+300bd/P')
+        self.assertTrue(dur.roll,'MP')
+
+        # both, 0 -> /F
+        dur = ddh('+5bd/F')+ddh('-5bd/P')
+        self.assertTrue(dur.roll,'F')
+
+        # equal approx
+        dur = ddh('+3m/F')+ddh('-3m/P')
+        self.assertTrue(dur.roll,'F')
+
+        # minus with approx w/ modifier
+        dur = ddh('+3m/F')+ddh('-5m/P')
+        self.assertTrue(dur.roll,'F')
+        
+        # minus with approx
+        dur = ddh('+3m/MF')+ddh('-5m/P')
+        self.assertTrue(dur.roll,'MF')
+
+    def test_compare(self):
+        
+        dur1 = Duration(months=5)
+        dur2 = Duration(days=-3)
+
+        # same
+        self.assertEqual(dur1,dur1)
+        self.assertNotEqual(dur1,dur2)
+        self.assertEqual(dur2,-3)
+
+        # >
+        self.assertGreater(dur1,dur2)
+        self.assertGreater(dur2,-5)
+
+        # >=
+        self.assertGreaterEqual(dur1,dur2)
+        self.assertGreaterEqual(dur2,-3)
+        
+        # <
+        self.assertLess(dur2,dur1)
+        self.assertLess(dur2,-2)
+        
+        # <=
+        self.assertLessEqual(dur2,dur1)
+        self.assertLessEqual(dur2,-3)
+
+
+
+
 
 if __name__=='__main__':
     unittest.main()

@@ -1,23 +1,41 @@
 
 class Schedule: 
-    # TODO tempo
-    
     def __init__(self,start,stop,step):
         self.start = start
         self.stop = stop
         self.step = step
+        
+        if self.step >=0:
+            self.direction = 'forward'
+        else:
+            self.direction = 'backward'
 
-    def range(self):
+    @property
+    def dates(self):
         '''
-            gives the date range, ie=[]
+            gives the date range
+            direction of date generations is given by the sign of step
         '''
-        dts = [self.start]
-        dt = dts[0]
-        while dt<self.stop:
-            dt+=self.step
-            dts.append(dt)
-        return dts
+        dates = []
 
+        # backward generation
+        if self.direction == 'backward':
+            cursor = self.stop
+            while cursor > self.start:
+                dates.append(cursor)
+                cursor -= self.step
+            dates.append(self.start)
+        else:
+            # foward generation
+            cursor = self.start
+            while cursor < self.stop:
+                dates.append(cursor)
+                cursor += self.step
+            dates.append(self.stop)
+
+        return sorted(dates)
+
+# default stub is FRONT short
 # old stuff we didn't add back:
 #         stub="short",
 #         ret="l",

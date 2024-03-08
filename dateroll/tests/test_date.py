@@ -138,7 +138,7 @@ class TestDate(unittest.TestCase):
         self.assertEqual(d2 - int_dur, d1)
         self.assertEqual(d2 - rd, d1)
         self.assertEqual(d2 - td, d1)
-
+        self.assertEqual(d2 - d3,Duration(days=0))
         self.assertEqual(d2-d2,d3-d2)
         self.assertEqual(d2-d2,d4-d2)
         self.assertEqual(d2-d2,d2-d4)
@@ -146,6 +146,7 @@ class TestDate(unittest.TestCase):
         self.assertRaises(TypeError,lambda: dur-d1)
         self.assertRaises(TypeError,lambda: 3.0-d1)
         self.assertRaises(TypeError,lambda: d1-3.0)
+        self.assertRaises(TypeError,lambda: d2-3.0)
 
         # iadd
         _d1 = d1

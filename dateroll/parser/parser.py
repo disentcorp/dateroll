@@ -172,7 +172,7 @@ class Parser:
                 raise TypeError("Step of generation must be a valid Duration")
 
             sch = Schedule(start=start, stop=stop, step=step)
-            dts = sch.range()
+            dts = sch.dates
             return dts
 
         else:
