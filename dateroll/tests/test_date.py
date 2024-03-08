@@ -124,6 +124,7 @@ class TestDate(unittest.TestCase):
         self.assertEqual(d1 + int_dur, d2)
         self.assertEqual(d1 + rd, d2)
         self.assertEqual(d1 + td, d2)
+        self.assertEqual(d3-d2,Duration())
 
         self.assertRaises(TypeError,lambda: d1+3.0)
         self.assertRaises(TypeError,lambda: 3.0-d1)

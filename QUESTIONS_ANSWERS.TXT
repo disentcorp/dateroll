@@ -361,9 +361,12 @@ TOTAL                                  950      5    99%
 
     PS: While testing, as I learn about the design, so good and easy to understand
 
-    2 of your test_math test cases didn't work/make sense i deleted them.
+    ############ batu 2024/3/8 9 AM EST
 
-    please put more comments on your test cases and i will do the same, when a big happens i can't tell what the test cases are supposed to do so i have to relearn
-    each time.
+    again i didn't 100% pass on the first pull, i commented out your test cases that were failing, can you pleae put more specific comments on what your test cases are testing? it wasn't obvious.
 
-    we need to think more carefully on test cases for duration, it's not trivial
+    there was a lot of bugs and non-handled cases. 
+
+    Did you figure out the mutated test and the bck.pop ?? they are still showing as missing on my side. 
+
+    I have a feeling were are not following the same workflow and have to reset again.

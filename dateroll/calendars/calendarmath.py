@@ -82,9 +82,6 @@ class CalendarMath:
                 cached = self.load_cache()
                 self.__dict__.update(cached)
                 return
-            else:
-                # cache invalidation
-                pass
         # compile
         self.compile_all()
 
