@@ -406,75 +406,65 @@ TOTAL                                  950      5    99%
     1 - missing tests:
         users tests from ddh
         practice add/sub examples
-        
-        /F
-            sat + 0bd, mon is holiday
-            sat + 0bd, fri is holiday
-            sun + 0bd, mon is holiday
-            sun + 0bd, fri is holiday
-            sat - 0bd, mon is holiday
-            sat - 0bd, fri is holiday
-            sun - 0bd, mon is holiday
-            sun - 0bd, fri is holiday
-            sat + 0bd, mon is 1st of next month
-            sat + 0bd, fri is last of prevous month
-            sun + 0bd, mon is 1st of next month
-            sun + 0bd, fri is last of previous month
-            sat - 0bd, mon is 1st of next month
-            sat - 0bd, fri is last of prevous month
-            sun - 0bd, mon is 1st of next month
-            sun - 0bd, fri is last of previous month
-        /P
-            sat + 0bd, mon is holiday
-            sat + 0bd, fri is holiday
-            sun + 0bd, mon is holiday
-            sun + 0bd, fri is holiday
-            sat - 0bd, mon is holiday
-            sat - 0bd, fri is holiday
-            sun - 0bd, mon is holiday
-            sun - 0bd, fri is holiday
-            sat + 0bd, mon is 1st of next month
-            sat + 0bd, fri is last of prevous month
-            sun + 0bd, mon is 1st of next month
-            sun + 0bd, fri is last of previous month
-            sat - 0bd, mon is 1st of next month
-            sat - 0bd, fri is last of prevous month
-            sun - 0bd, mon is 1st of next month
-            sun - 0bd, fri is last of previous month
-        /MF
-            sat + 0bd, mon is holiday
-            sat + 0bd, fri is holiday
-            sun + 0bd, mon is holiday
-            sun + 0bd, fri is holiday
-            sat - 0bd, mon is holiday
-            sat - 0bd, fri is holiday
-            sun - 0bd, mon is holiday
-            sun - 0bd, fri is holiday
-            sat + 0bd, mon is 1st of next month
-            sat + 0bd, fri is last of prevous month
-            sun + 0bd, mon is 1st of next month
-            sun + 0bd, fri is last of previous month
-            sat - 0bd, mon is 1st of next month
-            sat - 0bd, fri is last of prevous month
-            sun - 0bd, mon is 1st of next month
-            sun - 0bd, fri is last of previous month
-        /MP
-            sat + 0bd, mon is holiday
-            sat + 0bd, fri is holiday
-            sun + 0bd, mon is holiday
-            sun + 0bd, fri is holiday
-            sat - 0bd, mon is holiday
-            sat - 0bd, fri is holiday
-            sun - 0bd, mon is holiday
-            sun - 0bd, fri is holiday
-            sat + 0bd, mon is 1st of next month
-            sat + 0bd, fri is last of prevous month
-            sun + 0bd, mon is 1st of next month
-            sun + 0bd, fri is last of previous month
-            sat - 0bd, mon is 1st of next month
-            sat - 0bd, fri is last of prevous month
-            sun - 0bd, mon is 1st of next month
-            sun - 0bd, fri is last of previous month
+
+        3 modes:
+
+            1 calendar hopping
+            2 busday day adjusting
+                if roll, use roll rule
+                if no roll, roll is implied by the direction of travel, if no anchor, /F
+            3 combos
+                calendar hopping + bus adj
+            4 calendar shifting
+
+
+        -------------------------------------------------------
+        tests to enumerate:
+            fri, sat, sun, mon
+            +,-
+            0bd,1bd,1d,1w,1m,1q,1y
+
+            4 days for 2 scenarios 8
+            4 days for 2 sceanrios 8
+                                   16
+
+            for +0bd and +1bd exmples:
+                next is a holiday in current month
+                    day before xmas which is a fir/say/sun/mon
+                next is a holiday in next month
+                    new years eve is on a fri/sat/sun/month
+                next is a nonholiday in current month
+                    5/15/24 (5/16 is never a holiday)
+                next is a nonholiday in next month
+                    3/31/24 (4/1 is never a holiday)
+
+            for -0bd and -1bd examples:
+                prev is a holiday in previous month
+                    monday that is the 1st of the month
+                prev is a holiday in previous month
+                    any monday preceded by a holiday
+                prev is a nonholiday in previous month
+                    any 1st where the day before is not a holiday
+                prev is a nonholiday in previous month
+                    any 
+
+            for each of F/P/MF/MP 16*4 = 64
+
+            plus 8 more (non-bd):
+
+            +-5d
+            +-3w
+            +-4m
+            +-5y
+            
+            4 leap year cases:
+            
+            2/28/24+1d=29
+            3/1/24-1d=29
+            2/28/23+1d=3/1
+            3/1/23-1d=2/28
+
+        -------------------------------------------------------
 
         Date comparisons (i did Duration comparisons already)
             date1 > date2
@@ -483,6 +473,45 @@ TOTAL                                  950      5    99%
             date1 < date2
             date1 <= date2
 
+
+        bd adjusmtnet
+
+            Duration + adjustment rule (call,roll, cal+roll)
+        shifting
+
+            Date + adjustment rule
+
+            3 letter formulas:
+                F/L first/last
+                P/N/C prev/next/curr
+                D/M/W/Q/Y 
+            4 letter formula
+                N 1-31
+                W
+                UMTWRFS day of the week
+                PNC prev/next/curr
+
+            5/5/25|FCY  
+            5/5/25|FPY	frst day prev yr
+            5/5/25|FNY  frst day next yr
+            5/5/25|LCY	last day curr yr
+            5/5/25|LPY	last day prev yr
+            5/5/25|LNY	last day next yr
+            5/5/25|FCY	frst day curr yr
+            5/5/25|FPM	frst day prev mth
+            5/5/25|FNM	frst day next mth
+            5/5/25|LCM	last day curr mth
+            5/5/25|LPM	last day prev mth
+            5/5/25|LNM	last day next mth
+            5/5/25|FPM	frst day prev mth
+            5/5/25|FNQ	frst day next qtr
+            5/5/25|LCQ	last day curf qtr
+            5/5/25|LPQ	last day prev qtr
+            5/5/25|LNQ	last day next qtr
+            5/5/25|1WCM	1st wed curr mth
+            5/5/25|2FCM 2nd fri curr mth
+
+            ddh('t|3WCM-2bd|NYu')
 
         we need some leap year scenarios
         leap year with holidays
