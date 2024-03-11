@@ -321,45 +321,57 @@ class Duration(dateutil.relativedelta.relativedelta):
 
         return rd
 
-    def apply_business_date_adjustment(self, from_date):
+    def apply_business_date_adjustment(self,from_date,direction):
         """
         2 steps:
         1 calendar count #bd's
         2 apply roll convention
         """
+        from dateroll.date.date import Date
+        
         if self.bd is not None:
             adjusted = self.adjust_bds(from_date)
         else:
             adjusted = from_date
-        if self.roll is not None and self.bd is None:
+        
+        if self.roll is not None and (self.bd is None or (self.bd==0 and not Date(from_date.year,from_date.month,from_date.day).is_bd(cals=self.cals))):
             # if self.bd is not None, it will add another 1 bd which is wrong
-            rolled_and_adjusted = self.apply_roll_convention(adjusted)
+            rolled_and_adjusted = self.apply_roll_convention(adjusted,direction)
+            
+
         else:
             rolled_and_adjusted = adjusted
         
+        if ((self.roll=='MF' and direction>0) or (self.roll=='MP' and direction<0)) and rolled_and_adjusted.month!=from_date.month:
+            # find the last/first business date of the month
+            new_date = rolled_and_adjusted
+            while new_date.month!=from_date.month:
+                new_date = Date(new_date.year,new_date.month,new_date.day) + Duration(bd=direction* -1)
+            rolled_and_adjusted = new_date
         return rolled_and_adjusted
 
-    def apply_roll_convention(self, from_date):
+    def apply_roll_convention(self,from_date,direction):
         """
         uses CalendarMath for roll
         """
         roll = self.roll
-        if roll == "P":
-            return calmath.prev_bd(from_date, cals=self.cals)
-        elif roll == "MP":
-            return calmath.prev_bd(from_date, cals=self.cals, mod=True)
-        elif roll == "F":
-            return calmath.next_bd(from_date, cals=self.cals)
-        elif roll == "MF":
-            return calmath.next_bd(from_date, cals=self.cals, mod=True)
-        else:
+        new_date = from_date
+        if self.roll not in ['F','MF','P','MP']:
             raise Exception("Unhandled roll: Must be /F, /P / MF/ /MP")
-
+        if roll == "P" and direction<0:
+            new_date = calmath.prev_bd(from_date, cals=self.cals)
+        elif roll == "MP" and direction<0:
+            new_date = calmath.prev_bd(from_date, cals=self.cals, mod=True)
+        elif roll == "F" and direction>0:
+            new_date = calmath.next_bd(from_date, cals=self.cals)
+        elif roll == "MF" and direction>0:
+            new_date = calmath.next_bd(from_date, cals=self.cals, mod=True)
+        return new_date
     def adjust_bds(self, from_date):
         """
         uses CalendarMath for bd adjustment
         """
-        
+
         _d = calmath.add_bd(from_date, self.bd, cals=self.cals)
         return _d
 
@@ -482,9 +494,9 @@ class Duration(dateutil.relativedelta.relativedelta):
                         else:
                             roll = 'F'
                             warnings.warn(f"[dateroll] Perfect offset, using first")
+                
             else:
                 roll = None
-
             c = Duration(years=years, months=months, days=days, bd=bd, roll=roll, cals=cals)
             return c
 
@@ -495,16 +507,18 @@ class Duration(dateutil.relativedelta.relativedelta):
 
         elif isinstance(b, DateLike):
             # adjust b for Non-bd's FIRST
+            
             b_moved = b.date + self.relativedelta * direction
 
             # # if you have bd's, then use bd adj and roll:
             if self.bd or self.cals or self.roll:
-                shift_adj = self.apply_business_date_adjustment(b_moved)
+                shift_adj = self.apply_business_date_adjustment(b_moved,direction)
             else:
                 shift_adj = b_moved
 
             # convert back to dateroll.Date
             dt = Date.from_datetime(shift_adj)
+            
             return dt
 
         else:
@@ -516,7 +530,6 @@ class Duration(dateutil.relativedelta.relativedelta):
 
     def __rsub__(self, x):
         # print(type(x), "rsub")
-        
         return self.math(x, -1)
 
     def __add__(self, x):
@@ -613,11 +626,12 @@ PeriodLike = PeriodLike + (Duration,)
 if __name__ == "__main__": # pragma: no cover
     ...
     # dur2 = Duration()
-    from dateroll.date.date import Date
+    from dateroll.ddh.ddh import ddh
+    dur = ddh('+5bd/F')+ddh('-5bd/P')
+    # from dateroll.date.date import Date
     
     
-    dur = Duration(days=4,_anchor_start=Date(2024,3,1),_anchor_end=Date(2024,3,15),roll='F')
-    x = dur.just_days()
-    print('end-----')
-    code.interact(local=dict(globals(),**locals()))
+    # dur = Duration(days=4,_anchor_start=Date(2024,3,1),_anchor_end=Date(2024,3,15),roll='F')
+    # x = dur.just_days()
+    
 

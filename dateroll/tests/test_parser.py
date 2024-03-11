@@ -1,7 +1,7 @@
 import unittest
 import code
 
-from dateroll.parser.parser import Parser
+from dateroll.parser.parser import Parser, parse_to_native
 from dateroll.date.date import Date
 from dateroll.duration.duration import Duration
 class TestParser(unittest.TestCase):
@@ -71,6 +71,15 @@ class TestParser(unittest.TestCase):
             
         # parts stub
         dt = Parser.parse_maybe_many_parts('t,t+2m15d,1m',convention=convention)
+
+        # 2 parts are wrong
+        with self.assertRaises(Exception):
+            dt = Parser.parse_maybe_many_parts('t,t+3m',convention=convention)
+        
+
+        # use_native NotImplmented for now
+        with self.assertRaises(NotImplementedError):
+            dt = parse_to_native('t',convention=convention)
 
     
 

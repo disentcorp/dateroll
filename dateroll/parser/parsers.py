@@ -179,7 +179,7 @@ def parseDurationString(s):
     for m in matches:
         duration = process_duration_match(m)
         # subs turn into addisions because Duration comes back with - inside
-        s = s.replace(m[0], f"+X")
+        s = s.replace(m[0], f"+X") if not '-' in m[0] else s.replace(m[0], f"-X")
         durations.append(duration)
 
     return durations, s
@@ -210,8 +210,9 @@ def parseDateMathString(s, things):
             s = s.replace("X", AtoZ[idx], 1)
 
         gs = {k: v for k, v in zip(AtoZ[: len(things)], things)}
+        
         total = eval(s,{},gs)
-
+        
         return total
     raise ParserStringsError("Cannot recognize as date math", s)
 

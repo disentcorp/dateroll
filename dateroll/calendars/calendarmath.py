@@ -222,8 +222,9 @@ class CalendarMath:
         for name in cals:
             cal = self.cals[name]
             if d in cal:
+                
                 return False
-
+        
         return True
 
     def diff(self, t1, t2, cals, ie=DEFAULT_IE):
@@ -276,6 +277,7 @@ class CalendarMath:
                     new_d = d
                 else:
                     new_d = self.add_bd(d,1,cals)
+        
         return new_d
 
 
@@ -377,6 +379,4 @@ if __name__ == "__main__": # pragma: no cover
     b = time.time()
     print((b - a) * 1000, "ms")
 
-    import code
-
-    code.interact(local=locals())
+    

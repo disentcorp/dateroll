@@ -1,4 +1,6 @@
 
+import code
+
 class Schedule: 
     def __init__(self,start,stop,step):
         self.start = start
@@ -20,10 +22,11 @@ class Schedule:
 
         # backward generation
         if self.direction == 'backward':
-            cursor = self.stop
-            while cursor > self.start:
+            cursor = self.start
+            while cursor > self.stop:
                 dates.append(cursor)
-                cursor -= self.step
+                # we use plus sign because step<0
+                cursor += self.step
             dates.append(self.start)
         else:
             # foward generation
