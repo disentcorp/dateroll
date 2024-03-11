@@ -106,7 +106,7 @@ class Duration(dateutil.relativedelta.relativedelta):
         d = day
         bd = business days
         cals = list of 2-letter codes for calendars
-        roll = roll convention (F,P,MF,MP) <-non means not supplied, 0 means zero supplied
+        modified = False or True (True means stay in month with BD adjustment)
         """
         # merge y/m/w/d
         self.years = years + year + y + Y
@@ -229,7 +229,7 @@ class Duration(dateutil.relativedelta.relativedelta):
                             f"Calendars must be strings (not {type(cal).__name__})"
                         )
             # implicit weekend when using cals
-            _cals |= WEEKEND_CALENDAR
+            _cals |= set([WEEKEND_CALENDAR])
             _cals = tuple(sorted(_cals))
         else:
             if self.bd is not None:

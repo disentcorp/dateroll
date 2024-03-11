@@ -121,14 +121,9 @@ def process_duration_match(m: tuple):
         )
 
     # attach roll if any
-    roll = m[22]
-    if roll:
-        duration_contructor_args["roll"] = roll
-    else:
-        if mult == -1:
-            # if -BD is specific and no specific roll, roll should
-            # should ALWAYS be P or previous business day
-            duration_contructor_args["roll"] = "P"
+    modified = m[22]
+    if modified:
+        duration_contructor_args["modified"] = True
 
     duration = dur.Duration(**duration_contructor_args)
     return duration
