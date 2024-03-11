@@ -35,6 +35,10 @@ class Date(datetime.date):
     def __repr__(self):
         return f'{self.__class__.__name__}("{self.strftime("%Y-%m-%d")}")'
 
+    @staticmethod
+    def today():
+        return Date.from_datetime(datetime.date.today())
+
     @property
     def datetime(self):
         return datetime.datetime(self.year, self.month, self.day)
@@ -142,7 +146,8 @@ class Date(datetime.date):
                 if isinstance(o, datetime.date):
                     dt = o
 
-            return Duration.from_timedelta(self.date-dt,_anchor_start=dt,_anchor_end=self.date)
+            time_delta = self.date-dt
+            return Duration.from_timedelta(time_delta,_anchor_start=dt,_anchor_end=self.date)
         
         elif isinstance(o, Duration):
             # date + duration

@@ -1,5 +1,5 @@
 import datetime
-
+import math
 import warnings
 import dateutil
 import dateutil.relativedelta
@@ -9,12 +9,11 @@ import code
 
 cals = calmath.cals
 
-period_order = (*"yhsqmwd", "cals", "roll")
+period_order = (*"yhsqmwd", "cals", "modifier")
 
 PeriodLike = (dateutil.relativedelta, datetime.timedelta)
 
 WEEKEND_CALENDAR = 'WE'
-VALID_ROLL_CONVENTIONS = {"F", "P", "MF", "MP"}
 
 APPROX = {
     '1y1d' : 14610/40, # exact average length for post 1582AD change
@@ -91,7 +90,7 @@ class Duration(dateutil.relativedelta.relativedelta):
 
         # bd adjustment initializer
         cals=None,
-        roll=None,
+        modified=False,
         
         # anchor dates (if duration is the result of math with some date)
         _anchor_start=None,
@@ -109,20 +108,27 @@ class Duration(dateutil.relativedelta.relativedelta):
         cals = list of 2-letter codes for calendars
         roll = roll convention (F,P,MF,MP) <-non means not supplied, 0 means zero supplied
         """
-
-        self._anchor_start = _anchor_start
-        self._anchor_end = _anchor_end
-
         # merge y/m/w/d
         self.years = years + year + y + Y
         self.months = months + month + m + M
-        self.days = days + day + d + D + 7*(weeks + week + W + w)
+        self.days = days + day + d + D
 
+        # collapse quarters into months
+        self.months += 3*(quarters + quarter + Q + q)
+
+        # collapse weeks into days
+        self.days += 7*(weeks + week + W + w)
+
+        # assign modified
+        self.modified = modified
+
+        # roll up months>12 into years
         if abs(self.months) >= 12:
             self.years+= int(self.months/12)
             self.months-= 12*int(self.months/12)
 
-        self.process_anchor_dates()
+        # process anchor periods / dates
+        self.process_anchor_dates(_anchor_start,_anchor_end)
 
         # valid cals
         self._validate_cals(cals)
@@ -137,10 +143,14 @@ class Duration(dateutil.relativedelta.relativedelta):
         else:
             self.bd = None
 
-        # valid adj
-        self._validate_adj_roll(cals,roll)
+    def process_anchor_dates(self,_anchor_start, _anchor_end):
+        '''
+        if a period is the result of dates, we can be "more exact" when the user needs the number of days in the period
+        '''
 
-    def process_anchor_dates(self):
+        self._anchor_start = _anchor_start
+        self._anchor_end = _anchor_end
+
         from dateroll.date.date import Date
         if self._anchor_start and self._anchor_end:
             # anchor months -- month diff without days and years collapses into months
@@ -188,45 +198,9 @@ class Duration(dateutil.relativedelta.relativedelta):
         else:
             raise TypeError(f'Must be timedelta not {type(td).__name__}') 
 
-    def _validate_adj_roll(self,cals,roll):
-
-        # if roll and 0 raise error
-        if self.bd==0 and roll is not None:
-            self.bd = None
-
-        if self.bd is None and cals and len(cals) > 0:
-            self.bd = 0
-
-        # clean calendars, add weekends
-        if self.bd is not None:
-            if self.cals:
-                # sort and add weekends
-                self.cals = tuple(sorted(set([*self.cals,WEEKEND_CALENDAR,])))
-            else:
-                self.cals = (WEEKEND_CALENDAR,)
-
-        # now validate roll
-        if roll is not None:
-            if isinstance(roll, str):
-                if roll in VALID_ROLL_CONVENTIONS:
-                    self.roll = roll
-                else:
-                     raise ValueError(f"F, P, MF, or MP, not {roll}")
-            else:
-                raise TypeError("Roll must be a str")
-        else:
-            ...
-            if self.bd is not None:
-                if self.bd >= 0:
-                    self.roll = "F"
-                else:
-                    self.roll = "P"
-            else:
-                self.roll = None
-
     def _validate_cals(self,cals):
         '''
-        
+        validates calendars are correct
         '''
         _cals = set()
         if cals is not None:
@@ -254,12 +228,18 @@ class Duration(dateutil.relativedelta.relativedelta):
                         raise Exception(
                             f"Calendars must be strings (not {type(cal).__name__})"
                         )
-            
+            # implicit weekend when using cals
+            _cals |= WEEKEND_CALENDAR
             _cals = tuple(sorted(_cals))
         else:
-            _cals = None
+            if self.bd is not None:
+                # implicit weekend calendar if bd is defined
+                _cals = (WEEKEND_CALENDAR,)
+            else:
+                _cals = None
 
         self.cals = _cals
+
 
     def __eq__(self, o):
         """
@@ -280,7 +260,7 @@ class Duration(dateutil.relativedelta.relativedelta):
                         if isinstance(o, Duration):
                             if self.bd == o.bd:
                                 if self.cals == o.cals:
-                                    if self.roll == o.roll:
+                                    if self.modified == o.modified:
                                         if self._anchor_end == o._anchor_end and self._anchor_start == o._anchor_start:
                                             return True   
                         else:
@@ -291,8 +271,7 @@ class Duration(dateutil.relativedelta.relativedelta):
                 for durations from date subtraction there is equivalency to whole units
                 4/15/24-1/15/23 == 91d == 1y3m == 14m, and all combinations thereof, and vice-versa
                 '''
-                
-
+            
                 if self.compare_anchors(self,o) or self.compare_anchors(o,self):
                     return True
 
@@ -350,30 +329,22 @@ class Duration(dateutil.relativedelta.relativedelta):
             rolled_and_adjusted = new_date
         return rolled_and_adjusted
 
-    def apply_roll_convention(self,from_date,direction):
-        """
-        uses CalendarMath for roll
-        """
-        roll = self.roll
-        new_date = from_date
-        if self.roll not in ['F','MF','P','MP']:
-            raise Exception("Unhandled roll: Must be /F, /P / MF/ /MP")
-        if roll == "P" and direction<0:
-            new_date = calmath.prev_bd(from_date, cals=self.cals)
-        elif roll == "MP" and direction<0:
-            new_date = calmath.prev_bd(from_date, cals=self.cals, mod=True)
-        elif roll == "F" and direction>0:
-            new_date = calmath.next_bd(from_date, cals=self.cals)
-        elif roll == "MF" and direction>0:
-            new_date = calmath.next_bd(from_date, cals=self.cals, mod=True)
-        return new_date
     def adjust_bds(self, from_date):
         """
-        uses CalendarMath for bd adjustment
-        """
+        This moves business days, using the sign of BD, yes, -0.0 means go backwards to the previous business day
+        FOLLOWING is handled in +0.0 BD
+        PREVIOUS is handled in -0.0 BD
 
-        _d = calmath.add_bd(from_date, self.bd, cals=self.cals)
-        return _d
+        note: calmath.add_bd handles -0.0BD as well, split out here for ease of reading
+        """
+        bd_sign = math.copysign(1,self.bd)
+        
+        if bd_sign >= 0:
+            b_moved = calmath.add_bd(from_date, abs(self.bd), cals=self.cals)
+        else:
+            b_moved = calmath.sub_bd(from_date, abs(self.bd), cals=self.cals)
+        
+        return bd_sign, b_moved
 
 
     @property
@@ -437,8 +408,7 @@ class Duration(dateutil.relativedelta.relativedelta):
                 raise ValueError(message)
         
         return just_days
-
-
+    
     def math(self, b, direction):
         """
         c = a + b
@@ -450,55 +420,29 @@ class Duration(dateutil.relativedelta.relativedelta):
         if isinstance(b, Duration):
             """
             combine both
+
+            3 potential sign changers
+            if a has direction use as multiplier
+            if b has direciton use as multiple
+            if subtraction use incoming direction as multipler
             """
+            
+            # non bd adjustments
             years   = a.years   +   direction*b.years
             months  = a.months  +   direction*b.months
             days    = a.days    +   direction*b.days
+            
+            # bd adjustments w/o MOD
             bd = add_none(a.bd,b.bd,direction) # none or add
             cals = combine_none(a.cals,b.cals) # union
 
-            if a.roll or b.roll:
-                if a.roll == b.roll:
-                    # covers both none or both same
-                    roll = a.roll
-                else:
-                    if a.roll is not None and b.roll is None:
-                        # a rolls, b doesn't use a
-                        roll = a.roll
-                    elif b.roll is not None and a.roll is None:
-                        # b rolls, a doesn't use b
-                        roll = b.roll
-                    else:
-                        # both roll, but differently
-                        # BIGGER dominates, use just day to approxmate, if just_days needs conversion, warn
+            # modified / if either has, inherit it
+            modified = a.modified or b.modified
 
-                        a_days , b_days = a.just_days, b.just_days
-                        diff = a_days + direction*b_days
-
-                        if diff > 0:
-                            # a dominates
-                            roll = a.roll
-                            if b.roll and 'M' in b.roll:
-                                if 'M' not in roll:
-                                    roll = f'M{roll}'
-                            if isinstance(diff,float):
-                                warnings.warn(f"[dateroll] Using approx for roll dermination")
-                        elif diff < 0:
-                            # b dominates
-                            roll = b.roll
-                            if a.roll and 'M' in a.roll:
-                                if 'M' not in roll:
-                                    roll = f'M{roll}'
-                            if isinstance(diff,float):
-                                warnings.warn(f"[dateroll] Using approx for roll dermination")
-                        else:
-                            roll = 'F'
-                            warnings.warn(f"[dateroll] Perfect offset, using first")
-                
-            else:
-                roll = None
-            c = Duration(years=years, months=months, days=days, bd=bd, roll=roll, cals=cals)
-            return c
+            # check combined Duration net direction
+            dur = Duration(years=years,months=months,days=days,bd=bd,cals=cals,modified=modified)
+           
+            return dur
 
         # duration + rd() --- should not happen
         elif isinstance(b, dateutil.relativedelta.relativedelta):
@@ -506,23 +450,75 @@ class Duration(dateutil.relativedelta.relativedelta):
             # raise NotImplementedError('need to cast rd')
 
         elif isinstance(b, DateLike):
-            # adjust b for Non-bd's FIRST
-            
-            b_moved = b.date + self.relativedelta * direction
+            '''
+            if direction > 0:
+                    (Date + Duration) 
+                or  (Duration + Date)
+            if direction < 0:
+                        (Date - Duration) 
+                and not (Duration - Date) -- WHY? a) non-sensical, and b) Date.__rsub__ throws TypeError before it gets here
+            '''
 
-            # # if you have bd's, then use bd adj and roll:
-            if self.bd or self.cals or self.roll:
-                shift_adj = self.apply_business_date_adjustment(b_moved,direction)
-            else:
-                shift_adj = b_moved
+            if direction < 0:
+                # Date - Duration
+                # if negative, flip sign using __neg__
+                self = self.__neg__()
 
-            # convert back to dateroll.Date
-            dt = Date.from_datetime(shift_adj)
+            # non-holiday adjustments, add D,M,Y
+            b_moved = b.date + self.relativedelta
+                
+            # holiday adjustment, add BD
+            before = b_moved
+            bd_sign,after = self.adjust_bds(before)
+                
+            # modified check, if BD results in diff month, bounce
+            if self.modified:
+                modified = self.apply_modifier(before,after,bd_sign,Date)
+                    
+            dt = Date.from_datetime(modified)
             
             return dt
 
         else:
             raise NotImplementedError
+        
+    def apply_modifier(self,before,after,bd_sign,Date):
+        '''
+        based upon the sign of the business date (yes, includes -0.0 as a previous) perform MODIFIER
+
+        FOLLOWING is handled in +0.0 BD
+        PREVIOUS is handled in -0.0 BD
+
+        MODOFIED FOLLOWING is +0.0, then HERE
+        MODIFIED PREVIOUS is -0.0, then HERE
+
+        '''
+        if bd_sign > 0:
+            # if went to far, bounce BACKWARD
+            if after.month > before.month:
+                # MODIFIED FOLLOWING SCENARIO
+                c = 0
+                while after.month > before.month and c < 35:
+                    after = Date.from_datetime(after) - Duration(bd=bd_sign)
+                    c+=1
+                    if c >=35:
+                        raise Exception('Unhandled rolling order')
+            else:
+                raise Exception('Cannot be before if moving forward')
+        else:
+            # if went to soon, bounce FORWARD
+            if after.month < before.month:
+                # MODIFIED PREVIOUS SCENARIO
+                c = 0
+                while after.month < before.month and c < 35:
+                    after = Date.from_datetime(after) + Duration(bd=bd_sign)
+                    c+=1
+                    if c >=35:
+                        raise Exception('Unhandled rolling order')
+            else:
+                raise Exception('Cannot be after if moving backward')
+        
+        return after
 
     def __radd__(self, x):
         # print(type(x), "radd")
@@ -550,10 +546,20 @@ class Duration(dateutil.relativedelta.relativedelta):
     def __isub__(self, x):
         # print(type(x), "isub")
         return self.math(x, -1)
-
+       
     def __neg__(self):
-        raise NotImplementedError("need unary -negative on duration")
+        '''
+        apply negative across all units (distributive property)
+        '''
+
+        self.years = -1 * self.years
+        self.months = -1 * self.months
+        self.days = -1 * self.days
+
+        if self.bd is not None:
+            self.bd = -1 * float(self.bd)
         
+        return self
 
     def __pos__(self):
         return self
@@ -569,10 +575,10 @@ class Duration(dateutil.relativedelta.relativedelta):
         items = {k: d[k] for k in period_order if k in d}
         constructor = ""
         for k, v in self.__dict__.items():
-            if v != None or (v == 0 and k == "bd"):
-                if k == "roll":
-                    v = f'"{v}"'
-                constructor += f"{k}={v}, "
+            if v != None:
+                if k=='cals':
+                    v = '"'+ 'u'.join(v) + '"'
+                constructor += f"{k}={str(v)}, "
         return f'{self.__class__.__name__}({constructor.rstrip(", ")})'
 
     def __gt__(a,b):
@@ -599,8 +605,6 @@ class Duration(dateutil.relativedelta.relativedelta):
         
         return a.just_days <= b.just_days
 
-
-
     @property
     def y(self): return self.years
     @property
@@ -624,14 +628,7 @@ PeriodLike = PeriodLike + (Duration,)
 
 
 if __name__ == "__main__": # pragma: no cover
-    ...
-    # dur2 = Duration()
     from dateroll.ddh.ddh import ddh
-    dur = ddh('+5bd/F')+ddh('-5bd/P')
-    # from dateroll.date.date import Date
-    
-    
-    # dur = Duration(days=4,_anchor_start=Date(2024,3,1),_anchor_end=Date(2024,3,15),roll='F')
-    # x = dur.just_days()
-    
+    dur = ddh('+5bd/M')+ddh('-5bd/M')
+
 

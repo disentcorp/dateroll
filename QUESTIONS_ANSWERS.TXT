@@ -568,14 +568,14 @@ Positive /next
 5         next hol next month  2023-12-31   Sunday  2023-12-29  2023-12-29   MF
 6   next nonhol current month  2024-03-11   Monday  2024-03-11  2024-03-12   MF
 7      next nonhol next month  2024-04-30  Tuesday  2024-04-30  2024-04-30   MF
-8      next hol current month  2023-12-24   Sunday  2023-12-24  2023-12-26    P
-9         next hol next month  2023-12-31   Sunday  2023-12-31  2024-01-02    P
+8      next hol current month  2023-12-24   Sunday  2023-12-24  2023-12-26    P    
+9         next hol next month  2023-12-31   Sunday  2023-12-31  2024-01-02    P    
 10  next nonhol current month  2024-03-11   Monday  2024-03-11  2024-03-12    P
 11     next nonhol next month  2024-04-30  Tuesday  2024-04-30  2024-05-01    P
 12     next hol current month  2023-12-24   Sunday  2023-12-24  2023-12-26   MP
-13        next hol next month  2023-12-31   Sunday  2023-12-31  2024-01-02   MP
-14  next nonhol current month  2024-03-11   Monday  2024-03-11  2024-03-12   MP
-15     next nonhol next month  2024-04-30  Tuesday  2024-04-30  2024-05-01   MP
+13        next hol next month  2023-12-31   Sunday  2023-12-31  2024-01-02   MP    
+14  next nonhol current month  2024-03-11   Monday  2024-03-11  2024-03-12   MP     
+15     next nonhol next month  2024-04-30  Tuesday  2024-04-30  2024-05-01   MP    
 
 negative /prev
 
@@ -606,3 +606,21 @@ negative /prev
         #1 Although I made everything 100%, after implementation duration got 97%
         #2 I am getting error in test_duration, I commented out those tests giving me error( please see 459-474 in test_duration)
             I would like to look tomorrow
+
+############ anthony 2024/3/11 5pm
+
+
+I went through your cases, found a few errors, but really it was the ambiguity of +0 conflicting with /P and -0 conflicting with /F
+
+I removed /F and /P from existence
+
+following and previous are purely indicated from direction of travel  +Duration follow, -Duration, precede, /MOD bounces if needto (if +Durat and /MOD it's MF, -Dur and /MOD it's MP)
+
+/MOD becomes the only MODifier, then when used with ANY bd +/- (0 or otherwise), it will bounce back into the month from which it came.
+
+This reduces your test cases from 64->32. I have created a detailed test_cases.xlsx in the tests/ folder, we can go over.
+it shows each "step" from the original to the final.
+
+please double-check my work.
+
+re-problem, i will look when i implement /MOD, it's the same code co-incidently
