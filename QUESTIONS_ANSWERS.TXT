@@ -677,3 +677,21 @@ whenever this happens you can fix it one of two ways:
 
 #2 your logic is 100% correct, negate is not a mutating operation. But pleaes use copy.deepcopy(self) instead, it's safer/more maintainable
 
+
+added DEBUG_PRINT = True/False in duration.py, should be False before committing, but True during tesing,
+
+when using it, it prints before/after each of the steps in adjust_from_date, super useful to troubleshoot
+
+example output text:
+
+--adjust_from_date 2023-12-31 1 Duration(years=0, months=0, days=0, modified=True, bd=-5.0, cals="NYuWE")
+before non hol adju 2023-12-31 after non hol adj 2023-12-31
+before bd/hol adj 2023-12-31 after bd/hol adj 2023-12-21 sign= -1.0
+before mod 2023-12-21 after mod 2023-12-21
+
+... let's add a calendar feature to print colored calendars for a range of months with native python
+import calendar
+yy = 2023
+mm = 4
+# display the calendar
+print(calendar.month(yy, mm))

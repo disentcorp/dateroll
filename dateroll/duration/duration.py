@@ -7,9 +7,9 @@ import dateutil.relativedelta
 from dateroll.calendars.calendarmath import calmath
 import dateroll.parser.parsers as parsers
 import code
+from functools import cache
 
-DEBUG_PRINT = True
-xprint = lambda *args,**kwargs: print(*args,**kwargs) if DEBUG_PRINT else None
+from dateroll.utils import color, xprint
 
 cals = calmath.cals
 
@@ -39,6 +39,7 @@ def add_none(a,b,dir=1):
         return a + b*dir
 
 class Duration(dateutil.relativedelta.relativedelta):
+    global DEBUG_PRINT
     """
     inherits from relativedelta
 
@@ -100,6 +101,9 @@ class Duration(dateutil.relativedelta.relativedelta):
         _anchor_end=None,
         _anchor_months=None,
         _anchor_days=None,
+
+        # debug
+        debug = False
     ):
         """
         y = year
@@ -151,6 +155,9 @@ class Duration(dateutil.relativedelta.relativedelta):
         
         # valid cals
         self._validate_cals(cals)
+
+        # debug
+        self.debug = debug
 
     def process_anchor_dates(self,_anchor_start, _anchor_end):
         '''
@@ -453,32 +460,36 @@ class Duration(dateutil.relativedelta.relativedelta):
             4 - perform modified operation, if supplied
             5 - cast datetime.date back into Date
         """
+        xprint(f'Adjusting date [[{date_unadj}]] with [[{direction}*{self}]]') if self.debug else None
 
         # 1 negate if being subtracted
         if direction < 0:
             # Date - Duration
             # if negative, flip sign using __neg__
             negated_self = self.__neg__()
-            xprint('before negation',self,'after negation',negated_self)
+            xprint('negation','before:    ',self,'after:    ',negated_self) if self.debug else None
         else:
             negated_self = self
-            
+            xprint('negation: none') if self.debug else None
+
         # 2 non-holiday adjustments, add D,M,Y
         date_nonhol_adj = date_unadj.date + negated_self.relativedelta
-        xprint('before non hol adju',date_unadj,'after non hol adj',date_nonhol_adj)
+        xprint(lbl='cal adj',before=date_unadj,after=date_nonhol_adj) if self.debug else None
             
         # 3 holiday adjustment, add BD and if modified check, if BD results in diff month, bounce
         if negated_self.bd is not None:
             bd_sign, date_hol_adj = negated_self.adjust_bds(date_nonhol_adj)
-            xprint('before bd/hol adj',date_nonhol_adj,'after bd/hol adj',date_hol_adj,'sign=',bd_sign)
+            xprint(lbl='hol adj',before=date_nonhol_adj,after=date_hol_adj) if self.debug else None
             if negated_self.modified:
                 # modifying from non-hol adjusted to hol-ajusted, could be subjective arg in future that modification is from date_unadj to date_hol_adj
                 date_modifed = negated_self.apply_modifier(date_nonhol_adj,date_hol_adj,bd_sign)
+                xprint(lbl='mod adj',before=date_hol_adj,after=date_modifed) if self.debug else None
             else:
                 date_modifed = date_hol_adj
+                xprint('mod: no mod') if self.debug else None
         else:
             date_modifed = date_nonhol_adj
-        xprint('before mod',date_hol_adj,'after mod',date_modifed)
+            xprint('no modifier') if self.debug else None
 
         # 4 convert back to Date
         from dateroll.date.date import Date
@@ -508,6 +519,9 @@ class Duration(dateutil.relativedelta.relativedelta):
 
         return bd_sign, date_hol_adj
 
+
+    def __hash__(self):
+        return hash(str(self.__dict__))
 
     def apply_modifier(self,before,after,bd_sign):
         '''
@@ -549,31 +563,31 @@ class Duration(dateutil.relativedelta.relativedelta):
         return after
 
     def __radd__(self, x):
-        # print(type(x), "radd")
+        xprint(type(x), "radd") if self.debug else None
         return self.math(x, 1)
 
     def __rsub__(self, x):
-        # print(type(x), "rsub")
+        xprint(type(x), "rsub")  if self.debug else None
         
         return self.math(x, -1)
 
     def __add__(self, x):
-        # print(type(x), "add")
+        xprint(type(x), "add") if self.debug else None
         return self.math(x, 1)
 
     def __sub__(self, x):
-        # print(type(x), "sub")
+        xprint(type(x), "sub") if self.debug else None
         from dateroll import Date
         if isinstance(x,Date):
             raise TypeError('Cannot sub Date from Duration')
         return self.math(x, -1)
 
     def __iadd__(self, x):
-        print(type(x), "iadd",type(self.math(x, 1)))
+        xprint(type(x), "iadd",type(self.math(x, 1))) if self.debug else None
         return self.math(x, 1)
 
     def __isub__(self, x):
-        # print(type(x), "isub")
+        xprint(type(x), "isub")  if self.debug else None
         return self.math(x, -1)
        
     def __neg__(self):

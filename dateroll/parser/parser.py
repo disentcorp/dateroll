@@ -86,7 +86,7 @@ class Parser:
     native_delta = dateutil.relativedelta.relativedelta
 
     def __new__(
-        self, string, convention=None, use_native_types=False  # inherits from strings
+        self, string, convention=None, use_native_types=False, debug=False  # inherits from strings
     ):
         """
         Algorithm works left to right implicitly:
@@ -112,24 +112,24 @@ class Parser:
         # make - to +-, negate will occur in duration string match, and + will be captured in date math parser
         string = string.replace('-','+-')
 
-        part = Parser.parse_maybe_many_parts(string, convention=self.convention)
+        part = Parser.parse_maybe_many_parts(string, convention=self.convention, debug=debug)
         return part
 
     @classmethod
-    def parse_one_part(cls, untouched, convention=None):
+    def parse_one_part(cls, untouched, convention=None, debug=False):
 
         # 1
-        notoday = parsers.parseTodayString(untouched,convention=convention)
+        notoday = parsers.parseTodayString(untouched,convention=convention, debug=debug)
 
         # 2
-        dates, nodates = parsers.parseDateString(notoday, convention=convention)
+        dates, nodates = parsers.parseDateString(notoday, convention=convention, debug=debug)
         # print('s before/after:', untouched,nodates)
         if nodates == "X":
             return dates[0]
 
         # 3
         
-        durations, nodatesordurations = parsers.parseDurationString(nodates)
+        durations, nodatesordurations = parsers.parseDurationString(nodates, debug=debug)
         # print('s before/after:', nodates,nodatesordurations)
         if nodatesordurations == "+X":
             return durations[0]
@@ -144,7 +144,7 @@ class Parser:
         return processed_answer
 
     @classmethod
-    def parse_maybe_many_parts(cls, s, convention=None):
+    def parse_maybe_many_parts(cls, s, convention=None, debug=False):
         parts = s.split(",")
         if not s:
             TypeError("No empty strings")
@@ -153,15 +153,15 @@ class Parser:
 
         if num_parts == 1:
             part = parts[0]
-            date_or_period = cls.parse_one_part(part, convention=convention)
+            date_or_period = cls.parse_one_part(part, convention=convention, debug=debug)
             return date_or_period
 
         elif num_parts == 3:
             _maybe_start, _maybe_stop, _maybe_step = parts
 
-            maybe_start = cls.parse_one_part(_maybe_start, convention=convention)
-            maybe_stop = cls.parse_one_part(_maybe_stop, convention=convention)
-            maybe_step = cls.parse_one_part(_maybe_step, convention=convention)
+            maybe_start = cls.parse_one_part(_maybe_start, convention=convention, debug=debug)
+            maybe_stop = cls.parse_one_part(_maybe_stop, convention=convention, debug=debug)
+            maybe_step = cls.parse_one_part(_maybe_step, convention=convention, debug=debug)
 
             if isinstance(maybe_start, Date):
                 start = maybe_start
@@ -178,7 +178,7 @@ class Parser:
             else:
                 raise TypeError("Step of generation must be a valid Duration")
 
-            sch = Schedule(start=start, stop=stop, step=step)
+            sch = Schedule(start=start, stop=stop, step=step, debug=debug)
             dts = sch.dates
             return dts
 
@@ -195,5 +195,5 @@ def parse_to_native(string, convention=None):
     return Parser(string, convention=convention, use_native_types=True)
 
 
-def parse_to_dateroll(string, convention=None):
-    return Parser(string, convention=convention)
+def parse_to_dateroll(string, convention=None,debug=False):
+    return Parser(string, convention=convention,debug=debug)

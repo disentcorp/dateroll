@@ -9,6 +9,8 @@ import pandas as pd
 import code
 import time
 
+from dateroll.utils import color
+
 import dateroll.calendars.calendars as calendars
 from dateroll import ddh,cals
 import dateroll
@@ -68,8 +70,10 @@ def handle_sample_data_dates(x,inc,sign='+'):
 
 class Test_UserScenarios(unittest.TestCase):
     def tests_from_excel(self):
+        #### TURN DEBUG ON OFF ####
+        ddh.debug = True
+        #### TURN DEBUG ON OFF ####
         import pandas as pd
-        from termcolor import colored
         df = pd.read_excel('dateroll/tests/test_cases.xlsx')
         cols = ['from','ParserString','final']
         df = df[cols]
@@ -83,11 +87,15 @@ class Test_UserScenarios(unittest.TestCase):
             b = ddh(s)
             _b = time.time()
             ans = f'{str(b==a):<5}'
-
-            ### b -a  fails!?!?!?!
-            res = colored(ans,'green') if b==a else colored(ans,'red')
-            timing = f'{(_b-_a)*1000:.0f}ms'
-            print(f'tesing: {s:>28} = {b} == {a}',res,f'{timing:>10}')
+            res = color(ans,'green') if b==a else color(ans,'red')
+            ms = round((_b -_a)*1000,0)
+            if ms > 100:
+                ms = f'{ms:>10} ms'
+                ms = color(ms,'red')
+            else:
+                ms = f'{ms:>10} ms'
+            
+            print(f'tesing: {s:>28} = {b} == {a}',res,ms)
             if a==b:
                 c+=1
         print(f'{c}/{len(df)} passed')

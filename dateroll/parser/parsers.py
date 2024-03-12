@@ -18,7 +18,7 @@ AtoZ = tuple(chr(i) for i in range(65, 65 + 26))
 class ParserStringsError(Exception): ...
 
 
-def parseTodayString(s, convention=DEFAULT_CONVENTION):
+def parseTodayString(s, convention=DEFAULT_CONVENTION, debug=False):
     """
         this is [the] place where "t" is replaced
     """
@@ -35,11 +35,13 @@ def parseTodayString(s, convention=DEFAULT_CONVENTION):
     for t in TODAYSTRINGVALUES:
         # search order matters in TODAYSTRINGVALUES
         if t in s:
+            if debug:
+                print('MATCH(ES) FOR TODAY',t,s)
             return s.replace(t, today_string)
     return s
 
 
-def parseDateString(s, convention):
+def parseDateString(s, convention, debug=False):
     """
     for a given convention, see if string contains 1 or 2 dates
     regex to extract string, and Date.from_string(), which calls dateutil.parser.parse
@@ -79,7 +81,7 @@ def parseDateString(s, convention):
     return dates, res
 
 
-def process_duration_match(m: tuple):
+def process_duration_match(m: tuple, debug=False):
     """
     COMPLETE_DURATION regex matches a 23-item tuple
     This function extracts the parts and calls the Duration contructor appropriately
@@ -134,7 +136,7 @@ def process_duration_match(m: tuple):
         if modified or len(cals) > 0:
             duration_contructor_args['bd'] = float(0.0)*mult
     
-    duration = dur.Duration(**duration_contructor_args)
+    duration = dur.Duration(**duration_contructor_args, debug=debug)
     return duration
 
 def parseCalendarUnionString(s):
@@ -148,7 +150,7 @@ def parseCalendarUnionString(s):
     else:
         raise Exception(f'{s} not a valid calendar string')
 
-def parseDurationString(s):
+def parseDurationString(s,debug=False):
     """
     check for any DurationString:
 
@@ -177,27 +179,25 @@ def parseDurationString(s):
     durations = []
     matches = re.findall(patterns.COMPLETE_DURATION, s)
     for m in matches:
-        duration = process_duration_match(m)
+        duration = process_duration_match(m, debug=debug)
         dur_str = m[0]
-        print('dur_str',dur_str)
-        print('s',s)
         s = s.replace(dur_str,'+X')
-        print('s repl',s)
-        print(duration)
         durations.append(duration)
     
     return durations, s
 
 
-def parseDateMathString(s, things):
+def parseDateMathString(s, things, debug=False):
     """
     Looks for any linear formula with plus or minus
     Uses substitution and evaluation. Safe because wouldn't get here if *things were not validated, and regex didn't match.
     """
+    before = s
     s = s.replace(" ", "").replace("++", "+").replace("+-", "-").replace("-+", "-")
     
     if s == "+X":
         s = "X"
+
     math_matches = re.match(patterns.MATH, s)
     if math_matches:
         n1 = len(things)
@@ -214,6 +214,9 @@ def parseDateMathString(s, things):
 
         gs = {k: v for k, v in zip(AtoZ[: len(things)], things)}
         
+        if debug:
+            print('debug date math string (before eval)',before,s)
+
         total = eval(s,{},gs)
         
         return total
@@ -221,7 +224,7 @@ def parseDateMathString(s, things):
     raise ParserStringsError("Cannot recognize as date math", s)
 
 
-def parseScheduleString(s):  # pragma: no cover
+def parseScheduleString(s,debug=False):  # pragma: no cover
     """ """
     raise NotImplementedError
 

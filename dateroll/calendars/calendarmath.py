@@ -97,10 +97,16 @@ class CalendarMath:
         self.save_cache()
         self.hash = self.cals.hash
 
+
     @property
     def has_mutated(self):
-        cached = self.load_cache()
-        return cached["hash"] != self.hash
+        '''
+        only time "mutation" occurs is if an underlying calendar has changed
+        all __setitem__ to a calendar will automatically trigger removal of the
+        calendarmath cache file, thus it's existence confirms cache validity
+        '''
+        cache_is_valid = not self.home.exists()
+        return cache_is_valid
 
     @property
     def recompile_if_mutated(self):
