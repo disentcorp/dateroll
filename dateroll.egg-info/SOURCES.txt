@@ -47,6 +47,7 @@ dateroll/tests/__init__.py
 dateroll/tests/__main__.py
 dateroll/tests/test_calendarmath.py
 dateroll/tests/test_calendars.py
+dateroll/tests/test_cases.xlsx
 dateroll/tests/test_date.py
 dateroll/tests/test_ddh.py
 dateroll/tests/test_duration.py
@@ -56,3 +57,5 @@ dateroll/tests/test_parsers.py
 dateroll/tests/test_patterns.py
 dateroll/tests/test_schedule.py
 dateroll/tests/test_suite.py
+dateroll/tests/test_usage.py
+dateroll/tests/~$test_cases.xlsx

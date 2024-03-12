@@ -9,6 +9,7 @@ import dateroll.parser.parsers as parsers
 import code
 from functools import cache
 
+from dateroll.duration.debug import before_after
 from dateroll.utils import color, xprint
 
 cals = calmath.cals
@@ -495,6 +496,8 @@ class Duration(dateutil.relativedelta.relativedelta):
         from dateroll.date.date import Date
         Date_modifed = Date.from_datetime(date_modifed)
 
+
+        before_after(date_unadj,Date_modifed,self.cals)
         return Date_modifed
 
     def adjust_bds(self, from_date):
