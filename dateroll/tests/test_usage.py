@@ -71,7 +71,8 @@ def handle_sample_data_dates(x,inc,sign='+'):
 class Test_UserScenarios(unittest.TestCase):
     def tests_from_excel(self):
         #### TURN DEBUG ON OFF ####
-        ddh.debug = True
+        # ddh.debug = True
+        ddh.debug = False
         #### TURN DEBUG ON OFF ####
         import pandas as pd
         df = pd.read_excel('dateroll/tests/test_cases.xlsx')
