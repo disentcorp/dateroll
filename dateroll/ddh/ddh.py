@@ -16,6 +16,8 @@ ddh('t') +'3m' .... it's relaly close to the base but little extra.
 
 from dateroll.calendars.calendarmath import calmath
 from dateroll.parser.parsers import DEFAULT_CONVENTION
+from dateroll.date.date import DateLike, Date
+from dateroll.duration.duration import DurationLike, Duration
 
 cals = calmath.cals
 
@@ -25,10 +27,19 @@ class ddh:
     calmath = calmath
     cals = cals
 
-    def __new__(self, string, convention=None):
+    def __new__(self, o, convention=None):
         if convention is not None:
             self.convention = convention
-        obj = parse_to_dateroll(string, convention=self.convention)
+
+        if isinstance(o,str):
+            obj = parse_to_dateroll(o, convention=self.convention)
+        elif isinstance(o,DateLike):
+            return Date.from_datetime(o)
+        elif isinstance(o,DurationLike):
+            obj = Duration.from_relativedelta(o)
+        else:
+            raise TypeError(f'ddh() cannot handle {type(o).__name__})')
+
         return obj
 
     @staticmethod

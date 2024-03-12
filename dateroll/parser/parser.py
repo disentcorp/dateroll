@@ -107,6 +107,11 @@ class Parser:
         self.convention = convention
         self.use_native_types = use_native_types
         
+        # to ensure no conflict duration negation and date math application
+        # e.g.   t-3m = t + (-3m), and not t - (-3m)
+        # make - to +-, negate will occur in duration string match, and + will be captured in date math parser
+        string = string.replace('-','+-')
+
         part = Parser.parse_maybe_many_parts(string, convention=self.convention)
         return part
 

@@ -128,6 +128,11 @@ def process_duration_match(m: tuple):
     modified = m[22]
     if modified:
         duration_contructor_args["modified"] = True
+
+    # add signed bd's if implicit scenario
+    if 'bd' not in duration_contructor_args and 'BD' not in duration_contructor_args:
+        if modified or len(cals) > 0:
+            duration_contructor_args['bd'] = float(0.0)*mult
     
     duration = dur.Duration(**duration_contructor_args)
     return duration
@@ -158,12 +163,7 @@ def parseDurationString(s):
 
         they can repeat: 1y3m9d = 1y + 3m + 9d
 
-        modifiers after |
-            roll convention:
-                /F following
-                /P previous
-                /MF modified following
-                /MP modified previous
+        calendars after |
             calendar as any uppercase 2 letter combo that map's to installed calendars
                 WE -> by default is weekend calendar (list of all sat and sun from -100y to +100y)
                 NY -> new york federal holidays
@@ -171,20 +171,19 @@ def parseDurationString(s):
             calender unions: repreating calendars with "u" for union
                 WEuNY -> all weekend holidays + NY holidays
                 WUuNYuEU -> union of all 3 sets
+        modifier after  /
+                /MOD means modified the direction of travel for bd's to stay in current month
     """
     durations = []
     matches = re.findall(patterns.COMPLETE_DURATION, s)
     for m in matches:
         duration = process_duration_match(m)
-        # subs turn into addisions because Duration comes back with - inside
-        
-        s = s.replace(m[0], f"+X") if not '-' in m[0] else s.replace(m[0], f"-X")
-        # because of __neg__ changes the sign, we flip sign here
-        # print('in parsedurstring')
-        # code.interact(local=dict(globals(),**locals()))
-        if '-' in s:
-            duration = duration.__neg__()
-
+        dur_str = m[0]
+        print('dur_str',dur_str)
+        print('s',s)
+        s = s.replace(dur_str,'+X')
+        print('s repl',s)
+        print(duration)
         durations.append(duration)
     
     return durations, s

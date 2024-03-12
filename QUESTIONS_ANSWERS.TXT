@@ -670,4 +670,10 @@ TOTAL                                    1002      6    99%
             to avoid this problem, I created new Duration instance inside __neg__, please review (__neg__ of duration.py)
 
 
+#1 i removed the condition and it worked fine, in py 3.12 there is some change to "better detect" circular references that is super restrictive,
+whenever this happens you can fix it one of two ways:
+ - intelligent way: change the order of the file imports to minimize "recombining paths" (libraries that do the least on top, most imports on bottom, so-as to not conflict)
+ - naive way: move the import to just where you need it so that it's out of scope for the import checker's checking, (this is cached, additional time added is minimal for now)
+
+#2 your logic is 100% correct, negate is not a mutating operation. But pleaes use copy.deepcopy(self) instead, it's safer/more maintainable
 

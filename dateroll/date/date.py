@@ -16,21 +16,31 @@ class Date(datetime.date):
     ...
 
     @staticmethod
-    def from_string(s, **dateparser_kwargs):
+    def from_string(o, **dateparser_kwargs):
         """
         if string provided use dateutil's parser
         """
-        dt = parse(s, **dateparser_kwargs)
-        return Date.from_datetime(dt)
+        if isinstance(o,Date):
+            return o
+        elif isinstance(o,str):
+            dt = parse(o, **dateparser_kwargs)
+            return Date.from_datetime(dt)
+        else:
+            raise TypeError(f'from_string requires string, cannot use {type(o).__name__}')
 
     @staticmethod
-    def from_datetime(dt):
+    def from_datetime(o):
         """
         Create a Date instance from a datetime.datetime (drops time information), or datetime.date
         """
-        if isinstance(dt, DateLike):
-            y, m, d = dt.year, dt.month, dt.day
+        if isinstance(o,Date):
+            return o
+        elif isinstance(o, DateLike):
+            y, m, d = o.year, o.month, o.day
             return Date(y, m, d)
+        else:
+            raise TypeError(f'from_datetime requires string, cannot use {type(o).__name__}')
+
 
     def __repr__(self):
         return f'{self.__class__.__name__}("{self.strftime("%Y-%m-%d")}")'
@@ -109,7 +119,7 @@ class Date(datetime.date):
         elif isinstance(o, Duration):
             # date + duration
             # goes to __radd__ of Duration
-            return o.__radd__(self)
+            return Date.from_datetime(o.__radd__(self))
         elif isinstance(o, int):
             # date + int, int -> duration, -> date + duration -> __radd__ duration
             # goes to __radd__ of Duration

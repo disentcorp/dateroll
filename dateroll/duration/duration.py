@@ -8,12 +8,14 @@ from dateroll.calendars.calendarmath import calmath
 import dateroll.parser.parsers as parsers
 import code
 
+DEBUG_PRINT = True
+xprint = lambda *args,**kwargs: print(*args,**kwargs) if DEBUG_PRINT else None
+
 cals = calmath.cals
 
 period_order = (*"yhsqmwd", "cals", "modifier")
 
-PeriodLike = (dateutil.relativedelta, datetime.timedelta)
-
+DurationLike = (dateutil.relativedelta, datetime.timedelta)
 WEEKEND_CALENDAR = 'WE'
 
 APPROX = {
@@ -132,17 +134,22 @@ class Duration(dateutil.relativedelta.relativedelta):
         self.process_anchor_dates(_anchor_start,_anchor_end)
 
 
-        # merge bd
+        # merge bd - FLOAT(x) ensures sign is copied for direction of BD travel
         if bd is not None and BD is not None:
             self.bd = bd + BD
         elif bd is not None:
-            self.bd = bd
+            self.bd = float(bd)
         elif BD is not None:
-            self.bd = BD
+            self.bd = float(BD)
         else:
-            self.bd = None
-        # valid cals
+            if cals is not None:
+                # implicity calendar for weekends will be set in validate_cals
+                self.bd = float(0.0)
+            else:
+                # definately no bd adjustment 
+                self.bd = None
         
+        # valid cals
         self._validate_cals(cals)
 
     def process_anchor_dates(self,_anchor_start, _anchor_end):
@@ -187,7 +194,9 @@ class Duration(dateutil.relativedelta.relativedelta):
 
     @staticmethod
     def from_relativedelta(rd,_anchor_start=None,_anchor_end=None):
-        if isinstance(rd,dateutil.relativedelta.relativedelta):
+        if isinstance(rd,Duration):
+            return rd
+        elif isinstance(rd,dateutil.relativedelta.relativedelta):
             return Duration(years=rd.years,months=rd.months,days=rd.days,_anchor_start=_anchor_start,_anchor_end=_anchor_end)
         elif isinstance(rd,datetime.timedelta):
             return Duration.from_timedelta(rd,_anchor_start=_anchor_start,_anchor_end=_anchor_end)
@@ -196,7 +205,9 @@ class Duration(dateutil.relativedelta.relativedelta):
     
     @staticmethod
     def from_timedelta(td,_anchor_start=None,_anchor_end=None):
-        if isinstance(td,datetime.timedelta):
+        if isinstance(td,Duration):
+            return td
+        elif isinstance(td,datetime.timedelta):
             return Duration(days=td.days,_anchor_start=_anchor_start,_anchor_end=_anchor_end)
         else:
             raise TypeError(f'Must be timedelta not {type(td).__name__}') 
@@ -371,7 +382,7 @@ class Duration(dateutil.relativedelta.relativedelta):
         """
         c = a + b
         """
-        from dateroll.date.date import DateLike
+        from dateroll.date.date import DateLike,Date
 
         a = self
         # duration + duration
@@ -424,7 +435,11 @@ class Duration(dateutil.relativedelta.relativedelta):
             NOT (Duration - Date)
                 Date.__rsub__ throws TypeError before it gets here (non-sensical situation)
             '''
-            return self.adjust_from_date(b,direction)
+
+            modifed = self.adjust_from_date(b,direction)
+            
+            dt = Date.from_datetime(modifed)
+            return dt
 
         else:
             raise NotImplementedError
@@ -443,21 +458,27 @@ class Duration(dateutil.relativedelta.relativedelta):
         if direction < 0:
             # Date - Duration
             # if negative, flip sign using __neg__
-            self = self.__neg__()
-
+            negated_self = self.__neg__()
+            xprint('before negation',self,'after negation',negated_self)
+        else:
+            negated_self = self
+            
         # 2 non-holiday adjustments, add D,M,Y
-        date_nonhol_adj = date_unadj.date + self.relativedelta
+        date_nonhol_adj = date_unadj.date + negated_self.relativedelta
+        xprint('before non hol adju',date_unadj,'after non hol adj',date_nonhol_adj)
             
         # 3 holiday adjustment, add BD and if modified check, if BD results in diff month, bounce
-        if self.bd is not None:
-            bd_sign, date_hol_adj = self.adjust_bds(date_nonhol_adj)
-            if self.modified:
+        if negated_self.bd is not None:
+            bd_sign, date_hol_adj = negated_self.adjust_bds(date_nonhol_adj)
+            xprint('before bd/hol adj',date_nonhol_adj,'after bd/hol adj',date_hol_adj,'sign=',bd_sign)
+            if negated_self.modified:
                 # modifying from non-hol adjusted to hol-ajusted, could be subjective arg in future that modification is from date_unadj to date_hol_adj
-                date_modifed = self.apply_modifier(date_nonhol_adj,date_hol_adj,bd_sign)
+                date_modifed = negated_self.apply_modifier(date_nonhol_adj,date_hol_adj,bd_sign)
             else:
                 date_modifed = date_hol_adj
         else:
             date_modifed = date_nonhol_adj
+        xprint('before mod',date_hol_adj,'after mod',date_modifed)
 
         # 4 convert back to Date
         from dateroll.date.date import Date
@@ -548,7 +569,7 @@ class Duration(dateutil.relativedelta.relativedelta):
         return self.math(x, -1)
 
     def __iadd__(self, x):
-        # print(type(x), "iadd")
+        print(type(x), "iadd",type(self.math(x, 1)))
         return self.math(x, 1)
 
     def __isub__(self, x):
@@ -632,7 +653,7 @@ class Duration(dateutil.relativedelta.relativedelta):
     @property
     def day(self): return self.days
 
-PeriodLike = PeriodLike + (Duration,)
+DurationLike = (Duration,datetime.timedelta,dateutil.relativedelta.relativedelta)
 
 
 if __name__ == "__main__": # pragma: no cover
