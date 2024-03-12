@@ -130,8 +130,6 @@ class Duration(dateutil.relativedelta.relativedelta):
         # process anchor periods / dates
         self.process_anchor_dates(_anchor_start,_anchor_end)
 
-        # valid cals
-        self._validate_cals(cals)
 
         # merge bd
         if bd is not None and BD is not None:
@@ -142,6 +140,9 @@ class Duration(dateutil.relativedelta.relativedelta):
             self.bd = BD
         else:
             self.bd = None
+        # valid cals
+        
+        self._validate_cals(cals)
 
     def process_anchor_dates(self,_anchor_start, _anchor_end):
         '''
@@ -175,6 +176,7 @@ class Duration(dateutil.relativedelta.relativedelta):
         if isinstance(string,str):
             from dateroll.parser.parsers import parseDurationString
             durs,s = parseDurationString(string)
+            
             if len(durs)==1 and s in ('+X','X'):
                 return durs[0]
             else:
@@ -231,6 +233,7 @@ class Duration(dateutil.relativedelta.relativedelta):
             # implicit weekend when using cals
             _cals |= set([WEEKEND_CALENDAR])
             _cals = tuple(sorted(_cals))
+            
         else:
             if self.bd is not None:
                 # implicit weekend calendar if bd is defined
@@ -239,6 +242,7 @@ class Duration(dateutil.relativedelta.relativedelta):
                 _cals = None
 
         self.cals = _cals
+        
 
 
     def __eq__(self, o):
@@ -300,34 +304,37 @@ class Duration(dateutil.relativedelta.relativedelta):
 
         return rd
 
-    def apply_business_date_adjustment(self,from_date,direction):
+    def apply_business_date_adjustment(self,from_date):
         """
         2 steps:
         1 calendar count #bd's
         2 apply roll convention
         """
-        from dateroll.date.date import Date
         
         if self.bd is not None:
-            adjusted = self.adjust_bds(from_date)
+            bd_sign, adjusted = self.adjust_bds(from_date)
+            if self.modified:
+                adjusted = self.apply_modifier(from_date,adjusted,bd_sign)
         else:
             adjusted = from_date
         
-        if self.roll is not None and (self.bd is None or (self.bd==0 and not Date(from_date.year,from_date.month,from_date.day).is_bd(cals=self.cals))):
-            # if self.bd is not None, it will add another 1 bd which is wrong
-            rolled_and_adjusted = self.apply_roll_convention(adjusted,direction)
+        return adjusted
+        
+        # if self.roll is not None and (self.bd is None or (self.bd==0 and not Date(from_date.year,from_date.month,from_date.day).is_bd(cals=self.cals))):
+        #     # if self.bd is not None, it will add another 1 bd which is wrong
+        #     rolled_and_adjusted = self.apply_roll_convention(adjusted,direction)
             
 
-        else:
-            rolled_and_adjusted = adjusted
+        # else:
+        #     rolled_and_adjusted = adjusted
         
-        if ((self.roll=='MF' and direction>0) or (self.roll=='MP' and direction<0)) and rolled_and_adjusted.month!=from_date.month:
-            # find the last/first business date of the month
-            new_date = rolled_and_adjusted
-            while new_date.month!=from_date.month:
-                new_date = Date(new_date.year,new_date.month,new_date.day) + Duration(bd=direction* -1)
-            rolled_and_adjusted = new_date
-        return rolled_and_adjusted
+        # if ((self.roll=='MF' and direction>0) or (self.roll=='MP' and direction<0)) and rolled_and_adjusted.month!=from_date.month:
+        #     # find the last/first business date of the month
+        #     new_date = rolled_and_adjusted
+        #     while new_date.month!=from_date.month:
+        #         new_date = Date(new_date.year,new_date.month,new_date.day) + Duration(bd=direction* -1)
+        #     rolled_and_adjusted = new_date
+        # return rolled_and_adjusted
 
     def adjust_bds(self, from_date):
         """
@@ -337,13 +344,13 @@ class Duration(dateutil.relativedelta.relativedelta):
 
         note: calmath.add_bd handles -0.0BD as well, split out here for ease of reading
         """
-        bd_sign = math.copysign(1,self.bd)
         
+        bd_sign = math.copysign(1,self.bd)
         if bd_sign >= 0:
             b_moved = calmath.add_bd(from_date, abs(self.bd), cals=self.cals)
         else:
             b_moved = calmath.sub_bd(from_date, abs(self.bd), cals=self.cals)
-        
+
         return bd_sign, b_moved
 
 
@@ -417,6 +424,7 @@ class Duration(dateutil.relativedelta.relativedelta):
 
         a = self
         # duration + duration
+        
         if isinstance(b, Duration):
             """
             combine both
@@ -458,22 +466,19 @@ class Duration(dateutil.relativedelta.relativedelta):
                         (Date - Duration) 
                 and not (Duration - Date) -- WHY? a) non-sensical, and b) Date.__rsub__ throws TypeError before it gets here
             '''
-
+            
             if direction < 0:
                 # Date - Duration
                 # if negative, flip sign using __neg__
                 self = self.__neg__()
 
             # non-holiday adjustments, add D,M,Y
+            
             b_moved = b.date + self.relativedelta
                 
-            # holiday adjustment, add BD
-            before = b_moved
-            bd_sign,after = self.adjust_bds(before)
-                
-            # modified check, if BD results in diff month, bounce
-            if self.modified:
-                modified = self.apply_modifier(before,after,bd_sign,Date)
+            # holiday adjustment, add BD and if modified check, if BD results in diff month, bounce
+            modified = self.apply_business_date_adjustment(b_moved)
+
                     
             dt = Date.from_datetime(modified)
             
@@ -482,7 +487,7 @@ class Duration(dateutil.relativedelta.relativedelta):
         else:
             raise NotImplementedError
         
-    def apply_modifier(self,before,after,bd_sign,Date):
+    def apply_modifier(self,before,after,bd_sign):
         '''
         based upon the sign of the business date (yes, includes -0.0 as a previous) perform MODIFIER
 
@@ -493,30 +498,33 @@ class Duration(dateutil.relativedelta.relativedelta):
         MODIFIED PREVIOUS is -0.0, then HERE
 
         '''
+        from dateroll.date.date import Date
         if bd_sign > 0:
             # if went to far, bounce BACKWARD
-            if after.month > before.month:
+            
+            if after.month != before.month:
                 # MODIFIED FOLLOWING SCENARIO
                 c = 0
-                while after.month > before.month and c < 35:
+                while after.month != before.month and c < 35:
                     after = Date.from_datetime(after) - Duration(bd=bd_sign)
                     c+=1
                     if c >=35:
                         raise Exception('Unhandled rolling order')
-            else:
-                raise Exception('Cannot be before if moving forward')
+            
+        
         else:
             # if went to soon, bounce FORWARD
-            if after.month < before.month:
+            
+            if after.month != before.month:
                 # MODIFIED PREVIOUS SCENARIO
                 c = 0
-                while after.month < before.month and c < 35:
-                    after = Date.from_datetime(after) + Duration(bd=bd_sign)
+                while after.month != before.month and c < 35:
+                    after = Date.from_datetime(after) - Duration(bd=bd_sign)
                     c+=1
                     if c >=35:
+                        
                         raise Exception('Unhandled rolling order')
-            else:
-                raise Exception('Cannot be after if moving backward')
+            
         
         return after
 
@@ -526,6 +534,7 @@ class Duration(dateutil.relativedelta.relativedelta):
 
     def __rsub__(self, x):
         # print(type(x), "rsub")
+        
         return self.math(x, -1)
 
     def __add__(self, x):
@@ -551,15 +560,18 @@ class Duration(dateutil.relativedelta.relativedelta):
         '''
         apply negative across all units (distributive property)
         '''
-
-        self.years = -1 * self.years
-        self.months = -1 * self.months
-        self.days = -1 * self.days
-
-        if self.bd is not None:
-            self.bd = -1 * float(self.bd)
+        copy_self = Duration(years=self.years,months=self.months,days=self.days,bd=self.bd,cals=self.cals,modified=self.modified,
+                             _anchor_start=self._anchor_start,_anchor_end=self._anchor_end)
         
-        return self
+
+        copy_self.years = -1 * self.years
+        copy_self.months = -1 * self.months
+        copy_self.days = -1 * self.days
+
+        if copy_self.bd is not None:
+            copy_self.bd = -1 * float(self.bd)
+        
+        return copy_self
 
     def __pos__(self):
         return self
@@ -629,6 +641,13 @@ PeriodLike = PeriodLike + (Duration,)
 
 if __name__ == "__main__": # pragma: no cover
     from dateroll.ddh.ddh import ddh
-    dur = ddh('+5bd/M')+ddh('-5bd/M')
+    from dateroll import Date
+    from dateroll import Duration
+    # from dateroll.duration.duration import Duration ---- if I import like this, isinstance(dur2,Duration) is False
+    d1 = Date(2024,1,1)
+    dur2 = Duration(d=1)
+    newd2 = d1 - dur2
+    print(newd2)
+    
 
 

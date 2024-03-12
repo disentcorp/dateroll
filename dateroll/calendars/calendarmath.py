@@ -163,21 +163,23 @@ class CalendarMath:
 
         return fwd, bck
 
-    def add_bd(self, d, n, cals, mod=False):
+    def add_bd(self, d, n, cals):
         """
         add's n business days on cal to d
         careful, if n==0, B should auto backtrack, need to verify
         """
         
-        if n==0 and math.copysign(1,n)==1:
-            # if zero return original date as there is nothing to adjust
-            # when n=-0.0 has negative sign, in this case we would like to get the roll/P of date
-            return d
+        # when not bd, we need to handle n; positive direction n=0-->1 and negative direction n=-1--->0
+        # because of the property of fwd, bck dictionaries
+        if not self.is_bd(d,cals):
+            # make sure direction is positive
+            if n==0 and math.copysign(1,n)==1:
+                n = 1
+            # when direction is negative
+            elif n==-1:
+                n = 0
         cals = CalendarMath.reverse_calstring(cals)
         cal_name = self.union_key(cals)
-
-        if mod:
-            raise NotImplementedError("mod")
 
         A = self.fwd[cal_name]
         B = self.bck[cal_name]
@@ -199,18 +201,15 @@ class CalendarMath:
         new_dt = B[new_bd_index]
         return new_dt
 
-    def sub_bd(self, d, n, cals, mod=False):
+    def sub_bd(self, d, n, cals):
         """
         subtract (opposed of add)
         """
         if n<0:
             raise ValueError(f'n needs to be positive number')
-        if math.copysign(1,n)<0 and n==0:
-            # when it is -0.0 we do not want to mult by -1 to make it 0.0, because we use the - sign
-            pass
-        else:
-            n = -1 * n
-        return self.add_bd(d, n, cals, mod=mod)
+        
+        n = -1 * float(n)
+        return self.add_bd(d, n, cals)
 
     def is_bd(self, d, cals):
         """am i business day?"""
@@ -219,8 +218,11 @@ class CalendarMath:
         """ cals can come in as str or list"""
         cals = CalendarMath.reverse_calstring(cals)
 
-        for name in cals:
-            cal = self.cals[name]
+        for cal in cals:
+            if cal not in self.cals:
+                raise KeyError(f"There is no calendar {cal}")
+            cal = self.cals[cal]
+        
             if d in cal:
                 
                 return False
@@ -250,11 +252,7 @@ class CalendarMath:
         """
         the previous business date from d on calendars cals
         """
-        if self.is_bd(d,cals):
-            new_d = self.sub_bd(d,1,cals)
-        else:
-            # when holiday, to get prev_db we should subtract 0 from the date because of fwd,bck property
-            new_d = self.sub_bd(d,-0.0,cals)
+        new_d = self.sub_bd(d,1,cals)
         return new_d
 
 
@@ -277,6 +275,7 @@ class CalendarMath:
                 cals = tuple(sorted(cals.split("u")))
             else:
                 cals = [cals]
+
         return cals
 
     def union_key(self, cals):
@@ -285,11 +284,8 @@ class CalendarMath:
         
         """
         # cals always come as a tuple,list,set, no need to raise error here
-        
-        try:
-            cal_union_key = 'u'.join(cals)
-        except:
-            raise TypeError(f"Calendar name must be string")
+        cal_union_key = 'u'.join(cals)
+
         if cal_union_key not in self.fwd:
             # union dates wasnt' cached, call _generate_union
             self._generate_union(cal_union_key)

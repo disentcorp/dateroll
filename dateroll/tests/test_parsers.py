@@ -56,13 +56,13 @@ class TestParsers(unittest.TestCase):
         '''
             test duration match
         '''
-        s = ('','+','1','y','0','q','0','m','1','w','1','d','0','bd','WE','NY','BR','ECB','FED','LN','','','P')
+        s = ('','+','1','y','0','q','0','m','1','w','1','d','0','bd','WE','NY','BR','ECB','FED','LN','','','MOD')
         dur = parsers.process_duration_match(s)
-        self.assertEqual(dur,Duration(years=1, months=0, days=8, bd=0, cals=('BR', 'ECB', 'FED', 'LN', 'NY', 'WE'), roll="P"))
+        self.assertEqual(dur,Duration(years=1, months=0, days=8, modified=True, cals="BRuECBuFEDuLNuNYuWE"))
 
-        s2 = ('','-','1','y','0','q','0','m','1','w','1','d','0','bd','WE','NY','BR','ECB','FED','LN','','','P')
+        s2 = ('','-','1','y','0','q','0','m','1','w','1','d','0','bd','WE','NY','BR','ECB','FED','LN','','','MOD')
         dur2 = parsers.process_duration_match(s2)
-        self.assertEqual(dur2,Duration(years=-1, months=0, days=8, bd=0, cals=('BR', 'ECB', 'FED', 'LN', 'NY', 'WE'), roll="P"))
+        self.assertEqual(dur2,Duration(years=-1, months=0, days=8, modified=True, cals="BRuECBuFEDuLNuNYuWE"))
 
         s3 = ('','*','1','y','0','q','0','m','1','w','1','d','0','bd','WE','NY','BR','ECB','FED','LN','','','P')
         with self.assertRaises(Exception) as cm:
@@ -72,7 +72,7 @@ class TestParsers(unittest.TestCase):
         # no roll but it will have roll P
         s4 = ('','-','1','y','0','q','0','m','1','w','1','d','0','bd','WE','NY','BR','ECB','FED','LN','','','')
         dur4 = parsers.process_duration_match(s4)
-        self.assertEqual(dur4,Duration(years=-1, months=0, days=8, bd=0, cals=('BR', 'ECB', 'FED', 'LN', 'NY', 'WE'), roll="P"))
+        self.assertEqual(dur4,Duration(years=-1, months=0, days=8, modified=False, cals="BRuECBuFEDuLNuNYuWE"))
     def test_parseCalendarUnionString(self):
         '''
             test cal union string e.g, NYuBR --> [NY,BR]

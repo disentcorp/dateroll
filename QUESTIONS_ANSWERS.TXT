@@ -624,3 +624,50 @@ it shows each "step" from the original to the final.
 please double-check my work.
 
 re-problem, i will look when i implement /MOD, it's the same code co-incidently
+
+
+
+Before you run your tests, please double-check pyc cache is removed:
+find . -name '*.pyc' -exec rm {} \;
+
+
+############## batu 2024/3/12 8 AM EST
+
+Name                                    Stmts   Miss  Cover   Missing
+---------------------------------------------------------------------
+dateroll/__init__.py                        4      0   100%
+dateroll/calendars/__init__.py              0      0   100%
+dateroll/calendars/calendarmath.py        168      1    99%   305
+dateroll/calendars/calendars.py           151      0   100%
+dateroll/date/__init__.py                   0      0   100%
+dateroll/date/date.py                     110      1    99%   40
+dateroll/ddh/__init__.py                    0      0   100%
+dateroll/ddh/ddh.py                        29      0   100%
+dateroll/duration/__init__.py               0      0   100%
+dateroll/duration/duration.py             296      4    99%   512, 526, 549, 592
+dateroll/parser/__init__.py                 0      0   100%
+dateroll/parser/parser.py                  66      0   100%
+dateroll/parser/parsers.py                105      0   100%
+dateroll/parser/patterns.py                29      0   100%
+dateroll/schedule/__init__.py               0      0   100%
+dateroll/schedule/schedule.py              24      0   100%
+dateroll/tests/test_data/test_data.py       3      0   100%
+dateroll/utils.py                          17      0   100%
+---------------------------------------------------------------------
+TOTAL                                    1002      6    99%
+
+        Summary:
+            #1 Fixed all the bugs from new code (had few nasty bugs came from __neg__ and importing Duration, see below)
+            #2 Modified some code
+            #3 passed test_usage from yesterday ( not the new xlsx yet)
+
+        Questions:
+            # 1 isinstance(o,Duration) did not work when I imported differently, e.g from dateroll import Duration in test_duration and
+                from dateroll.duration.duration import Duration in __main__ of Duration.py, so I added or ... condition, please review (end of duration.py)
+            
+            #2 __neg__, I needed to copy self, because it will change the variable, for instance, d = Date(2023,1,1) dur = Duration(bd=1)
+            result = d-dur, it will go through __neg__ and give me result, but NOW dur changed to dur=Duration(bd=-1) instead of Duration(bd=1)
+            to avoid this problem, I created new Duration instance inside __neg__, please review (__neg__ of duration.py)
+
+
+

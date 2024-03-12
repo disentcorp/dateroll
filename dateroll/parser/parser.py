@@ -106,7 +106,7 @@ class Parser:
 
         self.convention = convention
         self.use_native_types = use_native_types
-
+        
         part = Parser.parse_maybe_many_parts(string, convention=self.convention)
         return part
 
@@ -123,6 +123,7 @@ class Parser:
             return dates[0]
 
         # 3
+        
         durations, nodatesordurations = parsers.parseDurationString(nodates)
         # print('s before/after:', nodates,nodatesordurations)
         if nodatesordurations == "+X":
@@ -131,6 +132,7 @@ class Parser:
         
         # 4
         # print('before pdms',nodatesordurations)
+        
         processed_answer = parsers.parseDateMathString(
             nodatesordurations, dates_durations
         )

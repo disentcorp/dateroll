@@ -30,13 +30,6 @@ class TestStringMathMethods(unittest.TestCase):
         """
         test add business days
 
-        with mod:
-            non-hol+0bd|WE
-            hol+0bd|WE
-            non-hol+0bd|WEuNY
-            hol+0bd|WEuNY
-            hol+1000bd
-            nonhol+1000bd
         without mod:
             non-hol+0bd|WE
             hol+0bd|WE
@@ -84,8 +77,7 @@ class TestStringMathMethods(unittest.TestCase):
         
         x4 = self.cals.sub_bd(hol,0,['WE','NY'])
         
-        self.assertEqual(x4,Date(2024,1,1))
-
+        self.assertEqual(x4,Date(2023,12,29))
         x5 = self.cals.sub_bd(hol,10000,'WE')
         x6 = self.cals.sub_bd(nonhol,10000,'WE')
         self.assertEqual(x5,Date(1985,9,2))
@@ -205,14 +197,6 @@ class TestStringMathMethods(unittest.TestCase):
             self.cals.add_bd(nonhol,2,'AA')
         self.assertEqual(str(cm.exception),'Please provide holidays')
 
-    def test_NotImplementMod(self):
-        '''
-            it is temporary, right now we do not support Mod
-        '''
-        calmath = self.cals
-        nonhol = Date(2023,1,3)
-        with self.assertRaises(NotImplementedError):
-            self.cals.add_bd(nonhol,2,'WE',mod=True)
     
     def test_datetime(self):
         '''
@@ -243,8 +227,9 @@ class TestStringMathMethods(unittest.TestCase):
             when calendar is not in the Calendar instance
         
         '''
-        calmath = self.cals
+
         nonhol = datetime.datetime(2023,1,3)
+        
         with self.assertRaises(Exception) as cm:
             self.cals.add_bd(nonhol,1,'AB')
         self.assertEqual(str(cm.exception),"'There is no calendar AB'")
@@ -253,12 +238,11 @@ class TestStringMathMethods(unittest.TestCase):
         '''
             calendar must be a string
         '''
-        calmath = self.cals
+
         nonhol = datetime.datetime(2023,1,3)
         with self.assertRaises(Exception) as cm:
             self.cals.add_bd(nonhol,2,[10])
         
-        self.assertEqual(str(cm.exception),'Calendar name must be string')
     def test_negativeN(self):
         '''
             when we try to pass n<0 in sub_bd, should raise error
@@ -275,24 +259,20 @@ class TestStringMathMethods(unittest.TestCase):
 
     def test_nextBd(self):
         '''
-            find the next bd, when pass mod=True should raise NotImplemented error
+            find the next bd
         '''
-        calmath = self.cals
+
         nonhol = datetime.datetime(2023,12,29)
         hol = Date(2023,12,31)
         d = self.cals.next_bd(hol,'NYuWE')
         d2 = self.cals.next_bd(nonhol,'NYuWE')
         self.assertEqual(d,Date(2024,1,2))
         self.assertEqual(d2,Date(2024,1,2))
-        d3 = self.cals.next_bd(hol,'NYuWE',mod=True)
-        d4 = self.cals.next_bd(nonhol,'NYuWE',mod=True)
-        self.assertEqual(d3,Date(2023,12,29))
-        self.assertEqual(d4,datetime.datetime(2023,12,29))
     
     def test_prevBd(self):
         '''
         
-            find the previous bd, when pass mod=True should raise NotImplemented error
+            find the previous bd
         '''
         
         
@@ -302,54 +282,12 @@ class TestStringMathMethods(unittest.TestCase):
         d2 = self.cals.prev_bd(nonhol,'NYuWE')
         self.assertEqual(d,Date(2023,12,29))
         self.assertEqual(d2,Date(2023,12,29))
-        d3 = self.cals.prev_bd(hol,'NYuWE',mod=True)
-        d4 = self.cals.prev_bd(nonhol,'NYuWE',mod=True)
-        self.assertEqual(d3,Date(2024,1,2))
-        self.assertEqual(d4,datetime.datetime(2024,1,2))
     
     def test_compileAll(self):
         self.cals.cached_compile_all()
 
 
-    # def test_nextbd(self):
-    #     """
-
-    #     w/o mod
-
-    #     from non-bd to bd on 1 cal
-    #     from non-bd to bd on 2 cal union
-    #     from bd to bd on 1 cal
-    #     from bd to bd on 2 cal union
-
-    #     w/ mod
-
-    #     from non-bd to bd on 1 cal
-    #     from non-bd to bd on 2 cal union
-    #     from bd to bd on 1 cal
-    #     from bd to bd on 2 cal union
-
-    #     measure performance, put a threshold
-    #     """
-
-    # def test_prevbd(self):
-    #     """
-
-    #     w/o mod
-
-    #     from non-bd to bd on 1 cal
-    #     from non-bd to bd on 2 cal union
-    #     from bd to bd on 1 cal
-    #     from bd to bd on 2 cal union
-
-    #     w/ mod
-
-    #     from non-bd to bd on 1 cal
-    #     from non-bd to bd on 2 cal union
-    #     from bd to bd on 1 cal
-    #     from bd to bd on 2 cal union
-
-    #     measure performance, put a threshold
-    #     """
+    
 
 
 

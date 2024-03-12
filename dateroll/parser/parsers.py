@@ -107,10 +107,14 @@ def process_duration_match(m: tuple):
             number = int(number)
             if i < 4:
                 # use multiplier on first pair
-                number *= mult
+                if unit=='bd':
+                    
+                    number = float(number) * mult
+                else:
+                    number *= mult
 
             duration_contructor_args[unit] = number
-
+    
     # attach calendars if any
     cals = m[13:21]
     for cal in cals:
@@ -124,7 +128,7 @@ def process_duration_match(m: tuple):
     modified = m[22]
     if modified:
         duration_contructor_args["modified"] = True
-
+    
     duration = dur.Duration(**duration_contructor_args)
     return duration
 
@@ -170,13 +174,19 @@ def parseDurationString(s):
     """
     durations = []
     matches = re.findall(patterns.COMPLETE_DURATION, s)
-
     for m in matches:
         duration = process_duration_match(m)
         # subs turn into addisions because Duration comes back with - inside
+        
         s = s.replace(m[0], f"+X") if not '-' in m[0] else s.replace(m[0], f"-X")
-        durations.append(duration)
+        # because of __neg__ changes the sign, we flip sign here
+        # print('in parsedurstring')
+        # code.interact(local=dict(globals(),**locals()))
+        if '-' in s:
+            duration = duration.__neg__()
 
+        durations.append(duration)
+    
     return durations, s
 
 
@@ -190,7 +200,6 @@ def parseDateMathString(s, things):
     if s == "+X":
         s = "X"
     math_matches = re.match(patterns.MATH, s)
-    
     if math_matches:
         n1 = len(things)
         n2 = s.count("X")
@@ -209,6 +218,7 @@ def parseDateMathString(s, things):
         total = eval(s,{},gs)
         
         return total
+    
     raise ParserStringsError("Cannot recognize as date math", s)
 
 
@@ -218,4 +228,4 @@ def parseScheduleString(s):  # pragma: no cover
 
 if __name__=='__main__':  # pragma: no cover
     ...
-    code.interact(local=dict(globals(),**locals()))
+     

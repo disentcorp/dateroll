@@ -106,7 +106,7 @@ class Date(datetime.date):
         if isinstance(o, DateLike):
             # date + date
             raise TypeError("unsupported operand type(s) for +: 'Date' and 'Date'")
-        elif isinstance(o, Duration):
+        elif isinstance(o, Duration) or 'Duration' in o.__class__.__name__:
             # date + duration
             # goes to __radd__ of Duration
             return o.__radd__(self)
@@ -124,6 +124,7 @@ class Date(datetime.date):
             )
 
     def __sub__(self, o):
+        
         """
         sub
         """
@@ -134,6 +135,7 @@ class Date(datetime.date):
             o = ddh(o)
 
         # apply rules by type
+        
         if isinstance(o, DateLike):
             # date - date
             # convert all datetimes to datetime.date for sub to be timedelta, then create Duration from timedelta
@@ -149,10 +151,12 @@ class Date(datetime.date):
             time_delta = self.date-dt
             return Duration.from_timedelta(time_delta,_anchor_start=dt,_anchor_end=self.date)
         
-        elif isinstance(o, Duration):
+        elif isinstance(o, Duration) or 'Duration' in o.__class__.__name__:
+            # sometimes Duration does not go here instead go as a dateutil, to make sure come here we use .__name__
             # date + duration
             # goes to __radd__ of Duration
-            return o.__rsub__(self)
+            x = o.__rsub__(self)
+            return x
         elif isinstance(o, int):
             # date + int, int -> duration, -> date + duration -> __radd__ duration
             # goes to __rsub__ of Duration

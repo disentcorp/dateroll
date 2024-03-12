@@ -222,5 +222,4 @@ class Calendars(dict):
 
 if __name__ == '__main__': # pragma: no cover
     ...
-    print('in calendars')
-    code.interact(local=dict(globals(),**locals()))
+    
