@@ -674,6 +674,7 @@ TOTAL                                    1002      6    99%
 whenever this happens you can fix it one of two ways:
  - intelligent way: change the order of the file imports to minimize "recombining paths" (libraries that do the least on top, most imports on bottom, so-as to not conflict)
  - naive way: move the import to just where you need it so that it's out of scope for the import checker's checking, (this is cached, additional time added is minimal for now)
+- import at top with as name, then use moudle. notiaotn to access, dont' do form x import y
 
 #2 your logic is 100% correct, negate is not a mutating operation. But pleaes use copy.deepcopy(self) instead, it's safer/more maintainable
 

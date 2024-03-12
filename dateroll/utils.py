@@ -16,7 +16,7 @@ DEBUG_COLORS ={
 def color(s,color):
     return f'{DEBUG_COLORS[color]}{s}{DEBUG_COLORS['end']}'
 
-def xprint(*args,**kwargs):
+def xprint(*args,**kwargs): # pragma:no cover
     if XPRINT_ON:
         _color = kwargs.get('color','yellow')
         if 'lbl' in kwargs:
