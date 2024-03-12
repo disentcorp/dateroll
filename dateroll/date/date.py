@@ -94,19 +94,19 @@ class Date(datetime.date):
 
     def __add__(self, o):
         """
-        add
+        add, do str conversion first, then handle suborinate cases
         """
         # convert string if first
         if isinstance(o, str):
             from dateroll.ddh.ddh import ddh
-
             o = ddh(o)
 
         # apply rules by type
         if isinstance(o, DateLike):
             # date + date
             raise TypeError("unsupported operand type(s) for +: 'Date' and 'Date'")
-        elif isinstance(o, Duration) or 'Duration' in o.__class__.__name__:
+        
+        elif isinstance(o, Duration):
             # date + duration
             # goes to __radd__ of Duration
             return o.__radd__(self)

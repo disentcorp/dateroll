@@ -143,25 +143,23 @@ class TestDuration(unittest.TestCase):
         _,d = dur.adjust_bds(Date(2024,3,6))
         self.assertEqual(d,Date(2024,3,7))
     
-    def test_apply_business_date_adjustment(self):
+    def test_adjust_bds(self):
         '''
             test business date adjustment which adjust date into business date
         '''
         d = Date(2024,3,6)
         expected_d = Date(2024,3,7)
         dur = Duration(bd=1)
-        newd = dur.apply_business_date_adjustment(d)
+        sign, newd = dur.adjust_bds(d)
         self.assertEqual(newd,expected_d)
 
         dur = Duration()
-        newd = dur.apply_business_date_adjustment(d)
+        sign, newd = dur.adjust_bds(d)
         self.assertEqual(newd,Date(2024,3,6))
 
         dur = Duration(modified=True)
-        newd = dur.apply_business_date_adjustment(d)
+        sign, newd = dur.adjust_bds(d)
         self.assertEqual(newd,Date(2024,3,6))
-
-        
 
     def test__validated_periodunits(self):
         pass
@@ -227,10 +225,13 @@ class TestDuration(unittest.TestCase):
         self.assertEqual(nonedur1+nonedur2,Duration(years=0, months=0, days=15, modified=False))
 
         # test dur + rd, should not add rd, should return dur only
-        rd = dateutil.relativedelta.relativedelta(days=3)
-        dur = Duration(days=4)
-        x = dur + rd
-        self.assertEqual(x,dur)
+        rd3 = dateutil.relativedelta.relativedelta(days=3)
+        rd7 = dateutil.relativedelta.relativedelta(days=7)
+        dur4 = Duration(days=4)
+        dur7 = Duration(days=7)
+        dur7_from_math = dur4 + rd3
+        self.assertEqual(dur7,dur7_from_math)
+        self.assertEqual(dur7_from_math,rd7)
 
         # test dur +datelike and adjust business date if necessary
         dur = Duration(days=4)

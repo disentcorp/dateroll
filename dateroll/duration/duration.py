@@ -1,4 +1,5 @@
 import datetime
+import copy
 import math
 import warnings
 import dateutil
@@ -304,56 +305,6 @@ class Duration(dateutil.relativedelta.relativedelta):
 
         return rd
 
-    def apply_business_date_adjustment(self,from_date):
-        """
-        2 steps:
-        1 calendar count #bd's
-        2 apply roll convention
-        """
-        
-        if self.bd is not None:
-            bd_sign, adjusted = self.adjust_bds(from_date)
-            if self.modified:
-                adjusted = self.apply_modifier(from_date,adjusted,bd_sign)
-        else:
-            adjusted = from_date
-        
-        return adjusted
-        
-        # if self.roll is not None and (self.bd is None or (self.bd==0 and not Date(from_date.year,from_date.month,from_date.day).is_bd(cals=self.cals))):
-        #     # if self.bd is not None, it will add another 1 bd which is wrong
-        #     rolled_and_adjusted = self.apply_roll_convention(adjusted,direction)
-            
-
-        # else:
-        #     rolled_and_adjusted = adjusted
-        
-        # if ((self.roll=='MF' and direction>0) or (self.roll=='MP' and direction<0)) and rolled_and_adjusted.month!=from_date.month:
-        #     # find the last/first business date of the month
-        #     new_date = rolled_and_adjusted
-        #     while new_date.month!=from_date.month:
-        #         new_date = Date(new_date.year,new_date.month,new_date.day) + Duration(bd=direction* -1)
-        #     rolled_and_adjusted = new_date
-        # return rolled_and_adjusted
-
-    def adjust_bds(self, from_date):
-        """
-        This moves business days, using the sign of BD, yes, -0.0 means go backwards to the previous business day
-        FOLLOWING is handled in +0.0 BD
-        PREVIOUS is handled in -0.0 BD
-
-        note: calmath.add_bd handles -0.0BD as well, split out here for ease of reading
-        """
-        
-        bd_sign = math.copysign(1,self.bd)
-        if bd_sign >= 0:
-            b_moved = calmath.add_bd(from_date, abs(self.bd), cals=self.cals)
-        else:
-            b_moved = calmath.sub_bd(from_date, abs(self.bd), cals=self.cals)
-
-        return bd_sign, b_moved
-
-
     @property
     def just_days(self):
         # count cal days approx warn return always
@@ -396,7 +347,7 @@ class Duration(dateutil.relativedelta.relativedelta):
             if self.months != 0:
                 monthdays = APPROX['1y1d'] / 12 * self.months
                 just_days += monthdays
-                warns.append(f"≈{monthdays:.6f}m")
+                warns.append(f"≈{monthdays:.6f}d")
 
             just_days += self.days
             
@@ -420,7 +371,7 @@ class Duration(dateutil.relativedelta.relativedelta):
         """
         c = a + b
         """
-        from dateroll.date.date import Date, DateLike
+        from dateroll.date.date import DateLike
 
         a = self
         # duration + duration
@@ -436,26 +387,32 @@ class Duration(dateutil.relativedelta.relativedelta):
             """
             
             # non bd adjustments
-            years   = a.years   +   direction*b.years
-            months  = a.months  +   direction*b.months
-            days    = a.days    +   direction*b.days
+            years   = a.years   +   direction * b.years
+            months  = a.months  +   direction * b.months
+            days    = a.days    +   direction * b.days
             
             # bd adjustments w/o MOD
-            bd = add_none(a.bd,b.bd,direction) # none or add
-            cals = combine_none(a.cals,b.cals) # union
+            bd = add_none(a.bd, b.bd, direction) # none or add
+            cals = combine_none(a.cals, b.cals) # union
 
             # modified / if either has, inherit it
             modified = a.modified or b.modified
 
             # check combined Duration net direction
-            dur = Duration(years=years,months=months,days=days,bd=bd,cals=cals,modified=modified)
+            dur = Duration(years=years, months=months, days=days, bd=bd, cals=cals, modified=modified)
            
             return dur
 
-        # duration + rd() --- should not happen
         elif isinstance(b, dateutil.relativedelta.relativedelta):
-            return self
-            # raise NotImplementedError('need to cast rd')
+            '''
+            combine rd with self via copy then combine years+months+days from rd into self
+            '''
+            dur = copy.deepcopy(self)
+            dur.years += b.years
+            dur.months += b.months
+            dur.days += b.days
+
+            return dur
 
         elif isinstance(b, DateLike):
             '''
@@ -464,29 +421,73 @@ class Duration(dateutil.relativedelta.relativedelta):
                 or  (Duration + Date)
             if direction < 0:
                         (Date - Duration) 
-                and not (Duration - Date) -- WHY? a) non-sensical, and b) Date.__rsub__ throws TypeError before it gets here
+            NOT (Duration - Date)
+                Date.__rsub__ throws TypeError before it gets here (non-sensical situation)
             '''
-            
-            if direction < 0:
-                # Date - Duration
-                # if negative, flip sign using __neg__
-                self = self.__neg__()
-
-            # non-holiday adjustments, add D,M,Y
-            
-            b_moved = b.date + self.relativedelta
-                
-            # holiday adjustment, add BD and if modified check, if BD results in diff month, bounce
-            modified = self.apply_business_date_adjustment(b_moved)
-
-                    
-            dt = Date.from_datetime(modified)
-            
-            return dt
+            return self.adjust_from_date(b,direction)
 
         else:
             raise NotImplementedError
+
+    def adjust_from_date(self,date_unadj,direction):
+        """
+        4 steps:
+            1 - if being subtracted, negate
+            2 - perform non-holiday adjustments first, i.e. y's, m's, d's (returns datetime.date)
+            3 - perform holiday adjustments second, i.e. bd's (impliying roll from direction via sign on neg, includes -0.0 as backwards)
+            4 - perform modified operation, if supplied
+            5 - cast datetime.date back into Date
+        """
+
+        # 1 negate if being subtracted
+        if direction < 0:
+            # Date - Duration
+            # if negative, flip sign using __neg__
+            self = self.__neg__()
+
+        # 2 non-holiday adjustments, add D,M,Y
+        date_nonhol_adj = date_unadj.date + self.relativedelta
+            
+        # 3 holiday adjustment, add BD and if modified check, if BD results in diff month, bounce
+        if self.bd is not None:
+            bd_sign, date_hol_adj = self.adjust_bds(date_nonhol_adj)
+            if self.modified:
+                # modifying from non-hol adjusted to hol-ajusted, could be subjective arg in future that modification is from date_unadj to date_hol_adj
+                date_modifed = self.apply_modifier(date_nonhol_adj,date_hol_adj,bd_sign)
+            else:
+                date_modifed = date_hol_adj
+        else:
+            date_modifed = date_nonhol_adj
+
+        # 4 convert back to Date
+        from dateroll.date.date import Date
+        Date_modifed = Date.from_datetime(date_modifed)
+
+        return Date_modifed
+
+    def adjust_bds(self, from_date):
+        """
+        This moves business days, using the sign of BD, yes, -0.0 means go backwards to the previous business day
+        note: calmath.add_bd ALSO handles -0.0BD as well
+
+        returns TUPLE, the holiday/bizday ajusted date, and it's sign: (bd_sign,date_hol_adj)
+        """
+
+        if self.bd is None:
+            # non-case
+            return (1,from_date)
         
+        bd_sign = math.copysign(1,self.bd)
+        if bd_sign >= 0:
+            # FOLLOWING ROLL CONVENTION is handled in +0.0 BD
+            date_hol_adj = calmath.add_bd(from_date, abs(self.bd), cals=self.cals)
+        else:
+            # PREVIOUS ROLL CONVENTION is handled in -0.0 BD
+            date_hol_adj = calmath.sub_bd(from_date, abs(self.bd), cals=self.cals)
+
+        return bd_sign, date_hol_adj
+
+
     def apply_modifier(self,before,after,bd_sign):
         '''
         based upon the sign of the business date (yes, includes -0.0 as a previous) perform MODIFIER
@@ -510,8 +511,6 @@ class Duration(dateutil.relativedelta.relativedelta):
                     c+=1
                     if c >=35:
                         raise Exception('Unhandled rolling order')
-            
-        
         else:
             # if went to soon, bounce FORWARD
             
@@ -560,10 +559,7 @@ class Duration(dateutil.relativedelta.relativedelta):
         '''
         apply negative across all units (distributive property)
         '''
-        copy_self = Duration(years=self.years,months=self.months,days=self.days,bd=self.bd,cals=self.cals,modified=self.modified,
-                             _anchor_start=self._anchor_start,_anchor_end=self._anchor_end)
-        
-
+        copy_self = copy.deepcopy(self)
         copy_self.years = -1 * self.years
         copy_self.months = -1 * self.months
         copy_self.days = -1 * self.days
