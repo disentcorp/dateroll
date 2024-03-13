@@ -2,7 +2,7 @@ import fcntl
 import os
 import pathlib
 
-XPRINT_ON = True
+XPRINT_ON = False
 
 DEBUG_COLORS ={
     'blue' : '\033[94m',

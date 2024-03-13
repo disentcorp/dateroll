@@ -696,3 +696,135 @@ yy = 2023
 mm = 4
 # display the calendar
 print(calendar.month(yy, mm))
+
+
+########## batu 2024/3/13 6:30 AM EST
+
+tesing:           12/24/23+0bd|WEuNY = 2023-12-26 == 2023-12-26 True        24.0 ms
+tesing:           12/31/23+0bd|WEuNY = 2024-01-02 == 2024-01-02 True        24.0 ms
+tesing:           03/11/24+0bd|WEuNY = 2024-03-11 == 2024-03-11 True        23.0 ms
+tesing:           04/30/24+0bd|WEuNY = 2024-04-30 == 2024-04-30 True        27.0 ms
+tesing:       12/24/23+0bd|WEuNY/MOD = 2023-12-26 == 2023-12-26 True        26.0 ms
+tesing:       12/31/23+0bd|WEuNY/MOD = 2023-12-29 == 2023-12-29 True        48.0 ms
+tesing:       03/11/24+0bd|WEuNY/MOD = 2024-03-11 == 2024-03-11 True        22.0 ms
+tesing:       04/30/24+0bd|WEuNY/MOD = 2024-04-30 == 2024-04-30 True        22.0 ms
+tesing:           12/24/23+1bd|WEuNY = 2023-12-26 == 2023-12-26 True        22.0 ms
+tesing:           12/31/23+1bd|WEuNY = 2024-01-02 == 2024-01-02 True        22.0 ms
+tesing:           03/11/24+1bd|WEuNY = 2024-03-12 == 2024-03-12 True        23.0 ms
+tesing:           04/30/24+1bd|WEuNY = 2024-05-01 == 2024-05-01 True        22.0 ms
+tesing:       12/24/23+1bd|WEuNY/MOD = 2023-12-26 == 2023-12-26 True        22.0 ms
+tesing:       12/31/23+1bd|WEuNY/MOD = 2023-12-29 == 2023-12-29 True        42.0 ms
+tesing:       03/11/24+1bd|WEuNY/MOD = 2024-03-12 == 2024-03-12 True        22.0 ms
+tesing:       04/30/24+1bd|WEuNY/MOD = 2024-04-30 == 2024-04-30 True        43.0 ms
+tesing:           12/26/22-0bd|WEuNY = 2022-12-23 == 2022-12-23 True        14.0 ms
+tesing:           06/01/20-0bd|WEuNY = 2020-06-01 == 2020-06-01 True        25.0 ms
+tesing:           03/12/24-0bd|WEuNY = 2024-03-12 == 2024-03-12 True        23.0 ms
+tesing:           05/01/24-0bd|WEuNY = 2024-05-01 == 2024-05-01 True        23.0 ms
+tesing:       12/26/22-0bd|WEuNY/MOD = 2022-12-23 == 2022-12-23 True        15.0 ms
+tesing:       06/01/20-0bd|WEuNY/MOD = 2020-06-01 == 2020-06-01 True        22.0 ms
+tesing:       03/12/24-0bd|WEuNY/MOD = 2024-03-12 == 2024-03-12 True        22.0 ms
+tesing:       05/01/24-0bd|WEuNY/MOD = 2024-05-01 == 2024-05-01 True        22.0 ms
+tesing:           12/26/22-1bd|WEuNY = 2022-12-23 == 2022-12-23 True        15.0 ms
+tesing:           06/01/20-1bd|WEuNY = 2020-05-29 == 2020-05-29 True        22.0 ms
+tesing:           03/12/24-1bd|WEuNY = 2024-03-11 == 2024-03-11 True        22.0 ms
+tesing:           05/01/24-1bd|WEuNY = 2024-04-30 == 2024-04-30 True        22.0 ms
+tesing:       12/26/22-1bd|WEuNY/MOD = 2022-12-23 == 2022-12-23 True        15.0 ms
+tesing:       06/01/20-1bd|WEuNY/MOD = 2020-06-01 == 2020-06-01 True        43.0 ms
+tesing:       03/12/24-1bd|WEuNY/MOD = 2024-03-11 == 2024-03-11 True        22.0 ms
+tesing:       05/01/24-1bd|WEuNY/MOD = 2024-05-01 == 2024-05-01 True        42.0 ms
+tesing:                 03/11/24+15d = 2024-03-26 == 2024-03-26 True         0.0 ms
+tesing:                 03/11/24-15d = 2024-02-25 == 2024-02-25 True         0.0 ms
+tesing:                  03/11/24+9w = 2024-05-13 == 2024-05-13 True         0.0 ms
+tesing:                  03/11/24-9w = 2024-01-08 == 2024-01-08 True         0.0 ms
+tesing:                  03/11/24+7m = 2024-10-11 == 2024-10-11 True         0.0 ms
+tesing:                  03/11/24-7m = 2023-08-11 == 2023-08-11 True         0.0 ms
+tesing:                  03/11/24+3q = 2024-12-11 == 2024-12-11 True         0.0 ms
+tesing:                  03/11/24-3q = 2023-06-11 == 2023-06-11 True         0.0 ms
+tesing:                  03/11/24+5y = 2029-03-11 == 2029-03-11 True         0.0 ms
+tesing:                  03/11/24-5y = 2019-03-11 == 2019-03-11 True         0.0 ms
+tesing:           01/01/22+0bd|WEuNY = 2022-01-03 == 2022-01-03 True        15.0 ms
+tesing:       01/01/22+0bd|WEuNY/MOD = 2022-01-03 == 2022-01-03 True        14.0 ms
+tesing:           01/01/22+1bd|WEuNY = 2022-01-03 == 2022-01-03 True        14.0 ms
+tesing:       01/01/22+1bd|WEuNY/MOD = 2022-01-03 == 2022-01-03 True        15.0 ms
+tesing:           12/24/23+5bd|WEuNY = 2024-01-02 == 2024-01-02 True        22.0 ms
+tesing:           01/01/22+5bd|WEuNY = 2022-01-07 == 2022-01-07 True        15.0 ms
+tesing:           12/31/23+5bd|WEuNY = 2024-01-08 == 2024-01-08 True        21.0 ms
+tesing:           03/11/24+5bd|WEuNY = 2024-03-18 == 2024-03-18 True        22.0 ms
+tesing:           04/30/24+5bd|WEuNY = 2024-05-07 == 2024-05-07 True        22.0 ms
+tesing:       12/24/23+5bd|WEuNY/MOD = 2023-12-29 == 2023-12-29 True        43.0 ms
+tesing:       01/01/22+5bd|WEuNY/MOD = 2022-01-07 == 2022-01-07 True        14.0 ms
+tesing:       12/31/23+5bd|WEuNY/MOD = 2023-12-29 == 2023-12-29 True        42.0 ms
+tesing:       03/11/24+5bd|WEuNY/MOD = 2024-03-18 == 2024-03-18 True        21.0 ms
+tesing:       04/30/24+5bd|WEuNY/MOD = 2024-04-30 == 2024-04-30 True        44.0 ms
+tesing:            12/24/23+1w|WEuNY = 2024-01-02 == 2024-01-02 True        22.0 ms
+tesing:            01/01/22+1w|WEuNY = 2022-01-10 == 2022-01-10 True        22.0 ms
+tesing:            12/31/23+1w|WEuNY = 2024-01-08 == 2024-01-08 True        21.0 ms
+tesing:            03/11/24+1w|WEuNY = 2024-03-18 == 2024-03-18 True        22.0 ms
+tesing:            04/30/24+1w|WEuNY = 2024-05-07 == 2024-05-07 True        22.0 ms
+tesing:        12/24/23+1w|WEuNY/MOD = 2023-12-29 == 2023-12-29 True        43.0 ms
+tesing:        01/01/22+1w|WEuNY/MOD = 2022-01-10 == 2022-01-10 True        22.0 ms
+tesing:        12/31/23+1w|WEuNY/MOD = 2024-01-08 == 2024-01-08 True        22.0 ms
+tesing:        03/11/24+1w|WEuNY/MOD = 2024-03-18 == 2024-03-18 True        22.0 ms
+tesing:        04/30/24+1w|WEuNY/MOD = 2024-05-07 == 2024-05-07 True        21.0 ms
+tesing:           01/01/22-0bd|WEuNY = 2021-12-30 == 2021-12-30 True        15.0 ms
+tesing:       01/01/22-0bd|WEuNY/MOD = 2022-01-03 == 2022-01-03 True        29.0 ms
+tesing:           01/01/22-1bd|WEuNY = 2021-12-30 == 2021-12-30 True        14.0 ms
+tesing:       01/01/22-1bd|WEuNY/MOD = 2022-01-03 == 2022-01-03 True        29.0 ms
+tesing:           12/24/23-5bd|WEuNY = 2023-12-18 == 2023-12-18 True        24.0 ms
+tesing:           01/01/22-5bd|WEuNY = 2021-12-23 == 2021-12-23 True        15.0 ms
+tesing:           12/31/23-5bd|WEuNY = 2023-12-22 == 2023-12-22 True        22.0 ms
+tesing:           03/11/24-5bd|WEuNY = 2024-03-04 == 2024-03-04 True        22.0 ms
+tesing:           04/30/24-5bd|WEuNY = 2024-04-23 == 2024-04-23 True        24.0 ms
+tesing:       12/24/23-5bd|WEuNY/MOD = 2023-12-18 == 2023-12-18 True        24.0 ms
+tesing:       01/01/22-5bd|WEuNY/MOD = 2022-01-03 == 2022-01-03 True        29.0 ms
+tesing:       12/31/23-5bd|WEuNY/MOD = 2023-12-22 == 2023-12-22 True        23.0 ms
+tesing:       03/11/24-5bd|WEuNY/MOD = 2024-03-04 == 2024-03-04 True        22.0 ms
+tesing:       04/30/24-5bd|WEuNY/MOD = 2024-04-23 == 2024-04-23 True        22.0 ms
+tesing:            12/24/23-1w|WEuNY = 2023-12-15 == 2023-12-15 True        22.0 ms
+tesing:            01/01/22-1w|WEuNY = 2021-12-23 == 2021-12-23 True        14.0 ms
+tesing:            12/31/23-1w|WEuNY = 2023-12-22 == 2023-12-22 True        22.0 ms
+tesing:            03/11/24-1w|WEuNY = 2024-03-04 == 2024-03-04 True        23.0 ms
+tesing:            04/30/24-1w|WEuNY = 2024-04-23 == 2024-04-23 True        22.0 ms
+tesing:        12/24/23-1w|WEuNY/MOD = 2023-12-15 == 2023-12-15 True        21.0 ms
+tesing:        01/01/22-1w|WEuNY/MOD = 2021-12-23 == 2021-12-23 True        14.0 ms
+tesing:        12/31/23-1w|WEuNY/MOD = 2023-12-22 == 2023-12-22 True        22.0 ms
+tesing:        03/11/24-1w|WEuNY/MOD = 2024-03-04 == 2024-03-04 True        22.0 ms
+tesing:        04/30/24-1w|WEuNY/MOD = 2024-04-23 == 2024-04-23 True        22.0 ms
+tesing:           07/03/25+1bd|WEuNY = 2025-07-07 == 2025-07-07 True        22.0 ms
+tesing:           02/16/24+1bd|WEuNY = 2024-02-20 == 2024-02-20 True        21.0 ms
+tesing:           07/07/25-1bd|WEuNY = 2025-07-03 == 2025-07-03 True        22.0 ms
+tesing:           02/20/24-1bd|WEuNY = 2024-02-16 == 2024-02-16 True        22.0 ms
+94/94 passed
+
+Name                                    Stmts   Miss  Cover   Missing
+---------------------------------------------------------------------
+dateroll/__init__.py                        4      0   100%
+dateroll/calendars/__init__.py              0      0   100%
+dateroll/calendars/calendarmath.py        166      0   100%
+dateroll/calendars/calendars.py           151      0   100%
+dateroll/date/__init__.py                   0      0   100%
+dateroll/date/date.py                     117      0   100%
+dateroll/ddh/__init__.py                    0      0   100%
+dateroll/ddh/ddh.py                        40      0   100%
+dateroll/duration/__init__.py               0      0   100%
+dateroll/duration/debug.py                  7      0   100%
+dateroll/duration/duration.py             328      0   100%
+dateroll/parser/__init__.py                 0      0   100%
+dateroll/parser/parser.py                  66      0   100%
+dateroll/parser/parsers.py                114      0   100%
+dateroll/parser/patterns.py                29      0   100%
+dateroll/schedule/__init__.py               0      0   100%
+dateroll/schedule/schedule.py              25      0   100%
+dateroll/tests/test_data/test_data.py       3      0   100%
+dateroll/utils.py                          21      0   100%
+---------------------------------------------------------------------
+TOTAL                                    1071      0   100%
+
+    Summary:
+        #1 Made tests 100%
+        #2 Passed usage test with new xlsx
+        
+    PS: Some xlsx dates were wrong, please confirm the dates with yellow colored
+        there were some dates such as 12/31/21 was holiday in https://www.officeholidays.com/countries/usa/2021 
+        and workalendar
+        although it looks business day (Friday). 

@@ -33,40 +33,40 @@ class TestDDH(unittest.TestCase):
     @classmethod
     def tearDownClass(self): ...
 
-    # def test_next_bd01(self):
-    #     '''
-    #         add 0 bd and 1bd from today
+    def test_next_bd01(self):
+        '''
+            add 0 bd and 1bd from today
         
-    #     '''
-    #     df = pd.DataFrame(next_d)
-    #     # print('in ddh')
-    #     bd0 = df.apply(lambda x:handle_sample_data_dates(x,'0bd','+'),axis=1)
-    #     bd0 = [l.strftime('%Y-%m-%d') for l in bd0.tolist()]
-    #     expected0 = df['0bd'].tolist()
-    #     expected1 = df['1bd'].tolist()
-    #     # code.interact(local=dict(globals(),**locals()))
-    #     self.assertEqual(bd0,expected0)
-    #     bd1 = df.apply(lambda x:handle_sample_data_dates(x,'1bd','+'),axis=1)
-    #     bd1 = [l.strftime('%Y-%m-%d') for l in bd1.tolist()]
-    #     # code.interact(local=dict(globals(),**locals()))
-    #     self.assertEqual(bd1,expected1)
+        '''
+        df = pd.DataFrame(next_d)
+        # print('in ddh')
+        bd0 = df.apply(lambda x:handle_sample_data_dates(x,'0bd','+'),axis=1)
+        bd0 = [l.strftime('%Y-%m-%d') for l in bd0.tolist()]
+        expected0 = df['0bd'].tolist()
+        expected1 = df['1bd'].tolist()
+        # code.interact(local=dict(globals(),**locals()))
+        self.assertEqual(bd0,expected0)
+        bd1 = df.apply(lambda x:handle_sample_data_dates(x,'1bd','+'),axis=1)
+        bd1 = [l.strftime('%Y-%m-%d') for l in bd1.tolist()]
+        # code.interact(local=dict(globals(),**locals()))
+        self.assertEqual(bd1,expected1)
         
     
-    # def test_prev_bd01(self):
-    #     '''
-    #         sub 0bd and 1bd from today
-    #     '''
-    #     df = pd.DataFrame(prev_d)
-    #     bd0 = df.apply(lambda x:handle_sample_data_dates(x,'0bd','-'),axis=1)
-    #     bd0 = [l.strftime('%Y-%m-%d') for l in bd0.tolist()]
-    #     expected0 = df['-0bd'].tolist()
-    #     expected1 = df['-1bd'].tolist()
-    #     # code.interact(local=dict(globals(),**locals()))
-    #     self.assertEqual(bd0,expected0)
-    #     bd1 = df.apply(lambda x:handle_sample_data_dates(x,'1bd','-'),axis=1)
-    #     bd1 = [l.strftime('%Y-%m-%d') for l in bd1.tolist()]
-    #     # code.interact(local=dict(globals(),**locals()))
-    #     self.assertEqual(bd1,expected1)
+    def test_prev_bd01(self):
+        '''
+            sub 0bd and 1bd from today
+        '''
+        df = pd.DataFrame(prev_d)
+        bd0 = df.apply(lambda x:handle_sample_data_dates(x,'0bd','-'),axis=1)
+        bd0 = [l.strftime('%Y-%m-%d') for l in bd0.tolist()]
+        expected0 = df['-0bd'].tolist()
+        expected1 = df['-1bd'].tolist()
+        # code.interact(local=dict(globals(),**locals()))
+        self.assertEqual(bd0,expected0)
+        bd1 = df.apply(lambda x:handle_sample_data_dates(x,'1bd','-'),axis=1)
+        bd1 = [l.strftime('%Y-%m-%d') for l in bd1.tolist()]
+        # code.interact(local=dict(globals(),**locals()))
+        self.assertEqual(bd1,expected1)
 
 class Test_UserScenarios(unittest.TestCase):
     def tests_from_excel(self):
@@ -75,17 +75,19 @@ class Test_UserScenarios(unittest.TestCase):
         ddh.debug = False
         #### TURN DEBUG ON OFF ####
         import pandas as pd
+        
         df = pd.read_excel('dateroll/tests/test_cases.xlsx')
-        cols = ['from','ParserString','final']
+        cols = ['from','ParserString','final','convention']
         df = df[cols]
         df = df.dropna()
         c = 0
         for idx,row in df.iterrows():
             s = row['ParserString']
             f = row['from']
+            convention = row['convention']
             _a = time.time()
             a = ddh(row['final'])
-            b = ddh(s)
+            b = ddh(s,convention=convention)
             _b = time.time()
             ans = f'{str(b==a):<5}'
             res = color(ans,'green') if b==a else color(ans,'red')

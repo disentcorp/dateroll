@@ -10,6 +10,7 @@ import code
 
 from dateroll import ddh,cals
 import dateroll
+# import dateroll.duration.duration as durationModule
 
 
 class TestDDH(unittest.TestCase):
@@ -100,7 +101,20 @@ class TestsPracticalExamples(unittest.TestCase):
         """
         assert ddh("t") == datetime.date.today()
 
-
+    def test_durationLike(self):
+        '''
+            pass durationlike into ddh
+        '''
+        x = ddh(datetime.timedelta(days=10))
+        self.assertEqual(x,dateroll.Duration(years=0, months=0, days=10, modified=False, debug=False))
+    
+    def test_badObj(self):
+        '''
+            pass bad instace to rayse TypeError
+        '''
+        
+        with self.assertRaises(TypeError):
+            ddh(10)
 if __name__ == "__main__":
     unittest.main()
 

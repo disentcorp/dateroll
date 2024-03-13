@@ -71,13 +71,16 @@ def parseDateString(s, convention, debug=False):
 
     dates = []
     matches = re.findall(pattern, s)
-
     res = s
     for match in matches:
         date = dt.Date.from_string(match, **dateparser_kwargs)
         res = res.replace(match, "X")
+        # to ensure no conflict duration negation and date math application
+        # e.g.   t-3m = t + (-3m), and not t - (-3m)
+        # make - to +-, negate will occur in duration string match, and + will be captured in date math parser
+        res = res.replace('-','+-')
         dates.append(date)
-
+    
     return dates, res
 
 
@@ -119,6 +122,9 @@ def process_duration_match(m: tuple, debug=False):
     
     # attach calendars if any
     cals = m[13:21]
+    
+    # remove empty strings from cals
+    cals = tuple(filter(lambda x:x!='',cals))
     for cal in cals:
         (
             duration_contructor_args.setdefault("cals", []).append(cal)
@@ -178,6 +184,7 @@ def parseDurationString(s,debug=False):
     """
     durations = []
     matches = re.findall(patterns.COMPLETE_DURATION, s)
+    
     for m in matches:
         duration = process_duration_match(m, debug=debug)
         dur_str = m[0]
@@ -197,7 +204,7 @@ def parseDateMathString(s, things, debug=False):
     
     if s == "+X":
         s = "X"
-
+    
     math_matches = re.match(patterns.MATH, s)
     if math_matches:
         n1 = len(things)
@@ -220,7 +227,7 @@ def parseDateMathString(s, things, debug=False):
         total = eval(s,{},gs)
         
         return total
-    
+
     raise ParserStringsError("Cannot recognize as date math", s)
 
 

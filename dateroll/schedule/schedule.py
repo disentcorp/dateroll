@@ -2,11 +2,11 @@
 import code
 
 class Schedule: 
-    def __init__(self,start,stop,step):
+    def __init__(self,start,stop,step,debug=False):
         self.start = start
         self.stop = stop
         self.step = step
-        
+        self.debug = debug
         if self.step >=0:
             self.direction = 'forward'
         else:

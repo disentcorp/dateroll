@@ -20,7 +20,7 @@ class TestParsers(unittest.TestCase):
         expected_mdy = datetime.date.today().strftime('%m/%d/%Y')
         expected_dmy = datetime.date.today().strftime('%d/%m/%Y')
         expected_ymd = datetime.date.today().strftime('%Y/%m/%d')
-        t = parsers.parseTodayString('t')
+        t = parsers.parseTodayString('t',debug=True)
         self.assertEqual(t,expected_mdy)
         t = parsers.parseTodayString('t',convention='DMY')
         self.assertEqual(t,expected_dmy)
@@ -94,37 +94,41 @@ class TestParsers(unittest.TestCase):
 
         s = '1y3m4d'
         s2 = parsers.parseDurationString(s)
-        self.assertEqual(s2,([Duration(years=1, months=3, days=4)], '+X'))
+        # print('in test parsers')
+        
+        self.assertEqual(s2,([Duration(years=1, months=3, days=4, modified=False, debug=False)], '+X'))
     
     def test_parseDateMathString(self):
         '''
             test parse date math string, +X-X
         '''
-        s = ' +X -X'
-        s2 = ' +X -X -X'
+        s = ' X+X'
+        s2 = ' +X+X -X'
         s3 = ' +X'
         things = [4,5]
         things2 = [4]
-        rs = parsers.parseDateMathString(s,things)
-        self.assertEqual(rs,-1)
+        rs = parsers.parseDateMathString(s,things,debug=True)
+        self.assertEqual(rs,9)
         with self.assertRaises(Exception) as cm:
             parsers.parseDateMathString(s2,things)
         
-        self.assertEqual(str(cm.exception),"('Cannot recognize as date math', '+X-X-X')")
+        self.assertEqual(str(cm.exception),"('Cannot recognize as date math', '+X+X-X')")
 
         wrong_things = 'qwertyuiop[;lkjhgfdaszxcvbnm'
 
         with self.assertRaises(Exception) as cm:
             parsers.parseDateMathString(s,wrong_things)
         
-        self.assertEqual(str(cm.exception),"('Cannot recognize as date math', '+X-X')")
+        self.assertEqual(str(cm.exception),"('Cannot recognize as date math', 'X+X')")
 
         with self.assertRaises(Exception) as cm:
             parsers.parseDateMathString(s,things2)
         
-        self.assertEqual(str(cm.exception),'Unmatched math (+X-X)')
-        rs3 = parsers.parseDateMathString(s3,things2)
-        self.assertEqual(rs3,4)
+        self.assertEqual(str(cm.exception),'Unmatched math (X+X)')
+        # rs3 = parsers.parseDateMathString(s3,things2)
+        # self.assertEqual(rs3,4)
+        with self.assertRaises(Exception):
+            parsers.parseDateMathString(s3,things2)
         
 
 

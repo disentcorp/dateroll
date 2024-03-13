@@ -1,5 +1,6 @@
 import datetime
 import calendar
+import code
 
 calendar.setfirstweekday(calendar.SUNDAY)
 
@@ -7,9 +8,9 @@ from dateroll.utils import color
 
 def before_after(dt1,dt2,cals):
     ...
-    print(dt1,dt2)
-    ym1 = dt1.year,dt1.month
-    ym2 = dt2.year,dt2.month
+    # print(dt1,dt2)
+    # ym1 = dt1.year,dt1.month
+    # ym2 = dt2.year,dt2.month
 
     if ym1==ym2:
         cal = str(calendar.month(*ym1,w=0))
@@ -19,7 +20,7 @@ def before_after(dt1,dt2,cals):
     header = '\n'.join(cal.splitlines()[:2])
     body = '\n'.join(cal.splitlines()[2:])
 
-    days = (dt2.date - dt1.date).days
+    # days = (dt2.date - dt1.date).days
     
     if dt2>dt1:
         a,b = dt1.date,dt2.date
@@ -28,7 +29,7 @@ def before_after(dt1,dt2,cals):
         a,b = dt2.date,dt1.date
         arrow = '<'
 
-    t = a+datetime.timedelta(days=1)
+    # t = a+datetime.timedelta(days=1)
 
     t = datetime.date(dt1.year,dt1.month,1)
     while t.month==dt1.month and t.year==dt1.year:
@@ -50,8 +51,9 @@ def before_after(dt1,dt2,cals):
     # body = body.replace(str(d1),color(d1,'blue'))
     # body = body.replace(str(d2),color(d2,'blue'))
 
-    cal = header +'\n' + body
-    print(cal)
+    # cal = header +'\n' + body
+    
+    # print(cal)
 
 
 #     a,b 
