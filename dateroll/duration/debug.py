@@ -19,30 +19,36 @@ def before_after(dt1,dt2,cals):
     header = '\n'.join(cal.splitlines()[:2])
     body = '\n'.join(cal.splitlines()[2:])
 
-
     days = (dt2.date - dt1.date).days
     
     if dt2>dt1:
         a,b = dt1.date,dt2.date
+        arrow = '>'
     else:
         a,b = dt2.date,dt1.date
+        arrow = '<'
 
     t = a+datetime.timedelta(days=1)
 
     t = datetime.date(dt1.year,dt1.month,1)
     while t.month==dt1.month and t.year==dt1.year:
-        d = str(t.day).rjust(2)
-        if t.weekday() in (6,5):
-            ...
-            # body = body.replace(d,color(d,'cyan'))
-        if t >= a and t <= b:
-            body = body.replace(d,color(d,'yellow'))
-
+        d = str(t.day)
+        if len(d)==1:
+            d =d.rjust(3)
+        i =  t-datetime.timedelta(days=1)
+        j =  t+datetime.timedelta(days=1)
+        s1 = f'{str(i.day).rjust(2)} {d}'
+        s2 = f'{str(j.day).rjust(2)} {d}'
+        ii = s1; ii = ii.replace(' ',arrow)
+        jj = s2; jj = jj.replace(' ',arrow)
+        if t > a and t < b:
+            body = body.replace(s1,ii)
+            body = body.replace(s2,jj)
         t+=datetime.timedelta(days=1)
 
 
-    body = body.replace(str(d1),color(d1,'blue'))
-    body = body.replace(str(d2),color(d2,'blue'))
+    # body = body.replace(str(d1),color(d1,'blue'))
+    # body = body.replace(str(d2),color(d2,'blue'))
 
     cal = header +'\n' + body
     print(cal)

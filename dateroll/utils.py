@@ -11,10 +11,11 @@ DEBUG_COLORS ={
     'yellow' : '\033[33m',
     'red' : '\033[31m',
     'end' : '\033[0m',
+    'gray':'\x1b[38;5;239m'
 }
 
 def color(s,color):
-    return f'{DEBUG_COLORS[color]}{s}{DEBUG_COLORS['end']}'
+    return DEBUG_COLORS[color] + str(s) + DEBUG_COLORS['end']
 
 def xprint(*args,**kwargs): # pragma:no cover
     if XPRINT_ON:
