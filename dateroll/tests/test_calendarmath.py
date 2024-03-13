@@ -7,9 +7,10 @@ import uuid
 import code
 from unittest import expectedFailure
 
-from dateroll.calendars.calendarmath import CalendarMath
+from dateroll.calendars.calendarmath import CalendarMath,DATA_LOCATION_FILE
 from dateroll.date.date import Date
 import dateroll.calendars.calendars as calendars
+
 
 
 class TestStringMathMethods(unittest.TestCase):
@@ -285,6 +286,15 @@ class TestStringMathMethods(unittest.TestCase):
     
     def test_compileAll(self):
         self.cals.cached_compile_all()
+    
+    def test_generate_union(self):
+        '''
+            when calendar does not exist, raise keyError
+        '''
+        
+        with self.assertRaises(KeyError):
+            self.cals._generate_union('BAD')
+
 
 
     

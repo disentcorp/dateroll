@@ -5,7 +5,7 @@ import sys
 from io import StringIO
 import datetime
 import dateutil.relativedelta
-from dateroll import Date,Duration
+from dateroll import Date,Duration,ddh
 
 class TestDuration(unittest.TestCase):
     @classmethod
@@ -342,7 +342,9 @@ class TestDuration(unittest.TestCase):
             test repr of Duration instance
         '''
         dur = Duration(days=4,modified=True)
+        dur2 = Duration(days=1,cals='NYuWE')
         repr(dur)
+        repr(dur2)
     def test___rsub__(self):
         pass
     def test___sub__(self):
@@ -425,7 +427,29 @@ class TestDuration(unittest.TestCase):
         # <=
         self.assertLessEqual(dur2,dur1)
         self.assertLessEqual(dur2,-3)
+    
+    def test_staticMethods(self):
+        '''
+            passing durationlike would return duration
+        '''
+        x = Duration(bd=1)
+        self.assertEqual(x,Duration.from_relativedelta(x))
+        self.assertEqual(x,Duration.from_timedelta(x))
+    
+    def test_hash(self):
+        x = Duration(bd=1)
+        rs = hash(x)
+        self.assertIsInstance(rs,int)
 
+    def test_failMod(self):
+        x = ddh('12/1/2023+12m/MOD')
+
+    def test_sub(self):
+        dur1 = Duration(days=12)
+        dur2 = Duration(days=1)
+        rs = dur2 - dur1
+        
+        self.assertEqual(rs,Duration(years=0, months=0, days=-11, modified=False, debug=False))
 
 
 

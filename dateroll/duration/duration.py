@@ -6,6 +6,7 @@ import dateutil
 import dateutil.relativedelta
 from dateroll.calendars.calendarmath import calmath
 import dateroll.parser.parsers as parsers
+import calendar
 import code
 from functools import cache
 
@@ -394,7 +395,6 @@ class Duration(dateutil.relativedelta.relativedelta):
 
         a = self
         # duration + duration
-        
         if isinstance(b, Duration):
             """
             combine both
@@ -538,29 +538,17 @@ class Duration(dateutil.relativedelta.relativedelta):
 
         '''
         from dateroll.date.date import Date
-        if bd_sign > 0:
-            # if went to far, bounce BACKWARD
-            
-            if after.month != before.month:
-                # MODIFIED FOLLOWING SCENARIO
-                c = 0
-                while after.month != before.month and c < 35:
-                    after = Date.from_datetime(after) - Duration(bd=bd_sign)
-                    c+=1
-                    if c >=35:
-                        raise Exception('Unhandled rolling order')
-        else:
-            # if went to soon, bounce FORWARD
-            
-            if after.month != before.month:
-                # MODIFIED PREVIOUS SCENARIO
-                c = 0
-                while after.month != before.month and c < 35:
-                    after = Date.from_datetime(after) - Duration(bd=bd_sign)
-                    c+=1
-                    if c >=35:
-                        
-                        raise Exception('Unhandled rolling order')
+        if after.month!=before.month or after.year!=before.year:
+            if bd_sign>0:
+                # get the latest calendar date of before
+                _,num_days = calendar.monthrange(before.year,before.month)
+
+                after = Date(before.year,before.month,num_days)
+                after = after - Duration(bd=0,cals=self.cals)
+            else:
+                after = Date(before.year,before.month,1)
+                after = after + Duration(bd=0,cals=self.cals)
+        
             
         
         return after
@@ -678,10 +666,13 @@ if __name__ == "__main__": # pragma: no cover
     from dateroll import Date
     from dateroll import Duration
     # from dateroll.duration.duration import Duration ---- if I import like this, isinstance(dur2,Duration) is False
-    d1 = Date(2024,1,1)
-    dur2 = Duration(d=1)
-    newd2 = d1 - dur2
-    print(newd2)
-    
+    # d1 = Date(2024,1,1)
+    # dur2 = Duration(bd=0)
+    # newd2 = d1 - dur2
+    # print(newd2)
+    # x = ddh('2023-12-24+0bd|NYuWE',convention='YMD')
+    # x = ddh('01/01/22-5bd|WEuNY')
+    x = ddh('12/1/2023+12m/MOD')
+    print(x)
 
 

@@ -216,6 +216,28 @@ class TestDate(unittest.TestCase):
         a = Date(2024, 12, 5)
         rs = repr(a)
         self.assertEqual(rs,'Date("2024-12-05")')
+
+    def test_from_string(self):
+        '''
+            test from string, pass Date or bad instance to raise TypeError
+        '''
+
+        x = Date(2023,1,1)
+        self.assertEqual(Date.from_string(x),x)
+        
+        with self.assertRaises(TypeError):
+            Date.from_string(10)
+    
+    def test_fromDatetime(self):
+        '''
+            pass bad instance will raise Type error
+        '''
+        with self.assertRaises(TypeError):
+            Date.from_datetime(10)
+    
+    def test_today(self):
+        self.assertEqual(Date.today(),datetime.date.today())
+
         
 
 if __name__ == "__main__":

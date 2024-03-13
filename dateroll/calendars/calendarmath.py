@@ -52,12 +52,12 @@ class CalendarMath:
         self.cached_compile_all()
 
     def load_cache(self):
-        if self.home.exists():
-            with safe_open(self.home, "rb") as f:
-                cached = pickle.load(f)
-            return cached
-        else:
-            return {"hash": None}
+        '''
+            self.home always exsist because load_cache called iff it exists
+        '''
+        with safe_open(self.home, "rb") as f:
+            cached = pickle.load(f)
+        return cached
 
     def save_cache(self):
         """
@@ -182,8 +182,8 @@ class CalendarMath:
             if n==0 and math.copysign(1,n)==1:
                 n = 1
             # when direction is negative
-            elif n==-1:
-                n = 0
+            elif n<0:
+                n += 1
         cals = CalendarMath.reverse_calstring(cals)
         cal_name = self.union_key(cals)
 
@@ -205,6 +205,7 @@ class CalendarMath:
         bd_index = A[d]
         new_bd_index = bd_index + n
         new_dt = B[new_bd_index]
+        
         return new_dt
 
     def sub_bd(self, d, n, cals):
@@ -308,6 +309,7 @@ class CalendarMath:
         for cal in cals:
             # saftey checks
             if cal not in self.cals:
+                
                 raise KeyError(f"There is no calendar {cal}")
             
             # the union operation

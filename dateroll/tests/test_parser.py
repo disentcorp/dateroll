@@ -34,7 +34,8 @@ class TestParser(unittest.TestCase):
         self.assertEqual(dt,Date(2024,1,1))
 
         dur = Parser.parse_one_part('3m',convention=convention)
-        self.assertEqual(dur,Duration(years=0, months=3, days=0))
+        
+        self.assertEqual(dur,Duration(years=0, months=3, days=0, modified=False, debug=False))
 
         dt_dur = Parser.parse_one_part('20240101+3m',convention=convention)
         
