@@ -5,26 +5,32 @@ import code
 
 import dateutil.relativedelta
 from dateutil.parser import parse
-
+from dateroll.settings import settings
 from dateroll.calendars.calendarmath import calmath
 from dateroll.duration.duration import Duration
+from dateroll import utils
 
 DateLike = (datetime.datetime, datetime.date)
 
 
 class Date(datetime.date):
-    ...
+    '''
+    A Date, inherits from datetime.date, represents a specific day (no sub-units of day)
+    '''
 
     @staticmethod
     def from_string(o, **dateparser_kwargs):
         """
         if string provided use dateutil's parser
+        note: dateutil's parser implements fall backs
+        future: create custom string parser that explicitly checks mask matches string
         """
         if isinstance(o,Date):
             return o
         elif isinstance(o,str):
-            dt = parse(o, **dateparser_kwargs)
-            return Date.from_datetime(dt)
+            me = parse(o, **dateparser_kwargs)
+            return Date.from_datetime(me)
+        
         else:
             raise TypeError(f'from_string requires string, cannot use {type(o).__name__}')
 
@@ -41,9 +47,16 @@ class Date(datetime.date):
         else:
             raise TypeError(f'from_datetime requires string, cannot use {type(o).__name__}')
 
+    def to_string(self):
+        fmt = utils.convention_map[settings.convention]
+        date_string = self.strftime(fmt)
+        return date_string
+
+    def __str__(self):
+        return self.to_string()
 
     def __repr__(self):
-        return f'{self.__class__.__name__}("{self.strftime("%Y-%m-%d")}")'
+        return f'{self.__class__.__name__}("{self.to_string()}")'
 
     @staticmethod
     def today():

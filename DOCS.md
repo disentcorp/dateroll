@@ -415,9 +415,9 @@ If you use `ddh` predominately you'll never need to use this directly.
 
 ¹`calendar` can be of the form: `"NY"`, `["NY"]`, `"NYuLN"`, or `["NY","LN"]` (see [`Parser`]() for more details.).
 
-### Calendar unions
+### Calendar sets
 
-A calendar "union" is simple a combination of two calendars (without duplication):
+A calendar "set" is a union of two calendars (without duplication):
 
 $ \mathbb{X} = \Set{t_1, t_2, t_3,...}$
 $ \mathbb{Y} = \Set{t_2, t_4, t_5...}$

@@ -8,6 +8,7 @@ from unittest import expectedFailure
 import dateroll.calendars.calendars as calendars
 import code
 
+from dateroll.settings import settings
 from dateroll import ddh,cals
 import dateroll
 # import dateroll.duration.duration as durationModule
@@ -65,16 +66,26 @@ class TestDDH(unittest.TestCase):
         self.assertEqual(sorted(cals.keys()),base_cals)
 
     def testConvention(self):
-        a = ddh('12/4/24',convention='MDY')
-        b = ddh('04/12/24',convention='DMY')
-        c = ddh('20241204',convention='YMD')
-        
-        self.assertEqual(a,b)
-        self.assertEqual(a,c)
-        self.assertEqual(a,b)
-
-        # RESET CONVENTION
-        ddh.convention = 'MDY'
+        original = settings.convention
+        try: 
+            # american
+            settings.convention = 'MDY'
+            _a = dateroll.Date(year=2024,month=12,day=1)
+            a = ddh('12/1/24')
+            self.assertEqual(_a,a)
+            #european
+            settings.convention = 'DMY'
+            _b = dateroll.Date(year=2023,month=3,day=23)
+            b = ddh('23/3/23')
+            self.assertEqual(_b,b)
+            #international
+            settings.convention = 'YMD'
+            _c = dateroll.Date(year=2022,month=10,day=5)
+            c = ddh('20221005')      
+            self.assertEqual(_c,c)
+        finally:
+            # back to original
+            settings.convention = original
 
 class TestsPracticalExamples(unittest.TestCase):
     def testNothing(self):

@@ -828,3 +828,9 @@ TOTAL                                    1071      0   100%
         there were some dates such as 12/31/21 was holiday in https://www.officeholidays.com/countries/usa/2021 
         and workalendar
         although it looks business day (Friday). 
+
+
+########## batu 2024/3/13 10 AM
+
+yellow looks ok, how many things are wrong and where?
+good job on roll code, removing loop A+

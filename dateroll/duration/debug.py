@@ -8,44 +8,44 @@ from dateroll.utils import color
 
 def before_after(dt1,dt2,cals):
     ...
-    # print(dt1,dt2)
-    # ym1 = dt1.year,dt1.month
-    # ym2 = dt2.year,dt2.month
+    # # print(dt1,dt2)
+    # # ym1 = dt1.year,dt1.month
+    # # ym2 = dt2.year,dt2.month
 
-    if ym1==ym2:
-        cal = str(calendar.month(*ym1,w=0))
+    # if ym1==ym2:
+    #     cal = str(calendar.month(*ym1,w=0))
 
-    d1, d2 = str(dt1.day), str(dt2.day)
+    # d1, d2 = str(dt1.day), str(dt2.day)
 
-    header = '\n'.join(cal.splitlines()[:2])
-    body = '\n'.join(cal.splitlines()[2:])
+    # header = '\n'.join(cal.splitlines()[:2])
+    # body = '\n'.join(cal.splitlines()[2:])
 
-    # days = (dt2.date - dt1.date).days
+    # # days = (dt2.date - dt1.date).days
     
-    if dt2>dt1:
-        a,b = dt1.date,dt2.date
-        arrow = '>'
-    else:
-        a,b = dt2.date,dt1.date
-        arrow = '<'
+    # if dt2>dt1:
+    #     a,b = dt1.date,dt2.date
+    #     arrow = '>'
+    # else:
+    #     a,b = dt2.date,dt1.date
+    #     arrow = '<'
 
-    # t = a+datetime.timedelta(days=1)
+    # # t = a+datetime.timedelta(days=1)
 
-    t = datetime.date(dt1.year,dt1.month,1)
-    while t.month==dt1.month and t.year==dt1.year:
-        d = str(t.day)
-        if len(d)==1:
-            d =d.rjust(3)
-        i =  t-datetime.timedelta(days=1)
-        j =  t+datetime.timedelta(days=1)
-        s1 = f'{str(i.day).rjust(2)} {d}'
-        s2 = f'{str(j.day).rjust(2)} {d}'
-        ii = s1; ii = ii.replace(' ',arrow)
-        jj = s2; jj = jj.replace(' ',arrow)
-        if t > a and t < b:
-            body = body.replace(s1,ii)
-            body = body.replace(s2,jj)
-        t+=datetime.timedelta(days=1)
+    # t = datetime.date(dt1.year,dt1.month,1)
+    # while t.month==dt1.month and t.year==dt1.year:
+    #     d = str(t.day)
+    #     if len(d)==1:
+    #         d =d.rjust(3)
+    #     i =  t-datetime.timedelta(days=1)
+    #     j =  t+datetime.timedelta(days=1)
+    #     s1 = f'{str(i.day).rjust(2)} {d}'
+    #     s2 = f'{str(j.day).rjust(2)} {d}'
+    #     ii = s1; ii = ii.replace(' ',arrow)
+    #     jj = s2; jj = jj.replace(' ',arrow)
+    #     if t > a and t < b:
+    #         body = body.replace(s1,ii)
+    #         body = body.replace(s2,jj)
+    #     t+=datetime.timedelta(days=1)
 
 
     # body = body.replace(str(d1),color(d1,'blue'))
@@ -76,3 +76,40 @@ def before_after(dt1,dt2,cals):
 # holidays in separate clendar per color
 
 # start and end days in somethign obivous - bold and underline
+    
+
+# ddh.debug
+
+# d2= dur + d1
+
+# d2.source
+#     Addition   
+#     Left operatand
+#     Right operatin
+#     calendar if same month  cal
+#     if month start month and end motn honly
+#     * between days
+#     Direction: forward in time or backends in time
+
+
+
+# invert string logic 
+# repr vs str
+# str(Duration) -> DateParserString
+# repr(Duration) -> constructor
+# str(Date) -> DateParserString
+# repr(Duration) -> constructor
+
+
+
+# schedule < - string
+# duration <- str, add, or a sub
+#     date - date, or dur + dur
+# date  <- str, add or asub
+#     date-dur, date+dur
+
+# dur+dur
+# dur+date
+# date+dur
+# date-dur
+

@@ -10,8 +10,9 @@ import calendar
 import code
 from functools import cache
 
+from dateroll.settings import settings
 from dateroll.duration.debug import before_after
-from dateroll.utils import color, xprint
+from dateroll.utils import color, xprint, add_none, combine_none
 
 cals = calmath.cals
 
@@ -24,21 +25,6 @@ APPROX = {
     '1y1d' : 14610/40, # exact average length for post 1582AD change
     '1bd1d' : 14610/40/252 # assuming 252 denominator
 }
-
-def combine_none(a,b):
-    if a is None and b is None:
-        return None
-    a = [] if a is None else a
-    b = [] if b is None else b
-    return tuple(sorted(set(a)|set(b)))
-
-def add_none(a,b,dir=1):
-    if a is None and b is None:
-        return None
-    else:
-        a = 0 if a is None else a
-        b = 0 if b is None else b
-        return a + b*dir
 
 class Duration(dateutil.relativedelta.relativedelta):
     global DEBUG_PRINT
