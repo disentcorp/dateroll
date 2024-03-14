@@ -1,3 +1,8 @@
+<style>
+  body{
+    font-family: helvetica, arial;
+  }  
+</style>
 <span style="color:red;">PRE-RELEASE</span>
 
 <div style="padding-left:12%;padding-right:12%;">
@@ -54,7 +59,7 @@ Date(2024,2,29)
 `Duration`|`ddh('1d')`<br>`ddh('1m')`<br>`ddh('1y')`<br>`ddh('1d\|NY')`<br>`ddh('1d\|NY/MF')`<br>`ddh('1d\|NYuLN')`|`Duration(d=1)`<br>`Duration(m=1)`<br>`Duration(y=1)`<br>`Duration(d=1,cal='NY')`<br>`Duration(d=1,cal='NY', roll='MF')`<br>`Duration(d=1, cal={'NY', 'LN'}, roll='MF)`
 `Schedule`|`ddh('t, 6m, 20')`<br>`ddh('t, t+5y ,6m')`|`Schedule(start='2/19/24', step='6m', n=20)`<br>`Schedule(start='2/20/24', stop='2/20/29, step='6m')`
 
-Comes with some sample calendars for `NY`/`FED`, `BR`, `LN`, `ECB` (see docs)
+Comes with some sample calendars for `NY`/`FED`, `BR`, `LN`, `ECB` (see [docs](docs.html))
 
 <!-- `Schedule`|`ddh('t, 6m, 20')`<br>`ddh('t, t+5y ,6m')`<br>`ddh('1/15/24,3/30/24,1m)`|`Schedule(start='2/19/24', step='6m', n=20)`<br>`Schedule(start='2/20/24', stop='2/20/29, step='6m')`<br>`Schedule(start='1/15/24', stop='3/30/24, step='1m',stub=']')` -->
 <!-- mix/match|`ddh('t') + ddh('3m')*4`|`Schedule(start='2/20/24',per='3m',n=4)` -->
@@ -125,7 +130,7 @@ Duration(start='1/5/24',stop='2/5/24')
 
 ```
 
-Much more in the [reference docs]().
+Much more in the [docs](docs.html).
 
 Happy rolling! 
 

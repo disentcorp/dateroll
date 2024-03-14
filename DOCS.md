@@ -1,7 +1,3 @@
-
-
-<span style="color:red;">PRE RELEASE</span>
-
 <style>
 .bar{
     color:blue;
@@ -12,8 +8,8 @@
 }
 .outer {
     font-family: helvetica; 
-    padding-left: 0%;
-    padding-right: 0%;
+    padding-left: 15%;
+    padding-right: 15%;
 }
 a {
     color: blue !important;
@@ -26,18 +22,18 @@ table td, table th {
   border: 0px !important;
   border-left: 1px dotted rgb(240,240,240) !important;
   border-right: 1px dashed rgb(240,240,240) !important;
-  border-top: 1px solid black !important;
-  border-bottom: 1px solid black !important;
+  border-top: 0px solid rgb(50,50,50) !important;
+  border-bottom: 0px solid rgb(50,50,50) !important;
   padding-top:7px !important;
   padding-bottom:7px !important;
 }
 table tr:first-child th {
-  border-top: 4px solid black !important;
-  border-bottom: 4px solid black !important;
+  border-top: 2px solid black !important;
+  border-bottom: 2px solid black !important;
 }
 table tr:last-child td {
   border-bottom: 0 !important;
-  border-bottom: 4px solid black !important;
+  border-bottom: 2px solid black !important;
 }
 table tr td:first-child,
 table tr th:first-child {
@@ -287,9 +283,12 @@ A schedule is a `list` of contiguous dates generated from some start date, stop 
 >>> sch.dates
 [Date(1984, 7, 2), Date(1985, 7, 2), ..., Date(2024, 7, 2)]
 ```
-<div class="disent-embed" data-defaultinput='Schedule(start=Date(1984,7,2),stop=Date(2024,7,2),step=Duration(y=1)).dates'></div></div><script type='text/javascript' src="http://repl.disent.com/drepl.js" async></script>
 
-### Contructor args
+<div class="disent-embed" data-defaultinput='Schedule(start=Date(1984,7,2),stop=Date(2024,7,2),step=Duration(y=1)).dates'></div><script type='text/javascript' src="http://repl.disent.com/drepl.js" async></script>
+
+
+### Constructor args
+
 |Name|Description|Type
 |-|-|-|
 |`start`|First date in schedule|`Date`
@@ -575,8 +574,6 @@ $t_1^m$ = `t1.months`, $t_2^m$ = `t1.months`
 $t_1^d$ = `t1.days`, $t_1^d$ = `t1.days`
 
 
-</div>
-
 ## Caveats
 
 - Calendars are political, and each jurisdiction has unique methods to proclaim or repeal.
@@ -610,3 +607,5 @@ It is our hope that fixed income and FI math can be a little less scary for ever
 - Group proofreading
 - Add notebook with examples (maybe a colab?)
 - Add REPL in-doc examples
+
+</div>

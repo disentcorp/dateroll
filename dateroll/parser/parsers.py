@@ -56,10 +56,6 @@ def parseDateString(s):
         pattern = patterns.YMD
         dateparser_kwargs = {"yearfirst": True,"dayfirst":False}
 
-    # it never gets here because settings will raise error if its other than MDY, YMD, DMY
-    # else:
-    #     raise ParserStringsError("No convention provided!")
-
     dates = []
     matches = re.findall(pattern, s)
     res = s
