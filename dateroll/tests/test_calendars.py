@@ -67,7 +67,7 @@ class TestStringMethods(unittest.TestCase):
     def test_tests9(self):
         dates = [datetime.date.today()]
         self.cals["BBB"] = dates
-        assert self.cals["BBB"] == dates
+        assert list(self.cals["BBB"].keys()) == dates
     
     def test_exitReturnTrue(self):
         '''
@@ -154,7 +154,7 @@ class TestStringMethods(unittest.TestCase):
         '''
         cals = Calendars()
         x = cals.FED
-        self.assertIsInstance(x,list)
+        self.assertIsInstance(x,dict)
         self.assertTrue(len(x)>0)
     
     def test_getattrHashHome(self):

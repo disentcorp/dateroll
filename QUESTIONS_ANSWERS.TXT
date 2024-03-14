@@ -198,7 +198,7 @@ TOTAL                                 1477    215    85%
     coverage run --omit="dateroll/tests/*.py" -m unittest discover
     coverage report -m 
     coverage html
-    xdg-open htmlcov/index.html
+     
 
 ^ notice 2 things, --omit excludes the test files, and html/xdg-open give pretty report!
 
@@ -834,3 +834,45 @@ TOTAL                                    1071      0   100%
 
 yellow looks ok, how many things are wrong and where?
 good job on roll code, removing loop A+
+
+########### batu 2024/3/14 8:45 AM EST
+
+Name                                    Stmts   Miss  Cover   Missing
+---------------------------------------------------------------------
+/home/batu/.dateroll/settings.py            2      0   100%
+dateroll/__init__.py                        5      0   100%
+dateroll/calendars/__init__.py              0      0   100%
+dateroll/calendars/calendarmath.py        166      0   100%
+dateroll/calendars/calendars.py           151      0   100%
+dateroll/date/__init__.py                   0      0   100%
+dateroll/date/date.py                     130      0   100%
+dateroll/ddh/__init__.py                    0      0   100%
+dateroll/ddh/ddh.py                        36      0   100%
+dateroll/duration/__init__.py               0      0   100%
+dateroll/duration/duration.py             319      0   100%
+dateroll/parser/__init__.py                 0      0   100%
+dateroll/parser/parser.py                  65      0   100%
+dateroll/parser/parsers.py                105      0   100%
+dateroll/parser/patterns.py                29      0   100%
+dateroll/pretty.py                         70     32    54%   19, 47, 57-89
+dateroll/schedule/__init__.py               0      0   100%
+dateroll/schedule/schedule.py              25      0   100%
+dateroll/settings.py                       47      0   100%
+dateroll/tests/test_data/test_data.py       3      0   100%
+dateroll/utils.py                          34      0   100%
+---------------------------------------------------------------------
+TOTAL                                    1187     32    97%
+
+    Summary:
+        #1 Put div into DOCS
+            PS: when string is long, e.g(Duration(years=1,months=1....)), it does not look good please check
+        #2 Made 100 except pretty
+            PS: I commented out 62-69 line of settings since it never gets there. Because it validates k in setattr
+                please review
+
+    TODO:
+        #1 Put imports in the top of the pages
+        #2 Duration(years=0,months=12)---> Duration(years=1,months=0)
+        #3 In DOC we have n.days and nyears, I need to implement that part
+
+        

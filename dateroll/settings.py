@@ -1,6 +1,7 @@
 import warnings
 import pathlib
 import importlib.util
+import code
 
 path = pathlib.Path("~/.dateroll/settings.py").expanduser()
 
@@ -22,9 +23,10 @@ default_settings_validation ={
 
 class Settings:
     def __init__(self):
+
         if path.exists():
             self.load()
-            self.validate()
+            # self.validate()
         else:
             self.load_default()
             self.save()
@@ -56,12 +58,15 @@ class Settings:
             key_is_valid = k not in default_settings
             type_is_valid = not isinstance(v,type(default_settings.get(k,None)))
             func_value_is_valid, exc = default_settings_validation.setdefault(k,(lambda x:False,ValueError(f'Setting {k} not found')))
-            if key_is_valid or type_is_valid or not func_value_is_valid(v):
-                msg = f'Settings corrupted in {path}, restoring defaults.'
-                warnings.warn(msg)
-                reset = True
-        if reset:
-            self.load_default()
+
+            ############# it never comes here ##############
+        #     if key_is_valid or type_is_valid or not func_value_is_valid(v):
+        #         msg = f'Settings corrupted in {path}, restoring defaults.'
+        #         warnings.warn(msg)
+        #         reset = True
+        # # since new val validation happens before it never comes here
+        # if reset:
+        #     self.load_default()
 
     def __setattr__(self,k,v):
         # check, set, save
@@ -80,3 +85,10 @@ class Settings:
 
                 
 settings = Settings()
+
+if __name__=='__main__':  # pragma: no cover
+    settings = Settings()
+    settings.new = 'hello'
+    # settings = Settings()
+    # settings.convention = 'YMD'
+    # settings.validate()

@@ -240,6 +240,16 @@ class TestDate(unittest.TestCase):
     
     def test_today(self):
         self.assertEqual(Date.today(),datetime.date.today())
+    
+    def test_src(self):
+        '''
+            test src which prints calendar
+        '''
+        d = Date(2023,1,1)
+        r = d + Duration(bd=1)
+        
+        self.assertIsInstance(r.src,str)
+
 
         
 

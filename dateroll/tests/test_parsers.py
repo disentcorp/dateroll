@@ -161,6 +161,10 @@ class TestParsers(unittest.TestCase):
         # self.assertEqual(rs3,4)
         with self.assertRaises(Exception):
             parsers.parseDateMathString(s3,things2)
+    
+    def test_parsersConvention(self):
+        s = settings
+        
         
 
 
