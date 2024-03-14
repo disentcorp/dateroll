@@ -245,10 +245,7 @@ class TestDate(unittest.TestCase):
         '''
             test src which prints calendar
         '''
-        d = Date(2023,1,1)
-        r = d + Duration(bd=1)
-        
-        self.assertIsInstance(r.src,str)
+        ... # coveraged in test_pretty
 
 
         

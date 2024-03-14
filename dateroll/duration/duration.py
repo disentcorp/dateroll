@@ -7,11 +7,10 @@ import dateutil.relativedelta
 from dateroll.calendars.calendarmath import calmath
 import dateroll.parser.parsers as parsers
 import calendar
-import code
 from functools import cache
 
 from dateroll.settings import settings
-from dateroll.pretty import before_after
+
 from dateroll.utils import color, xprint, add_none, combine_none
 
 cals = calmath.cals

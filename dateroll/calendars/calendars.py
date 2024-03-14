@@ -51,19 +51,20 @@ class Drawer:
         if self.cals.hash == self.cals.db_hash:
             return self.cals.db
 
-        if self.path.exists():
+        try:
             with safe_open(self.path, "rb") as f:
                 self.data = pickle.load(f)
                 self.cals.db_hash = self.cals.hash
                 self.cals.db = self.data
-        else:
+                return self.cals.db
+        except:
             print(f"[dateroll] no saved calendars, loading sample data")
             data = load_sample_data()
             self.cals.db = data
             with safe_open(self.path, "wb") as f:
                 pickle.dump(self.cals.db, f)
 
-        return self.cals.db
+            return self.cals.db
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         if exc_type is None:

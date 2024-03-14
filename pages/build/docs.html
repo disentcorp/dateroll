@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Dateroll Docs</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="github-markdown.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Dates and calendars in python made easy.">
+  <meta name="keywords" content="datetime,python,datemath,calendar math, date math, holidays, programming, fixed income, fixed income mathematics, schedule generations, stub handlng, date rolling, daycount conventions, ">
+  <meta name="author" content="Anthony Malizzio">
+
+  <!-- Canonical URL -->
+  <link rel="canonical" href="https://dateroll.disent.com">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:title" content="Your Keyword-Rich Title | Your Brand Name">
+  <meta property="og:description" content="A concise description of your page content, including relevant keywords.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.yourwebsite.com/your-page">
+  <meta property="og:image" content="https://www.yourwebsite.com/images/your-image.jpg">
+  <meta property="og:image:alt" content="Description of your image">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Your Keyword-Rich Title | Your Brand Name">
+  <meta name="twitter:description" content="A concise description of your page content, including relevant keywords.">
+  <meta name="twitter:url" content="https://www.yourwebsite.com/your-page">
+  <meta name="twitter:image" content="https://www.yourwebsite.com/images/your-image.jpg">
+  <meta name="twitter:image:alt" content="Description of your image">
+
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📅</text></svg>">
+
+  <!-- CSS Stylesheet -->
+  <link rel="stylesheet" href="github-markdown.css">
+</head>
+<body>
+<style>
+.bar{
+    color:blue;
+    /* text-decoration: underline !important; */
+    position:absolute;
+    top: 595px;
+    text-align:right;
+}
+.outer {
+    font-family: helvetica; 
+    padding-left: 15%;
+    padding-right: 15%;
+}
+a {
+    color: blue !important;
+    /* text-decoration: underline !important; */
+}
+table {
+  border-collapse: collapse !important;
+}
+table td, table th {
+  border: 0px !important;
+  border-left: 1px dotted rgb(240,240,240) !important;
+  border-right: 1px dashed rgb(240,240,240) !important;
+  border-top: 0px solid rgb(50,50,50) !important;
+  border-bottom: 0px solid rgb(50,50,50) !important;
+  padding-top:7px !important;
+  padding-bottom:7px !important;
+}
+table tr:first-child th {
+  border-top: 2px solid black !important;
+  border-bottom: 2px solid black !important;
+}
+table tr:last-child td {
+  border-bottom: 0 !important;
+  border-bottom: 2px solid black !important;
+}
+table tr td:first-child,
+table tr th:first-child {
+  border-left: 0 !important;
+}
+table tr td:last-child,
+table tr th:last-child {
+  border-right: 0 !important;
+}
+
+</style>
+<!-- <div class="bar">
+<span style="font-size:130%;font-weight:bold;color:grey;">ddh</span><br>
+Date<br>
+Duration<br>
+Schedule<br>
+Calendars<br>
+CalendarMath<br>
+Parser<br>
+Day counters<br>
+</div> -->
+<div class="outer">
+<p align="center">
+<img src="logo.png" style="width:250px"/>
+</p>
+<center>
+<span style="color:black;font-size:65pt;font-weight:bold">date</span> <span style="color:black;font-size:65pt;font-weight:bold;opacity:60%;">roll</span>
+</center>
+<p><br /></p>
+<p><strong><code>dateroll</code></strong> makes working with 📅 dates less painful.</p>
+<p>Excellent for modelling fixed income math on human-scale dates (<span class="math inline"> ± 200</span><code>y</code>)</p>
+<p><br /></p>
+<h1 id="reference-guide">reference guide</h1>
+<h2 id="ddh">ddh <a name="ddh"></a></h2>
+<p><a href="#ddh">ddh</a> | <a href="#Date">Date</a> | <a href="#Duration">Duration</a> | <a href="#Schedule">Schedule</a> | <a href="#Calendars">Calendars</a> | <a href="#CalendarMath">CalendarMath</a> | <a href="#Parser">Parser</a></p>
+<p>Date duration helper <code>function</code> that takes a <code>str</code> and returns either a <code>Date</code>, <code>Duration</code>, or <code>Schedule</code>.</p>
+<h5 id="usage">Usage</h5>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="im">from</span> dateroll <span class="im">import</span> ddh</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a>ddh(some_string)</span></code></pre></div>
+<h5 id="examples">Examples</h5>
+<table>
+<thead>
+<tr class="header">
+<th>Flavor</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table>
+|<a href="">Today string</a>|
+<div class="disent-embed" data-defaultinput="ddh(&quot;t&quot;)">
+
+</div>
+<script type='text/javascript' src="http://repl.disent.com/drepl.js" async></script>
+|<a href="">Date string</a>|
+<div class="disent-embed" data-defaultinput="ddh(&quot;12/31/22&quot;)">
+
+</div>
+<div class="line-block"></div>
+|<a href="">Duration string</a>|
+<div class="disent-embed" data-defaultinput="ddh(&quot;+3m&quot;)">
+
+</div>
+<div class="line-block"></div>
+|<a href="">Date math string</a>|
+<div class="disent-embed" data-defaultinput="ddh(&quot;t+1y&quot;)">
+
+</div>
+<div class="line-block"></div>
+|<a href="">Date schedule string</a>|
+<div class="disent-embed" data-defaultinput="ddh(&quot;t,t+5y,1m&quot;)">
+
+</div>
+<div class="line-block"></div>
+<p><br></p>
+<p>See <a href="">Parser</a> section for valid strings.</p>
+<h2 id="date">Date <a name="Date"></a></h2>
+<p><a href="#ddh">ddh</a> | <a href="#Date">Date</a> | <a href="#Duration">Duration</a> | <a href="#Schedule">Schedule</a> | <a href="#Calendars">Calendars</a> | <a href="#CalendarMath">CalendarMath</a> | <a href="#Parser">Parser</a></p>
+<p>Date <code>class</code> inherits <code>datetime.date</code>.</p>
+<p>Adds business day handling, calendar math, and schedule generation when combined with <code>ddh</code>, <code>Duration</code> and <code>Schedule</code>.</p>
+<h4 id="usage-1">Usage</h4>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="op">&gt;&gt;&gt;</span> <span class="im">from</span> dateroll <span class="im">import</span> Date</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a><span class="op">&gt;&gt;&gt;</span> Date(<span class="dv">1984</span>, <span class="dv">7</span> ,<span class="dv">2</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true"></a>Date(year, month, day)</span></code></pre></div>
+<h5 id="constructor-example">Constructor example</h5>
+<div class="disent-embed" data-defaultinput="Date(2024,7,2)">
+
+</div>
+<p><br> *^3 integer args: year, month, and day</p>
+<h5 id="propertiesmethods">Properties/Methods</h5>
+<table>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table>
+|<code>.datetime</code> |
+<div class="disent-embed" data-defaultinput="Date(2024,7,2).datetime">
+
+</div>
+| |<code>.date</code> |
+<div class="disent-embed" data-defaultinput="Date(2024,7,2).date">
+
+</div>
+<div class="line-block"></div>
+|<code>.iso</code> |
+<div class="disent-embed" data-defaultinput="Date(2024,7,2).iso">
+
+</div>
+<div class="line-block"></div>
+|<code>.xls</code> |
+<div class="disent-embed" data-defaultinput="Date(2024,7,2).xls">
+
+</div>
+<div class="line-block"></div>
+|<code>.unix</code> |
+<div class="disent-embed" data-defaultinput="Date(2024,7,2).unix">
+
+</div>
+<div class="line-block"></div>
+|<code>.dotw</code> |
+<div class="disent-embed" data-defaultinput="Date(2024,7,2).dotw">
+
+</div>
+<div class="line-block"></div>
+|<code>.woty</code> |
+<div class="disent-embed" data-defaultinput="Date(2024,7,2).woty">
+
+</div>
+<div class="line-block">                                                 |</div>
+|<code>.is_bd(calendar)</code>¹ |
+<div class="disent-embed" data-defaultinput="Date(2024,7,2).is_bd(&quot;NY&quot;)">
+
+</div>
+<div class="line-block"></div>
+<p>|<code>datetime.date.*</code>|see <a href="https://docs.python.org/3/library/datetime.html#datetime.date">datetime</a>|</p>
+<p>¹<code>calendar</code> can be of the form: <code>"NY"</code>, <code>["NY"]</code>, <code>"NYuLN"</code>, or <code>["NY","LN"]</code> (see <a href=""><code>Parser</code></a> for more details.).</p>
+<h5 id="operations">Operations</h5>
+<h5 id="date---duration-or-date"><code>Date</code> <span class="math inline">+</span>/<span class="math inline">−</span> <code>Duration</code> or <code>Date</code></h5>
+<table>
+<thead>
+<tr class="header">
+<th>LHS</th>
+<th>Operator</th>
+<th>RHS</th>
+<th>Result</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table>
+|<code>Date</code>|<span class="math inline">+</span>|<code>Duration</code> |<code>Date</code> |
+<div class="disent-embed" data-defaultinput="Date(2000,1,1) + Duration(m=1)">
+
+</div>
+<div class="line-block"></div>
+|<code>Date</code>|<span class="math inline">−</span>|<code>Duration</code> |<code>Date</code> |
+<div class="disent-embed" data-defaultinput="Date(2000,1,1) + Duration(y=1)">
+
+</div>
+<div class="line-block"></div>
+|<code>Date</code>|<span class="math inline">−</span>|<code>Date</code> |<code>Duration</code> |
+<div class="disent-embed" data-defaultinput="Date(2000,1,1) - Date(1998,1,1)">
+
+</div>
+<div class="line-block"></div>
+<h5 id="date---int-for-calendar-days"><code>Date</code> <span class="math inline">+</span>/<span class="math inline">−</span> <code>int</code> (for calendar days)</h5>
+<table>
+<thead>
+<tr class="header">
+<th>LHS</th>
+<th>Operator</th>
+<th>RHS</th>
+<th>Result</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table>
+|<code>Date</code>|<span class="math inline">+</span>|<code>int</code> |<code>Duration</code> |
+<div class="disent-embed" data-defaultinput="Date(2000,1,1) + 5">
+
+</div>
+<div class="line-block"></div>
+|<code>Date</code>|<span class="math inline">−</span>|<code>int</code> |<code>Duration</code> |
+<div class="disent-embed" data-defaultinput="Date(2000,1,1) - 1">
+
+</div>
+<div class="line-block"></div>
+<h5 id="date---date-string-or-duration-string"><code>Date</code> <span class="math inline">+</span>/<span class="math inline">−</span> <em>Date string</em> or <em>Duration string</em></h5>
+<table>
+<thead>
+<tr class="header">
+<th>LHS</th>
+<th>Operator</th>
+<th>RHS</th>
+<th>Result</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table>
+|<code>Date</code>|<span class="math inline">−</span>|<em>Date string</em> |<code>Duration</code>|
+<div class="disent-embed" data-defaultinput="Date(2000,1,1) - &quot;1/1/98&quot;">
+
+</div>
+<div class="line-block"></div>
+|<code>Date</code>|<span class="math inline">+</span>|<em>Duration string</em> |<code>Date</code> |
+<div class="disent-embed" data-defaultinput="Date(2000,1,1) + &quot;1m&quot;">
+
+</div>
+<div class="line-block"></div>
+|<code>Date</code>|<span class="math inline">−</span>|<em>Duration string</em> |<code>Date</code> |
+<div class="disent-embed" data-defaultinput="Date(2000,1,1) - &quot;1y&quot;">
+
+</div>
+<div class="line-block"></div>
+<h2 id="duration">Duration <a name="Duration"></a></h2>
+<p><a href="#ddh">ddh</a> | <a href="#Date">Date</a> | <a href="#Duration">Duration</a> | <a href="#Schedule">Schedule</a> | <a href="#Calendars">Calendars</a> | <a href="#CalendarMath">CalendarMath</a> | <a href="#Parser">Parser</a></p>
+<p>Duration <code>class</code> inherits from <code>dateutil.relativedelta</code> for defining intervals (periods) of time.</p>
+<p>Adds business day handling.</p>
+<h4 id="usage-2">Usage</h4>
+<div class="sourceCode" id="cb3"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="op">&gt;&gt;&gt;</span> <span class="im">from</span> dateroll <span class="im">import</span> Date</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true"></a><span class="op">&gt;&gt;&gt;</span> Duration(years<span class="op">=</span><span class="dv">1</span>,months<span class="op">=</span><span class="dv">3</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true"></a>Duration(years<span class="op">=</span><span class="dv">1</span>,months<span class="op">=</span><span class="dv">3</span>)</span></code></pre></div>
+<h4 id="constructor-examples-s-are-integers.">Constructor examples (#’s are <code>int</code>egers.)</h4>
+<p><code>n</code> is a postive or negative <code>int</code></p>
+<table>
+<thead>
+<tr class="header">
+<th>Description</th>
+<th>Kwargs</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table>
+|Years |<code>years</code> <code>year</code> <code>Y</code> <code>y</code>|
+<div class="disent-embed" data-defaultinput="Duration(y=1)">
+
+</div>
+<div class="line-block"></div>
+|Quarters (<span class="math inline">→</span> 3m) |<code>quarters</code> <code>quarter</code> <code>Q</code> <code>q</code>|
+<div class="disent-embed" data-defaultinput="Duration(q=1)">
+
+</div>
+<div class="line-block"></div>
+|Weeks (<span class="math inline">→</span> 7d) |<code>weeks</code> <code>week</code> <code>W</code> <code>w</code>|
+<div class="disent-embed" data-defaultinput="Duration(w=1)">
+
+</div>
+<div class="line-block"></div>
+|Calendar days |<code>days</code> <code>day</code> <code>D</code> <code>d</code>|
+<div class="disent-embed" data-defaultinput="Duration(d=-1)">
+
+</div>
+<div class="line-block"></div>
+|Calendar days w/ modified |<code>modified=modified</code>¹|
+<div class="disent-embed" data-defaultinput="Duration(d=1,modified=True)">
+
+</div>
+<div class="line-block"></div>
+|Business days |<code>BD</code> <code>bd</code>|
+<div class="disent-embed" data-defaultinput="Duration(bd=-1)">
+
+</div>
+<div class="line-block"></div>
+|Business days w/ calendar |<code>BD</code> <code>bd</code> <code>cals=calendar</code>²|
+<div class="disent-embed" data-defaultinput="Duration(bd=-1,cals=&quot;FED&quot;)">
+
+</div>
+<div class="line-block"></div>
+|Combinations|<code>y</code> <code>m</code> <code>bd</code> <code>cals</code>|
+<div class="disent-embed" data-defaultinput="Duration(y=1,m=3,bd=-1,cals=&quot;FED&quot;)">
+
+</div>
+<div class="line-block"></div>
+<p><span style="color:red;">open items for 1st release: (1) split modified from roll direction into 2 settings, (2) add EOM rule, and (3) maybe add BRL longer months/shorter months rule.</span></p>
+<p>¹<code>modified</code> can be True or False.</p>
+<p>²<code>calendar</code> can be of the form: <code>"NY"</code>, <code>["NY"]</code>, <code>"NYuLN"</code>, or <code>["NY","LN"]</code> (see <a href=""><code>Parser</code></a> for more details.).</p>
+<p>Optional <code>kwargs</code> for either <code>anchor_start=Date(...)</code> or <code>anchor_stop=Date(...)</code> can be user-supplied. These are automatically inherited when <code>Duration</code> is the result of some math involving a <code>Date</code>. <br></p>
+<h4 id="propertiesmethods-1">Properties/Methods</h4>
+<table>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table>
+|<code>.years</code> |
+<div class="disent-embed" data-defaultinput="Duration(y=5,m=4,d=3,bd=2).years">
+
+</div>
+<div class="line-block"></div>
+|<code>.months</code> |
+<div class="disent-embed" data-defaultinput="Duration(y=5,m=4,d=3,bd=2).months">
+
+</div>
+<div class="line-block"></div>
+|<code>.days</code> |
+<div class="disent-embed" data-defaultinput="Duration(y=5,m=4,d=3,bd=2).days">
+
+</div>
+<div class="line-block"></div>
+|<code>.bd</code> |
+<div class="disent-embed" data-defaultinput="Duration(y=5,m=4,d=3,bd=2).bd">
+
+</div>
+<div class="line-block"></div>
+|<code>._anchor_start</code> |
+<div class="disent-embed" data-defaultinput="ddh(&quot;7/7/2000-7/5/2000&quot;)._anchor_start">
+
+</div>
+<div class="line-block"></div>
+|<code>._anchor_end</code> |
+<div class="disent-embed" data-defaultinput="ddh(&quot;7/7/2000-7/5/2000&quot;)._anchor_end">
+
+</div>
+<div class="line-block"></div>
+|<code>.ndays()</code>¹ |
+<div class="disent-embed" data-defaultinput="Duration(y=5,m=4,d=3,bd=2)">
+
+</div>
+<div class="line-block"></div>
+|<code>.nyears(counter)</code>² |
+<div class="disent-embed" data-defaultinput="Duration(y=5,m=4,d=3,bd=2)">
+
+</div>
+<div class="line-block"></div>
+<p>¹The <code>n*</code> methods may require period conversion based upon approximation. see <a href="#PeriodConversions">Period Conversions</a>.</p>
+<p>²<code>counter</code> is one of <code>"ACT/360"</code>, <code>"30/360"</code>, … see <a href="">day counters</a></p>
+<h4 id="operations-1">Operations</h4>
+<p>assume <code>dur = Duration(years=1)</code> and <code>d = Date(2000,1,1)</code></p>
+<h5 id="duration---duration"><code>Duration</code> <span class="math inline">+</span>/<span class="math inline">−</span> <code>Duration</code></h5>
+<table>
+<thead>
+<tr class="header">
+<th>LHS</th>
+<th>Operator</th>
+<th>RHS</th>
+<th>Result</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table>
+|<code>Duration</code>|<span class="math inline">+</span>|<code>Duration</code>|<code>Duration</code>|
+<div class="disent-embed" data-defaultinput="Duration(y=1) + Duration(m=1)">
+
+</div>
+<div class="line-block"></div>
+|<code>Duration</code>|<span class="math inline">−</span>|<code>Duration</code>|<code>Duration</code>|
+<div class="disent-embed" data-defaultinput="Duration(y=1) - Duration(m=1)">
+
+</div>
+<div class="line-block"></div>
+<h5 id="date---duration-string"><code>Date</code> <span class="math inline">+</span>/<span class="math inline">−</span> <em>Duration string</em></h5>
+<table>
+<thead>
+<tr class="header">
+<th>LHS</th>
+<th>Operator</th>
+<th>RHS</th>
+<th>Result</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table>
+|<code>Date</code>|<span class="math inline">+</span>|<em>Duration string</em> |<code>Date</code> |
+<div class="disent-embed" data-defaultinput="Date(2000,1,1) + &quot;1m&quot;">
+
+</div>
+<div class="line-block"></div>
+|<code>Date</code>|<span class="math inline">−</span>|<em>Duration string</em> |<code>Date</code> |
+<div class="disent-embed" data-defaultinput="Date(2000,1,1) - &quot;1m&quot;">
+
+</div>
+<div class="line-block"></div>
+<h4 id="anchoring-with-date">Anchoring with <code>Date</code></h4>
+<p>When a <code>Duration</code> is the result of an operation with two <code>Date</code>, then 2 additional properties (<code>_anchor_start</code> and/or <code>_anchor_end</code>) will be set automatically.</p>
+<p><code>Date(2000, 1, 1)</code> <span class="math inline">−</span> <code>Date(1999, 1, 1)</code> <span class="math inline">=</span> <code>Duration(y=1, _anchor_start=Date(1999,1,1), _anchor_end=date(2000, 1, 1)</code></p>
+<div class="disent-embed" data-defaultinput="Date(2000,1,1) - Date(1999,1,1)">
+
+</div>
+<p>When present, these properties allow for more exact period conversion.</p>
+<h4 id="period-conversions">Period Conversions <a name="PeriodConversions"></a></h4>
+<p>If an approximate conversion is required a warning will be raised.</p>
+<table>
+<thead>
+<tr class="header">
+<th>From period</th>
+<th>Calendar Days</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>1y</code></td>
+<td><span class="math inline">$= 365.242\phantom{.}500 \ \times$</span> <code>1d</code></td>
+</tr>
+<tr class="even">
+<td><code>1q</code></td>
+<td><span class="math inline">$= \phantom{3}90.310\phantom{.}625 \ \times$</span> <code>1d</code></td>
+</tr>
+<tr class="odd">
+<td><code>1m</code></td>
+<td><span class="math inline">$= \phantom{3}30.436\phantom{.}875 \ \times$</span> <code>1d</code></td>
+</tr>
+<tr class="even">
+<td><code>1w</code></td>
+<td><span class="math inline">=</span> <code>7d</code></td>
+</tr>
+<tr class="odd">
+<td><code>1d</code></td>
+<td><span class="math inline">=</span> <code>1d</code></td>
+</tr>
+<tr class="even">
+<td><code>1bd</code></td>
+<td><span class="math inline">$\approx 1.449\phantom{.}375$</span></td>
+</tr>
+</tbody>
+</table>
+<p>¹Numerator is days in a year, denominator is <code>252bd</code>. Argument can be made for 250-260, just ask!</p>
+<h2 id="schedule">Schedule <a name="Schedule"></a></h2>
+<p><a href="#ddh">ddh</a> | <a href="#Date">Date</a> | <a href="#Duration">Duration</a> | <a href="#Schedule">Schedule</a> | <a href="#Calendars">Calendars</a> | <a href="#CalendarMath">CalendarMath</a> | <a href="#Parser">Parser</a></p>
+<p>Schedule <code>class</code> inherits <code>list</code>.</p>
+<p>A schedule is a <code>list</code> of contiguous dates generated from some start date, stop date, and step increment.</p>
+<h4 id="usage-3">Usage</h4>
+<div class="sourceCode" id="cb4"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a><span class="op">&gt;&gt;&gt;</span> <span class="im">from</span> dateroll <span class="im">import</span> Schedule</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true"></a><span class="op">&gt;&gt;&gt;</span> sch <span class="op">=</span> Schedule(start<span class="op">=</span>Date(<span class="dv">1984</span>, <span class="dv">7</span> ,<span class="dv">2</span>), stop<span class="op">=</span>Date(<span class="dv">2024</span>, <span class="dv">7</span> ,<span class="dv">2</span>), step<span class="op">=</span>Duration(y<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true"></a><span class="op">&gt;&gt;&gt;</span> sch.dates</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true"></a>[Date(<span class="dv">1984</span>, <span class="dv">7</span>, <span class="dv">2</span>), Date(<span class="dv">1985</span>, <span class="dv">7</span>, <span class="dv">2</span>), ..., Date(<span class="dv">2024</span>, <span class="dv">7</span>, <span class="dv">2</span>)]</span></code></pre></div>
+<div class="disent-embed" data-defaultinput="Schedule(start=Date(1984,7,2),stop=Date(2024,7,2),step=Duration(y=1)).dates">
+
+</div>
+<script type='text/javascript' src="http://repl.disent.com/drepl.js" async></script>
+<h3 id="constructor-args">Constructor args</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>start</code></td>
+<td>First date in schedule</td>
+<td><code>Date</code></td>
+</tr>
+<tr class="even">
+<td><code>stop</code></td>
+<td>Last date in schedule</td>
+<td><code>Date</code></td>
+</tr>
+<tr class="odd">
+<td><code>step</code></td>
+<td>Distance between dates in schedule</td>
+<td><code>Duration</code></td>
+</tr>
+</tbody>
+</table>
+<p><br></p>
+<h3 id="leftover-days-a.k.a.-stub-handling">Leftover days (a.k.a. stub handling)</h3>
+<ul>
+<li>if <code>step</code> <span class="math inline"> &lt; 0</span>, then schedule is generated <strong>backwards</strong> from last to first
+<ul>
+<li>Leftover days are on the interval <strong><code>sch[0:2]</code></strong></li>
+</ul></li>
+<li>if <code>step</code> <span class="math inline"> &gt; 0</span>, then the schedule is generated <strong>forwards</strong> from first to last
+<ul>
+<li>Leftover days are on the interval <strong><code>sch[-2:]</code></strong></li>
+</ul></li>
+</ul>
+<p><br /></p>
+<h3 id="propertiesmethods-2">Properties/Methods</h3>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Input</th>
+<th>Output</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>.start</code></td>
+<td><code>sch.start</code></td>
+<td><code>Date(1984, 7 ,2)</code></td>
+</tr>
+<tr class="even">
+<td><code>.stop</code></td>
+<td><code>sch.stop</code></td>
+<td><code>Date(2024, 7 ,2)</code></td>
+</tr>
+<tr class="odd">
+<td><code>.step</code></td>
+<td><code>sch.step</code></td>
+<td><code>Duration(y=1)</code></td>
+</tr>
+<tr class="even">
+<td><code>.dates</code></td>
+<td><code>Schedule(start=Date(1984, 7...</code></td>
+<td><code>[Date(1984, 7, 2), Date(...]</code> (sorted)</td>
+</tr>
+<tr class="odd">
+<td><code>list.*</code></td>
+<td>see <a href="https://docs.python.org/3/tutorial/datastructures.html">list</a></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<div class="disent-embed" data-defaultinput="Schedule(start=Date(1984,7,2),stop=Date(2024,7,2),step=Duration(y=1)).start">
+
+</div>
+<div class="disent-embed" data-defaultinput="Schedule(start=Date(1984,7,2),stop=Date(2024,7,2),step=Duration(y=1)).stop">
+
+</div>
+<div class="disent-embed" data-defaultinput="Schedule(start=Date(1984,7,2),stop=Date(2024,7,2),step=Duration(y=1)).step">
+
+</div>
+<p><br></p>
+<h2 id="calendars">Calendars <a name="Calendars"></a></h2>
+<p><a href="#ddh">ddh</a> | <a href="#Date">Date</a> | <a href="#Duration">Duration</a> | <a href="#Schedule">Schedule</a> | <a href="#Calendars">Calendars</a> | <a href="#CalendarMath">CalendarMath</a> | <a href="#Parser">Parser</a></p>
+<p>Calendars is a database for your holidays. It’s a <code>dict</code> whose data is always saved for global access. Keys are calendar names, values are ordinary lists of dates.</p>
+<h3 id="usage-4">Usage</h3>
+<p>List calendars</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a><span class="op">&gt;&gt;&gt;</span> cals.keys()</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true"></a>[<span class="st">&#39;WE&#39;</span>,<span class="st">&#39;ALL&#39;</span>,<span class="st">&#39;NY&#39;</span>]</span></code></pre></div>
+<p>Get one</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true"></a><span class="op">&gt;&gt;&gt;</span> Duration(bd<span class="op">=</span><span class="dv">0</span>,cals<span class="op">=</span>[<span class="st">&#39;NY&#39;</span>]) <span class="co"># get / use#</span></span></code></pre></div>
+<div class="disent-embed" data-defaultinput="Duration(bd=0,cals=[&quot;NY&quot;])">
+
+</div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true"></a><span class="op">&gt;&gt;&gt;</span> fed <span class="op">=</span> cals.FED <span class="co"># &quot;dot&quot; notation works too</span></span></code></pre></div>
+<p>Create one</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true"></a><span class="op">&gt;&gt;&gt;</span> <span class="im">from</span> dateroll <span class="im">import</span> cals</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true"></a><span class="op">&gt;&gt;&gt;</span> cals[<span class="st">&#39;US&#39;</span>] <span class="op">=</span> [Date(...), Date(...), ...] <span class="co"># add takes list of dates, or Schedule</span></span></code></pre></div>
+<p>Delete one</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true"></a><span class="op">&gt;&gt;&gt;</span> <span class="kw">del</span> cals[<span class="st">&#39;US&#39;</span>] <span class="co"># delete</span></span></code></pre></div>
+<h3 id="calendar-name-rules">Calendar name rules</h3>
+<ul>
+<li>2-3 letters (A-Z), all uppercase only.</li>
+<li>Examples: <code>WE</code> for weekend. <code>FED</code> or <code>NY</code> for US banking days.</li>
+</ul>
+<h3 id="storage">Storage</h3>
+<p>Saves in users’s home folder</p>
+<ul>
+<li><code>pathlib.Path.home()</code>
+<ul>
+<li><code>Linux:</code> <code>~/.dateroll/calendars/holiday_lists</code></li>
+<li><code>Windows:</code> <code>C:/Users/[USERNAME]/.dateroll/calendars/holiday_lists</code></li>
+</ul></li>
+<li>Uses <code>shelve</code> (may added extension depending on python version)</li>
+</ul>
+<p><br></p>
+<h3 id="properties-methods">Properties / Methods</h3>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Descriptions</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>.load_all_and_we()</code></td>
+<td>Creates <code>ALL</code> and <code>WE</code>¹</td>
+</tr>
+<tr class="even">
+<td><code>.load_sample_data()</code></td>
+<td>Creates <code>ALL</code>,<code>WE</code>,<code>LN</code>,<code>EU</code>,<code>BR</code>,<code>NY</code>,<code>FED</code>,<code>ECB</code>,<code>BOE</code>,<code>BCB</code> using <code>workalendar</code></td>
+</tr>
+<tr class="odd">
+<td><code>dict.*</code></td>
+<td>see <a href="https://docs.python.org/3/tutorial/datastructures.html#dictionaries">dict</a> docs</td>
+</tr>
+</tbody>
+</table>
+<p><br></p>
+<h3 id="available-calendars">Available calendars</h3>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>ALL</code></td>
+<td>All calendar days</td>
+<td>Generated for the interval <span class="math inline">[</span><code>ddh(-200y)</code>,<code>ddh(+200y)</code> <span class="math inline">]</span></td>
+</tr>
+<tr class="even">
+<td><code>WE</code></td>
+<td><strong>W</strong>eek<strong>e</strong>nds (Sat/Sun’s)</td>
+<td>Generated for the interval <span class="math inline">[</span><code>ddh(-200y)</code>,<code>ddh(+200y)</code> <span class="math inline">]</span></td>
+</tr>
+<tr class="odd">
+<td><code>NY</code> <code>FED</code></td>
+<td>US banking holidays</td>
+<td><code>workalendar</code>¹</td>
+</tr>
+<tr class="even">
+<td><code>EU</code> <code>ECB</code></td>
+<td>ECB banking holidays</td>
+<td><code>workalendar</code>¹</td>
+</tr>
+<tr class="odd">
+<td><code>LN</code> <code>BOE</code></td>
+<td>UK holidays</td>
+<td><code>workalendar</code>¹</td>
+</tr>
+<tr class="even">
+<td><code>BR</code> <code>BCB</code></td>
+<td>Brazil holidays</td>
+<td><code>workalendar</code>¹</td>
+</tr>
+</tbody>
+</table>
+<p>¹ We used <code>workalender</code> and generated dates for the same interval as <code>ALL</code> and <code>WE</code> (above), data for available calendars is stored in <code>JSON</code> to eliminate the library dependency. See <a href="https://workalendar.github.io/workalendar/">workalendar</a> for more details, they’ve got a lot of great coverage.</p>
+<p><span style="color:red;font-weight:900;">CAUTION</span> using when someone else’s calendars! always verify</p>
+<h2 id="calendar-math">Calendar math <a name="CalendarMath"></a></h2>
+<p><a href="#ddh">ddh</a> | <a href="#Date">Date</a> | <a href="#Duration">Duration</a> | <a href="#Schedule">Schedule</a> | <a href="#Calendars">Calendars</a> | <a href="#CalendarMath">CalendarMath</a> | <a href="#Parser">Parser</a></p>
+<p><code>CalendarMath</code> is an interim singelton <code>class</code> that “compiles” Calendar date lists into <span class="math inline"><em>O</em>(1)</span> hashes.</p>
+<p>If you use <code>ddh</code> predominately you’ll never need to use this directly.</p>
+<h3 id="usage-5">Usage</h3>
+<div class="sourceCode" id="cb10"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true"></a><span class="op">&gt;&gt;&gt;</span> <span class="im">from</span> dateroll <span class="im">import</span> calmath</span></code></pre></div>
+<h3 id="properties-methods-1">Properties / Methods</h3>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Usage</th>
+<th>Descriptions</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>.add_bd(</code></td>
+<td><code>calmath.add_bd(from_date:Date, n:int, cals=calendar)</code>¹ <span class="math inline">→</span> <code>Date</code></td>
+<td>Add n bd’s</td>
+</tr>
+<tr class="even">
+<td><code>.sub_bd(</code></td>
+<td><code>calmath.sub_bd(from_date, n, cals=calendar)</code>¹ <span class="math inline">→</span> <code>Date</code></td>
+<td>Subtract n bd’s<code>| |</code>.is_bd(<code>|</code>calmath.is_bd(from_date, cals=calendar)<code>¹ $\to$</code>bool<code>|Is a bd?</code></td>
+</tr>
+<tr class="odd">
+<td><code>.prev_bd(</code></td>
+<td><code>calmath.prev_bd(from_date, cals=calendar)</code>¹ <span class="math inline">→</span> <code>Date</code></td>
+<td>Advance to next bd</td>
+</tr>
+<tr class="even">
+<td><code>.next_bd(</code></td>
+<td><code>calmath.next_bd(from_date), cals=calendar</code>¹ <span class="math inline">→</span> <code>Date</code></td>
+<td>Back up until previous bd</td>
+</tr>
+</tbody>
+</table>
+<p>¹<code>calendar</code> can be of the form: <code>"NY"</code>, <code>["NY"]</code>, <code>"NYuLN"</code>, or <code>["NY","LN"]</code> (see <a href=""><code>Parser</code></a> for more details.).</p>
+<h3 id="calendar-sets">Calendar sets</h3>
+<p>A calendar “set” is a union of two calendars (without duplication):</p>
+<p>$  = $ $  = $ $  =   $ $  =  $</p>
+<p>The first time a calendar union is specified (i.e. list of calendars is sent to <code>CalendarMath</code>), then the <span class="math inline"><em>O</em>(1)</span> hashes are created on the fly and cached. Local to <code>CalendarMath</code> instance (<code>dateroll.calmath</code>), not <code>Calendars</code> instance (<code>dateroll.cals</code>).</p>
+<h3 id="caching-invalidation">Caching / Invalidation</h3>
+<p><code>CalendarMath</code> stores an in-memory cache of “compiled” calendars. A compiled calendar is simply a collection of hash tables to do business data movements in <span class="math inline"><em>O</em>(1)</span> time.</p>
+<p>There’s several mutation checks, and whenever a <code>Calendars</code> value is written to, the the entire <code>CalendarMath</code> instance cache is purged for safety.</p>
+<h2 id="parser">Parser <a name="Parser"></a></h2>
+<p><a href="#ddh">ddh</a> | <a href="#Date">Date</a> | <a href="#Duration">Duration</a> | <a href="#Schedule">Schedule</a> | <a href="#Calendars">Calendars</a> | <a href="#CalendarMath">CalendarMath</a> | <a href="#Parser">Parser</a></p>
+<p>Parses <code>str</code> into a <code>thing</code>: can be either <code>Date</code>, <code>Duration</code>, <code>Schedule</code>.</p>
+<p>This is the 🧠 brains behind <code>ddh</code>.</p>
+<p>It a combo of (1) really big <code>regex</code>, and (2) date validation with <a href="https://dateutil.readthedocs.io/en/stable/parser.html"><code>dateutil.parser.parse</code></a>.</p>
+<h3 id="string-parsing-ontology">String Parsing Ontology</h3>
+<ul>
+<li><code>DateRollString</code> (any of the below)
+<ul>
+<li><code>TodayString</code> (represents TODAY’s <code>Date</code>)
+<ul>
+<li>Three literal values: <code>"t"</code>,<code>"t0"</code>, or <code>"today"</code></li>
+<li>Converts to <code>Date</code></li>
+</ul></li>
+<li><code>DateString</code> (any <code>Date</code>)
+<ul>
+<li>Supports 3 <code>conventions</code>: <code>'american'</code>, <code>'european'</code>, and <code>'international'</code>
+<ul>
+<li><code>american</code>: <code>month</code><span class="math inline">→</span><code>day</code><span class="math inline">→</span><code>year</code>, slashes/dashes/nothing
+<ul>
+<li>e.g. <code>"7/2/84"</code> or <code>"07-02-1984"</code></li>
+</ul></li>
+<li><code>european</code>: <code>day</code><span class="math inline">→</span><code>month</code><span class="math inline">→</span><code>year</code>, slashes/dashes/nothing
+<ul>
+<li>e.g. <code>"2/7/1984"</code> or <code>"02-07-84"</code></li>
+</ul></li>
+<li><code>international</code>: <code>year</code><span class="math inline">→</span><code>month</code><span class="math inline">→</span><code>day</code>, slashes/dashes/nothing
+<ul>
+<li>e.g. <code>"19840702"</code> or <code>"19840702"</code></li>
+</ul></li>
+</ul></li>
+<li>Converts to <code>Date</code></li>
+</ul></li>
+<li><code>DurationString</code> (any <code>Duration</code>)
+<ul>
+<li><code>DurationPeriodString</code>
+<ul>
+<li>Can be <span class="math inline"> &gt; 1</span> pairs of <code>unit</code> and <code>period</code>
+<ul>
+<li>Unit must be <code>int</code></li>
+<li>Valid periods: are <code>bd</code> <code>d</code> <code>w</code> <code>m</code> <code>q</code> and <code>y</code></li>
+<li>Combos like <code>5y3m</code> or <code>7w2d</code> or <code>1y2bd</code> are allowed</li>
+</ul></li>
+</ul></li>
+<li><code>CalendarString</code>
+<ul>
+<li>Any <code>DurationPeriodString</code> in a <code>DurationString</code> can be followed by the filtration (or pipe) operator <code>"|"</code> to denote information from calendar lists of holidays which must be used to perform date arithmetic.
+<ul>
+<li><code>CalendarString</code> follows rules of calendar (2-3 letters A-Z, all uppercase), and union operator <code>"u"</code>
+<ul>
+<li>Single calendar, e.g. <code>"|NY"</code> or <code>"|FED"</code></li>
+<li>Calendar union, e.g. <code>"|NY u LN"</code> (2) or <code>"|FED u BOE u BCB"</code> (3)
+<ul>
+<li>it mathy like <span class="math inline">𝔼[<em>X</em><sub><em>t</em></sub>|ℱ<sub>𝓉</sub>]</span> where <span class="math inline">$\mathscr{F_t}=\Set{\text{NY}\bigcup\text{LN}}$</span></li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul></li>
+<li><code>RollingConventionString</code>
+<ul>
+<li>The rolling operator <code>"/"</code> can be followed by MOD string:
+<ul>
+<li>When the direction of direction is positive<code>"/MOD"</code> means that if you cross a month boundary, go backwards to 1st business date in that month</li>
+<li>When the direction of direction is negative<code>"/MOD"</code> means that if you cross a month boundary, go forwards to last business date in that month</li>
+<li>for reference <a href="https://en.wikipedia.org/wiki/Date_rolling">date rolling</a>, it’s for when payment adjustments need to stay in a specific accounting period.</li>
+</ul>
+Example:
+<div class="disent-embed" data-defaultinput="ddh(&quot;12/30/2023+5bd/MOD&quot;)">
+
+</div></li>
+</ul></li>
+</ul></li>
+<li>Example with one of everything <code>"+ 1y 2h 3s 4q 5m 6w 7d 8bd | NY u LN u JP / MF"</code></li>
+</ul></li>
+<li><code>ScheduleString</code> (any <code>Schedule</code>)
+<ul>
+<li>3 parts separated by two commas, e.g. <code>"X, Y, Z"</code>
+<ul>
+<li><code>X</code> is <code>DateString</code>, <code>TodayString</code>, or <code>DateMathString</code></li>
+<li><code>Y</code> is is <code>DateString</code>, <code>TodayString</code>, or <code>DateMathString</code></li>
+<li><code>Z</code> is <code>DurationString</code></li>
+</ul></li>
+<li>yields <code>Schedule(start=X, stop=Y, step=Z)</code></li>
+<li>e.g. <code>"t-5y, 1/15/25, 1y"</code> (from 5 years ago to Jan 15 next year, give me all years)</li>
+<li><code>DateMathString</code> (any datemath operation)
+<ul>
+<li>2 parts separated by math operator plus <span class="math inline">+</span> or minus <span class="math inline">−</span>, e.g. <code>"X+Y"</code> or <code>"Y-X"</code>
+<ul>
+<li><code>X</code> or <code>Y</code> can be either <code>DateString</code> or <code>DurationString</code> and add/sub operation logic must be supported by <code>Date</code> and <code>Duration</code> objects</li>
+<li>e.g. <code>"t+1bd"</code> or <code>"t-5y"</code> or <code>"7/2/84+39y"</code></li>
+</ul>
+<div class="disent-embed" data-defaultinput="ddh(&quot;t+1bd&quot;)">
+
+</div>
+<div class="disent-embed" data-defaultinput="ddh(&quot;t-5y&quot;)">
+
+</div>
+<div class="disent-embed" data-defaultinput="ddh(&quot;7/2/84+39y&quot;)">
+
+</div></li>
+</ul></li>
+</ul></li>
+<li>Examples
+<ul>
+<li>Unncessarily complicated
+<ul>
+<li><code>"t-1y4q5m6w7d8bd|NYuLNuBR/MOD,07/02/1984+45y35bd|FED/MOD,3q7m5d|WE"</code>
+<ul>
+<li><em>^^ Note</em> on above, if you <code>ddh</code> it, all calendars -unioned (<code>"|NYuLNuJPuFEDuWE"</code>), modified convention would hold as it was specified once, and <code>MOD</code> would depend on the direction of travel when being appled to a specific date. If approx is needed, it will <code>warn</code>.</li>
+<li>For example, if you do <code>"t+1m-21bd"</code>, if you have an anchor date, if <code>1m</code> &gt; <code>21bd</code> (net adjustment is in the future as opposed to past) it assumes you are rolling foward, period conversion is used, see <a href="#PeriodConversions">period conversion rules</a>. If modified was specified it would be inherited as well.</li>
+</ul>
+Example:
+<div class="disent-embed" data-defaultinput="Schedule(ddh(&quot;t-1y4q5m6w7d8bd|NYuLNuBR/MOD&quot;),ddh(&quot;07/02/1984+45y35bd|FED/MOD&quot;),ddh(&quot;3q7m5d|WE&quot;)).dates">
+
+</div></li>
+</ul></li>
+<li>Classic
+<ul>
+<li>Client wants a 5 year loan from today, paid monthly, i need dates to structure it <code>ddh("t,t+5y,1m")</code>.</li>
+</ul></li>
+</ul></li>
+</ul>
+<h1 id="appendix">Appendix</h1>
+<h2 id="day-counters">Day counters <a name="DayCounters"></a></h2>
+<p>==NEEDS WORK==</p>
+<p><a href="https://en.wikipedia.org/wiki/Day_count_convention">nice wikipedia</a></p>
+<h3 id="section">30/360</h3>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Usage</th>
+<th>Formula</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>.nyears("30/360")</code></td>
+<td><span class="math inline">$\displaystyle\frac{360\times (t_{2}^{y}-t_1^{y})+30\times(t_2^{m}-t_1^{m}) + (t_2^{d}-t_1^{d})}{360}$</span></td>
+</tr>
+<tr class="even">
+<td><code>.nyears("30/360 BB")</code></td>
+<td><span class="math inline">$\displaystyle\frac{360\times (t_{2}^{y}-t_1^{y})+30\times(t_2^{m}-t_1^{m}) + (t_2^{d}-t_1^{d})}{360}$</span></td>
+</tr>
+<tr class="odd">
+<td><code>.nyears("30/360")</code></td>
+<td><span class="math inline">$\displaystyle\frac{360\times (t_{2}^{y}-t_1^{y})+30\times(t_2^{m}-t_1^{m}) + (t_2^{d}-t_1^{d})}{360}$</span></td>
+</tr>
+<tr class="even">
+<td><code>.nyears("30E/360")</code></td>
+<td><span class="math inline">$\displaystyle\frac{360\times (t_{2}^{y}-t_1^{y})+30\times(t_2^{m}-t_1^{m}) + (t_2^{d}-t_1^{d})}{360}$</span></td>
+</tr>
+<tr class="odd">
+<td><code>.nyears("30E/360 ISDA")</code></td>
+<td><span class="math inline">$\displaystyle\frac{360\times (t_{2}^{y}-t_1^{y})+30\times(t_2^{m}-t_1^{m}) + (t_2^{d}-t_1^{d})}{360}$</span></td>
+</tr>
+</tbody>
+</table>
+<h3 id="act">ACT/<span style="color:red;">???</span></h3>
+<p>/36?’s</p>
+<table>
+<thead>
+<tr class="header">
+<th>Usage</th>
+<th>Formula</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>.nyears("ACT/360")</code></td>
+<td><span class="math inline">$\displaystyle\frac{n_d}{360}$</span></td>
+</tr>
+<tr class="even">
+<td><code>.nyears("30E/364")</code></td>
+<td><span class="math inline">$\displaystyle\frac{n_d}{364}$</span></td>
+</tr>
+<tr class="odd">
+<td><code>.nyears("ACT/365)</code></td>
+<td><span class="math inline">$\displaystyle\frac{n_d}{365}$</span></td>
+</tr>
+<tr class="even">
+<td><code>.nyears("ACT/365F")</code></td>
+<td><span class="math inline">$\displaystyle\frac{n_d}{365}$</span></td>
+</tr>
+<tr class="odd">
+<td><code>.nyears("ACT/365L")</code></td>
+<td><span class="math inline">$\displaystyle\frac{n_d}{366}$</span></td>
+</tr>
+</tbody>
+</table>
+<p>/ACT’s</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Usage</th>
+<th>Formula</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>.nyears("ACT/ACT AFB")</code></td>
+<td><span class="math inline">$\displaystyle\frac{360\times (t_{2}^{y}-t_1^{y})+30\times(t_2^{m}-t_1^{m}) + (t_2^{d}-t_1^{d})}{360}$</span></td>
+</tr>
+<tr class="even">
+<td><code>.nyears("ACT/ACT ICMA")</code></td>
+<td><span class="math inline">$\displaystyle\frac{360\times (t_{2}^{y}-t_1^{y})+30\times(t_2^{m}-t_1^{m}) + (t_2^{d}-t_1^{d})}{360}$</span></td>
+</tr>
+</tbody>
+</table>
+<h3 id="bd252">BD/252</h3>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Usage</th>
+<th>Formula</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>.nyears("BD/252")</code></td>
+<td><span class="math inline">$\displaystyle\frac{360\times (t_{2}^{y}-t_1^{y})+30\times(t_2^{m}-t_1^{m}) + (t_2^{d}-t_1^{d})}{360}$</span></td>
+</tr>
+</tbody>
+</table>
+<h3 id="terms">Terms</h3>
+<p>$t_2 = $<code>t1 = ddh(some_date_string)</code> $t_1 = $<code>t2 = ddh(another_date_string)</code> <span class="math inline"><em>s</em>.<em>t</em>.  <em>t</em><sub>2</sub> &gt; <em>t</em><sub>1</sub></span></p>
+<p><span class="math inline"><em>t</em><sub>1</sub><sup><em>y</em></sup></span> = <code>t1.years</code>, <span class="math inline"><em>t</em><sub>2</sub><sup><em>y</em></sup></span> = <code>t1.years</code> <span class="math inline"><em>t</em><sub>1</sub><sup><em>m</em></sup></span> = <code>t1.months</code>, <span class="math inline"><em>t</em><sub>2</sub><sup><em>m</em></sup></span> = <code>t1.months</code> <span class="math inline"><em>t</em><sub>1</sub><sup><em>d</em></sup></span> = <code>t1.days</code>, <span class="math inline"><em>t</em><sub>1</sub><sup><em>d</em></sup></span> = <code>t1.days</code></p>
+<h2 id="caveats">Caveats</h2>
+<ul>
+<li>Calendars are political, and each jurisdiction has unique methods to proclaim or repeal.</li>
+<li>This is only designed to be used for “human life” dates, such as -100y ago and +100y from now. In the future we might add support for sub-day time periods (hours, minutes, …)</li>
+<li>There is no central standards body, these conventions are known as “street conventions”, i.e. each financial institutions and 3rd party vendor has their own reference implementations. Reliance on self regulatory agency (ISDA/ICMA) guidance and case law / precedents is the norm.</li>
+</ul>
+<h2 id="acknowledgements">Acknowledgements</h2>
+<p>Thank you to the teams behind <code>dateutil</code>, <code>datetime</code>, <code>workalendar</code>, <code>pandas</code>, <code>numpy</code>, <code>ICMA</code>, <code>ISDA</code>, <code>ISO 8601</code>, and the countless traders and bond/derivatives accountants worldwide.</p>
+<p>It is our hope that fixed income and FI math can be a little less scary for everyone, because <em>every single person in the world</em> is impacted by it.</p>
+<p>- The <a href="https://www.disent.com">Disent</a> Team</p>
+<h2 id="references">References</h2>
+<ul>
+<li>https://en.wikipedia.org/wiki/Date_rolling</li>
+<li>https://en.wikipedia.org/wiki/ISO_8601</li>
+<li>https://en.wikipedia.org/wiki/Day_count_convention</li>
+<li>https://www.amazon.com/Calendrical-Calculations-Edward-M-Reingold/dp/0521771676 (thanks Prof!)</li>
+<li>https://www.amazon.com/Fixed-Income-Mathematics-Fifth-Statistical/dp/1264258275</li>
+</ul>
+<h2 id="documentation-todos">Documentation Todo’s</h2>
+<ul>
+<li>Verify all examples</li>
+<li>Cross references features in doc not yet in code base</li>
+<li>Finish daycounters</li>
+<li>add period conversion formulas to recalc the decimals</li>
+<li>Cross doc features against code base</li>
+<li>Separate features from roadmap</li>
+<li>Group proofreading</li>
+<li>Add notebook with examples (maybe a colab?)</li>
+<li>Add REPL in-doc examples</li>
+</ul>
+</div>
+</body>
+</html>

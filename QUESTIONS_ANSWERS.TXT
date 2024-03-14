@@ -866,13 +866,34 @@ TOTAL                                    1187     32    97%
     Summary:
         #1 Put div into DOCS
             PS: when string is long, e.g(Duration(years=1,months=1....)), it does not look good please check
+        OK
         #2 Made 100 except pretty
             PS: I commented out 62-69 line of settings since it never gets there. Because it validates k in setattr
                 please review
+            
+
 
     TODO:
         #1 Put imports in the top of the pages
         #2 Duration(years=0,months=12)---> Duration(years=1,months=0)
         #3 In DOC we have n.days and nyears, I need to implement that part
 
-        
+
+########### anthony 2024/3/14 12p
+
+q#1 
+
+Duration: +3m
+Date: 3/14/24
+q#2 
+
+i added a test case that touches the code, the use cases is if the user manually changes their settings
+
+todo 1, ok
+todo 2, this does it already right?
+todo 3, let's review the specification
+
+new file in repo: .coveragerc
+this means you can run coverage with just the following:
+    coverage run         
+    coverage report -m

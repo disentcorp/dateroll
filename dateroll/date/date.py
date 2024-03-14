@@ -9,7 +9,7 @@ from dateroll.settings import settings
 from dateroll.calendars.calendarmath import calmath
 from dateroll.duration.duration import Duration
 from dateroll import utils
-from dateroll.pretty import before_after
+from dateroll import pretty
 
 DateLike = (datetime.datetime, datetime.date)
 
@@ -222,8 +222,8 @@ class Date(datetime.date):
     @property
     def src(self):
         if hasattr(self,'origin_dur_date'):
-            res = before_after(self.date,self.origin_dur_date,self.origin_dur_cals,calmath)
-            return res
+            pretty_calendars = pretty.pretty_between_two_dates(self.date,self.origin_dur_date,self.origin_dur_cals,calmath)
+            print(pretty_calendars)
 
 
 DateLike = DateLike + (Date,)

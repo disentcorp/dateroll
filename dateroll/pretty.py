@@ -8,13 +8,24 @@ calendar.setfirstweekday(calendar.SUNDAY)
 
 from dateroll.utils import color
 
-def body(i,c,txt1,cals):
+def replacer(i,c,txt1,cals):
     bef = str(i).rjust(3)
     aft = color(bef,c)
     txt2 = txt1.replace(bef,aft)   
     return txt2
 
-def before_after(dt1,dt2,cals,calmath):
+def pretty_between_two_dates(dt1,dt2,cals,calmath):
+    '''
+    experimental feature
+
+    print a calendar or calenders for set of debugging:
+        if start and end date fall in same month show calendar for month
+        if standard and end date fall in two different months show calendars for starting month and ending month
+
+        color skipped days as cyan
+        color start/end days as blue
+        color holidays/weekends as grey
+    '''
     if dt2>dt1:
         _1,_2 = dt1,dt2
     else:
@@ -40,11 +51,11 @@ def before_after(dt1,dt2,cals,calmath):
                 ishol = False
 
             if i==d1 or i==d2:
-                cal1 = body(i, 'blue', cal1, cals)
+                cal1 = replacer(i, 'blue', cal1, cals)
             elif ishol:
-                cal1 = body(i, 'gray', cal1, cals)
+                cal1 = replacer(i, 'gray', cal1, cals)
             elif i>d1 and i<d2:
-                cal1 = body(i, 'cyan', cal1, cals)
+                cal1 = replacer(i, 'cyan', cal1, cals)
 
 
         res = color(f'        {_1.strftime('%b')} {y1}','yellow')
@@ -61,11 +72,11 @@ def before_after(dt1,dt2,cals,calmath):
             except:
                 ishol = False
             if i==d1:
-                cal1 = body(i,'blue',cal1,cals)
+                cal1 = replacer(i,'blue',cal1,cals)
             elif i >= d1 and not ishol:
-                cal1 = body(i,'cyan',cal1,cals)
+                cal1 = replacer(i,'cyan',cal1,cals)
             elif ishol:
-                cal1 = body(i,'gray',cal1,cals)
+                cal1 = replacer(i,'gray',cal1,cals)
 
 
         c2 = calendar.month(y2,m2)
@@ -77,11 +88,11 @@ def before_after(dt1,dt2,cals,calmath):
             except:
                 ishol = False
             if i==d2:
-                cal2 = body(i,'blue',cal2,cals)
+                cal2 = replacer(i,'blue',cal2,cals)
             elif i<=d2 and not ishol:
-                cal2 = body(i,'cyan',cal2,cals)
+                cal2 = replacer(i,'cyan',cal2,cals)
             elif ishol:
-                cal2 = body(i,'gray',cal2,cals)
+                cal2 = replacer(i,'gray',cal2,cals)
 
         res = color(f'        {_1.strftime('%b')} {y1}                 {_2.strftime('%b')} {y2}                ','yellow')
         for idx, (i, j) in enumerate(zip(cal1.splitlines(),cal2.splitlines())):
