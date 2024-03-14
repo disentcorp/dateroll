@@ -9,6 +9,7 @@ from dateroll.settings import settings
 from dateroll.calendars.calendarmath import calmath
 from dateroll.duration.duration import Duration
 from dateroll import utils
+from dateroll.pretty import before_after
 
 DateLike = (datetime.datetime, datetime.date)
 
@@ -217,6 +218,12 @@ class Date(datetime.date):
         else:
             self = self - o
         return self
+    
+    @property
+    def src(self):
+        if hasattr(self,'origin_dur_date'):
+            res = before_after(self.date,self.origin_dur_date,self.origin_dur_cals,calmath)
+            return res
 
 
 DateLike = DateLike + (Date,)

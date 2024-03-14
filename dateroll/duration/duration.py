@@ -11,7 +11,7 @@ import code
 from functools import cache
 
 from dateroll.settings import settings
-from dateroll.duration.debug import before_after
+from dateroll.pretty import before_after
 from dateroll.utils import color, xprint, add_none, combine_none
 
 cals = calmath.cals
@@ -480,10 +480,12 @@ class Duration(dateutil.relativedelta.relativedelta):
 
         # 4 convert back to Date
         from dateroll.date.date import Date
-        Date_modifed = Date.from_datetime(date_modifed)
+        Date_modified = Date.from_datetime(date_modifed)
+        Date_modified.origin_dur_date = date_unadj
+        Date_modified.origin_dur_cals = self.cals
+        Date_modified.origin_dur_modified = self.modified
 
-        before_after(date_unadj,Date_modifed,self.cals,calmath)
-        return Date_modifed
+        return Date_modified
 
     def adjust_bds(self, from_date):
         """
