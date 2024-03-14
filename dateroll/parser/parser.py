@@ -112,28 +112,23 @@ class Parser:
 
     @classmethod
     def parse_one_part(cls, untouched):
+        letters = [chr(i) for i in range(65, 65 + 26)]
+        def gen(): yield letters.pop(0)
 
         # 1
         notoday = parsers.parseTodayString(untouched)
 
         # 2
-        dates, nodates = parsers.parseDateString(notoday)
+        dates, nodates = parsers.parseDateString(notoday,gen)
         # print('s before/after:', untouched,nodates)
-        if nodates == "X":
-            return dates[0]
 
         # 3
-        
-        durations, nodatesordurations = parsers.parseDurationString(nodates)
+        durations, nodatesordurations = parsers.parseDurationString(nodates,gen)
         # print('s before/after:', nodates,nodatesordurations)
-        if nodatesordurations == "+X":
-            return durations[0]
-        dates_durations = dates + durations
+        dates_durations = {**dates,**durations}
         
         # 4
         # print('before pdms',nodatesordurations)
-        # print('in parser')
-        # code.interact(local=dict(globals(),**locals()))
         processed_answer = parsers.parseDateMathString(
             nodatesordurations, dates_durations
         )

@@ -13,8 +13,6 @@ from dateroll.settings import settings
 
 TODAYSTRINGVALUES = ["today", "t0", "t"]
 
-AtoZ = tuple(chr(i) for i in range(65, 65 + 26))
-
 class ParserStringsError(Exception): ...
 
 
@@ -33,7 +31,7 @@ def parseTodayString(s):
     return s
 
 
-def parseDateString(s):
+def parseDateString(s, gen):
     """
     for a given convention, see if string contains 1 or 2 dates
     regex to extract string, and Date.from_string(), which calls dateutil.parser.parse
@@ -56,17 +54,18 @@ def parseDateString(s):
         pattern = patterns.YMD
         dateparser_kwargs = {"yearfirst": True,"dayfirst":False}
 
-    dates = []
+    dates = {}
     matches = re.findall(pattern, s)
     res = s
     for match in matches:
         date = dt.Date.from_string(match, **dateparser_kwargs)
-        res = res.replace(match, "X")
+        next_letter = next(gen())
+        res = res.replace(match, '+'+next_letter)
         # to ensure no conflict duration negation and date math application
         # e.g.   t-3m = t + (-3m), and not t - (-3m)
         # make - to +-, negate will occur in duration string match, and + will be captured in date math parser
         res = res.replace('-','+-')
-        dates.append(date)
+        dates[next_letter]=date
     
     return dates, res
 
@@ -143,7 +142,7 @@ def parseCalendarUnionString(s):
     else:
         raise Exception(f'{s} not a valid calendar string')
 
-def parseDurationString(s,debug=False):
+def parseDurationString(s,gen,debug=False):
     """
     check for any DurationString:
 
@@ -169,14 +168,15 @@ def parseDurationString(s,debug=False):
         modifier after  /
                 /MOD means modified the direction of travel for bd's to stay in current month
     """
-    durations = []
+    durations = {}
     matches = re.findall(patterns.COMPLETE_DURATION, s)
     
     for m in matches:
         duration = process_duration_match(m, debug=debug)
         dur_str = m[0]
-        s = s.replace(dur_str,'+X')
-        durations.append(duration)
+        next_letter = next(gen())
+        s = s.replace(dur_str,'+'+next_letter)
+        durations[next_letter] = duration
     
     return durations, s
 
@@ -188,25 +188,16 @@ def parseDateMathString(s, things, debug=False):
     """
     before = s
     s = s.replace(" ", "").replace("++", "+").replace("+-", "-").replace("-+", "-")
-    
-    if s == "+X":
-        s = "X"
-    
+        
     math_matches = re.match(patterns.MATH, s)
     if math_matches:
         n1 = len(things)
-        n2 = s.count("X")
-        
-        if n1 > len(AtoZ):
-            raise ParserStringsError("Cannot recognize as date math", s)
-        
+        n2 = len(s.replace('+','').replace('-',''))
+               
         if n1 != n2:
             raise Exception(f"Unmatched math ({s})")
 
-        for idx in range(n2):
-            s = s.replace("X", AtoZ[idx], 1)
-
-        gs = {k: v for k, v in zip(AtoZ[: len(things)], things)}
+        gs = {k: v for k, v in things.items()}
         
         if debug:
             print('debug date math string (before eval)',before,s)
