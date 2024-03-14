@@ -6,4 +6,5 @@ build/*
 dist/*
 NotExist
 NotExist.lockfile
-.coverage
+!.coveragerc
+.coverage*
