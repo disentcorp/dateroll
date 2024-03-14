@@ -51,10 +51,12 @@ class Settings:
         # key check
         reset = False
         for k,v in self.__dict__.items():
+            if k.startswith('__'):
+                continue
             key_is_valid = k not in default_settings
             type_is_valid = not isinstance(v,type(default_settings.get(k,None)))
             func_value_is_valid, exc = default_settings_validation.setdefault(k,(lambda x:False,ValueError(f'Setting {k} not found')))
-            if key_is_valid or type_is_valid or func_value_is_valid(v):
+            if key_is_valid or type_is_valid or not func_value_is_valid(v):
                 msg = f'Settings corrupted in {path}, restoring defaults.'
                 warnings.warn(msg)
                 reset = True

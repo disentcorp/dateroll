@@ -482,8 +482,7 @@ class Duration(dateutil.relativedelta.relativedelta):
         from dateroll.date.date import Date
         Date_modifed = Date.from_datetime(date_modifed)
 
-
-        before_after(date_unadj,Date_modifed,self.cals)
+        before_after(date_unadj,Date_modifed,self.cals,calmath)
         return Date_modifed
 
     def adjust_bds(self, from_date):
@@ -651,13 +650,6 @@ if __name__ == "__main__": # pragma: no cover
     from dateroll.ddh.ddh import ddh
     from dateroll import Date
     from dateroll import Duration
-    # from dateroll.duration.duration import Duration ---- if I import like this, isinstance(dur2,Duration) is False
-    # d1 = Date(2024,1,1)
-    # dur2 = Duration(bd=0)
-    # newd2 = d1 - dur2
-    # print(newd2)
-    # x = ddh('2023-12-24+0bd|NYuWE',convention='YMD')
-    # x = ddh('01/01/22-5bd|WEuNY')
     x = ddh('12/1/2023+12m/MOD')
     print(x)
 

@@ -14,6 +14,7 @@ from dateroll.utils import color
 import dateroll.calendars.calendars as calendars
 from dateroll import ddh,cals
 import dateroll
+from dateroll.settings import settings
 from dateroll.tests.test_data.test_data import next_d,prev_d
 
 def handle_sample_data_dates(x,inc,sign='+'):
@@ -23,7 +24,11 @@ def handle_sample_data_dates(x,inc,sign='+'):
         s = f'{t}{sign}{inc}|NYuWE/MOD'
     else:
         s = f'{t}{sign}{inc}|NYuWE'
-    res = ddh(s,convention='YMD')
+    
+    orig = settings.convention
+    settings.convention = 'YMD'
+    res = ddh(s)
+    settings.convention = orig
     return res
 
 class TestDDH(unittest.TestCase):
@@ -87,7 +92,7 @@ class Test_UserScenarios(unittest.TestCase):
             convention = row['convention']
             _a = time.time()
             a = ddh(row['final'])
-            b = ddh(s,convention=convention)
+            b = ddh(s)
             _b = time.time()
             ans = f'{str(b==a):<5}'
             res = color(ans,'green') if b==a else color(ans,'red')

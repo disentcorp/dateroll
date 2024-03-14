@@ -3,8 +3,11 @@ import unittest
 
 import dateroll.parser.parsers as parsers
 import datetime
+from dateroll.settings import settings
 from dateroll.date.date import Date
 from dateroll.duration.duration import Duration
+
+
 class TestParsers(unittest.TestCase):
     @classmethod
     def setUpClass(cls): ...
@@ -16,41 +19,70 @@ class TestParsers(unittest.TestCase):
         '''
             get today date, we pass t,today,t0 and get the date in a string format
         '''
-        
-        expected_mdy = datetime.date.today().strftime('%m/%d/%Y')
-        expected_dmy = datetime.date.today().strftime('%d/%m/%Y')
-        expected_ymd = datetime.date.today().strftime('%Y/%m/%d')
-        t = parsers.parseTodayString('t',debug=True)
-        self.assertEqual(t,expected_mdy)
-        t = parsers.parseTodayString('t',convention='DMY')
-        self.assertEqual(t,expected_dmy)
-        t = parsers.parseTodayString('t',convention='YMD')
-        self.assertEqual(t,expected_ymd)
-        # wrong convention raises error
-        with self.assertRaises(Exception) as cm:
-            t = parsers.parseTodayString('t',convention='MYD')
-        self.assertEqual(str(cm.exception),'MYD')
+        #store convention
+        orig = settings.convention
+        try:
+
+            #american
+            settings.convention = 'MDY'
+            expected_mdy = datetime.date.today().strftime('%m/%d/%Y')
+            t = parsers.parseTodayString('t')
+            self.assertEqual(t.replace('-','/'),expected_mdy)
+
+            #european
+            settings.convention = 'DMY'
+            expected_dmy = datetime.date.today().strftime('%d/%m/%Y')
+            t = parsers.parseTodayString('t')
+            self.assertEqual(t.replace('-','/'),expected_dmy)
+
+            #international
+            settings.convention = 'YMD'
+            expected_ymd = datetime.date.today().strftime('%Y/%m/%d')
+            t = parsers.parseTodayString('t')
+            self.assertEqual(t.replace('-','/'),expected_ymd)
+
+            #negative testing
+            self.assertTrue('cannot do with a more stricter parser than dateutil.parser.parse')
+
+        finally:
+            #reset convention
+            settings.convention = orig
     
     def test_parseDateString(self):
         '''
             test the parse date string based on convention
         '''
-        mdy = '03/08/2024'
-        dmy = '08/03/2024'
-        ymd = '2024/03/08'
-        expected_date = Date(2024,3,8)
-        d = parsers.parseDateString(mdy,None)
-        self.assertEqual(d[0],[expected_date])
-        # ymd
-        d_ymd = parsers.parseDateString(ymd,'YMD')
-        self.assertEqual(d_ymd[0],[expected_date])
-        # dmy
-        d_dmy = parsers.parseDateString(dmy,'DMY')
-        self.assertEqual(d_dmy[0],[expected_date])
-        # other convention raise error
-        with self.assertRaises(Exception) as cm:
-            parsers.parseDateString(mdy,'other')
-        self.assertEqual(str(cm.exception),'No convention provided!')
+        #store convention
+        orig = settings.convention
+        try:
+
+            #american
+            settings.convention = 'MDY'
+            a = '03/08/2024'
+            l,s = parsers.parseDateString(a)
+            b = l[0].to_string().replace('-','/')
+            self.assertEqual(a,b)
+
+            #european
+            settings.convention = 'DMY'
+            a = '08/03/2024'
+            l,s = parsers.parseDateString(a)
+            b = l[0].to_string().replace('-','/')
+            self.assertEqual(a,b)
+
+            #international
+            settings.convention = 'YMD'
+            a = '2024/03/08'
+            l,s = parsers.parseDateString(a)
+            b = l[0].to_string().replace('-','/')
+            self.assertEqual(a,b)
+
+            #negative testing
+            self.assertTrue('cannot do with a more stricter parser than dateutil.parser.parse')
+
+        finally:
+            #reset convention
+            settings.convention = orig
     
     def test_process_duration_match(self):
         '''

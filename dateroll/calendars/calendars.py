@@ -32,11 +32,11 @@ def load_sample_data():
         name = pathlib.Path(file).stem
         with safe_open(file) as f:
             ls = f.readlines()
-            ld = []
+            ld = {}
             for i in ls:
                 dt = datetime.date(int(i[0:4]), int(i[5:7]), int(i[8:10]))
                 if dt > INCEPTION:
-                    ld.append(dt)
+                    ld[dt]=True
             data[name] = ld
     return data
 
@@ -155,7 +155,7 @@ class Calendars(dict):
                 f"{k} exists already, delete first.if you want to replace."
             )
         with Drawer(self) as db:
-            s = list(sorted(list(set(processed))))
+            s = {k:True for k in list(sorted(list(set(processed))))}
             db[k] = s
 
     def __getitem__(self, k):

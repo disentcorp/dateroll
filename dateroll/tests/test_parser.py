@@ -1,6 +1,7 @@
 import unittest
 import code
 
+from dateroll.settings import settings
 from dateroll.parser.parser import Parser, parse_to_native
 from dateroll.date.date import Date
 from dateroll.duration.duration import Duration
@@ -29,58 +30,62 @@ class TestParser(unittest.TestCase):
         '''
             test parse one part
         '''
-        convention = 'MDY'
-        dt = Parser.parse_one_part('20240101',convention=convention)
-        self.assertEqual(dt,Date(2024,1,1))
+        original = settings.convention
+        try:
+            settings.convention = 'YMD'
+            
+            dt = Parser.parse_one_part('20240101')
+            self.assertEqual(dt,Date(2024,1,1))
 
-        dur = Parser.parse_one_part('3m',convention=convention)
-        
-        self.assertEqual(dur,Duration(years=0, months=3, days=0, modified=False, debug=False))
+            dur = Parser.parse_one_part('3m')
+            
+            self.assertEqual(dur,Duration(years=0, months=3, days=0, modified=False, debug=False))
 
-        dt_dur = Parser.parse_one_part('20240101+3m',convention=convention)
-        
-        self.assertEqual(dt_dur,Date(2024,4,1))
+            dt_dur = Parser.parse_one_part('20240101+3m')
+            
+            self.assertEqual(dt_dur,Date(2024,4,1))
+        finally:
+            settings.convention = original
     
     def test_maybe_many_parts(self):
         '''
             test parse maybe many parts accepts 1 part or 3 parts (start,stop,step)
         '''
-        
-        convention = 'MDY'
+
 
         # 1 part
-        dt = Parser.parse_maybe_many_parts('20240101',convention=convention)
+        dt = Parser.parse_maybe_many_parts('20240101')
         self.assertEqual(dt,Date(2024,1,1))
 
         # 3 parts - valid schedule generation
-        dts = Parser.parse_maybe_many_parts('20240101,20240201,1bd',convention=convention)
+        dts = Parser.parse_maybe_many_parts('20240101,20240201,1bd')
         self.assertEqual(dts[0],Date(2024,1,1))
         self.assertEqual(dts[-1],Date(2024,2,1))
         self.assertEqual(len(dts),24)
 
         # 3 parts 1st part wrong
         with self.assertRaises(TypeError):
-            dt = Parser.parse_maybe_many_parts('3m,t,1m',convention=convention)
+            dt = Parser.parse_maybe_many_parts('3m,t,1m')
 
         # 3 parts 2nd part wrong
         with self.assertRaises(TypeError):
-            dt = Parser.parse_maybe_many_parts('t,3m,1m',convention=convention)
+            dt = Parser.parse_maybe_many_parts('t,3m,1m')
 
         # 3 parts 3rd part wrong
         with self.assertRaises(TypeError):
-            dt = Parser.parse_maybe_many_parts('t,t+3m,t-1d',convention=convention)
+            dt = Parser.parse_maybe_many_parts('t,t+3m,t-1d')
             
         # parts stub
-        dt = Parser.parse_maybe_many_parts('t,t+2m15d,1m',convention=convention)
+        dt = Parser.parse_maybe_many_parts('t,t+2m15d,1m')
 
         # 2 parts are wrong
         with self.assertRaises(Exception):
-            dt = Parser.parse_maybe_many_parts('t,t+3m',convention=convention)
+            dt = Parser.parse_maybe_many_parts('t,t+3m')
         
 
         # use_native NotImplmented for now
         with self.assertRaises(NotImplementedError):
-            dt = parse_to_native('t',convention=convention)
+            dt = parse_to_native('t')
 
     
 

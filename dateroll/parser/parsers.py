@@ -46,8 +46,6 @@ def parseDateString(s):
 
     """
     
-    print('i am using',settings.convention)
-    
     if settings.convention == "MDY":
         pattern = patterns.MDY
         dateparser_kwargs = {"dayfirst": False,"yearfirst": False}
