@@ -895,5 +895,6 @@ todo 3, let's review the specification
 
 new file in repo: .coveragerc
 this means you can run coverage with just the following:
-    coverage run         
+    coverage run   
     coverage report -m
+    ...or in one line "coverage run; coverage report -m"

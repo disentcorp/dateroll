@@ -1,6 +1,6 @@
 [run]
 source = dateroll
-command_line = -m unittest discover
+command_line = -m tests.test_suite
 omit = dateroll/tests/*, dateroll/calendars/sampledata.py
 ; branch = false
 

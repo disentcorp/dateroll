@@ -15,7 +15,7 @@ import dateroll.calendars.calendars as calendars
 from dateroll import ddh,cals
 import dateroll
 from dateroll.settings import settings
-from dateroll.tests.test_data.test_data import next_d,prev_d
+from tests.test_data.test_data import next_d,prev_d
 
 def handle_sample_data_dates(x,inc,sign='+'):
     t = x['today']
@@ -31,7 +31,7 @@ def handle_sample_data_dates(x,inc,sign='+'):
     settings.convention = orig
     return res
 
-class TestDDH(unittest.TestCase):
+class TestUsage(unittest.TestCase):
     @classmethod
     def setUpClass(cls): ...
 
@@ -73,7 +73,7 @@ class TestDDH(unittest.TestCase):
         # code.interact(local=dict(globals(),**locals()))
         self.assertEqual(bd1,expected1)
 
-class Test_UserScenarios(unittest.TestCase):
+class TestUsageMore(unittest.TestCase):
     def tests_from_excel(self):
         #### TURN DEBUG ON OFF ####
         # ddh.debug = True
@@ -81,7 +81,7 @@ class Test_UserScenarios(unittest.TestCase):
         #### TURN DEBUG ON OFF ####
         import pandas as pd
         
-        df = pd.read_excel('dateroll/tests/test_cases.xlsx')
+        df = pd.read_excel('tests/test_cases.xlsx')
         cols = ['from','ParserString','final','convention']
         df = df[cols]
         df = df.dropna()
