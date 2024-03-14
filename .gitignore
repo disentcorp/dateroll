@@ -7,4 +7,5 @@ dist/*
 NotExist
 NotExist.lockfile
 !.coveragerc
-.coverage*
+.coverage
+.coverage.*
