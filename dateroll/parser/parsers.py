@@ -8,40 +8,32 @@ import dateroll.date.date as dt
 import dateroll.duration.duration as dur
 from dateroll.parser import patterns
 from dateroll.schedule.schedule import Schedule
+from dateroll import utils
+from dateroll.settings import settings
 
-DEFAULT_CONVENTION = "MDY"
 TODAYSTRINGVALUES = ["today", "t0", "t"]
 
 AtoZ = tuple(chr(i) for i in range(65, 65 + 26))
 
-
 class ParserStringsError(Exception): ...
 
 
-def parseTodayString(s, convention=DEFAULT_CONVENTION, debug=False):
+def parseTodayString(s):
     """
         this is [the] place where "t" is replaced
     """
     today = datetime.date.today()
-    if convention == "MDY":
-        today_string = today.strftime(r"%m/%d/%Y")
-    elif convention == "DMY":
-        today_string = today.strftime(r"%d/%m/%Y")
-    elif convention == "YMD":
-        today_string = today.strftime(r"%Y/%m/%d")
-    else:
-        raise ValueError(convention)
+    fmt = utils.convention_map[settings.convention]
+    today_string = today.strftime(fmt)
 
     for t in TODAYSTRINGVALUES:
         # search order matters in TODAYSTRINGVALUES
         if t in s:
-            if debug:
-                print('MATCH(ES) FOR TODAY',t,s)
             return s.replace(t, today_string)
     return s
 
 
-def parseDateString(s, convention, debug=False):
+def parseDateString(s):
     """
     for a given convention, see if string contains 1 or 2 dates
     regex to extract string, and Date.from_string(), which calls dateutil.parser.parse
@@ -54,18 +46,15 @@ def parseDateString(s, convention, debug=False):
 
     """
     
-    if convention is None:
-        convention = DEFAULT_CONVENTION
-
-    if convention == "MDY":
+    if settings.convention == "MDY":
         pattern = patterns.MDY
-        dateparser_kwargs = {}
-    elif convention == "DMY":
+        dateparser_kwargs = {"dayfirst": False,"yearfirst": False}
+    elif settings.convention == "DMY":
         pattern = patterns.DMY
-        dateparser_kwargs = {"dayfirst": True}
-    elif convention == "YMD":
+        dateparser_kwargs = {"dayfirst": True, "yearfirst": True}
+    elif settings.convention == "YMD":
         pattern = patterns.YMD
-        dateparser_kwargs = {"yearfirst": True}
+        dateparser_kwargs = {"yearfirst": True,"dayfirst":False}
     else:
         raise ParserStringsError("No convention provided!")
 

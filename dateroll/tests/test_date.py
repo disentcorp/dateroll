@@ -2,8 +2,9 @@ import datetime
 import unittest
 import code
 
+from dateroll import utils
 from dateutil.relativedelta import relativedelta
-
+from dateroll.settings import settings
 from dateroll import Date, Duration
 
 
@@ -215,7 +216,9 @@ class TestDate(unittest.TestCase):
         '''
         a = Date(2024, 12, 5)
         rs = repr(a)
-        self.assertEqual(rs,'Date("2024-12-05")')
+        fmt = utils.convention_map[settings.convention]
+        dstr = a.strftime(fmt)
+        self.assertEqual(rs,f'Date("{dstr}")')
 
     def test_from_string(self):
         '''

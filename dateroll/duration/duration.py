@@ -10,8 +10,9 @@ import calendar
 import code
 from functools import cache
 
-from dateroll.duration.debug import before_after
-from dateroll.utils import color, xprint
+from dateroll.settings import settings
+from dateroll.pretty import before_after
+from dateroll.utils import color, xprint, add_none, combine_none
 
 cals = calmath.cals
 
@@ -24,21 +25,6 @@ APPROX = {
     '1y1d' : 14610/40, # exact average length for post 1582AD change
     '1bd1d' : 14610/40/252 # assuming 252 denominator
 }
-
-def combine_none(a,b):
-    if a is None and b is None:
-        return None
-    a = [] if a is None else a
-    b = [] if b is None else b
-    return tuple(sorted(set(a)|set(b)))
-
-def add_none(a,b,dir=1):
-    if a is None and b is None:
-        return None
-    else:
-        a = 0 if a is None else a
-        b = 0 if b is None else b
-        return a + b*dir
 
 class Duration(dateutil.relativedelta.relativedelta):
     global DEBUG_PRINT
@@ -494,11 +480,12 @@ class Duration(dateutil.relativedelta.relativedelta):
 
         # 4 convert back to Date
         from dateroll.date.date import Date
-        Date_modifed = Date.from_datetime(date_modifed)
+        Date_modified = Date.from_datetime(date_modifed)
+        Date_modified.origin_dur_date = date_unadj
+        Date_modified.origin_dur_cals = self.cals
+        Date_modified.origin_dur_modified = self.modified
 
-
-        before_after(date_unadj,Date_modifed,self.cals)
-        return Date_modifed
+        return Date_modified
 
     def adjust_bds(self, from_date):
         """
@@ -665,13 +652,6 @@ if __name__ == "__main__": # pragma: no cover
     from dateroll.ddh.ddh import ddh
     from dateroll import Date
     from dateroll import Duration
-    # from dateroll.duration.duration import Duration ---- if I import like this, isinstance(dur2,Duration) is False
-    # d1 = Date(2024,1,1)
-    # dur2 = Duration(bd=0)
-    # newd2 = d1 - dur2
-    # print(newd2)
-    # x = ddh('2023-12-24+0bd|NYuWE',convention='YMD')
-    # x = ddh('01/01/22-5bd|WEuNY')
     x = ddh('12/1/2023+12m/MOD')
     print(x)
 

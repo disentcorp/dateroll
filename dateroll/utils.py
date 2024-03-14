@@ -39,6 +39,20 @@ def xprint(*args,**kwargs): # pragma:no cover
             args = [color(a,_color)for a in args]
             print(color('[debug]',_color),*args,**kwargs)
 
+def combine_none(a,b):
+    if a is None and b is None:
+        return None
+    a = [] if a is None else a
+    b = [] if b is None else b
+    return tuple(sorted(set(a)|set(b)))
+
+def add_none(a,b,dir=1):
+    if a is None and b is None:
+        return None
+    else:
+        a = 0 if a is None else a
+        b = 0 if b is None else b
+        return a + b*dir
 
 class safe_open:
     """
@@ -71,3 +85,9 @@ class safe_open:
         fcntl.lockf(self.lockfile, fcntl.LOCK_UN)
         self.lockfile.close()
         self.file.close()
+
+convention_map = {
+    'YMD':r'%Y-%m-%d',
+    'DMY':r'%d-%m-%Y',
+    'MDY':r'%m-%d-%Y'
+}
