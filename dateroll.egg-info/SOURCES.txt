@@ -5,6 +5,8 @@ README.md
 setup.py
 dateroll/__init__.py
 dateroll/__main__.py
+dateroll/pretty.py
+dateroll/settings.py
 dateroll/utils.py
 dateroll.egg-info/PKG-INFO
 dateroll.egg-info/SOURCES.txt
@@ -58,4 +60,3 @@ dateroll/tests/test_patterns.py
 dateroll/tests/test_schedule.py
 dateroll/tests/test_suite.py
 dateroll/tests/test_usage.py
-dateroll/tests/~$test_cases.xlsx
