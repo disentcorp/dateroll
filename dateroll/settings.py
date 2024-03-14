@@ -29,12 +29,13 @@ class Settings:
         '''
         if settings load and validate, if not load defaults and save
         '''
+        self.load_default()
+
         if path.exists():
             self.load()
             self.validate()
-        else:
-            self.load_default()
-            self.save()
+
+        self.save()
 
     def load_default(self):
         '''
