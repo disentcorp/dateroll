@@ -3,7 +3,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       
-      <link rel="stylesheet" href="file:////home/amalizzio/.vscode-server/extensions/shd101wyy.markdown-preview-enhanced-0.8.11/crossnote/dependencies/katex/katex.min.css">
+      <link rel="stylesheet" href="file:////home/batu/.vscode-server/extensions/shd101wyy.markdown-preview-enhanced-0.8.12/crossnote/dependencies/katex/katex.min.css">
       
       
       
@@ -96,35 +96,29 @@ ddh<span class="token punctuation">(</span>some_string<span class="token punctua
 <thead>
 <tr>
 <th>Flavor</th>
-<th>Input</th>
-<th>Output</th>
+<th>Example</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><a href="">Today string        </a></td>
-<td><code>ddh('t')</code></td>
-<td><code>Date(2024,2,2)</code></td>
+<td><div class="disent-embed" data-defaultinput="ddh(&quot;t&quot;)"></div><script type="text/javascript" src="http://repl.disent.com/drepl.js" async=""></script></td>
 </tr>
 <tr>
 <td><a href="">Date string         </a></td>
-<td><code>ddh('12/31/22')</code></td>
-<td><code>Date(2022,12,31)</code></td>
+<td><div class="disent-embed" data-defaultinput="ddh(&quot;12/31/22&quot;)"></div></td>
 </tr>
 <tr>
 <td><a href="">Duration string     </a></td>
-<td><code>ddh('+3m')</code></td>
-<td><code>Duration(m=3)</code></td>
+<td><div class="disent-embed" data-defaultinput="ddh(&quot;+3m&quot;)"></div></td>
 </tr>
 <tr>
 <td><a href="">Date math string     </a></td>
-<td><code>ddh('t + 1y')</code></td>
-<td><code>Date(2025,2,2)</code></td>
+<td><div class="disent-embed" data-defaultinput="ddh(&quot;t+1y&quot;)"></div></td>
 </tr>
 <tr>
 <td><a href="">Date schedule string </a></td>
-<td><code>ddh('t, t+5y, 1m')</code></td>
-<td><code>[Date(2022,2,2),</code>...<code>]</code></td>
+<td><div class="disent-embed" data-defaultinput="ddh(&quot;t,t+5y,1m&quot;)"></div></td>
 </tr>
 </tbody>
 </table>
@@ -139,69 +133,58 @@ ddh<span class="token punctuation">(</span>some_string<span class="token punctua
 <span class="token operator">&gt;&gt;</span><span class="token operator">&gt;</span> Date<span class="token punctuation">(</span><span class="token number">1984</span><span class="token punctuation">,</span> <span class="token number">7</span> <span class="token punctuation">,</span><span class="token number">2</span><span class="token punctuation">)</span>
 Date<span class="token punctuation">(</span>year<span class="token punctuation">,</span> month<span class="token punctuation">,</span> day<span class="token punctuation">)</span>
 </code></pre><h5 id="constructor-example">Constructor example </h5>
-<p><code>Date(2024, 7, 2)</code><br>
-<br><br>
-*^3 integer args: year, month, and day</p>
+<div class="disent-embed" data-defaultinput="Date(2024,7,2)"></div>
+<br>
+*^3 integer args: year, month, and day
 <h5 id="propertiesmethods">Properties/Methods </h5>
 <table>
 <thead>
 <tr>
 <th>Name</th>
-<th>Input</th>
-<th>Output</th>
+<th>Example</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>.datetime</code></td>
-<td><code>Date(2024,7,2).datetime</code></td>
-<td><code>datetime.datetime(2024, 7, 2, 0, 0)</code></td>
+<td><div class="disent-embed" data-defaultinput="Date(2024,7,2).datetime"></div></td>
 </tr>
 <tr>
 <td><code>.date</code></td>
-<td><code>Date(2024,7,2).date</code></td>
-<td><code>datetime.date(2024, 7, 2, 0, 0)</code></td>
+<td><div class="disent-embed" data-defaultinput="Date(2024,7,2).date"></div></td>
 </tr>
 <tr>
 <td><code>.iso</code></td>
-<td><code>Date(2024,7,2).iso</code></td>
-<td><code>20240702</code></td>
+<td><div class="disent-embed" data-defaultinput="Date(2024,7,2).iso"></div></td>
 </tr>
 <tr>
 <td><code>.xls</code></td>
-<td><code>Date(2024,7,2).xls</code></td>
-<td><code>45475</code></td>
+<td><div class="disent-embed" data-defaultinput="Date(2024,7,2).xls"></div></td>
 </tr>
 <tr>
 <td><code>.unix</code></td>
-<td><code>Date(2024,7,2).unix</code></td>
-<td><code>1719892800</code></td>
+<td><div class="disent-embed" data-defaultinput="Date(2024,7,2).unix"></div></td>
 </tr>
 <tr>
 <td><code>.dotw</code></td>
-<td><code>Date(2024,7,2).dotw</code></td>
-<td><code>"Tue"</code></td>
+<td><div class="disent-embed" data-defaultinput="Date(2024,7,2).dotw"></div></td>
 </tr>
 <tr>
 <td><code>.woty</code></td>
-<td><code>Date(2024,7,2).woty</code></td>
-<td><code>27</code></td>
+<td><div class="disent-embed" data-defaultinput="Date(2024,7,2).woty"></div></td>
 </tr>
 <tr>
 <td><code>.is_bd(calendar)</code>¹</td>
-<td><code>Date(2024,7,2).is_bd("NY")</code></td>
-<td><code>False</code></td>
+<td><div class="disent-embed" data-defaultinput="Date(2024,7,2).is_bd(&quot;NY&quot;)"></div></td>
 </tr>
 <tr>
 <td><code>datetime.date.*</code></td>
-<td>see <a href="https://docs.python.org/3/library/datetime.html#datetime.date">datetime</a></td>
 <td>see <a href="https://docs.python.org/3/library/datetime.html#datetime.date">datetime</a></td>
 </tr>
 </tbody>
 </table>
 <p>¹<code>calendar</code> can be of the form: <code>"NY"</code>, <code>["NY"]</code>, <code>"NYuLN"</code>, or <code>["NY","LN"]</code> (see <a href=""><code>Parser</code></a> for more details.).</p>
 <h5 id="operations">Operations </h5>
-<p>assume <code>d = Date(2000,1,1)</code></p>
 <h5 id="date---duration-or-date"><code>Date</code> <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>+</mo></mrow><annotation encoding="application/x-tex">+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6667em;vertical-align:-0.0833em;"></span><span class="mord">+</span></span></span></span>/<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>−</mo></mrow><annotation encoding="application/x-tex">-</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6667em;vertical-align:-0.0833em;"></span><span class="mord">−</span></span></span></span> <code>Duration</code> or <code>Date</code> </h5>
 <table>
 <thead>
@@ -210,8 +193,7 @@ Date<span class="token punctuation">(</span>year<span class="token punctuation">
 <th>Operator</th>
 <th>RHS</th>
 <th>Result</th>
-<th>Input</th>
-<th>Output</th>
+<th>Example</th>
 </tr>
 </thead>
 <tbody>
@@ -220,24 +202,21 @@ Date<span class="token punctuation">(</span>year<span class="token punctuation">
 <td><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>+</mo></mrow><annotation encoding="application/x-tex">+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6667em;vertical-align:-0.0833em;"></span><span class="mord">+</span></span></span></span></td>
 <td><code>Duration</code></td>
 <td><code>Date</code></td>
-<td><code>d + Duration(m=1)</code></td>
-<td><code>Date(2000,2,1)</code></td>
+<td><div class="disent-embed" data-defaultinput="Date(2000,1,1) + Duration(m=1)"></div></td>
 </tr>
 <tr>
 <td><code>Date</code></td>
 <td><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>−</mo></mrow><annotation encoding="application/x-tex">-</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6667em;vertical-align:-0.0833em;"></span><span class="mord">−</span></span></span></span></td>
 <td><code>Duration</code></td>
 <td><code>Date</code></td>
-<td><code>d - Duration(y=1)</code></td>
-<td><code>Date(1999,1,1)</code></td>
+<td><div class="disent-embed" data-defaultinput="Date(2000,1,1) + Duration(y=1)"></div></td>
 </tr>
 <tr>
 <td><code>Date</code></td>
 <td><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>−</mo></mrow><annotation encoding="application/x-tex">-</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6667em;vertical-align:-0.0833em;"></span><span class="mord">−</span></span></span></span></td>
 <td><code>Date</code></td>
 <td><code>Duration</code></td>
-<td><code>d - Date(1998,1,1)</code></td>
-<td><code>Duration(d=730)</code></td>
+<td><div class="disent-embed" data-defaultinput="Date(2000,1,1) - Date(1998,1,1)"></div></td>
 </tr>
 </tbody>
 </table>
@@ -249,8 +228,7 @@ Date<span class="token punctuation">(</span>year<span class="token punctuation">
 <th>Operator</th>
 <th>RHS</th>
 <th>Result</th>
-<th>Input</th>
-<th>Output</th>
+<th>Example</th>
 </tr>
 </thead>
 <tbody>
@@ -259,16 +237,14 @@ Date<span class="token punctuation">(</span>year<span class="token punctuation">
 <td><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>+</mo></mrow><annotation encoding="application/x-tex">+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6667em;vertical-align:-0.0833em;"></span><span class="mord">+</span></span></span></span></td>
 <td><code>int</code></td>
 <td><code>Duration</code></td>
-<td><code>d + 5</code></td>
-<td><code>Date(2000,1,6)</code></td>
+<td><div class="disent-embed" data-defaultinput="Date(2000,1,1) + 5"></div></td>
 </tr>
 <tr>
 <td><code>Date</code></td>
 <td><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>−</mo></mrow><annotation encoding="application/x-tex">-</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6667em;vertical-align:-0.0833em;"></span><span class="mord">−</span></span></span></span></td>
 <td><code>int</code></td>
 <td><code>Duration</code></td>
-<td><code>d - 1</code></td>
-<td><code>Date(1999,12,31)</code></td>
+<td><div class="disent-embed" data-defaultinput="Date(2000,1,1) - 1"></div></td>
 </tr>
 </tbody>
 </table>
@@ -280,8 +256,7 @@ Date<span class="token punctuation">(</span>year<span class="token punctuation">
 <th>Operator</th>
 <th>RHS</th>
 <th>Result</th>
-<th>Input</th>
-<th>Output</th>
+<th>Example</th>
 </tr>
 </thead>
 <tbody>
@@ -290,30 +265,27 @@ Date<span class="token punctuation">(</span>year<span class="token punctuation">
 <td><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>−</mo></mrow><annotation encoding="application/x-tex">-</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6667em;vertical-align:-0.0833em;"></span><span class="mord">−</span></span></span></span></td>
 <td><em>Date string</em></td>
 <td><code>Duration</code></td>
-<td><code>d - "1/1/98"</code></td>
-<td><code>Duration(d=730)</code></td>
+<td><div class="disent-embed" data-defaultinput="Date(2000,1,1) - &quot;1/1/98&quot;"></div></td>
 </tr>
 <tr>
 <td><code>Date</code></td>
 <td><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>+</mo></mrow><annotation encoding="application/x-tex">+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6667em;vertical-align:-0.0833em;"></span><span class="mord">+</span></span></span></span></td>
 <td><em>Duration string</em></td>
 <td><code>Date</code></td>
-<td><code>d + "1m"</code></td>
-<td><code>Date(2000,2,1)</code></td>
+<td><div class="disent-embed" data-defaultinput="Date(2000,1,1) + &quot;1m&quot;"></div></td>
 </tr>
 <tr>
 <td><code>Date</code></td>
 <td><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>−</mo></mrow><annotation encoding="application/x-tex">-</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6667em;vertical-align:-0.0833em;"></span><span class="mord">−</span></span></span></span></td>
 <td><em>Duration string</em></td>
 <td><code>Date</code></td>
-<td><code>d - "1y"</code></td>
-<td><code>Date(1999,1,1)</code></td>
+<td><div class="disent-embed" data-defaultinput="Date(2000,1,1) - &quot;1y&quot;"></div></td>
 </tr>
 </tbody>
 </table>
 <h2 id="duration-a-namedurationa">Duration <a name="Duration" href=""></a> </h2>
 <p><a href="#ddh">ddh</a> | <a href="#Date">Date</a> | <a href="#Duration">Duration</a> | <a href="#Schedule">Schedule</a> | <a href="#Calendars">Calendars</a> | <a href="#CalendarMath">CalendarMath</a> | <a href="#Parser">Parser</a></p>
-<p>Duration <code>class</code> herits from <code>dateutil.relativedelta</code> for defining intervals (periods) of time.</p>
+<p>Duration <code>class</code> inherits from <code>dateutil.relativedelta</code> for defining intervals (periods) of time.</p>
 <p>Adds business day handling.</p>
 <h4 id="usage-2">Usage </h4>
 <pre data-role="codeBlock" data-info="python" class="language-python python"><code><span class="token operator">&gt;&gt;</span><span class="token operator">&gt;</span> <span class="token keyword keyword-from">from</span> dateroll <span class="token keyword keyword-import">import</span> Date
@@ -332,48 +304,48 @@ Duration<span class="token punctuation">(</span>years<span class="token operator
 <tbody>
 <tr>
 <td>Years</td>
-<td><code>years</code> <code>year</code> <code>y</code></td>
-<td><code>Duration(y=n)</code></td>
+<td><code>years</code> <code>year</code> <code>Y</code> <code>y</code></td>
+<td><div class="disent-embed" data-defaultinput="Duration(y=1)"></div></td>
 </tr>
 <tr>
 <td>Quarters (<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>→</mo></mrow><annotation encoding="application/x-tex">\to</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.3669em;"></span><span class="mrel">→</span></span></span></span> 3m)</td>
-<td><code>qtrs</code> <code>qtr</code> <code>q</code></td>
-<td><code>Duration(q=n)</code></td>
+<td><code>quarters</code> <code>quarter</code> <code>Q</code> <code>q</code></td>
+<td><div class="disent-embed" data-defaultinput="Duration(q=1)"></div></td>
 </tr>
 <tr>
 <td>Weeks (<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>→</mo></mrow><annotation encoding="application/x-tex">\to</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.3669em;"></span><span class="mrel">→</span></span></span></span> 7d)</td>
-<td><code>weeks</code> <code>week</code> <code>w</code></td>
-<td><code>Duration(w=n)</code></td>
+<td><code>weeks</code> <code>week</code> <code>W</code> <code>w</code></td>
+<td><div class="disent-embed" data-defaultinput="Duration(w=1)"></div></td>
 </tr>
 <tr>
 <td>Calendar days</td>
-<td><code>days</code> <code>cd</code> <code>d</code></td>
-<td><code>Duration(d=-n)</code></td>
+<td><code>days</code> <code>day</code> <code>D</code> <code>d</code></td>
+<td><div class="disent-embed" data-defaultinput="Duration(d=-1)"></div></td>
 </tr>
 <tr>
-<td>Calendar days w/ roll</td>
-<td><code>roll=roll</code>¹</td>
-<td><code>Duration(d=n,roll="F")</code></td>
+<td>Calendar days w/ modified</td>
+<td><code>modified=modified</code>¹</td>
+<td><div class="disent-embed" data-defaultinput="Duration(d=1,modified=True)"></div></td>
 </tr>
 <tr>
 <td>Business days</td>
-<td><code>bd</code></td>
-<td><code>Duration(bd=-n)</code></td>
+<td><code>BD</code> <code>bd</code></td>
+<td><div class="disent-embed" data-defaultinput="Duration(bd=-1)"></div></td>
 </tr>
 <tr>
 <td>Business days w/ calendar</td>
-<td><code>bd</code> <code>cals=calendar</code>²</td>
-<td><code>Duration(bd=-1, cals="FED")</code></td>
+<td><code>BD</code> <code>bd</code> <code>cals=calendar</code>²</td>
+<td><div class="disent-embed" data-defaultinput="Duration(bd=-1,cals=&quot;FED&quot;)"></div></td>
 </tr>
 <tr>
 <td>Combinations</td>
 <td><code>y</code> <code>m</code> <code>bd</code> <code>cals</code></td>
-<td><code>Duration(y=1, m=3, bd=-1, cals="FED")</code></td>
+<td><div class="disent-embed" data-defaultinput="Duration(y=1,m=3,bd=-1,cals=&quot;FED&quot;)"></div></td>
 </tr>
 </tbody>
 </table>
 <p><span style="color:red;">open items for 1st release: (1) split modified from roll direction into 2 settings, (2) add EOM rule, and (3) maybe add BRL longer months/shorter months rule.</span></p>
-<p>¹<code>roll</code> can one be following business day (<code>"F"</code>), preceding business day (<code>"P"</code>) or the equivalent modified conventions: modified following (<code>"MF"</code>), or modified previous (<code>"MP"</code>).</p>
+<p>¹<code>modified</code> can be True or False.</p>
 <p>²<code>calendar</code> can be of the form: <code>"NY"</code>, <code>["NY"]</code>, <code>"NYuLN"</code>, or <code>["NY","LN"]</code> (see <a href=""><code>Parser</code></a> for more details.).</p>
 <p>Optional <code>kwargs</code> for either <code>anchor_start=Date(...)</code> or <code>anchor_stop=Date(...)</code> can be user-supplied. These are automatically inherited when <code>Duration</code> is the result of some math involving a <code>Date</code>.<br>
 <br></p>
@@ -382,57 +354,48 @@ Duration<span class="token punctuation">(</span>years<span class="token operator
 <thead>
 <tr>
 <th>Name</th>
-<th>Input</th>
-<th>Output</th>
+<th>Example</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>.years               </code></td>
-<td><code>Duration(y=5,m=4,d=3,bd=2)</code></td>
-<td><code>5</code></td>
+<td><div class="disent-embed" data-defaultinput="Duration(y=5,m=4,d=3,bd=2).years"></div></td>
 </tr>
 <tr>
 <td><code>.months              </code></td>
-<td><code>Duration(y=5,m=4,d=3,bd=2)</code></td>
-<td><code>4</code></td>
+<td><div class="disent-embed" data-defaultinput="Duration(y=5,m=4,d=3,bd=2).months"></div></td>
 </tr>
 <tr>
 <td><code>.days                </code></td>
-<td><code>Duration(y=5,m=4,d=3,bd=2)</code></td>
-<td><code>3</code></td>
+<td><div class="disent-embed" data-defaultinput="Duration(y=5,m=4,d=3,bd=2).days"></div></td>
 </tr>
 <tr>
-<td><code>.bds                 </code></td>
-<td><code>Duration(y=5,m=4,d=3,bd=2)</code></td>
-<td><code>2</code></td>
+<td><code>.bd                 </code></td>
+<td><div class="disent-embed" data-defaultinput="Duration(y=5,m=4,d=3,bd=2).bd"></div></td>
 </tr>
 <tr>
-<td><code>.anchor_start        </code></td>
-<td><code>ddh('7/7/2000-7/5/2000')</code></td>
-<td><code>Dates(2000,7,7)</code></td>
+<td><code>._anchor_start        </code></td>
+<td><div class="disent-embed" data-defaultinput="ddh(&quot;7/7/2000-7/5/2000&quot;)._anchor_start"></div></td>
 </tr>
 <tr>
-<td><code>.anchor_stop         </code></td>
-<td><code>ddh('7/7/2000-7/5/2000')</code></td>
-<td><code>Dates(2000,7,5)</code></td>
+<td><code>._anchor_end         </code></td>
+<td><div class="disent-embed" data-defaultinput="ddh(&quot;7/7/2000-7/5/2000&quot;)._anchor_end"></div></td>
 </tr>
 <tr>
 <td><code>.ndays()         </code>¹</td>
-<td><code>Duration(y=5,m=4,d=3,bd=2)</code></td>
-<td>~<code>1478</code></td>
+<td><div class="disent-embed" data-defaultinput="Duration(y=5,m=4,d=3,bd=2)"></div></td>
 </tr>
 <tr>
-<td><code>.nyears(counter)</code>¹²</td>
-<td><code>Duration(y=5,m=4,d=3,bd=2)</code></td>
-<td>~<code>4.05</code></td>
+<td><code>.nyears(counter)</code>²</td>
+<td><div class="disent-embed" data-defaultinput="Duration(y=5,m=4,d=3,bd=2)"></div></td>
 </tr>
 </tbody>
 </table>
 <p>¹The <code>n*</code> methods may require period conversion based upon approximation. see <a href="#PeriodConversions">Period Conversions</a>.</p>
 <p>²<code>counter</code> is one of <code>"ACT/360"</code>, <code>"30/360"</code>, ... see <a href="">day counters</a></p>
 <h4 id="operations-1">Operations </h4>
-<p>assume <code>dur = Duration(years=1)</code></p>
+<p>assume <code>dur = Duration(years=1)</code> and <code>d = Date(2000,1,1)</code></p>
 <h5 id="duration---duration"><code>Duration</code> <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>+</mo></mrow><annotation encoding="application/x-tex">+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6667em;vertical-align:-0.0833em;"></span><span class="mord">+</span></span></span></span>/<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>−</mo></mrow><annotation encoding="application/x-tex">-</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6667em;vertical-align:-0.0833em;"></span><span class="mord">−</span></span></span></span> <code>Duration</code> </h5>
 <table>
 <thead>
@@ -441,8 +404,7 @@ Duration<span class="token punctuation">(</span>years<span class="token operator
 <th>Operator</th>
 <th>RHS</th>
 <th>Result</th>
-<th>Input</th>
-<th>Output</th>
+<th>Example</th>
 </tr>
 </thead>
 <tbody>
@@ -451,20 +413,18 @@ Duration<span class="token punctuation">(</span>years<span class="token operator
 <td><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>+</mo></mrow><annotation encoding="application/x-tex">+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6667em;vertical-align:-0.0833em;"></span><span class="mord">+</span></span></span></span></td>
 <td><code>Duration</code></td>
 <td><code>Duration</code></td>
-<td><code>dur + Duration(m=1)</code></td>
-<td><code>Duration(y=1,m=1)</code></td>
+<td><div class="disent-embed" data-defaultinput="Duration(y=1) + Duration(m=1)"></div></td>
 </tr>
 <tr>
 <td><code>Duration</code></td>
 <td><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>−</mo></mrow><annotation encoding="application/x-tex">-</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6667em;vertical-align:-0.0833em;"></span><span class="mord">−</span></span></span></span></td>
 <td><code>Duration</code></td>
 <td><code>Duration</code></td>
-<td><code>dur - Duration(m=1)</code></td>
-<td><code>Duration(m=11)</code></td>
+<td><div class="disent-embed" data-defaultinput="Duration(y=1) - Duration(m=1)"></div></td>
 </tr>
 </tbody>
 </table>
-<h5 id="duration---date-string-or-duration-string"><code>Duration</code> <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>+</mo></mrow><annotation encoding="application/x-tex">+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6667em;vertical-align:-0.0833em;"></span><span class="mord">+</span></span></span></span>/<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>−</mo></mrow><annotation encoding="application/x-tex">-</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6667em;vertical-align:-0.0833em;"></span><span class="mord">−</span></span></span></span> (<em>Date string</em> or <em>Duration string</em>) </h5>
+<h5 id="date---duration-string"><code>Date</code> <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>+</mo></mrow><annotation encoding="application/x-tex">+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6667em;vertical-align:-0.0833em;"></span><span class="mord">+</span></span></span></span>/<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>−</mo></mrow><annotation encoding="application/x-tex">-</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6667em;vertical-align:-0.0833em;"></span><span class="mord">−</span></span></span></span> <em>Duration string</em> </h5>
 <table>
 <thead>
 <tr>
@@ -472,33 +432,30 @@ Duration<span class="token punctuation">(</span>years<span class="token operator
 <th>Operator</th>
 <th>RHS</th>
 <th>Result</th>
-<th>Input</th>
-<th>Output</th>
+<th>Example</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code>Duration</code></td>
+<td><code>Date</code></td>
 <td><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>+</mo></mrow><annotation encoding="application/x-tex">+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6667em;vertical-align:-0.0833em;"></span><span class="mord">+</span></span></span></span></td>
 <td><em>Duration string</em></td>
 <td><code>Date</code></td>
-<td><code>dur + "1m"</code></td>
-<td><code>Date(2000,2,1)</code></td>
+<td><div class="disent-embed" data-defaultinput="Date(2000,1,1) + &quot;1m&quot;"></div></td>
 </tr>
 <tr>
-<td><code>Duration</code></td>
+<td><code>Date</code></td>
 <td><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>−</mo></mrow><annotation encoding="application/x-tex">-</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6667em;vertical-align:-0.0833em;"></span><span class="mord">−</span></span></span></span></td>
 <td><em>Duration string</em></td>
 <td><code>Date</code></td>
-<td><code>dur - "1y"</code></td>
-<td><code>Date(1999,1,1)</code></td>
+<td><div class="disent-embed" data-defaultinput="Date(2000,1,1) - &quot;1m&quot;"></div></td>
 </tr>
 </tbody>
 </table>
 <h4 id="anchoring-with-date">Anchoring with <code>Date</code> </h4>
-<p>When a <code>Duration</code> is the result of an operation with one or more <code>Date</code>, then 2 additional properties (<code>anchor_start</code> and/or <code>anchor_stop</code>) will be set automatically.</p>
-<p><code>Date(1999, 1, 1 )</code> <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>+</mo></mrow><annotation encoding="application/x-tex">+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6667em;vertical-align:-0.0833em;"></span><span class="mord">+</span></span></span></span> <code>Duration(m=1)</code> <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>=</mo></mrow><annotation encoding="application/x-tex">=</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.3669em;"></span><span class="mrel">=</span></span></span></span> <code>Duration(anchor_start=Date(1999, 1, 1)</code><br>
-<code>Date(2000, 1, 1)</code> <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>−</mo></mrow><annotation encoding="application/x-tex">-</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6667em;vertical-align:-0.0833em;"></span><span class="mord">−</span></span></span></span> <code>Date(1999, 1, 1)</code> <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>=</mo></mrow><annotation encoding="application/x-tex">=</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.3669em;"></span><span class="mrel">=</span></span></span></span> <code>Duration(y=1, anchor_start=Date(1999,1,1), anchor_stop=date(2000, 1, 1)</code></p>
+<p>When a <code>Duration</code> is the result of an operation with two <code>Date</code>, then 2 additional properties (<code>_anchor_start</code> and/or <code>_anchor_end</code>) will be set automatically.</p>
+<p><code>Date(2000, 1, 1)</code> <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>−</mo></mrow><annotation encoding="application/x-tex">-</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6667em;vertical-align:-0.0833em;"></span><span class="mord">−</span></span></span></span> <code>Date(1999, 1, 1)</code> <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>=</mo></mrow><annotation encoding="application/x-tex">=</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.3669em;"></span><span class="mrel">=</span></span></span></span> <code>Duration(y=1, _anchor_start=Date(1999,1,1), _anchor_end=date(2000, 1, 1)</code></p>
+<div class="disent-embed" data-defaultinput="Date(2000,1,1) - Date(1999,1,1)"></div>
 <p>When present, these properties allow for more exact period conversion.</p>
 <h4 id="period-conversions-a-nameperiodconversionsa">Period Conversions <a name="PeriodConversions" href=""></a> </h4>
 <p>If an approximate conversion is required a warning will be raised.</p>
@@ -546,7 +503,8 @@ Duration<span class="token punctuation">(</span>years<span class="token operator
 <span class="token operator">&gt;&gt;</span><span class="token operator">&gt;</span> sch <span class="token operator">=</span> Schedule<span class="token punctuation">(</span>start<span class="token operator">=</span>Date<span class="token punctuation">(</span><span class="token number">1984</span><span class="token punctuation">,</span> <span class="token number">7</span> <span class="token punctuation">,</span><span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">,</span> stop<span class="token operator">=</span>Date<span class="token punctuation">(</span><span class="token number">2024</span><span class="token punctuation">,</span> <span class="token number">7</span> <span class="token punctuation">,</span><span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">,</span> step<span class="token operator">=</span>Duration<span class="token punctuation">(</span>y<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">)</span>
 <span class="token operator">&gt;&gt;</span><span class="token operator">&gt;</span> sch<span class="token punctuation">.</span>dates
 <span class="token punctuation">[</span>Date<span class="token punctuation">(</span><span class="token number">1984</span><span class="token punctuation">,</span> <span class="token number">7</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">,</span> Date<span class="token punctuation">(</span><span class="token number">1985</span><span class="token punctuation">,</span> <span class="token number">7</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">,</span> Date<span class="token punctuation">(</span><span class="token number">2024</span><span class="token punctuation">,</span> <span class="token number">7</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">]</span>
-</code></pre><h3 id="contructor-args">Contructor args </h3>
+</code></pre><div class="disent-embed" data-defaultinput="Schedule(start=Date(1984,7,2),stop=Date(2024,7,2),step=Duration(y=1)).dates"></div></div><script type="text/javascript" src="http://repl.disent.com/drepl.js" async=""></script>
+<h3 id="contructor-args">Contructor args </h3>
 <table>
 <thead>
 <tr>
@@ -581,7 +539,7 @@ Duration<span class="token punctuation">(</span>years<span class="token operator
 <li>Leftover days are on the interval <strong><code>sch[0:2]</code></strong></li>
 </ul>
 </li>
-<li>if <code>step</code> <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>&gt;</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">&gt;0</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em;"></span><span class="mrel">&gt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">0</span></span></span></span>, then the scheduled is generated <strong>forwards</strong> from first ot last
+<li>if <code>step</code> <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>&gt;</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">&gt;0</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em;"></span><span class="mrel">&gt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">0</span></span></span></span>, then the schedule is generated <strong>forwards</strong> from first to last
 <ul>
 <li>Leftover days are on the interval <strong><code>sch[-2:]</code></strong></li>
 </ul>
@@ -605,12 +563,12 @@ Duration<span class="token punctuation">(</span>years<span class="token operator
 </tr>
 <tr>
 <td><code>.stop</code></td>
-<td><code>sch.start</code></td>
+<td><code>sch.stop</code></td>
 <td><code>Date(2024, 7 ,2)</code></td>
 </tr>
 <tr>
 <td><code>.step</code></td>
-<td><code>sch.start</code></td>
+<td><code>sch.step</code></td>
 <td><code>Duration(y=1)</code></td>
 </tr>
 <tr>
@@ -625,6 +583,9 @@ Duration<span class="token punctuation">(</span>years<span class="token operator
 </tr>
 </tbody>
 </table>
+<div class="disent-embed" data-defaultinput="Schedule(start=Date(1984,7,2),stop=Date(2024,7,2),step=Duration(y=1)).start"></div>
+<div class="disent-embed" data-defaultinput="Schedule(start=Date(1984,7,2),stop=Date(2024,7,2),step=Duration(y=1)).stop"></div>
+<div class="disent-embed" data-defaultinput="Schedule(start=Date(1984,7,2),stop=Date(2024,7,2),step=Duration(y=1)).step"></div>
 <br>
 <h2 id="calendars-a-namecalendarsa">Calendars <a name="Calendars" href=""></a> </h2>
 <p><a href="#ddh">ddh</a> | <a href="#Date">Date</a> | <a href="#Duration">Duration</a> | <a href="#Schedule">Schedule</a> | <a href="#Calendars">Calendars</a> | <a href="#CalendarMath">CalendarMath</a> | <a href="#Parser">Parser</a></p>
@@ -635,17 +596,19 @@ It's a <code>dict</code> whose data is always saved for global access. Keys are 
 <pre data-role="codeBlock" data-info="python" class="language-python python"><code><span class="token operator">&gt;&gt;</span><span class="token operator">&gt;</span> cals<span class="token punctuation">.</span>keys<span class="token punctuation">(</span><span class="token punctuation">)</span>
 <span class="token punctuation">[</span><span class="token string">'WE'</span><span class="token punctuation">,</span><span class="token string">'ALL'</span><span class="token punctuation">,</span><span class="token string">'NY'</span><span class="token punctuation">]</span>
 </code></pre><p>Get one</p>
-<pre data-role="codeBlock" data-info="python" class="language-python python"><code><span class="token operator">&gt;&gt;</span><span class="token operator">&gt;</span> Duration<span class="token punctuation">(</span>bd<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span>cals<span class="token operator">=</span>cals<span class="token punctuation">[</span><span class="token string">'NY'</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token comment"># get / use#</span>
-</code></pre><pre data-role="codeBlock" data-info="python" class="language-python python"><code><span class="token operator">&gt;&gt;</span><span class="token operator">&gt;</span> fed <span class="token operator">=</span> cals<span class="token punctuation">.</span>FED <span class="token comment"># "dot" notation works too</span>
+<pre data-role="codeBlock" data-info="python" class="language-python python"><code><span class="token operator">&gt;&gt;</span><span class="token operator">&gt;</span> Duration<span class="token punctuation">(</span>bd<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span>cals<span class="token operator">=</span><span class="token punctuation">[</span><span class="token string">'NY'</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token comment"># get / use#</span>
+</code></pre><div class="disent-embed" data-defaultinput="Duration(bd=0,cals=[&quot;NY&quot;])"></div>
+<pre data-role="codeBlock" data-info="python" class="language-python python"><code><span class="token operator">&gt;&gt;</span><span class="token operator">&gt;</span> fed <span class="token operator">=</span> cals<span class="token punctuation">.</span>FED <span class="token comment"># "dot" notation works too</span>
 </code></pre><p>Create one</p>
 <pre data-role="codeBlock" data-info="python" class="language-python python"><code><span class="token operator">&gt;&gt;</span><span class="token operator">&gt;</span> <span class="token keyword keyword-from">from</span> dateroll <span class="token keyword keyword-import">import</span> cals
 <span class="token operator">&gt;&gt;</span><span class="token operator">&gt;</span> cals<span class="token punctuation">[</span><span class="token string">'US'</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">[</span>Date<span class="token punctuation">(</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">)</span><span class="token punctuation">,</span> Date<span class="token punctuation">(</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">]</span> <span class="token comment"># add takes list of dates, or Schedule</span>
+
 </code></pre><p>Delete one</p>
-<pre data-role="codeBlock" data-info="python" class="language-python python"><code><span class="token operator">&gt;&gt;</span><span class="token operator">&gt;</span> <span class="token keyword keyword-del">del</span> cals<span class="token punctuation">[</span><span class="token string">'NY'</span><span class="token punctuation">]</span> <span class="token comment"># delete</span>
+<pre data-role="codeBlock" data-info="python" class="language-python python"><code><span class="token operator">&gt;&gt;</span><span class="token operator">&gt;</span> <span class="token keyword keyword-del">del</span> cals<span class="token punctuation">[</span><span class="token string">'US'</span><span class="token punctuation">]</span> <span class="token comment"># delete</span>
 </code></pre><h3 id="calendar-name-rules">Calendar name rules </h3>
 <ul>
 <li>2-3 letters (A-Z), all uppercase only.</li>
-<li>Examples: <code>WE</code> or <code>WKD</code> for weekend. <code>US</code> or <code>FED</code> or <code>NY</code> for US banking days.</li>
+<li>Examples: <code>WE</code> for weekend. <code>FED</code> or <code>NY</code> for US banking days.</li>
 </ul>
 <h3 id="storage">Storage </h3>
 <p>Saves in users's home folder</p>
@@ -788,15 +751,18 @@ It's a <code>dict</code> whose data is always saved for global access. Keys are 
 <p>It a combo of (1) really big <code>regex</code>, and (2) date validation with <a href="https://dateutil.readthedocs.io/en/stable/parser.html"><code>dateutil.parser.parse</code></a>.</p>
 <h3 id="string-parsing-ontology">String Parsing Ontology </h3>
 <ul>
-<li><code>DateRollString</code> (any of the below)
+<li>
+<p><code>DateRollString</code> (any of the below)</p>
 <ul>
-<li><code>TodayString</code> (represents TODAY's <code>Date</code>)
+<li>
+<p><code>TodayString</code> (represents TODAY's <code>Date</code>)</p>
 <ul>
 <li>Three literal values: <code>"t"</code>,<code> "t0"</code>, or <code>"today"</code></li>
 <li>Converts to <code>Date</code></li>
 </ul>
 </li>
-<li><code>DateString</code> (any <code>Date</code>)
+<li>
+<p><code>DateString</code> (any <code>Date</code>)</p>
 <ul>
 <li>Supports 3 <code>conventions</code>: <code>'american'</code>, <code>'european'</code>, and <code>'international'</code>
 <ul>
@@ -805,7 +771,7 @@ It's a <code>dict</code> whose data is always saved for global access. Keys are 
 <li>e.g. <code>"7/2/84"</code> or <code>"07-02-1984"</code></li>
 </ul>
 </li>
-<li><code>european</code>:  <code>day</code><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>→</mo></mrow><annotation encoding="application/x-tex">\to</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.3669em;"></span><span class="mrel">→</span></span></span></span><code>day</code><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>→</mo></mrow><annotation encoding="application/x-tex">\to</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.3669em;"></span><span class="mrel">→</span></span></span></span><code>year</code>, slashes/dashes/nothing
+<li><code>european</code>:  <code>day</code><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>→</mo></mrow><annotation encoding="application/x-tex">\to</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.3669em;"></span><span class="mrel">→</span></span></span></span><code>month</code><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>→</mo></mrow><annotation encoding="application/x-tex">\to</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.3669em;"></span><span class="mrel">→</span></span></span></span><code>year</code>, slashes/dashes/nothing
 <ul>
 <li>e.g. <code>"2/7/1984"</code> or <code>"02-07-84"</code></li>
 </ul>
@@ -820,14 +786,15 @@ It's a <code>dict</code> whose data is always saved for global access. Keys are 
 <li>Converts to <code>Date</code></li>
 </ul>
 </li>
-<li><code>DurationString</code> (any <code>Duration</code>)
+<li>
+<p><code>DurationString</code> (any <code>Duration</code>)</p>
 <ul>
 <li><code>DurationPeriodString</code>
 <ul>
 <li>Can be <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>&gt;</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">&gt;1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em;"></span><span class="mrel">&gt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">1</span></span></span></span> pairs of <code>unit</code> and <code>period</code>
 <ul>
 <li>Unit must be <code>int</code></li>
-<li>Valid periods: are <code>bd</code> <code>d</code> <code>w</code> <code>m</code> <code>q</code> <code>s</code> (semester) <code>h</code> (halves), and <code>y</code></li>
+<li>Valid periods: are <code>bd</code> <code>d</code> <code>w</code> <code>m</code> <code>q</code> and <code>y</code></li>
 <li>Combos like <code>5y3m</code> or <code>7w2d</code> or <code>1y2bd</code> are allowed</li>
 </ul>
 </li>
@@ -853,23 +820,27 @@ It's a <code>dict</code> whose data is always saved for global access. Keys are 
 </li>
 <li><code>RollingConventionString</code>
 <ul>
-<li>The rolling operator <code>"/"</code> can be followed by one of the 4 rolling methods:
+<li>
+<p>The rolling operator <code>"/"</code> can be followed by MOD string:</p>
 <ul>
-<li><code>"/F"</code> if all period adjustments to a date land on non-business day roll forward to next business day</li>
-<li><code>"/P"</code> if all period adjustments to a date land on non-business day roll backwards to previous business day</li>
-<li><code>"/MF"</code> similar to <code>"/F"</code> but if you cross a month boundary, go backwards to 1st business date in that month</li>
-<li><code>"/MP"</code> similar to <code>"/P"</code> but if you cross a month boundary, go forwards to last business date in that month</li>
+<li>When the direction of direction is positive<code>"/MOD"</code> means that if you cross a month boundary, go backwards to 1st business date in that month</li>
+<li>When the direction of direction is negative<code>"/MOD"</code> means that if you cross a month boundary, go forwards to last business date in that month</li>
 <li>for reference <a href="https://en.wikipedia.org/wiki/Date_rolling">date rolling</a>, it's for when payment adjustments need to stay in a specific accounting period.</li>
 </ul>
+<p>Example:</p>
+   <div class="disent-embed" data-defaultinput="ddh(&quot;12/30/2023+5bd/MOD&quot;)"></div>
 </li>
 </ul>
 </li>
 </ul>
 </li>
-<li>Example with one of everything <code>"+ 1y 2h 3s 4q 5m 6w 7d 8bd | NY u LN u JP / MF"</code></li>
+<li>
+<p>Example with one of everything <code>"+ 1y 2h 3s 4q 5m 6w 7d 8bd | NY u LN u JP / MF"</code></p>
+</li>
 </ul>
 </li>
-<li><code>ScheduleString</code> (any <code>Schedule</code>)
+<li>
+<p><code>ScheduleString</code> (any <code>Schedule</code>)</p>
 <ul>
 <li>3 parts separated by two commas, e.g.  <code>"X, Y, Z"</code>
 <ul>
@@ -882,25 +853,33 @@ It's a <code>dict</code> whose data is always saved for global access. Keys are 
 <li>e.g. <code>"t-5y, 1/15/25, 1y"</code> (from 5 years ago to Jan 15 next year, give me all years)</li>
 <li><code>DateMathString</code> (any datemath operation)
 <ul>
-<li>2 parts separated by math operator plus <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>+</mo></mrow><annotation encoding="application/x-tex">+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6667em;vertical-align:-0.0833em;"></span><span class="mord">+</span></span></span></span>  or minux <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>−</mo></mrow><annotation encoding="application/x-tex">-</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6667em;vertical-align:-0.0833em;"></span><span class="mord">−</span></span></span></span>, e.g. <code>"X+Y"</code> or <code>"Y-X"</code>
+<li>
+<p>2 parts separated by math operator plus <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>+</mo></mrow><annotation encoding="application/x-tex">+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6667em;vertical-align:-0.0833em;"></span><span class="mord">+</span></span></span></span>  or minus <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>−</mo></mrow><annotation encoding="application/x-tex">-</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6667em;vertical-align:-0.0833em;"></span><span class="mord">−</span></span></span></span>, e.g. <code>"X+Y"</code> or <code>"Y-X"</code></p>
 <ul>
 <li><code>X</code> or <code>Y</code> can be either <code>DateString</code> or <code>DurationString</code> and add/sub operation logic must be supported by <code>Date</code> and <code>Duration</code> objects</li>
 <li>e.g. <code>"t+1bd"</code> or <code>"t-5y"</code> or <code>"7/2/84+39y"</code></li>
 </ul>
+  <div class="disent-embed" data-defaultinput="ddh(&quot;t+1bd&quot;)"></div> 
+  <div class="disent-embed" data-defaultinput="ddh(&quot;t-5y&quot;)"></div> 
+  <div class="disent-embed" data-defaultinput="ddh(&quot;7/2/84+39y&quot;)"></div> 
 </li>
 </ul>
 </li>
 </ul>
 </li>
-<li>Examples
+<li>
+<p>Examples</p>
 <ul>
 <li>Unncessarily complicated
 <ul>
-<li><code>"t-1y2h3s4q5m6w7d8bd|NYuLNuJP/MF,07/02/1984+99y35bd|FED/P,3q7m5d|WE"</code>
+<li>
+<p><code>"t-1y4q5m6w7d8bd|NYuLNuBR/MOD,07/02/1984+45y35bd|FED/MOD,3q7m5d|WE"</code></p>
 <ul>
-<li><em>^^ Note</em> on above, if you <code>ddh</code> it, all calendars -unioned (<code>"|NYuLNuJPuFEDuWE"</code>), modified convention would hold as it was specified once, and <code>P</code> or <code>F</code> whould depend on the direction of travel when being appled to a specific date. If approx is needed, it will <code>warn</code>.</li>
-<li>For example, if you  do <code>"t+1m-21bd"</code>, if you have an anchor date, if <code>1m</code> &gt; <code>21bd</code> (net adjustment is in the future as opposed to past) it assumes you are rolling foward, and would imply a following (<code>"/F"</code>), period conversion is used, see <a href="#PeriodConversions">period conversion rules</a>. If modified was specified it would be inherited as well.</li>
+<li><em>^^ Note</em> on above, if you <code>ddh</code> it, all calendars -unioned (<code>"|NYuLNuJPuFEDuWE"</code>), modified convention would hold as it was specified once, and <code>MOD</code> would depend on the direction of travel when being appled to a specific date. If approx is needed, it will <code>warn</code>.</li>
+<li>For example, if you  do <code>"t+1m-21bd"</code>, if you have an anchor date, if <code>1m</code> &gt; <code>21bd</code> (net adjustment is in the future as opposed to past) it assumes you are rolling foward, period conversion is used, see <a href="#PeriodConversions">period conversion rules</a>. If modified was specified it would be inherited as well.</li>
 </ul>
+<p>Example:<br>
+</p><div class="disent-embed" data-defaultinput="Schedule(ddh(&quot;t-1y4q5m6w7d8bd|NYuLNuBR/MOD&quot;),ddh(&quot;07/02/1984+45y35bd|FED/MOD&quot;),ddh(&quot;3q7m5d|WE&quot;)).dates"></div><p></p>
 </li>
 </ul>
 </li>
@@ -1019,7 +998,7 @@ It's a <code>dict</code> whose data is always saved for global access. Keys are 
 <p><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>t</mi><mn>1</mn><mi>y</mi></msubsup></mrow><annotation encoding="application/x-tex">t_1^y</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.0486em;vertical-align:-0.2663em;"></span><span class="mord"><span class="mord mathnormal">t</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.7823em;"><span style="top:-2.4337em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span><span style="top:-3.1809em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.03588em;">y</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2663em;"><span></span></span></span></span></span></span></span></span></span> = <code>t1.years</code>, <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>t</mi><mn>2</mn><mi>y</mi></msubsup></mrow><annotation encoding="application/x-tex">t_2^y</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.0486em;vertical-align:-0.2663em;"></span><span class="mord"><span class="mord mathnormal">t</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.7823em;"><span style="top:-2.4337em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span><span style="top:-3.1809em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.03588em;">y</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2663em;"><span></span></span></span></span></span></span></span></span></span> = <code>t1.years</code><br>
 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>t</mi><mn>1</mn><mi>m</mi></msubsup></mrow><annotation encoding="application/x-tex">t_1^m</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.9125em;vertical-align:-0.2481em;"></span><span class="mord"><span class="mord mathnormal">t</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.6644em;"><span style="top:-2.4519em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">m</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2481em;"><span></span></span></span></span></span></span></span></span></span> = <code>t1.months</code>, <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>t</mi><mn>2</mn><mi>m</mi></msubsup></mrow><annotation encoding="application/x-tex">t_2^m</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.9125em;vertical-align:-0.2481em;"></span><span class="mord"><span class="mord mathnormal">t</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.6644em;"><span style="top:-2.4519em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">m</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2481em;"><span></span></span></span></span></span></span></span></span></span> = <code>t1.months</code><br>
 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>t</mi><mn>1</mn><mi>d</mi></msubsup></mrow><annotation encoding="application/x-tex">t_1^d</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.0972em;vertical-align:-0.2481em;"></span><span class="mord"><span class="mord mathnormal">t</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8491em;"><span style="top:-2.4519em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">d</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2481em;"><span></span></span></span></span></span></span></span></span></span> = <code>t1.days</code>, <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>t</mi><mn>1</mn><mi>d</mi></msubsup></mrow><annotation encoding="application/x-tex">t_1^d</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.0972em;vertical-align:-0.2481em;"></span><span class="mord"><span class="mord mathnormal">t</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8491em;"><span style="top:-2.4519em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">d</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2481em;"><span></span></span></span></span></span></span></span></span></span> = <code>t1.days</code></p>
-</div>
+
 <h2 id="caveats">Caveats </h2>
 <ul>
 <li>Calendars are political, and each jurisdiction has unique methods to proclaim or repeal.</li>

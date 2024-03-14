@@ -1,3 +1,5 @@
+
+
 <span style="color:red;">PRE RELEASE</span>
 
 <style>
@@ -95,13 +97,13 @@ ddh(some_string)
 
 ##### Examples
 
-|Flavor|Input|Output|
-|-|-|-|
-|[Today string        ]()|`ddh('t')`|`Date(2024,2,2)`|
-|[Date string         ]()|`ddh('12/31/22')`|`Date(2022,12,31)`|
-|[Duration string     ]()|`ddh('+3m')`|`Duration(m=3)`|
-|[Date math string     ]()|`ddh('t + 1y')`|`Date(2025,2,2)`|
-|[Date schedule string ]()|`ddh('t, t+5y, 1m')`|`[Date(2022,2,2),`...`]`|
+|Flavor|Example|
+|-|-|
+|[Today string        ]()|<div class="disent-embed" data-defaultinput='ddh("t")'></div><script type='text/javascript' src="http://repl.disent.com/drepl.js" async></script>
+|[Date string         ]()|<div class="disent-embed" data-defaultinput='ddh("12/31/22")'></div>|
+|[Duration string     ]()|<div class="disent-embed" data-defaultinput='ddh("+3m")'></div>|
+|[Date math string     ]()|<div class="disent-embed" data-defaultinput='ddh("t+1y")'></div>|
+|[Date schedule string ]()|<div class="disent-embed" data-defaultinput='ddh("t,t+5y,1m")'></div>|
 
 <br>
 
@@ -124,51 +126,49 @@ Adds business day handling, calendar math, and schedule generation when combined
 Date(year, month, day)
 ```
 ##### Constructor example
-`Date(2024, 7, 2)` 
+<div class="disent-embed" data-defaultinput='Date(2024,7,2)'></div>
 <br>
 *^3 integer args: year, month, and day
 
 ##### Properties/Methods
-|Name|Input|Output|
-|-|-|-|
-|`.datetime`            | `Date(2024,7,2).datetime` | `datetime.datetime(2024, 7, 2, 0, 0)`|
-|`.date`                | `Date(2024,7,2).date` | `datetime.date(2024, 7, 2, 0, 0)`|
-|`.iso`                 | `Date(2024,7,2).iso`| `20240702`|
-|`.xls`                 | `Date(2024,7,2).xls`| `45475`|
-|`.unix`                | `Date(2024,7,2).unix`| `1719892800`|
-|`.dotw`                | `Date(2024,7,2).dotw`| `"Tue"`|
-|`.woty`                | `Date(2024,7,2).woty`| `27`|                                                    |
-|`.is_bd(calendar)`¹    | `Date(2024,7,2).is_bd("NY")`|`False`|
-|`datetime.date.*`|see [datetime](https://docs.python.org/3/library/datetime.html#datetime.date)|see [datetime](https://docs.python.org/3/library/datetime.html#datetime.date)
+|Name|Example|
+|-|-|
+|`.datetime`            | <div class="disent-embed" data-defaultinput='Date(2024,7,2).datetime'></div> |
+|`.date`                | <div class="disent-embed" data-defaultinput='Date(2024,7,2).date'></div>|
+|`.iso`                 | <div class="disent-embed" data-defaultinput='Date(2024,7,2).iso'></div>|
+|`.xls`                 | <div class="disent-embed" data-defaultinput='Date(2024,7,2).xls'></div>|
+|`.unix`                | <div class="disent-embed" data-defaultinput='Date(2024,7,2).unix'></div>|
+|`.dotw`                | <div class="disent-embed" data-defaultinput='Date(2024,7,2).dotw'></div>|
+|`.woty`                | <div class="disent-embed" data-defaultinput='Date(2024,7,2).woty'></div>|                                                  |
+|`.is_bd(calendar)`¹    |<div class="disent-embed" data-defaultinput='Date(2024,7,2).is_bd("NY")'></div>|
+|`datetime.date.*`|see [datetime](https://docs.python.org/3/library/datetime.html#datetime.date)|
 
 ¹`calendar` can be of the form: `"NY"`, `["NY"]`, `"NYuLN"`, or `["NY","LN"]` (see [`Parser`]() for more details.).
 
 
 ##### Operations
 
-assume ```d = Date(2000,1,1)```
-
 ##### `Date` $+$/$-$ `Duration` or `Date`
 
-|LHS|Operator|RHS|Result|Input|Output|
-|-|-|-|-|-|-|
-|`Date`|$+$|`Duration`  |`Date`     |`d + Duration(m=1)`|`Date(2000,2,1)`|
-|`Date`|$-$|`Duration`  |`Date`     |`d - Duration(y=1)`|`Date(1999,1,1)`|
-|`Date`|$-$|`Date`      |`Duration` |`d - Date(1998,1,1)`|`Duration(d=730)`|
+|LHS|Operator|RHS|Result|Example|
+|-|-|-|-|-|
+|`Date`|$+$|`Duration`  |`Date`     |<div class="disent-embed" data-defaultinput='Date(2000,1,1) + Duration(m=1)'></div>|
+|`Date`|$-$|`Duration`  |`Date`     |<div class="disent-embed" data-defaultinput='Date(2000,1,1) + Duration(y=1)'></div>|
+|`Date`|$-$|`Date`      |`Duration` |<div class="disent-embed" data-defaultinput='Date(2000,1,1) - Date(1998,1,1)'></div>|
 
 
 ##### `Date` $+$/$-$ `int` (for calendar days)
-|LHS|Operator|RHS|Result|Input|Output|
-|-|-|-|-|-|-|
-|`Date`|$+$|`int`      |`Duration` |`d + 5`|`Date(2000,1,6)`|
-|`Date`|$-$|`int`      |`Duration` |`d - 1`|`Date(1999,12,31)`|
+|LHS|Operator|RHS|Result|Example|
+|-|-|-|-|-|
+|`Date`|$+$|`int`      |`Duration` |<div class="disent-embed" data-defaultinput='Date(2000,1,1) + 5'></div>|
+|`Date`|$-$|`int`      |`Duration` |<div class="disent-embed" data-defaultinput='Date(2000,1,1) - 1'></div>|
 
 ##### `Date` $+$/$-$ *Date string* or *Duration string*
-|LHS|Operator|RHS|Result|Input|Output|
-|-|-|-|-|-|-|
-|`Date`|$-$|*Date string*     |`Duration`|`d - "1/1/98"`|`Duration(d=730)`|
-|`Date`|$+$|*Duration string* |`Date`    |`d + "1m"`|`Date(2000,2,1)`|
-|`Date`|$-$|*Duration string* |`Date`    |`d - "1y"`|`Date(1999,1,1)`|
+|LHS|Operator|RHS|Result|Example|
+|-|-|-|-|-|
+|`Date`|$-$|*Date string*     |`Duration`|<div class="disent-embed" data-defaultinput='Date(2000,1,1) - "1/1/98"'></div>|
+|`Date`|$+$|*Duration string* |`Date`    |<div class="disent-embed" data-defaultinput='Date(2000,1,1) + "1m"'></div>|
+|`Date`|$-$|*Duration string* |`Date`    |<div class="disent-embed" data-defaultinput='Date(2000,1,1) - "1y"'></div>|
 
 
 ## Duration <a name="Duration"></a>
@@ -176,7 +176,7 @@ assume ```d = Date(2000,1,1)```
 [ddh](#ddh) | [Date](#Date) | [Duration](#Duration) | [Schedule](#Schedule) | [Calendars](#Calendars) | [CalendarMath](#CalendarMath) | [Parser](#Parser)
 
 
-Duration `class` herits from `dateutil.relativedelta` for defining intervals (periods) of time.
+Duration `class` inherits from `dateutil.relativedelta` for defining intervals (periods) of time.
 
 Adds business day handling.
 
@@ -192,19 +192,19 @@ Duration(years=1,months=3)
 
 |Description                |Kwargs|Example|
 |-                          |-      |-            |
-|Years                      |`years` `year` `y`|`Duration(y=n)`|
-|Quarters ($\to$ 3m)        |`qtrs` `qtr` `q`|`Duration(q=n)`|
-|Weeks ($\to$ 7d)           |`weeks` `week` `w`|`Duration(w=n)`|
-|Calendar days              |`days` `cd` `d`|`Duration(d=-n)`|
-|Calendar days w/ roll      |`roll=roll`¹|`Duration(d=n,roll="F")`|
-|Business days              |`bd`|`Duration(bd=-n)`|
-|Business days w/ calendar  |`bd` `cals=calendar`²|`Duration(bd=-1, cals="FED")`|
-|Combinations|`y` `m` `bd` `cals`|`Duration(y=1, m=3, bd=-1, cals="FED")`|
+|Years                      |`years` `year` `Y` `y`|<div class="disent-embed" data-defaultinput='Duration(y=1)'></div>|
+|Quarters ($\to$ 3m)        |`quarters` `quarter` `Q` `q`|<div class="disent-embed" data-defaultinput='Duration(q=1)'></div>|
+|Weeks ($\to$ 7d)           |`weeks` `week` `W` `w`|<div class="disent-embed" data-defaultinput='Duration(w=1)'></div>|
+|Calendar days              |`days` `day` `D` `d`|<div class="disent-embed" data-defaultinput='Duration(d=-1)'></div>|
+|Calendar days w/ modified      |`modified=modified`¹|<div class="disent-embed" data-defaultinput='Duration(d=1,modified=True)'></div>|
+|Business days              |`BD` `bd`|<div class="disent-embed" data-defaultinput='Duration(bd=-1)'></div>|
+|Business days w/ calendar  |`BD` `bd` `cals=calendar`²|<div class="disent-embed" data-defaultinput='Duration(bd=-1,cals="FED")'></div>|
+|Combinations|`y` `m` `bd` `cals`|<div class="disent-embed" data-defaultinput='Duration(y=1,m=3,bd=-1,cals="FED")'></div>|
 
 
 <span style="color:red;">open items for 1st release: (1) split modified from roll direction into 2 settings, (2) add EOM rule, and (3) maybe add BRL longer months/shorter months rule.</span>
 
-¹`roll` can one be following business day (`"F"`), preceding business day (`"P"`) or the equivalent modified conventions: modified following (`"MF"`), or modified previous (`"MP"`). 
+¹`modified` can be True or False. 
 
 ²`calendar` can be of the form: `"NY"`, `["NY"]`, `"NYuLN"`, or `["NY","LN"]` (see [`Parser`]() for more details.).
 
@@ -212,16 +212,16 @@ Optional `kwargs` for either `anchor_start=Date(...)` or `anchor_stop=Date(...)`
 <br>
 
 #### Properties/Methods
-|Name                       |Input                     |Output        |
-|-                          |-                      |-          | 
-|`.years               `      |`Duration(y=5,m=4,d=3,bd=2)`    |`5`        |
-|`.months              `      |`Duration(y=5,m=4,d=3,bd=2)`    |`4`        |
-|`.days                `      |`Duration(y=5,m=4,d=3,bd=2)`    |`3`        |
-|`.bds                 `      |`Duration(y=5,m=4,d=3,bd=2)`    |`2`        |
-|`.anchor_start        `      |`ddh('7/7/2000-7/5/2000')`      |`Dates(2000,7,7)`   |
-|`.anchor_stop         `      |`ddh('7/7/2000-7/5/2000')`      |`Dates(2000,7,5)`   |
-|`.ndays()         `¹        |`Duration(y=5,m=4,d=3,bd=2)`    |~`1478`    |
-|`.nyears(counter)`¹²    |`Duration(y=5,m=4,d=3,bd=2)`    |~`4.05`    |
+|Name                       |Example                   |
+|-                          |-                      | 
+|`.years               `      |<div class="disent-embed" data-defaultinput='Duration(y=5,m=4,d=3,bd=2).years'></div>|
+|`.months              `      |<div class="disent-embed" data-defaultinput='Duration(y=5,m=4,d=3,bd=2).months'></div>|
+|`.days                `      |<div class="disent-embed" data-defaultinput='Duration(y=5,m=4,d=3,bd=2).days'></div>|
+|`.bd                 `      |<div class="disent-embed" data-defaultinput='Duration(y=5,m=4,d=3,bd=2).bd'></div>|
+|`._anchor_start        `      |<div class="disent-embed" data-defaultinput='ddh("7/7/2000-7/5/2000")._anchor_start'></div>|
+|`._anchor_end         `      |<div class="disent-embed" data-defaultinput='ddh("7/7/2000-7/5/2000")._anchor_end'></div>|
+|`.ndays()         `¹        |<div class="disent-embed" data-defaultinput='Duration(y=5,m=4,d=3,bd=2)'></div>|
+|`.nyears(counter)`²    |<div class="disent-embed" data-defaultinput='Duration(y=5,m=4,d=3,bd=2)'></div>|
 
 ¹The `n*` methods may require period conversion based upon approximation. see [Period Conversions](#PeriodConversions).
 
@@ -229,27 +229,30 @@ Optional `kwargs` for either `anchor_start=Date(...)` or `anchor_stop=Date(...)`
 
 #### Operations
 
-assume ```dur = Duration(years=1)```
+assume ```dur = Duration(years=1)``` and ```d = Date(2000,1,1)```
 
 ##### `Duration` $+$/$-$ `Duration`
 
-|LHS|Operator|RHS|Result|Input|Output|
-|-|-|-|-|-|-|
-|`Duration`|$+$|`Duration`|`Duration`|`dur + Duration(m=1)`|`Duration(y=1,m=1)`|
-|`Duration`|$-$|`Duration`|`Duration`|`dur - Duration(m=1)`|`Duration(m=11)`|
+|LHS|Operator|RHS|Result|Example|
+|-|-|-|-|-|
+|`Duration`|$+$|`Duration`|`Duration`|<div class="disent-embed" data-defaultinput='Duration(y=1) + Duration(m=1)'></div>|
+|`Duration`|$-$|`Duration`|`Duration`|<div class="disent-embed" data-defaultinput='Duration(y=1) - Duration(m=1)'></div>|
 
-##### `Duration` $+$/$-$ (*Date string* or *Duration string*)
-|LHS|Operator|RHS|Result|Input|Output|
-|-|-|-|-|-|-|
-|`Duration`|$+$|*Duration string* |`Date`    |`dur + "1m"`|`Date(2000,2,1)`|
-|`Duration`|$-$|*Duration string* |`Date`    |`dur - "1y"`|`Date(1999,1,1)`|
+##### `Date` $+$/$-$ *Duration string*
+|LHS|Operator|RHS|Result|Example|
+|-|-|-|-|-|
+|`Date`|$+$|*Duration string* |`Date`    |<div class="disent-embed" data-defaultinput='Date(2000,1,1) + "1m"'></div>|
+|`Date`|$-$|*Duration string* |`Date`    |<div class="disent-embed" data-defaultinput='Date(2000,1,1) - "1m"'></div>|
 
 #### Anchoring with `Date`
 
-When a `Duration` is the result of an operation with one or more `Date`, then 2 additional properties (`anchor_start` and/or `anchor_stop`) will be set automatically.
+When a `Duration` is the result of an operation with two `Date`, then 2 additional properties (`_anchor_start` and/or `_anchor_end`) will be set automatically.
 
-`Date(1999, 1, 1 )` $+$ `Duration(m=1)` $=$ `Duration(anchor_start=Date(1999, 1, 1)`
-`Date(2000, 1, 1)` $-$ `Date(1999, 1, 1)` $=$ `Duration(y=1, anchor_start=Date(1999,1,1), anchor_stop=date(2000, 1, 1)`
+
+`Date(2000, 1, 1)` $-$ `Date(1999, 1, 1)` $=$ `Duration(y=1, _anchor_start=Date(1999,1,1), _anchor_end=date(2000, 1, 1)`
+
+<div class="disent-embed" data-defaultinput='Date(2000,1,1) - Date(1999,1,1)'></div>
+
 
 When present, these properties allow for more exact period conversion.
 
@@ -284,6 +287,7 @@ A schedule is a `list` of contiguous dates generated from some start date, stop 
 >>> sch.dates
 [Date(1984, 7, 2), Date(1985, 7, 2), ..., Date(2024, 7, 2)]
 ```
+<div class="disent-embed" data-defaultinput='Schedule(start=Date(1984,7,2),stop=Date(2024,7,2),step=Duration(y=1)).dates'></div></div><script type='text/javascript' src="http://repl.disent.com/drepl.js" async></script>
 
 ### Contructor args
 |Name|Description|Type
@@ -297,7 +301,7 @@ A schedule is a `list` of contiguous dates generated from some start date, stop 
 ### Leftover days (a.k.a. stub handling)
 - if `step` $<0$, then schedule is generated **backwards** from last to first
     -  Leftover days are on the interval **`sch[0:2]`**
-- if `step` $>0$, then the scheduled is generated **forwards** from first ot last
+- if `step` $>0$, then the schedule is generated **forwards** from first to last
     -  Leftover days are on the interval **`sch[-2:]`**
 
 <br />
@@ -306,10 +310,16 @@ A schedule is a `list` of contiguous dates generated from some start date, stop 
 |Name|Input|Output|
 |-|-|-|
 |`.start`|`sch.start`|`Date(1984, 7 ,2)`|
-|`.stop`|`sch.start`|`Date(2024, 7 ,2)`|
-|`.step`|`sch.start`|`Duration(y=1)`|
+|`.stop`|`sch.stop`|`Date(2024, 7 ,2)`|
+|`.step`|`sch.step`|`Duration(y=1)`|
 |`.dates`| `Schedule(start=Date(1984, 7...` | `[Date(1984, 7, 2), Date(...]` (sorted)|
 |`list.*`|see [list](https://docs.python.org/3/tutorial/datastructures.html)|
+
+<div class="disent-embed" data-defaultinput='Schedule(start=Date(1984,7,2),stop=Date(2024,7,2),step=Duration(y=1)).start'></div>
+
+<div class="disent-embed" data-defaultinput='Schedule(start=Date(1984,7,2),stop=Date(2024,7,2),step=Duration(y=1)).stop'></div>
+
+<div class="disent-embed" data-defaultinput='Schedule(start=Date(1984,7,2),stop=Date(2024,7,2),step=Duration(y=1)).step'></div>
  
 <br>
 
@@ -330,8 +340,9 @@ List calendars
 
 Get one
 ```python
->>> Duration(bd=0,cals=cals['NY']) # get / use#
+>>> Duration(bd=0,cals=['NY']) # get / use#
 ```
+<div class="disent-embed" data-defaultinput='Duration(bd=0,cals=["NY"])'></div>
 
 ```python
 >>> fed = cals.FED # "dot" notation works too
@@ -341,16 +352,18 @@ Create one
 ```python
 >>> from dateroll import cals
 >>> cals['US'] = [Date(...), Date(...), ...] # add takes list of dates, or Schedule
+
 ```
+
 Delete one
 ```python
->>> del cals['NY'] # delete
+>>> del cals['US'] # delete
 ```
 
 ### Calendar name rules
 
  - 2-3 letters (A-Z), all uppercase only.
- - Examples: `WE` or `WKD` for weekend. `US` or `FED` or `NY` for US banking days.
+ - Examples: `WE` for weekend. `FED` or `NY` for US banking days.
 
 ### Storage
 
@@ -452,7 +465,7 @@ It a combo of (1) really big `regex`, and (2) date validation with [`dateutil.pa
      - Supports 3 `conventions`: `'american'`, `'european'`, and `'international'`
         - `american`: `month`$\to$`day`$\to$`year`, slashes/dashes/nothing
            - e.g. `"7/2/84"` or `"07-02-1984"`
-        - `european`:  `day`$\to$`day`$\to$`year`, slashes/dashes/nothing
+        - `european`:  `day`$\to$`month`$\to$`year`, slashes/dashes/nothing
            - e.g. `"2/7/1984"` or `"02-07-84"`
         - `international`:  `year`$\to$`month`$\to$`day`, slashes/dashes/nothing
            - e.g. `"19840702"` or `"19840702"`
@@ -461,7 +474,7 @@ It a combo of (1) really big `regex`, and (2) date validation with [`dateutil.pa
     - `DurationPeriodString`
          - Can be $>1$ pairs of `unit` and `period`
            - Unit must be `int`
-           - Valid periods: are `bd` `d` `w` `m` `q` `s` (semester) `h` (halves), and `y`
+           - Valid periods: are `bd` `d` `w` `m` `q` and `y`
            - Combos like `5y3m` or `7w2d` or `1y2bd` are allowed
     - `CalendarString`
        -  Any `DurationPeriodString` in a `DurationString` can be followed by the filtration (or pipe) operator `"|"` to denote information from calendar lists of holidays which must be used to perform date arithmetic.
@@ -470,13 +483,16 @@ It a combo of (1) really big `regex`, and (2) date validation with [`dateutil.pa
               -  Calendar union, e.g. `"|NY u LN"` (2) or `"|FED u BOE u BCB"` (3)
                  -  it mathy like $\mathbb{E} [X_t|\mathscr{F_t}]$ where $\mathscr{F_t}=\Set{\text{NY}\bigcup\text{LN}}$
     - `RollingConventionString`
-       - The rolling operator `"/"` can be followed by one of the 4 rolling methods:
-          - `"/F"` if all period adjustments to a date land on non-business day roll forward to next business day
-          - `"/P"` if all period adjustments to a date land on non-business day roll backwards to previous business day
-          - `"/MF"` similar to `"/F"` but if you cross a month boundary, go backwards to 1st business date in that month
-          - `"/MP"` similar to `"/P"` but if you cross a month boundary, go forwards to last business date in that month
+       - The rolling operator `"/"` can be followed by MOD string:
+          - When the direction of direction is positive`"/MOD"` means that if you cross a month boundary, go backwards to 1st business date in that month
+          - When the direction of direction is negative`"/MOD"` means that if you cross a month boundary, go forwards to last business date in that month
           - for reference [date rolling](https://en.wikipedia.org/wiki/Date_rolling), it's for when payment adjustments need to stay in a specific accounting period.
+
+         Example:
+            <div class="disent-embed" data-defaultinput='ddh("12/30/2023+5bd/MOD")'></div>
+
   - Example with one of everything `"+ 1y 2h 3s 4q 5m 6w 7d 8bd | NY u LN u JP / MF"`
+  
 - `ScheduleString` (any `Schedule`)
      - 3 parts separated by two commas, e.g.  `"X, Y, Z"`
         - `X` is `DateString`, `TodayString`, or `DateMathString`
@@ -485,14 +501,23 @@ It a combo of (1) really big `regex`, and (2) date validation with [`dateutil.pa
      - yields `Schedule(start=X, stop=Y, step=Z)`
      - e.g. `"t-5y, 1/15/25, 1y"` (from 5 years ago to Jan 15 next year, give me all years)
   - `DateMathString` (any datemath operation)
-     - 2 parts separated by math operator plus $+$  or minux $-$, e.g. `"X+Y"` or `"Y-X"`
+     - 2 parts separated by math operator plus $+$  or minus $-$, e.g. `"X+Y"` or `"Y-X"`
          - `X` or `Y` can be either `DateString` or `DurationString` and add/sub operation logic must be supported by `Date` and `Duration` objects
          - e.g. `"t+1bd"` or `"t-5y"` or `"7/2/84+39y"`
+          
+         <div class="disent-embed" data-defaultinput='ddh("t+1bd")'></div> 
+
+         <div class="disent-embed" data-defaultinput='ddh("t-5y")'></div> 
+
+         <div class="disent-embed" data-defaultinput='ddh("7/2/84+39y")'></div> 
 - Examples
    - Unncessarily complicated
-     - `"t-1y2h3s4q5m6w7d8bd|NYuLNuJP/MF,07/02/1984+99y35bd|FED/P,3q7m5d|WE"`
-        - *^^ Note* on above, if you `ddh` it, all calendars -unioned (`"|NYuLNuJPuFEDuWE"`), modified convention would hold as it was specified once, and `P` or `F` whould depend on the direction of travel when being appled to a specific date. If approx is needed, it will `warn`.
-        -    For example, if you  do `"t+1m-21bd"`, if you have an anchor date, if `1m` > `21bd` (net adjustment is in the future as opposed to past) it assumes you are rolling foward, and would imply a following (`"/F"`), period conversion is used, see [period conversion rules](#PeriodConversions). If modified was specified it would be inherited as well.
+     - `"t-1y4q5m6w7d8bd|NYuLNuBR/MOD,07/02/1984+45y35bd|FED/MOD,3q7m5d|WE"`
+        - *^^ Note* on above, if you `ddh` it, all calendars -unioned (`"|NYuLNuJPuFEDuWE"`), modified convention would hold as it was specified once, and `MOD` would depend on the direction of travel when being appled to a specific date. If approx is needed, it will `warn`.
+        -    For example, if you  do `"t+1m-21bd"`, if you have an anchor date, if `1m` > `21bd` (net adjustment is in the future as opposed to past) it assumes you are rolling foward, period conversion is used, see [period conversion rules](#PeriodConversions). If modified was specified it would be inherited as well.
+
+        Example:
+               <div class="disent-embed" data-defaultinput='Schedule(ddh("t-1y4q5m6w7d8bd|NYuLNuBR/MOD"),ddh("07/02/1984+45y35bd|FED/MOD"),ddh("3q7m5d|WE")).dates'></div> 
    - Classic
       - Client wants a 5 year loan from today, paid monthly, i need dates to structure it `ddh("t,t+5y,1m")`.
 
