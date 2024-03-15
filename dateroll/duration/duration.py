@@ -8,6 +8,7 @@ from dateroll.calendars.calendarmath import calmath
 import dateroll.parser.parsers as parsers
 import calendar
 from functools import cache
+import code
 
 from dateroll.settings import settings
 
@@ -531,6 +532,7 @@ class Duration(dateutil.relativedelta.relativedelta):
 
                 after = Date(before.year,before.month,num_days)
                 after = after - Duration(bd=0,cals=self.cals)
+
             else:
                 after = Date(before.year,before.month,1)
                 after = after + Duration(bd=0,cals=self.cals)
@@ -651,7 +653,8 @@ if __name__ == "__main__": # pragma: no cover
     from dateroll.ddh.ddh import ddh
     from dateroll import Date
     from dateroll import Duration
-    x = ddh('12/1/2023+12m/MOD')
+    # x = ddh('12/1/2023+12m/MOD')
+    x = ddh('6m+6m')
     print(x)
 
 
