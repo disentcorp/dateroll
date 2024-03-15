@@ -138,34 +138,21 @@ class TestParsers(unittest.TestCase):
             test parse date math string, +X-X
         '''
 
-        s = ' A+B'
-        s2 = ' +A+B -C'
-        s3 = ' +A'
-        things = {'A':4,'B':5}
-        things2 = {'A':4}
+        # good
+        self.assertEqual(parsers.parseDateMathString("A",{'A':4}),4)
+        self.assertEqual(parsers.parseDateMathString("-A",{'A':4}),-4)
+        self.assertEqual(parsers.parseDateMathString("+A",{'A':4}),4)
+        self.assertEqual(parsers.parseDateMathString('A+B', {'A':4,'B':5}),9)
+        self.assertEqual(parsers.parseDateMathString("A+B-C",{'A':4,'B':3,'C':1}),6)
+        self.assertEqual(parsers.parseDateMathString("A+B-C-D",{'A':4,'B':3,'C':1,'D':1}),5)
 
-        # good case
-        rs = parsers.parseDateMathString(s,things)
-        self.assertEqual(rs,9)
-
-        # bad case, missing C
+        # bad
         with self.assertRaises(Exception) as cm:
-            parsers.parseDateMathString(s2,things)
+            parsers.parseDateMathString("A+B", {'A':4})
     
-        wrong_things = 'qwertyuiop[;lkjhgfdaszxcvbnm'
-
-        # bad case, wrong things
+        # bad
         with self.assertRaises(Exception) as cm:
-            parsers.parseDateMathString(s,wrong_things)
-
-        # bad case, missing B
-        with self.assertRaises(Exception) as cm:
-            parsers.parseDateMathString(s,things2)
-        
-        # good case
-        rs3 = parsers.parseDateMathString(s3,things2)
-        self.assertEqual(rs3,4)
-        
+            parsers.parseDateMathString('B',{'A':4,'B':5})        
     
     def test_parsersConvention(self):
         s = settings
