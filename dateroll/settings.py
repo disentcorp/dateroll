@@ -29,13 +29,12 @@ class Settings:
         '''
         if settings load and validate, if not load defaults and save
         '''
-        self.load_default()
-
         if path.exists():
             self.load()
             self.validate()
-
-        self.save()
+        else:
+            self.load_default()
+            self.save()
 
     def load_default(self):
         '''
@@ -63,7 +62,8 @@ class Settings:
         '''
         save settings file
         '''
-        with open(path,'w') as f:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with path.open('w') as f:
             txt = f'# Dateroll settings file\n# {path}\n\n'
             for k,v in self.__dict__.items():
                 if not k.startswith('__'):
