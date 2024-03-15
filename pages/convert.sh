@@ -3,7 +3,9 @@
 mkdir -p build/docs
 cp ../logo.png build
 if [[ $? ]]; then
-    cp github-markdown.css build    
+    cp ../logo.png build/docs
+    cp github-markdown.css build
+    cp github-markdown.css build/docs
 else
     echo "ERROR: run this script from the pages directory."
     exit 1
