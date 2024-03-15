@@ -131,8 +131,9 @@ class TestDate(unittest.TestCase):
         self.assertRaises(TypeError,lambda: 3.0-d1)
 
         # # sub
-        dur91d = Duration(y=0,m=3,w=0,d=0)
-        self.assertEqual(d2 - d1, dur91d)
+        dur91d = Duration(y=0,m=3,w=0,d=0,_anchor_start=Date(2024,1,3),_anchor_end=Date(2024,4,3),)
+        
+        self.assertEqual((d2 - d1), dur91d)
         self.assertEqual(d2 - dur, d1)
         self.assertEqual(d2 - str_d1, dur91d)
         self.assertEqual(d2 - str_dur, d1)

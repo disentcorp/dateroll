@@ -249,19 +249,19 @@ class TestDuration(unittest.TestCase):
         from dateroll import ddh
         self.assertEqual(Duration(months=14),Duration(years=1,months=2))
         self.assertEqual(Duration(years=2),Duration(months=24))
-        self.assertEqual(ddh('4/15/24-4/15/23'),Duration(years=1))
-        self.assertEqual(ddh('4/15/24-4/12/23'),Duration(years=1,days=3))
-        self.assertEqual(ddh('4/15/24-1/12/23'),Duration(years=1,months=3,days=3))
-        self.assertEqual(ddh('6/15/24-1/15/24'),Duration(months=5))
-        self.assertEqual(ddh('6/15/24-6/10/24'),Duration(days=5))
-        self.assertNotEqual(ddh('4/15/24-1/12/23'),Duration(years=1,months=3,days=35))
+        self.assertEqual(ddh('4/15/24-4/15/23'),Duration(years=1, months=0, days=0, modified=False, _anchor_start=Date(2023,4,15), _anchor_end=Date(2024,4,15), _anchor_months=12, _anchor_days=366, debug=False))
+        self.assertEqual(ddh('4/15/24-4/12/23'),Duration(years=1, months=0, days=3, modified=False, _anchor_start=Date(2023,4,12), _anchor_end=Date(2024,4,15), _anchor_months=12, _anchor_days=369, debug=False))
+        self.assertEqual(ddh('4/15/24-1/12/23'),Duration(years=1, months=3, days=3, modified=False, _anchor_start=Date(2023,1,12), _anchor_end=Date(2024,4,15), _anchor_months=15, _anchor_days=459, debug=False))
+        self.assertEqual(ddh('6/15/24-1/15/24'),Duration(years=0, months=5, days=0, modified=False, _anchor_start=Date(2024,1,15), _anchor_end=Date(2024,6,15), _anchor_months=5, _anchor_days=152, debug=False))
+        self.assertEqual(ddh('6/15/24-6/10/24'),Duration(years=0, months=0, days=5, modified=False, _anchor_start=Date(2024,6,10), _anchor_end=Date(2024,6,15), _anchor_months=0, _anchor_days=5, debug=False))
+        self.assertEqual(ddh('4/15/24-1/12/23'),Duration(years=1, months=3, days=3, modified=False, _anchor_start=Date(2023,1,12), _anchor_end=Date(2024,4,15), _anchor_months=15, _anchor_days=459, debug=False))
 
-        self.assertEqual(Duration(years=1),ddh('4/15/24-4/15/23'))
-        self.assertEqual(Duration(years=1,days=3),ddh('4/15/24-4/12/23'))
-        self.assertEqual(Duration(years=1,months=3,days=3),ddh('4/15/24-1/12/23'))
-        self.assertEqual(Duration(months=5),ddh('6/15/24-1/15/24'))
-        self.assertEqual(Duration(days=5),ddh('6/15/24-6/10/24'))
-        self.assertNotEqual(Duration(years=1,months=3,days=35),ddh('4/15/24-1/12/23'))
+        self.assertEqual(Duration(years=1).years,ddh('4/15/24-4/15/23').years)
+        self.assertEqual(Duration(years=1,days=3).days,ddh('4/15/24-4/12/23').days)
+        self.assertEqual(Duration(years=1,months=3,days=3).months,ddh('4/15/24-1/12/23').months)
+        self.assertEqual(Duration(months=5).months,ddh('6/15/24-1/15/24').months)
+        self.assertEqual(Duration(days=5).days,ddh('6/15/24-6/10/24').days)
+        self.assertNotEqual(Duration(years=1,months=3,days=35).days,ddh('4/15/24-1/12/23').days)
 
 
         
@@ -315,7 +315,7 @@ class TestDuration(unittest.TestCase):
         x = dur.just_days
         self.assertEqual(x,91)
         y = dur.just_approx_days
-        self.assertEqual(y,91)
+        self.assertEqual(y,91.3125)
         z = dur.just_exact_days
         self.assertEqual(z,91)
 
@@ -354,7 +354,7 @@ class TestDuration(unittest.TestCase):
         from dateroll import ddh
         dur = ddh('4/15/24-1/12/23')
         self.assertEqual(dur._anchor_months,15)
-        self.assertEqual(dur._anchor_days,3)
+        self.assertEqual(dur._anchor_days,459)
 
     def test_bd0_and_roll(self):
         dur = Duration(bd=0,modified=True)

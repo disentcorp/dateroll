@@ -33,7 +33,7 @@ COMPLETE_DURATION = (
 )
 
 # DateMathString Patterns
-MATH = r"X[+-]+[A-Z]"
+MATH = r"[+]?[A-Z][+-]+[A-Z]"
 
 # Compiled
 YMD = re.compile(YMD)

@@ -4,8 +4,11 @@ import math
 import warnings
 import dateutil
 import dateutil.relativedelta
+import numpy as np
+
 from dateroll.calendars.calendarmath import calmath
-import dateroll.parser.parsers as parsers
+import dateroll.parser.parsers as parsersModule
+
 import calendar
 from functools import cache
 import code
@@ -164,24 +167,35 @@ class Duration(dateutil.relativedelta.relativedelta):
             mdiff = self._anchor_end.month - self._anchor_start.month
             diff = mdiff + ydiff*12
             self_anchor_years = ydiff
-            self._anchor_months = diff        
+            self._anchor_months = diff     
+
+            # put anchor dates as a total days without subtracting month years   
+            self._anchor_days = (self._anchor_end.date - self._anchor_start.date).days
+
+
+            ######### BATU: needs review DELETE or KEEP
+
             #anchor days  --- date diff but WITHOUT dates
-            b = self._anchor_end.date
-            a = self._anchor_start.date
-            delta = dateutil.relativedelta.relativedelta(months=diff)
-            if a.day==b.day:
-                self._anchor_days=0
-            else:
-                self._anchor_days=(b-(a+delta)).days
+            # b = self._anchor_end.date
+            # a = self._anchor_start.date
+            # delta = dateutil.relativedelta.relativedelta(months=diff)
+
+            # if a.day==b.day:
+            #     self._anchor_days=0
+            # else:
+            #     self._anchor_days=(b-(a+delta)).days
+                
 
     @staticmethod
     def from_string(string):
+        letters = [chr(i) for i in range(65, 65 + 26)]
+        def gen(): yield letters.pop(0)
         if isinstance(string,str):
-            from dateroll.parser.parsers import parseDurationString
-            durs,s = parseDurationString(string)
-            
-            if len(durs)==1 and s in ('+X','X'):
-                return durs[0]
+            durs,s = parsersModule.parseDurationString(string,gen)
+            # first generating string is always A because of alphabetical order
+            if len(durs)==1 and s in ('+A','A'):
+                
+                return durs['A']
             else:
                 raise TypeError(f'Could not validate duration string: {string}')
         else:
@@ -216,7 +230,7 @@ class Duration(dateutil.relativedelta.relativedelta):
               
             # str parser if required
             if isinstance(cals, str):
-                cals = parsers.parseCalendarUnionString(cals)
+                cals = parsersModule.parseCalendarUnionString(cals)
             
             # process normally
             if isinstance(cals, (list,set,tuple)):
@@ -342,7 +356,9 @@ class Duration(dateutil.relativedelta.relativedelta):
        
         if self._anchor_start and self._anchor_end and not _force_approx:
             # i am anchored
-            just_days += (self._anchor_end-self._anchor_start).days
+            # just_days += (self._anchor_end-self._anchor_start).days
+            just_days += (self._anchor_end-self._anchor_start)._anchor_days
+            
         else:      
             # i am not anchored 
             if self.years != 0:
@@ -362,6 +378,7 @@ class Duration(dateutil.relativedelta.relativedelta):
                     dbds = APPROX['1bd1d']*self.bd
                     just_days += dbds
                     warns.append(f"≈{dbds:.6f}d")
+            
 
         if len(warns)>0:
             w = ','.join(warns)
@@ -395,7 +412,13 @@ class Duration(dateutil.relativedelta.relativedelta):
             years   = a.years   +   direction * b.years
             months  = a.months  +   direction * b.months
             days    = a.days    +   direction * b.days
-            
+    
+            if np.sign(years)!=np.sign(months):
+                # we adjust it to have same signs, since we dont have anchor date we can not adjust the date
+                rd_adjusted = dateutil.relativedelta.relativedelta(months=years*12 + months)
+                years = rd_adjusted.years
+                months = rd_adjusted.months
+                
             # bd adjustments w/o MOD
             bd = add_none(a.bd, b.bd, direction) # none or add
             cals = combine_none(a.cals, b.cals) # union
@@ -405,7 +428,7 @@ class Duration(dateutil.relativedelta.relativedelta):
 
             # check combined Duration net direction
             dur = Duration(years=years, months=months, days=days, bd=bd, cals=cals, modified=modified)
-           
+
             return dur
 
         elif isinstance(b, dateutil.relativedelta.relativedelta):
@@ -654,7 +677,31 @@ if __name__ == "__main__": # pragma: no cover
     from dateroll import Date
     from dateroll import Duration
     # x = ddh('12/1/2023+12m/MOD')
-    x = ddh('6m+6m')
-    print(x)
+    # x = ddh('6m+6m')
+    # ddh('t+7dm')
+    # ddh('t+7g')
+    # x = ddh('6m+3m+1y+1/5/24')
+    # print(x)
+    # print(ddh('6m+7m+1y'))
+    # x = ddh('2y-5m-4d')
+    
+    # print(Date(2024,5,5)-Date(2022,10,9))
+    dur = ddh('4/15/24-1/15/24')
+    print(dur.just_approx_days)
+    
+    ####### good test
+    # x2 = Date(2022,10,9)
+    # x = Date(2024,5,5)
+    # x3 = x2-x
+    # x4 = ddh('10/9/22 - 5/5/24')
+    # print(x3)
+    # print(x4)
+    # print(x4==x3)
+    #########
+
+    # x = ddh('1/12/24+11m13d|NYuWE')
+    # print(x)
+
+    
 
 

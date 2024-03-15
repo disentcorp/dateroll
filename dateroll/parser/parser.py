@@ -4,8 +4,10 @@ import dateutil.relativedelta
 import dateutil.rrule
 import code
 
-from dateroll.date.date import Date
-from dateroll.duration.duration import Duration
+# from dateroll.date.date import Date
+import dateroll.date.date as dateModule
+# from dateroll.duration.duration import Duration
+import dateroll.duration.duration as durationModule
 from dateroll.parser import parsers
 from dateroll.schedule.schedule import Schedule
 
@@ -113,8 +115,7 @@ class Parser:
     @classmethod
     def parse_one_part(cls, untouched):
         letters = [chr(i) for i in range(65, 65 + 26)]
-        def gen(): yield letters.pop(0)
-
+        def gen():yield letters.pop(0)
         # 1
         notoday = parsers.parseTodayString(untouched)
 
@@ -154,17 +155,17 @@ class Parser:
             maybe_stop = cls.parse_one_part(_maybe_stop)
             maybe_step = cls.parse_one_part(_maybe_step)
 
-            if isinstance(maybe_start, Date):
+            if isinstance(maybe_start, dateModule.Date):
                 start = maybe_start
             else:
                 raise TypeError("Start of generation must be a valid Date")
 
-            if isinstance(maybe_stop, Date):
+            if isinstance(maybe_stop, dateModule.Date):
                 stop = maybe_stop
             else:
                 raise TypeError("Stop of generation must be a valid Date")
 
-            if isinstance(maybe_step, Duration):
+            if isinstance(maybe_step, durationModule.Duration):
                 step = maybe_step
             else:
                 raise TypeError("Step of generation must be a valid Duration")
@@ -179,7 +180,7 @@ class Parser:
                 f"String must contain either 1 or 3 parts (not {num_parts})"
             )
 
-        raise ParserError(f"Sorry, can't understand {s}") from None
+        
 
 
 def parse_to_native(string):

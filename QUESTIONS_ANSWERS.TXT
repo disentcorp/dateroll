@@ -898,3 +898,27 @@ this means you can run coverage with just the following:
     coverage run   
     coverage report -m
     ...or in one line "coverage run; coverage report -m"
+
+############# batu 2024/3/15 8:40 AM EST
+    TESTS : 100%
+    
+    Summary:
+        #1 Fixed test_cases of today's list ( see below) and put into test_usage
+            review schedule
+            review daycounting .days, .n....
+            fix ddh('1cm')
+            fix ddh('6m+6m')A A+B, A+B+C, date - dur+dur
+            check ddh('6m+3m+1y+1/5/124'), should work
+            converts to new patterns
+            fix colors on Duration.source for weekend
+            enhance subtract for whole years and days (i.e. instead of 365 d, do the 1y,6m,xd math by /12 /3? ...)---BATU:used relativedelta in line360/duration
+        
+        Question:
+            #1 Previously Date(2024,5,5) - Date(2022,10,9) = Duration(y=0,m=0,d=574,anchor_months=19,anchor_days=26)
+            After fixing it becomes Duration(years=1, months=6, days=26, modified=False, _anchor_start=10-09-2022,
+                                             _anchor_end=05-05-2024, _anchor_months=19, _anchor_days=574, debug=False)
+            Notice that the _anchor_days became previous d, so I did some correspoinding changes in the code, please
+            review line:360/duration,__sub__/Date,process_anchor_dates/Duration
+            #2 ddh(‘1/12/24+11m13d|NYuwE’) failed because there is a typo wE should ne NYuWE
+
+    

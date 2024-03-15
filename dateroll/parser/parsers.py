@@ -10,8 +10,11 @@ from dateroll.parser import patterns
 from dateroll.schedule.schedule import Schedule
 from dateroll import utils
 from dateroll.settings import settings
+import dateroll.parser.parser as parserModule
+
 
 TODAYSTRINGVALUES = ["today", "t0", "t"]
+
 
 class ParserStringsError(Exception): ...
 
@@ -31,7 +34,7 @@ def parseTodayString(s):
     return s
 
 
-def parseDateString(s, gen):
+def parseDateString(s,gen):
     """
     for a given convention, see if string contains 1 or 2 dates
     regex to extract string, and Date.from_string(), which calls dateutil.parser.parse
@@ -170,12 +173,13 @@ def parseDurationString(s,gen,debug=False):
     """
     durations = {}
     matches = re.findall(patterns.COMPLETE_DURATION, s)
-    
+
     for m in matches:
         duration = process_duration_match(m, debug=debug)
         dur_str = m[0]
+        
         next_letter = next(gen())
-        s = s.replace(dur_str,'+'+next_letter)
+        s = s.replace(dur_str,'+'+next_letter,1)
         durations[next_letter] = duration
     
     return durations, s
@@ -188,24 +192,29 @@ def parseDateMathString(s, things, debug=False):
     """
     before = s
     s = s.replace(" ", "").replace("++", "+").replace("+-", "-").replace("-+", "-")
-        
-    math_matches = re.match(patterns.MATH, s)
-    if math_matches:
-        n1 = len(things)
-        n2 = len(s.replace('+','').replace('-',''))
-               
-        if n1 != n2:
-            raise Exception(f"Unmatched math ({s})")
 
+    # if first string is + then we remove the first + sign, eg +A, +A-B--> A, A-B
+    s = s.replace('+','',1) if len(s)>0 and s.strip()[0]=='+' else s
+    math_matches = re.match(patterns.MATH, s)
+
+    # we use this validation here to make the len(things)==1 condition work
+    n1 = len(things)
+    n2 = len(s.replace('+','').replace('-',''))
+            
+    if n1 != n2:
+        raise Exception(f"Unmatched math ({s})")
+    if math_matches:
         gs = {k: v for k, v in things.items()}
         
         if debug:
             print('debug date math string (before eval)',before,s)
-
         total = eval(s,{},gs)
         
         return total
-
+    if len(things)==1 and s in things:
+        # eg s = A we do not do eval calculation, just pick the value from dict
+        return things[s]
+    
     raise ParserStringsError("Cannot recognize as date math", s)
 
 
@@ -214,5 +223,11 @@ def parseScheduleString(s,debug=False):  # pragma: no cover
     raise NotImplementedError
 
 if __name__=='__main__':  # pragma: no cover
-    ...
+    s = ' A+B'
+    s2 = ' +A+B -C'
+    s3 = ' +A'
+    things = {'A':4,'B':5}
+    things2 = {'A':4}
+    rs = parseDateMathString(s,things,debug=True)
+    print(rs)
      

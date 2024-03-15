@@ -54,27 +54,30 @@ class TestParsers(unittest.TestCase):
         '''
         #store convention
         orig = settings.convention
+        letters = [chr(i) for i in range(65, 65 + 26)]
+        def gen(): yield letters.pop(0)
         try:
 
             #american
             settings.convention = 'MDY'
             a = '03/08/2024'
-            l,s = parsers.parseDateString(a)
-            b = l[0].to_string().replace('-','/')
+            l,s = parsers.parseDateString(a,gen)
+            
+            b = list(l.values())[0].to_string().replace('-','/')
             self.assertEqual(a,b)
 
             #european
             settings.convention = 'DMY'
             a = '08/03/2024'
-            l,s = parsers.parseDateString(a)
-            b = l[0].to_string().replace('-','/')
+            l,s = parsers.parseDateString(a,gen)
+            b = list(l.values())[0].to_string().replace('-','/')
             self.assertEqual(a,b)
 
             #international
             settings.convention = 'YMD'
             a = '2024/03/08'
-            l,s = parsers.parseDateString(a)
-            b = l[0].to_string().replace('-','/')
+            l,s = parsers.parseDateString(a,gen)
+            b = list(l.values())[0].to_string().replace('-','/')
             self.assertEqual(a,b)
 
             #negative testing
@@ -123,44 +126,43 @@ class TestParsers(unittest.TestCase):
         '''
             parse duration string
         '''
-
+        letters = [chr(i) for i in range(65, 65 + 26)]
+        def gen(): yield letters.pop(0)
         s = '1y3m4d'
-        s2 = parsers.parseDurationString(s)
-        # print('in test parsers')
+        s2 = parsers.parseDurationString(s,gen)
         
-        self.assertEqual(s2,([Duration(years=1, months=3, days=4, modified=False, debug=False)], '+X'))
+        self.assertEqual(s2,({'A': Duration(years=1, months=3, days=4, modified=False, debug=False)}, '+A'))
     
     def test_parseDateMathString(self):
         '''
             test parse date math string, +X-X
         '''
-        s = ' X+X'
-        s2 = ' +X+X -X'
-        s3 = ' +X'
-        things = [4,5]
-        things2 = [4]
+        s = ' A+B'
+        s2 = ' +A+B -C'
+        s3 = ' +A'
+        things = {'A':4,'B':5}
+        things2 = {'A':4}
         rs = parsers.parseDateMathString(s,things,debug=True)
         self.assertEqual(rs,9)
         with self.assertRaises(Exception) as cm:
             parsers.parseDateMathString(s2,things)
         
-        self.assertEqual(str(cm.exception),"('Cannot recognize as date math', '+X+X-X')")
+        self.assertEqual(str(cm.exception),"Unmatched math (A+B-C)")
 
         wrong_things = 'qwertyuiop[;lkjhgfdaszxcvbnm'
 
         with self.assertRaises(Exception) as cm:
             parsers.parseDateMathString(s,wrong_things)
         
-        self.assertEqual(str(cm.exception),"('Cannot recognize as date math', 'X+X')")
+        self.assertEqual(str(cm.exception),"Unmatched math (A+B)")
 
         with self.assertRaises(Exception) as cm:
             parsers.parseDateMathString(s,things2)
         
-        self.assertEqual(str(cm.exception),'Unmatched math (X+X)')
-        # rs3 = parsers.parseDateMathString(s3,things2)
-        # self.assertEqual(rs3,4)
-        with self.assertRaises(Exception):
-            parsers.parseDateMathString(s3,things2)
+        self.assertEqual(str(cm.exception),'Unmatched math (A+B)')
+        rs3 = parsers.parseDateMathString(s3,things2)
+        self.assertEqual(rs3,4)
+        
     
     def test_parsersConvention(self):
         s = settings

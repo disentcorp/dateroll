@@ -13,8 +13,9 @@ from dateroll.utils import color
 
 import dateroll.calendars.calendars as calendars
 from dateroll import ddh,cals
-import dateroll
+import dateroll.date.date as dateModule
 from dateroll.settings import settings
+import dateroll.duration.duration as durationModule
 from tests.test_data.test_data import next_d,prev_d
 
 def handle_sample_data_dates(x,inc,sign='+'):
@@ -49,11 +50,9 @@ class TestUsage(unittest.TestCase):
         bd0 = [l.strftime('%Y-%m-%d') for l in bd0.tolist()]
         expected0 = df['0bd'].tolist()
         expected1 = df['1bd'].tolist()
-        # code.interact(local=dict(globals(),**locals()))
         self.assertEqual(bd0,expected0)
         bd1 = df.apply(lambda x:handle_sample_data_dates(x,'1bd','+'),axis=1)
         bd1 = [l.strftime('%Y-%m-%d') for l in bd1.tolist()]
-        # code.interact(local=dict(globals(),**locals()))
         self.assertEqual(bd1,expected1)
         
     
@@ -66,12 +65,39 @@ class TestUsage(unittest.TestCase):
         bd0 = [l.strftime('%Y-%m-%d') for l in bd0.tolist()]
         expected0 = df['-0bd'].tolist()
         expected1 = df['-1bd'].tolist()
-        # code.interact(local=dict(globals(),**locals()))
         self.assertEqual(bd0,expected0)
         bd1 = df.apply(lambda x:handle_sample_data_dates(x,'1bd','-'),axis=1)
         bd1 = [l.strftime('%Y-%m-%d') for l in bd1.tolist()]
-        # code.interact(local=dict(globals(),**locals()))
         self.assertEqual(bd1,expected1)
+    
+    def test_ddhCases(self):
+        '''
+            test edge cases of ddh and dates subtraction
+        '''
+        self.assertEqual(ddh('6m+6m'),durationModule.Duration(years=1, months=0, days=0, modified=False, debug=False))
+        with self.assertRaises(Exception) as cm1:
+            ddh('t+7dm')
+        with self.assertRaises(Exception) as cm2:
+            ddh('t+7g')
+        
+        # to match the error message : Unmatched math ...
+        err_7dm = str(cm1.exception).split(' ')[:-1]
+        err_7g = str(cm2.exception).split(' ')[:-1]
+        self.assertEqual(err_7dm,err_7g)
+
+        self.assertEqual(ddh('6m+3m+1y+1/5/24'), dateModule.Date(2025,10,5))
+        self.assertEqual(ddh('6m+3m+1y'),durationModule.Duration(years=1, months=9, days=0, modified=False, debug=False))
+        self.assertEqual(ddh('2y-5m-4d'),durationModule.Duration(years=1, months=7, days=-4, modified=False, debug=False))
+        self.assertEqual(dateModule.Date(2024,5,5)-dateModule.Date(2022,10,9),
+                         durationModule.Duration(years=1, months=6, days=26, modified=False, _anchor_start=dateModule.Date(2022,10,9), _anchor_end=dateModule.Date(2024,5,5), _anchor_months=19, _anchor_days=-4, debug=False))
+        d1 = ddh('10/9/22 - 5/5/24')
+        d2 = dateModule.Date(2022,10,9) - dateModule.Date(2024,5,5)
+        self.assertEqual(d1,d2)
+        self.assertEqual(d2 + dateModule.Date(2024,5,5),dateModule.Date(2022,10,9))
+        d3 = ddh('5/5/24 - 10/9/22')
+        self.assertEqual(d3,
+                         durationModule.Duration(years=1, months=6, days=26, modified=False, _anchor_start=dateModule.Date(2022,10,9), _anchor_end=dateModule.Date(2024,5,5), _anchor_months=19, _anchor_days=-4, debug=False))
+        self.assertEqual(ddh('1/12/24+11m13d|NYuWE'),dateModule.Date(2024,12,26))
 
 class TestUsageMore(unittest.TestCase):
     def tests_from_excel(self):
@@ -109,6 +135,8 @@ class TestUsageMore(unittest.TestCase):
         print(f'{c}/{len(df)} passed')
         # assert True if an only if all 32 pass
         self.assertTrue(c==len(df))
+    
+    
 
 if __name__=='__main__':  
 

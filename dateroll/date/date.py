@@ -172,8 +172,8 @@ class Date(datetime.date):
                 if isinstance(o, datetime.date):
                     dt = o
 
-            time_delta = self.date-dt
-            return Duration.from_timedelta(time_delta,_anchor_start=dt,_anchor_end=self.date)
+            relative_delta = dateutil.relativedelta.relativedelta(self.date,dt)
+            return Duration.from_relativedelta(relative_delta,_anchor_start=dt,_anchor_end=self.date)
         
         elif isinstance(o, Duration) or 'Duration' in o.__class__.__name__:
             # sometimes Duration does not go here instead go as a dateutil, to make sure come here we use .__name__
