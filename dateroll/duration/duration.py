@@ -170,21 +170,7 @@ class Duration(dateutil.relativedelta.relativedelta):
             self._anchor_months = diff     
 
             # put anchor dates as a total days without subtracting month years   
-            self._anchor_days = (self._anchor_end.date - self._anchor_start.date).days
-
-
-            ######### BATU: needs review DELETE or KEEP
-
-            #anchor days  --- date diff but WITHOUT dates
-            # b = self._anchor_end.date
-            # a = self._anchor_start.date
-            # delta = dateutil.relativedelta.relativedelta(months=diff)
-
-            # if a.day==b.day:
-            #     self._anchor_days=0
-            # else:
-            #     self._anchor_days=(b-(a+delta)).days
-                
+            self._anchor_days = (self._anchor_end.date - self._anchor_start.date).days                
 
     @staticmethod
     def from_string(string):
@@ -356,7 +342,6 @@ class Duration(dateutil.relativedelta.relativedelta):
        
         if self._anchor_start and self._anchor_end and not _force_approx:
             # i am anchored
-            # just_days += (self._anchor_end-self._anchor_start).days
             just_days += (self._anchor_end-self._anchor_start)._anchor_days
             
         else:      

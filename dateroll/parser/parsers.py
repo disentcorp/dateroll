@@ -198,12 +198,12 @@ def parseDateMathString(s, things):
     for i in letters_used:
         if i not in things:
             print(s,things)
-            raise Exception(f"Math not recognized (missing {j})")
+            raise ParserStringsError("Cannot recognize as date math", s)
     for j in things:
         if j.isalpha():
             if j not in letters_used:
                 print(s,things)
-                raise Exception(f"Math not recognized (missing {j})")
+                raise ParserStringsError("Cannot recognize as date math", s)
         
     # good case, do the math
     gs = {k: v for k, v in things.items()}

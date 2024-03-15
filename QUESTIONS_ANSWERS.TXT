@@ -921,4 +921,16 @@ this means you can run coverage with just the following:
             review line:360/duration,__sub__/Date,process_anchor_dates/Duration
             #2 ddh(‘1/12/24+11m13d|NYuwE’) failed because there is a typo wE should ne NYuWE
 
-    
+############# anthony 330pm 3/15
+
+tests 100%
+
+1 looks ok, let's talk monday
+2 got it
+
+i changed the error messages around and cleaned up some stuff
+
+i removed the +- -+ BS everywhere, we don't need it
+
+math parsing is more robust now and less code / less things to break
+
