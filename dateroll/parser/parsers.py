@@ -1,3 +1,4 @@
+import traceback
 import datetime
 import re
 import code
@@ -63,17 +64,14 @@ def parseDateString(s,gen):
     for match in matches:
         date = dt.Date.from_string(match, **dateparser_kwargs)
         next_letter = next(gen())
-        res = res.replace(match, '+'+next_letter)
-        # to ensure no conflict duration negation and date math application
-        # e.g.   t-3m = t + (-3m), and not t - (-3m)
-        # make - to +-, negate will occur in duration string match, and + will be captured in date math parser
-        res = res.replace('-','+-')
+        # match only 1st time!! or causes letter mismatch
+        res = res.replace(match, '+'+next_letter,1)
         dates[next_letter]=date
     
     return dates, res
 
 
-def process_duration_match(m: tuple, debug=False):
+def process_duration_match(m: tuple):
     """
     COMPLETE_DURATION regex matches a 23-item tuple
     This function extracts the parts and calls the Duration contructor appropriately
@@ -131,7 +129,7 @@ def process_duration_match(m: tuple, debug=False):
         if modified or len(cals) > 0:
             duration_contructor_args['bd'] = float(0.0)*mult
     
-    duration = dur.Duration(**duration_contructor_args, debug=debug)
+    duration = dur.Duration(**duration_contructor_args)
     return duration
 
 def parseCalendarUnionString(s):
@@ -145,7 +143,7 @@ def parseCalendarUnionString(s):
     else:
         raise Exception(f'{s} not a valid calendar string')
 
-def parseDurationString(s,gen,debug=False):
+def parseDurationString(s,gen):
     """
     check for any DurationString:
 
@@ -175,7 +173,7 @@ def parseDurationString(s,gen,debug=False):
     matches = re.findall(patterns.COMPLETE_DURATION, s)
 
     for m in matches:
-        duration = process_duration_match(m, debug=debug)
+        duration = process_duration_match(m)
         dur_str = m[0]
         
         next_letter = next(gen())
@@ -185,40 +183,39 @@ def parseDurationString(s,gen,debug=False):
     return durations, s
 
 
-def parseDateMathString(s, things, debug=False):
+def parseDateMathString(s, things):
     """
     Looks for any linear formula with plus or minus
     Uses substitution and evaluation. Safe because wouldn't get here if *things were not validated, and regex didn't match.
     """
     before = s
-    s = s.replace(" ", "").replace("++", "+").replace("+-", "-").replace("-+", "-")
-
-    # if first string is + then we remove the first + sign, eg +A, +A-B--> A, A-B
-    s = s.replace('+','',1) if len(s)>0 and s.strip()[0]=='+' else s
-    math_matches = re.match(patterns.MATH, s)
+    math_matches = re.match(r'[A-Z]', s)
 
     # we use this validation here to make the len(things)==1 condition work
-    n1 = len(things)
-    n2 = len(s.replace('+','').replace('-',''))
+    letters_used = re.findall(r'[A-Z]',s)
+     
+    # bad case, letter mismatch
+    for i in letters_used:
+        if i not in things:
+            print(s,things)
+            raise Exception(f"Math not recognized (missing {j})")
+    for j in things:
+        if j.isalpha():
+            if j not in letters_used:
+                print(s,things)
+                raise Exception(f"Math not recognized (missing {j})")
+        
+    # good case, do the math
+    gs = {k: v for k, v in things.items()}
             
-    if n1 != n2:
-        raise Exception(f"Unmatched math ({s})")
-    if math_matches:
-        gs = {k: v for k, v in things.items()}
-        
-        if debug:
-            print('debug date math string (before eval)',before,s)
+    try:
         total = eval(s,{},gs)
-        
         return total
-    if len(things)==1 and s in things:
-        # eg s = A we do not do eval calculation, just pick the value from dict
-        return things[s]
-    
-    raise ParserStringsError("Cannot recognize as date math", s)
+    except Exception as e:
+        raise ParserStringsError("Cannot recognize as date math", s)
 
 
-def parseScheduleString(s,debug=False):  # pragma: no cover
+def parseScheduleString(s):  # pragma: no cover
     """ """
     raise NotImplementedError
 
@@ -228,6 +225,6 @@ if __name__=='__main__':  # pragma: no cover
     s3 = ' +A'
     things = {'A':4,'B':5}
     things2 = {'A':4}
-    rs = parseDateMathString(s,things,debug=True)
+    rs = parseDateMathString(s,things)
     print(rs)
      

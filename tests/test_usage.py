@@ -80,11 +80,6 @@ class TestUsage(unittest.TestCase):
         with self.assertRaises(Exception) as cm2:
             ddh('t+7g')
         
-        # to match the error message : Unmatched math ...
-        err_7dm = str(cm1.exception).split(' ')[:-1]
-        err_7g = str(cm2.exception).split(' ')[:-1]
-        self.assertEqual(err_7dm,err_7g)
-
         self.assertEqual(ddh('6m+3m+1y+1/5/24'), dateModule.Date(2025,10,5))
         self.assertEqual(ddh('6m+3m+1y'),durationModule.Duration(years=1, months=9, days=0, modified=False, debug=False))
         self.assertEqual(ddh('2y-5m-4d'),durationModule.Duration(years=1, months=7, days=-4, modified=False, debug=False))

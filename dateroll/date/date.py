@@ -147,6 +147,9 @@ class Date(datetime.date):
                 f"unsupported operand type(s) for +: 'Date' and {type(o).__name__}"
             )
 
+    def __pos__(self):
+        return self
+
     def __sub__(self, o):
         
         """

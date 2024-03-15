@@ -92,7 +92,8 @@ class TestsPracticalExamples(unittest.TestCase):
         """
         empty string
         """
-        self.assertRaises(dateroll.parser.parsers.ParserStringsError,lambda: ddh(""))
+        with self.assertRaises(dateroll.parser.parsers.ParserStringsError):
+            ddh("")
 
     def testDate(self):
         """

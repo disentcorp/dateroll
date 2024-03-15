@@ -620,7 +620,7 @@ class Duration(dateutil.relativedelta.relativedelta):
         items = {k: d[k] for k in period_order if k in d}
         constructor = ""
         for k, v in self.__dict__.items():
-            if v != None:
+            if v !=None and k !='debug' and not k.startswith('_'):
                 if k=='cals':
                     v = '"'+ 'u'.join(v) + '"'
                 constructor += f"{k}={str(v)}, "

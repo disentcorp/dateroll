@@ -32,14 +32,10 @@ COMPLETE_DURATION = (
     f"({OPERATOR}{REPEATING_DATE_PERIODS} ?{PIPE_REPEAT_CAL_UNION}{PIPE_ROLL})"
 )
 
-# DateMathString Patterns
-MATH = r"[+]?[A-Z][+-]+[A-Z]"
-
 # Compiled
 YMD = re.compile(YMD)
 MDY = re.compile(MDY)
 DMY = re.compile(DMY)
-MATH = re.compile(MATH)
 COMPLETE_DURATION = re.compile(COMPLETE_DURATION)
 
 

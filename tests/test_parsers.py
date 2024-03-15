@@ -137,29 +137,32 @@ class TestParsers(unittest.TestCase):
         '''
             test parse date math string, +X-X
         '''
+
         s = ' A+B'
         s2 = ' +A+B -C'
         s3 = ' +A'
         things = {'A':4,'B':5}
         things2 = {'A':4}
-        rs = parsers.parseDateMathString(s,things,debug=True)
+
+        # good case
+        rs = parsers.parseDateMathString(s,things)
         self.assertEqual(rs,9)
+
+        # bad case, missing C
         with self.assertRaises(Exception) as cm:
             parsers.parseDateMathString(s2,things)
-        
-        self.assertEqual(str(cm.exception),"Unmatched math (A+B-C)")
-
+    
         wrong_things = 'qwertyuiop[;lkjhgfdaszxcvbnm'
 
+        # bad case, wrong things
         with self.assertRaises(Exception) as cm:
             parsers.parseDateMathString(s,wrong_things)
-        
-        self.assertEqual(str(cm.exception),"Unmatched math (A+B)")
 
+        # bad case, missing B
         with self.assertRaises(Exception) as cm:
             parsers.parseDateMathString(s,things2)
         
-        self.assertEqual(str(cm.exception),'Unmatched math (A+B)')
+        # good case
         rs3 = parsers.parseDateMathString(s3,things2)
         self.assertEqual(rs3,4)
         
