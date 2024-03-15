@@ -55,7 +55,7 @@ class CalendarMath:
         '''
             self.home always exsist because load_cache called iff it exists
         '''
-        with safe_open(self.home, "rb") as f:
+        with open(self.home, "rb") as f:
             cached = pickle.load(f)
         return cached
 

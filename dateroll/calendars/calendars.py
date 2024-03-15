@@ -30,7 +30,7 @@ def load_sample_data():
     data = {}
     for file in files:
         name = pathlib.Path(file).stem
-        with safe_open(file) as f:
+        with open(file) as f:
             ls = f.readlines()
             ld = {}
             for i in ls:
@@ -108,7 +108,7 @@ class Calendars(dict):
         filenames = glob.glob(f"{self.home}")
         if len(filenames) == 1:
             filename = filenames[0]
-            with safe_open(filename, "rb") as f:
+            with open(filename, "rb") as f:
                 result = hashlib.md5(
                     f.read(),
                 ).hexdigest()
