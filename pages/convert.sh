@@ -1,13 +1,14 @@
 #/bin/bash
 
-mkdir -p build/docs
-cp ../logo.png build
-if [[ $? ]]; then
+cp ../logo.png /dev/null
+if [[ $? = 0 ]]; then
+    mkdir -p build/docs
+    cp ../logo.png build
     cp ../logo.png build/docs
     cp github-markdown.css build
     cp github-markdown.css build/docs
 else
-    echo "ERROR: run this script from the pages directory."
+    echo "ERROR: you must run this script from the pages directory."
     exit 1
 fi
 
