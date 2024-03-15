@@ -1,8 +1,9 @@
 #/bin/bash
 
-cp ../logo.png build
+cp ../logo.png /dev/null
 if [[ $? = 0 ]]; then
     mkdir -p build/docs
+    cp ../logo.png build
     cp ../logo.png build/docs
     cp github-markdown.css build
     cp github-markdown.css build/docs
