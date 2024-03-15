@@ -1,3 +1,4 @@
+import os
 import datetime
 import pathlib
 import pickle
@@ -53,11 +54,16 @@ class CalendarMath:
 
     def load_cache(self):
         '''
-            self.home always exsist because load_cache called iff it exists
+            self.home always exsist because load_cache called if it exists
         '''
         with open(self.home, "rb") as f:
-            cached = pickle.load(f)
-        return cached
+            try:
+                cached = pickle.load(f)
+                return cached
+            except:
+                print(f'[dateroll] calendar math cache corrupted, cleaning.')
+                os.remove(self.home)
+        
 
     def save_cache(self):
         """
@@ -80,8 +86,9 @@ class CalendarMath:
             if not self.has_mutated:
                 # load cache
                 cached = self.load_cache()
-                self.__dict__.update(cached)
-                return
+                if cached is not None:
+                    self.__dict__.update(cached)
+                    return 
          
         # compile
         self.compile_all()
