@@ -55,16 +55,19 @@ class TestDuration(unittest.TestCase):
       
         #year
         self.assertEqual(dur1.y,y)
+        self.assertEqual(dur1.Y,y)
         self.assertEqual(dur1.year,y)
         self.assertEqual(dur1.years,y)
 
         #month
         self.assertEqual(dur1.m,m)
+        self.assertEqual(dur1.M,m)
         self.assertEqual(dur1.month,m)
         self.assertEqual(dur1.months,m)
 
         #day
         self.assertEqual(dur1.d,d+7*w)
+        self.assertEqual(dur1.D,d+7*w)
         self.assertEqual(dur1.day,d+7*w)
         self.assertEqual(dur1.days,d+7*w)
         
