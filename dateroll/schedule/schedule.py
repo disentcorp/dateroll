@@ -48,7 +48,8 @@ class Schedule(list):
     
     @property
     def cal(self):
-        return pretty.pretty_between_two_dates(self.start,self.stop,self.cals,calmath)
+        _ = pretty.pretty_between_two_dates(self.start,self.stop,self.cals,calmath)
+        print(_)
     
     def __str__(self):
         s = f"""Schedule:
@@ -82,6 +83,9 @@ class Schedule(list):
     
     @property
     def split_bond(self):
+        '''
+        makes a bond schedule assuming T+0BD on weekends
+        '''
         df = self.split
         df['type']='interest'
         df.columns = ['start','end','days','type']
