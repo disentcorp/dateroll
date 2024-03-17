@@ -15,7 +15,8 @@ class Schedule(list):
             self.direction = 'backward'
 
         self.cals = step.cals
-        self.dates = self.run()
+
+        self.run()
         self.num_dates = len(self.dates)
 
     def __len__(self):
@@ -29,22 +30,23 @@ class Schedule(list):
         dates = []
 
         # backward generation
-        if self.direction == 'backward':
-            cursor = self.start
-            while cursor > self.stop:
-                dates.append(cursor)
-                # we use plus sign because step<0
-                cursor += self.step
-            dates.append(self.start)
-        else:
-            # foward generation
+        if self.direction == 'forward':
             cursor = self.start
             while cursor < self.stop:
                 dates.append(cursor)
+                # we use plus sign because step<0
                 cursor += self.step
             dates.append(self.stop)
+        else:
+            # backward generation
+            cursor = self.stop
+            while cursor > self.start:
+                dates.append(cursor)
+                cursor -= -self.step
+            dates.append(self.start)
 
-        return sorted(dates)
+
+        self.dates = sorted(dates)
     
     @property
     def cal(self):
@@ -88,14 +90,15 @@ class Schedule(list):
         '''
         df = self.split
         df['type']='interest'
-        df.columns = ['start','end','days','type']
-        df['pay']=df.end+'0bd'
+        df.columns = ['starts','ends','days','type']
+        df['pays']=df['ends']+'0bd'
         st,ed = min(self.dates),max(self.dates)
         
-        df.loc[0]=[st,ed,None,'principal',st+'0bd']
-        df.loc[len(df)]=[st,ed,None,'repayment',ed+'0bd']
-        df['days']=(df.end-df.start).apply(lambda x:x.just_exact_days)
-        return df.sort_index()
+        df.loc[-1]=[None,None,None,'principal',st+'0bd']
+        df.loc[len(df)-1]=[None,None,None,'repayment',ed+'0bd']
+        df.index+=1
+        df['days']=df.apply(lambda row: (row["ends"]-row['starts']).just_exact_days if row['starts'] else None,axis=1)
+        return df.sort_values(by='pays')
 
     def to_string(self):
         '''
