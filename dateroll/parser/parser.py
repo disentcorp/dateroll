@@ -170,9 +170,8 @@ class Parser:
             else:
                 raise TypeError("Step of generation must be a valid Duration")
 
-            sch = Schedule(start=start, stop=stop, step=step)
-            dts = sch.dates
-            return dts
+            sch = Schedule(start=start, stop=stop, step=step, origin_string=s)
+            return sch
 
         else:
             # Must

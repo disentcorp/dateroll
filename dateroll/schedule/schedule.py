@@ -1,19 +1,27 @@
 
 import code
+from dateroll.calendars.calendarmath import calmath
+from dateroll import pretty
 
-class Schedule: 
-    def __init__(self,start,stop,step,debug=False):
+class Schedule(list): 
+    def __init__(self,start,stop,step,origin_string=None):
         self.start = start
         self.stop = stop
         self.step = step
-        self.debug = debug
+        self.origin_string = origin_string
         if self.step >=0:
             self.direction = 'forward'
         else:
             self.direction = 'backward'
 
-    @property
-    def dates(self):
+        self.cals = step.cals
+        self.dates = self.run()
+        self.num_dates = len(self.dates)
+
+    def __len__(self):
+        return self.num_dates
+
+    def run(self):
         '''
             gives the date range
             direction of date generations is given by the sign of step
@@ -37,11 +45,62 @@ class Schedule:
             dates.append(self.stop)
 
         return sorted(dates)
+    
+    @property
+    def cal(self):
+        return pretty.pretty_between_two_dates(self.start,self.stop,self.cals,calmath)
+    
+    def __str__(self):
+        s = f"""Schedule:
+    start      : {self.start}
+    stop       : {self.start}
+    step       : {self.start}
+    direction  : {self.direction}
+    cals       : {self.cals}
+    orig str   : {self.origin_string}
+    #dates     : {self.num_dates}"""
+        return s
+    
+    
+    def __repr__(self):
+        constructor = ""
+        for k, v in self.__dict__.items():
+            if k not in ['run','spit','dates','debug'] and v:
+                constructor += f"{k}={str(v)}, "
+        return f'{self.__class__.__name__}({constructor.rstrip(", ")})'
+    
+    @property
+    def split(self):
+        import pandas as pd
+        list_of_dates = self.dates
+        start = list_of_dates[:-1]
+        stop = list_of_dates[1:]
+        step = [self.step.to_string()]*(len(list_of_dates)-1)
+        df = pd.DataFrame({'start':start,'stop':stop,'step':step})
+        df.index.name = 'per'
+        return df
+    
+    @property
+    def split_bond(self):
+        df = self.split
+        df['type']='interest'
+        df.columns = ['start','end','days','type']
+        df['pay']=df.end+'0bd'
+        st,ed = min(self.dates),max(self.dates)
+        
+        df.loc[0]=[st,ed,None,'principal',st+'0bd']
+        df.loc[len(df)]=[st,ed,None,'repayment',ed+'0bd']
+        df['days']=(df.end-df.start).apply(lambda x:x.just_exact_days)
+        return df.sort_index()
 
-# default stub is FRONT short
-# old stuff we didn't add back:
-#         stub="short",
-#         ret="l",
-#         monthEndRule="anniv",
-#         ie="[)",
-#         dc=NotImplementedError,
+    def to_string(self):
+        '''
+        should print as string
+        '''
+        if self.origin_string:
+            return self.origin_string
+        else:
+            '''
+            should subtract from t for a today's version of the string
+            '''
+            raise NotImplementedError

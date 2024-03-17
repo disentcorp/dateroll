@@ -219,7 +219,7 @@ class TestDate(unittest.TestCase):
         rs = repr(a)
         fmt = utils.convention_map[settings.convention]
         dstr = a.strftime(fmt)
-        self.assertEqual(rs,f'Date("{dstr}")')
+        self.assertEqual(rs,f'Date(year=2024,month=12,day=5)')
 
     def test_from_string(self):
         '''

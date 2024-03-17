@@ -31,7 +31,7 @@ def pretty_between_two_dates(dt1,dt2,cals,calmath):
     else:
         _1,_2 = dt2,dt1
 
-    print('from',_1,'to',_2)
+    print('from',_1,'to',_2, 'cals',cals)
     
     y1,m1,d1 = _1.year,_1.month,_1.day
     y2,m2,d2 = _2.year,_2.month,_2.day

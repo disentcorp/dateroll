@@ -654,6 +654,22 @@ class Duration(dateutil.relativedelta.relativedelta):
     @property
     def day(self): return self.days
 
+    def to_string(self):
+        output = ''
+        if self.years!=0:
+            output+=f'{self.years:+}y'
+        if self.months!=0:
+            output+=f'{self.months:+}m'
+        if self.days!=0:
+            output+=f'{self.years:+}d'
+        if self.bd:
+            output+=f'{self.years:+}bd'
+        if self.cals:
+            output+=f'|{"u".join(self.cals)}'
+        if self.modified:
+            output+=f'/MOD'
+        return output
+
 DurationLike = (Duration,datetime.timedelta,dateutil.relativedelta.relativedelta)
 
 

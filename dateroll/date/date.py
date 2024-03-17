@@ -223,10 +223,27 @@ class Date(datetime.date):
         return self
     
     @property
-    def src(self):
+    def cal(self):
         if hasattr(self,'origin_dur_date'):
             pretty_calendars = pretty.pretty_between_two_dates(self.date,self.origin_dur_date,self.origin_dur_cals,calmath)
             print(pretty_calendars)
+        else:
+            pretty_calendars = pretty.pretty_between_two_dates(self.date,self.date,None,calmath)
+            print(pretty_calendars)
+
+    def __repr__(self):
+        return f'Date(year={self.year},month={self.month},day={self.day})'
+    
+    def to_string(self):
+        '''
+        should print as string according to convention
+        '''
+        if settings.convention=='MDY':
+            return self.strftime('%m-%d-%Y')
+        elif settings.convention=='DMY':
+            return self.strftime('%d-%m-%Y')
+        else:
+            return self.strftime('%Y-%m-%d')
 
 
 DateLike = DateLike + (Date,)
