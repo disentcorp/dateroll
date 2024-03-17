@@ -98,7 +98,7 @@ def pretty_between_two_dates(dt1, dt2, cals, calmath):
             "yellow",
         )
         for idx, (i, j) in enumerate(zip(cal1.splitlines(), cal2.splitlines())):
-            res += "\n" + f"  {i}  {" "+j}"
+            res += "\n" + f"  {i}  {' '+j}"
             prev = len(i)
 
     return res
