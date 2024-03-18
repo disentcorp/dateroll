@@ -118,7 +118,11 @@ class TestStringMathMethods(unittest.TestCase):
 
     def test_diffbd(self):
         """
-        batu use global settings, settings.ie='(])' do the test, then try again
+        change global setting:  settings.ie='(])' do the test, then try again
+                
+        one liner test code:
+        
+        python -c "from dateroll import *; settings.ie='[]'; b=ddh('3/22/24'); a= ddh('3/18/24'); d=b-a; d.cals=['NY']; print(d.just_bds)"
 
         pick a calendar where on WEuNY you have 5 dates:
 
