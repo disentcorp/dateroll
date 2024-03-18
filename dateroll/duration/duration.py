@@ -737,9 +737,9 @@ class Duration(dateutil.relativedelta.relativedelta):
         if self.months!=0:
             output+=f'{self.months:+}m'
         if self.days!=0:
-            output+=f'{self.years:+}d'
+            output+=f'{self.days:+}d'
         if self.bd:
-            output+=f'{self.years:+}bd'
+            output+=f'{int(self.bd):+}bd'
         if self.cals:
             output+=f'|{"u".join(self.cals)}'
         if self.modified:
@@ -764,8 +764,10 @@ if __name__ == "__main__":  # pragma: no cover
     # x = ddh('2y-5m-4d')
 
     # print(Date(2024,5,5)-Date(2022,10,9))
-    dur = ddh("4/15/24-1/15/24")
-    print(dur.just_approx_days)
+    # dur = ddh("4/15/24-1/15/24")
+    dur = Duration(years=1,months=-2,days=3,bd=4,
+                       cals = ['NY','WE'],modified=True)
+    print(dur.to_string())
 
     ####### good test
     # x2 = Date(2022,10,9)

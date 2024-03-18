@@ -64,16 +64,16 @@ class TestDate(unittest.TestCase):
         d2 = Date.from_datetime(b)
         self.assertEqual(ref, d2)
 
-        d3 = Date.from_string("1/1/1900")
+        d3 = Date.from_string("1/1/1900","%m/%d/%Y")
         self.assertEqual(ref, d3)
 
     def test_is_bd(self):
         """
         check if day is a business day given a specific calendar
         """
-        sunday = Date.from_string("3/3/24")
-        monday = Date.from_string("3/4/24")
-        christmas = Date.from_string("12/25/23")
+        sunday = Date.from_string("3/3/2024","%m/%d/%Y")
+        monday = Date.from_string("3/4/2024","%m/%d/%Y")
+        christmas = Date.from_string("12/25/2023","%m/%d/%Y")
 
         self.assertFalse(sunday.is_bd(cals="WEuLN"))
         self.assertTrue(monday.is_bd(cals="WEuNYuBR"))
@@ -83,7 +83,7 @@ class TestDate(unittest.TestCase):
         """
         various properties
         """
-        d = Date.from_string("3/3/24")
+        d = Date.from_string("3/3/2024","%m/%d/%Y")
         # iso
         self.assertEqual(d.iso, "2024-03-03")
 
@@ -227,7 +227,7 @@ class TestDate(unittest.TestCase):
         '''
 
         x = Date(2023,1,1)
-        self.assertEqual(Date.from_string(x),x)
+        self.assertEqual(Date.from_string(x,'YMD'),x)
         
         with self.assertRaises(TypeError):
             Date.from_string(10)
@@ -242,11 +242,17 @@ class TestDate(unittest.TestCase):
     def test_today(self):
         self.assertEqual(Date.today(),datetime.date.today())
     
-    def test_src(self):
+    def test_toString(self):
         '''
             test src which prints calendar
         '''
-        ... # coveraged in test_pretty
+        d = Date(2023,1,1)
+        rs = d.to_string()
+        self.assertEqual(rs,'01-01-2023')
+    
+    
+        
+
 
 
         

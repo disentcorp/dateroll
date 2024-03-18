@@ -27,8 +27,8 @@ def handle_sample_data_dates(x,inc,sign='+'):
         s = f'{t}{sign}{inc}|NYuWE'
     
     orig = settings.convention
-    settings.convention = 'YMD'
-    res = ddh(s)
+    # settings.convention = 'YMD'
+    res = ddh(s,convention='YMD')
     settings.convention = orig
     return res
 
@@ -112,8 +112,8 @@ class TestUsageMore(unittest.TestCase):
             f = row['from']
             convention = row['convention']
             _a = time.time()
-            a = ddh(row['final'])
-            b = ddh(s)
+            a = ddh(row['final'],convention=convention)
+            b = ddh(s,convention=convention)
             _b = time.time()
             ans = f'{str(b==a):<5}'
             res = color(ans,'green') if b==a else color(ans,'red')

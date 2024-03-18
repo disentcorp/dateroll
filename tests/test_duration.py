@@ -367,6 +367,7 @@ class TestDuration(unittest.TestCase):
         dur = Duration(BD=1,bd=2,modified=True)
         self.assertEqual(dur.bd,3)
 
+
     def test_mod(self):
         
         from dateroll import ddh
@@ -453,6 +454,14 @@ class TestDuration(unittest.TestCase):
         rs = dur2 - dur1
         
         self.assertEqual(rs,Duration(years=0, months=0, days=-11, modified=False, debug=False))
+    
+    def test_tostring(self):
+        dur = Duration(years=1,months=2,days=3,bd=4,
+                       cals = ['NY','WE'],modified=True)
+        dur2 = Duration(years=1,months=-2,days=3,bd=4,
+                       cals = ['NY','WE'],modified=True)
+        self.assertEqual(dur.to_string(),'+1y+2m+3d+4bd|NYuWE/MOD')
+        self.assertEqual(dur2.to_string(),'+1y-2m+3d+4bd|NYuWE/MOD')
 
 
 

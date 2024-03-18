@@ -2,9 +2,12 @@
 import code
 from dateroll.calendars.calendarmath import calmath
 from dateroll import pretty
+import dateroll.date.date as date
+import dateroll.duration.duration as duration
 
 class Schedule(list): 
     def __init__(self,start,stop,step,origin_string=None):
+        
         self.start = start
         self.stop = stop
         self.step = step
@@ -47,7 +50,7 @@ class Schedule(list):
 
 
         self.dates = sorted(dates)
-    
+        
     @property
     def cal(self):
         _ = pretty.pretty_between_two_dates(self.start,self.stop,self.cals,calmath)
@@ -68,8 +71,9 @@ class Schedule(list):
     def __repr__(self):
         constructor = ""
         for k, v in self.__dict__.items():
-            if k not in ['run','spit','dates','debug'] and v:
+            if k not in ['run','spit','dates','debug'] and v is not None:
                 constructor += f"{k}={str(v)}, "
+        
         return f'{self.__class__.__name__}({constructor.rstrip(", ")})'
     
     @property
@@ -81,6 +85,7 @@ class Schedule(list):
         step = [self.step.to_string()]*(len(list_of_dates)-1)
         df = pd.DataFrame({'start':start,'stop':stop,'step':step})
         df.index.name = 'per'
+        
         return df
     
     @property
@@ -111,3 +116,13 @@ class Schedule(list):
             should subtract from t for a today's version of the string
             '''
             raise NotImplementedError
+    
+    
+    
+    if __name__=='__main__':  # pragma: no cover
+        from dateroll import Date,Duration,Schedule
+        start = Date(2023,1,1)
+        stop = Date(2023,2,1)
+        step = Duration(bd=-1)
+        sch = Schedule(start,stop,step)
+        repr(sch)

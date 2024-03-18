@@ -20,7 +20,7 @@ class Date(datetime.date):
     '''
 
     @staticmethod
-    def from_string(o, **dateparser_kwargs):
+    def from_string(o, dateparser):
         """
         if string provided use dateutil's parser
         note: dateutil's parser implements fall backs
@@ -29,7 +29,9 @@ class Date(datetime.date):
         if isinstance(o,Date):
             return o
         elif isinstance(o,str):
-            me = parse(o, **dateparser_kwargs)
+            # me = parse(o, **dateparser_kwargs)
+            me = datetime.datetime.strptime(o,dateparser)
+            
             return Date.from_datetime(me)
         
         else:
@@ -48,16 +50,16 @@ class Date(datetime.date):
         else:
             raise TypeError(f'from_datetime requires string, cannot use {type(o).__name__}')
 
-    def to_string(self):
-        fmt = utils.convention_map[settings.convention]
-        date_string = self.strftime(fmt)
-        return date_string
+    # def to_string(self):
+    #     fmt = utils.convention_map[settings.convention]
+    #     date_string = self.strftime(fmt)
+    #     return date_string
 
     def __str__(self):
         return self.to_string()
 
-    def __repr__(self):
-        return f'{self.__class__.__name__}("{self.to_string()}")'
+    # def __repr__(self):
+    #     return f'{self.__class__.__name__}("{self.to_string()}")'
 
     @staticmethod
     def today():

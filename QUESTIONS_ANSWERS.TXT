@@ -198,6 +198,7 @@ TOTAL                                 1477    215    85%
     coverage run --omit="dateroll/tests/*.py" -m unittest discover
     coverage report -m 
     coverage html
+    xdg-open htmlcov/index.html
      
 
 ^ notice 2 things, --omit excludes the test files, and html/xdg-open give pretty report!
@@ -933,4 +934,57 @@ i changed the error messages around and cleaned up some stuff
 i removed the +- -+ BS everywhere, we don't need it
 
 math parsing is more robust now and less code / less things to break
+
+
+
+########### batu 2024/3/18 8:46 AM EST
+
+    Name                                 Stmts   Miss  Cover   Missing
+------------------------------------------------------------------
+dateroll/__init__.py                     5      0   100%
+dateroll/__main__.py                     0      0   100%
+dateroll/calendars/__init__.py           0      0   100%
+dateroll/calendars/__main__.py           0      0   100%
+dateroll/calendars/calendarmath.py     172      0   100%
+dateroll/calendars/calendars.py        153      0   100%
+dateroll/date/__init__.py                0      0   100%
+dateroll/date/__main__.py                0      0   100%
+dateroll/date/date.py                  136      1    99%   38
+dateroll/ddh/__init__.py                 0      0   100%
+dateroll/ddh/__main__.py                 0      0   100%
+dateroll/ddh/ddh.py                     36      0   100%
+dateroll/duration/__init__.py            0      0   100%
+dateroll/duration/__main__.py            0      0   100%
+dateroll/duration/duration.py          342      0   100%
+dateroll/duration/old_duration.py        0      0   100%
+dateroll/parser/__init__.py              0      0   100%
+dateroll/parser/__main__.py              0      0   100%
+dateroll/parser/parser.py               62      0   100%
+dateroll/parser/parsers.py             102      0   100%
+dateroll/parser/patterns.py             27      0   100%
+dateroll/pretty.py                      69      0   100%
+dateroll/schedule/__init__.py            0      0   100%
+dateroll/schedule/__main__.py            0      0   100%
+dateroll/schedule/schedule.py           72      0   100%
+dateroll/settings.py                    60      0   100%
+dateroll/utils.py                       71     17    76%   71, 89, 91-104, 107
+------------------------------------------------------------------
+TOTAL                                 1307     18    99%
+
+    Summary:
+        #1 Fixed bugs made everything 100% -----> added test_usage2 modified some code---> coverage 99%
+
+    Problem:
+        #1 I could not change the settings.convention e.g giving settings.convention='YMD' still gave me settings.convention=MDY, please see 
+        test_usage2 where I put intentionally wrong date mdy_wrong = '30032011' and ddh(mdy_wrong) raised error then I 
+        put settings.convention='DMY' then ddh(dmy_wrong) where still settings.convention='MDY' so to test these other convention I changed to pass
+        convention. It is not clean, but I could not find the better way. I would like to discuss with you tomorrow to get a better approach 
+
+        #2 Using dateutil.parser.parse to get ddh(30/3/2011,convention='MDY') incorrectly gave me march 30 2011 when convention='MDY' and it is supposed to raise an error
+            so I changed dateutil.parser.parse into datetime.strptime() please review
+        
+        #3 ddh could not work with 03032011 it wanted the format of 03/03/2011 or 03-03-2011, so I created the handle_dateString in utils
+            to make it work, please review
+
+
 

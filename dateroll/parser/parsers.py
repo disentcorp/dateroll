@@ -35,7 +35,7 @@ def parseTodayString(s):
     return s
 
 
-def parseDateString(s,gen):
+def parseDateString(s,gen,convention):
     """
     for a given convention, see if string contains 1 or 2 dates
     regex to extract string, and Date.from_string(), which calls dateutil.parser.parse
@@ -48,21 +48,28 @@ def parseDateString(s,gen):
 
     """
     
-    if settings.convention == "MDY":
+    if convention == "MDY":
         pattern = patterns.MDY
-        dateparser_kwargs = {"dayfirst": False,"yearfirst": False}
-    elif settings.convention == "DMY":
+        # dateparser_kwargs = {"dayfirst": False,"yearfirst": False}
+        dateparser = '%m/%d/%Y'
+    elif convention == "DMY":
         pattern = patterns.DMY
-        dateparser_kwargs = {"dayfirst": True, "yearfirst": True}
-    elif settings.convention == "YMD":
+        # dateparser_kwargs = {"dayfirst": True, "yearfirst": True}
+        dateparser = '%d/%m/%Y'
+    elif convention == "YMD":
         pattern = patterns.YMD
-        dateparser_kwargs = {"yearfirst": True,"dayfirst":False}
+        # dateparser_kwargs = {"yearfirst": True,"dayfirst":False}
+        dateparser = '%Y/%m/%d'
 
     dates = {}
     matches = re.findall(pattern, s)
     res = s
+
     for match in matches:
-        date = dt.Date.from_string(match, **dateparser_kwargs)
+        
+        match_new = utils.handle_dateString(match,convention)
+        # date = dt.Date.from_string(match_new, **dateparser_kwargs)
+        date = dt.Date.from_string(match_new, dateparser)
         next_letter = next(gen())
         # match only 1st time!! or causes letter mismatch
         res = res.replace(match, '+'+next_letter,1)
@@ -96,15 +103,10 @@ def process_duration_match(m: tuple):
 
         if number and unit:
             # cast number to integer y,s,q,m,w,d
-            number = int(number)
+            number = int(number) if unit!='bd' else float(number)
             if i < 4:
                 # use multiplier on first pair
-                if unit=='bd':
-                    
-                    number = float(number) * mult
-                else:
-                    number *= mult
-
+                number *= mult
             duration_contructor_args[unit] = number
     
     # attach calendars if any
@@ -188,13 +190,11 @@ def parseDateMathString(s, things):
     Looks for any linear formula with plus or minus
     Uses substitution and evaluation. Safe because wouldn't get here if *things were not validated, and regex didn't match.
     """
-    before = s
-    math_matches = re.match(r'[A-Z]', s)
 
-    # we use this validation here to make the len(things)==1 condition work
     letters_used = re.findall(r'[A-Z]',s)
-     
+    
     # bad case, letter mismatch
+    
     for i in letters_used:
         if i not in things:
             print(s,things)

@@ -1,5 +1,7 @@
 import fcntl
 import pathlib
+import re
+import code
 
 XPRINT_ON = False
 
@@ -57,6 +59,55 @@ def add_none(a, b, dir=1):
         b = 0 if b is None else b
         return a + b * dir
 
+def handle_dateString(s,convention):
+    
+    if '-' in s:
+        s = s.replace('-','/')
+    if '/' in s:
+        s2 = s.split('/')
+        if convention=='YMD':
+            if len(s2[0])==2:
+                # make year 4 digit
+                s2[0] = f'20{s2[0]}'
+                
+        else:
+            if len(s2[-1])==2:
+                # lis is mutable
+                s2[-1] = f'20{s2[-1]}'
+        
+        s = '/'.join(s2)
+        
+        return s
+       
+
+    if convention=='YMD':
+        d = s[-2:]
+        m = s[-4:-2]
+        y = s[:-4]
+        if len(y)==2:
+            # to avoid the error of datetime.strptime which requires 4 digit in year
+            y = f'20{y}'
+        after = f'{y}/{m}/{d}'
+    elif convention=='MDY':
+        m = s[:2]
+        d = s[2:4]
+        y = s[4:]
+        if len(y)==2:
+            y = f'20{y}'
+        after = f'{m}/{d}/{y}'
+    elif convention=='DMY':
+        d = s[:2]
+        m = s[2:4]
+        y = s[4:]
+        if len(y)==2:
+            y = f'20{y}'
+        after = f'{d}/{m}/{y}'
+    
+    if int(m)>12 or int(m)<1:
+        raise ValueError(f'month should be between [1,12]')
+    return after
+    
+        
 
 class safe_open:
     """

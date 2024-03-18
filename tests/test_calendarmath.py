@@ -4,6 +4,9 @@ import pathlib
 import tempfile
 import unittest
 import uuid
+import io
+import sys
+
 import code
 from unittest import expectedFailure
 
@@ -294,6 +297,21 @@ class TestStringMathMethods(unittest.TestCase):
         
         with self.assertRaises(KeyError):
             self.cals._generate_union('BAD')
+    
+    def test_loadCache(self):
+        calm = CalendarMath()
+        # corrupt file
+        with open(calm.home,'r+b') as f:
+            f.seek(10)
+            f.write(b'corrupt')
+        capt = io.StringIO()
+        sys.stdout = capt
+        calm.load_cache()
+        sys.stdout = sys.__stdout__
+        txt = capt.getvalue().strip()
+        self.assertEqual(txt,'[dateroll] calendar math cache corrupted, cleaning.')
+        
+        
 
 
 
