@@ -246,11 +246,6 @@ class CalendarMath:
     def diff(self, t1, t2, cals, ie=DEFAULT_IE):
         """
         compute business days between two dates
-
-        one liner test code:
-        
-        python -c "from dateroll import *; settings.ie='[]'; b=ddh('3/22/24'); a= ddh('3/18/24'); d=b-a; d.cals=['NY']; print(d.just_bds)"
-
         """
         cals = CalendarMath.reverse_calstring(cals)
         cal_name = self.union_key(cals)

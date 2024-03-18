@@ -47,6 +47,17 @@ class Date(datetime.date):
             return Date(y, m, d)
         else:
             raise TypeError(f'from_datetime requires string, cannot use {type(o).__name__}')
+        
+    @staticmethod
+    def from_timestamp(o):
+        """
+        Create a Date instance from a unix timestamp
+        """  
+        if isinstance(o,(int,float)):
+            dt = datetime.date.fromtimestamp(o)
+            return Date.from_datetime(dt)
+        else:
+            raise TypeError(f'from_datetime requires int/float, cannot use {type(o).__name__}')           
 
     def to_string(self):
         fmt = utils.convention_map[settings.convention]
