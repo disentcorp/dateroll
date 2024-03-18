@@ -115,36 +115,50 @@ class TestStringMathMethods(unittest.TestCase):
 
     def test_diffbd(self):
         """
+        batu use global settings, settings.ie='(])' do the test, then try again
 
-        a - non-bd
-        b - non-bd
-        x - bd
-        y - bd
+        pick a calendar where on WEuNY you have 5 dates:
 
-        (a,b)
-        (a,b]
-        [a,b]
-        [a,b)
+            a. MTWRF No hol
+            b. M holiday, TWU no hol
+            c. F holiday, TWU no hol
+            d. MF holiday, TWU no hol
+            e. W holiday, MTU no hol
 
-        (a,y)
-        (a,y]
-        [a,y]
-        [a,y)
+        for each of the 5 above, you have 4 cases to test, so 20 test cases:
 
-        (x,b)
-        (x,b]
-        [x,b]
-        [x,b)
+        MTWRF No hol
+            () - 3
+            (] - 4
+            [) - 4
+            [] - 5
+        M holiday, TWU no hol
+            () - 3
+            (] - 4
+            [) - 3
+            [] - 4
+        F holiday, TWU no hol
+            () - 3
+            (] - 3
+            [) - 4
+            [] - 4
+        MF holiday, TWU no hol
+            () - 3
+            (] - 3
+            [) - 3
+            [] - 3
+        W holiday, MTU no hol
+            () - 2
+            (] - 3
+            [) - 3
+            [] - 4
 
-        (x,y)
-        (x,y]
-        [x,y]
-        [x,y)
-
-        measure performance, put a threshold
+        e.g.
 
         """
-        cals = 'WEuNY'
+    
+        cals = 'NY'
+
         a = Date(2024,1,1)
         b = Date(2024,1,12)
         x = Date(2024,2,29)
@@ -166,6 +180,7 @@ class TestStringMathMethods(unittest.TestCase):
         self.assertEqual(y_minus_a,44)
         y_minus_b = self.cals.diff(b,y,cals)
         self.assertEqual(y_minus_b,35)
+        raise Exception('reimpliement test bd with i rules working using real test cases')
 
     
 

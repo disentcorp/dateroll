@@ -249,10 +249,30 @@ class CalendarMath:
         """
         cals = CalendarMath.reverse_calstring(cals)
         cal_name = self.union_key(cals)
-        print(f"[dateroll] IE rules not implemented...warning")
+
+        if t1==t2:
+            return 0
+
+        # exclude first or last based on ie (inclusion/exclusion rule)
+        if ie[0]=='(':
+            if t1 < t2:
+                a = self.add_bd(t1,1,cals=cals)
+            else:
+                a = self.sub_bd(t1,1,cals=cals)
+        else:
+            a = t1
+
+        if ie[1]==')':
+            if t2 < a:
+                b = self.add_bd(t2,1,cals=cals)
+            else:
+                b = self.sub_bd(t2,1,cals=cals)
+        else:
+            b = t2
 
         fwd = self.fwd[cal_name]
-        n = fwd[t2] - fwd[t1]
+        n = fwd[b] - fwd[a] + 1
+
         return n
 
     def next_bd(self, d, cals):
