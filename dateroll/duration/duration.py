@@ -353,6 +353,14 @@ class Duration(dateutil.relativedelta.relativedelta):
     def just_exact_days(self):
         # raise execption instead of warn
         return self._just_days(_force_exact=True)
+    
+    @property
+    def just_bds(self):
+        if self._anchor_start and self._anchor_end:
+            return calmath.diff(self._anchor_start,self._anchor_end,self.cals,settings.ie)
+        else:
+            raise Exception('Cannot compute BDs on a duration that did not result from two dates')
+
 
     def _just_days(self, _force_approx=False, _force_exact=False):
         """

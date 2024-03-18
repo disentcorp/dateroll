@@ -7,7 +7,8 @@ path = pathlib.Path("~/.dateroll/settings.py").expanduser()
 
 default_settings = {
     'debug':True,
-    'convention':'MDY'
+    'convention':'MDY',
+    'ie':'(]'
 }
 
 default_settings_validation ={
@@ -18,7 +19,12 @@ default_settings_validation ={
     'convention': (
         lambda x: isinstance(x,str) and x in ['YMD','MDY','DMY'],
         ValueError('must be one of "MDY", "DMY" or "YMD".')
+    ),
+    'ie': (
+        lambda x: isinstance(x,str) and x in ['()','(]','[)','[]'],
+        ValueError('must be one of (), (], [), or [] such that is the interval: (a,b])')
     )
+
 }
 
 class Settings:
@@ -29,11 +35,12 @@ class Settings:
         '''
         if settings load and validate, if not load defaults and save
         '''
+        self.load_default()
+
         if path.exists():
             self.load()
             self.validate()
         else:
-            self.load_default()
             self.save()
 
     def load_default(self):
@@ -52,7 +59,7 @@ class Settings:
             spec.loader.exec_module(mod)
             settings = mod.__dict__
             self.__dict__.update(settings)
-        except:
+        except Exception as e:
             msg = f'Settings corrupted in {path}, restoring defaults.'
             warnings.warn(msg)
             self.load_default()
@@ -81,8 +88,8 @@ class Settings:
                 continue
             key_is_valid = k in default_settings
             type_is_valid = isinstance(v,type(default_settings.get(k,None)))
-            func_value_is_valid, exc = default_settings_validation.setdefault(k,(lambda x:False,ValueError(f'Setting {k} not found')))
-
+            missing_validation = (lambda x:False,ValueError(f'Setting {k} not found'))
+            func_value_is_valid, exc = default_settings_validation.get(k,missing_validation)
             if  not (key_is_valid and type_is_valid and func_value_is_valid(v)):
                 msg = f'Settings corrupted in {path}, restoring defaults.'
                 warnings.warn(msg)
