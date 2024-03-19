@@ -1039,3 +1039,6 @@ please document the logic of handle_string (now called parseDateString) in the d
 not working yet, please finish
 
 for the test on just_bds that should be in test_duration and not in test_calendar math.
+
+the 2000 forced cutoff for 2-digit dates is a ok, it's an assumption, dateutil.parser used 1973, please add this to the documentation.
+
