@@ -120,7 +120,7 @@ class Parser:
         notoday = parsers.parseTodayString(untouched)
 
         # 2
-        dates, nodates = parsers.parseDateString(notoday,gen)
+        dates, nodates = parsers.parseManyDateStrings(notoday,gen)
         # print('s before/after:', untouched,nodates)
 
         # 3

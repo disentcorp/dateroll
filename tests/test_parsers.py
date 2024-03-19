@@ -48,7 +48,7 @@ class TestParsers(unittest.TestCase):
             #reset convention
             settings.convention = orig
     
-    def test_parseDateString(self):
+    def test_parseManyDateStrings(self):
         '''
             test the parse date string based on convention
         '''
@@ -61,7 +61,7 @@ class TestParsers(unittest.TestCase):
             #american
             settings.convention = 'MDY'
             a = '03/08/2024'
-            l,s = parsers.parseDateString(a,gen)
+            l,s = parsers.parseManyDateStrings(a,gen)
             
             b = list(l.values())[0].to_string().replace('-','/')
             self.assertEqual(a,b)
@@ -69,14 +69,14 @@ class TestParsers(unittest.TestCase):
             #european
             settings.convention = 'DMY'
             a = '08/03/2024'
-            l,s = parsers.parseDateString(a,gen)
+            l,s = parsers.parseManyDateStrings(a,gen)
             b = list(l.values())[0].to_string().replace('-','/')
             self.assertEqual(a,b)
 
             #international
             settings.convention = 'YMD'
             a = '2024/03/08'
-            l,s = parsers.parseDateString(a,gen)
+            l,s = parsers.parseManyDateStrings(a,gen)
             b = list(l.values())[0].to_string().replace('-','/')
             self.assertEqual(a,b)
 

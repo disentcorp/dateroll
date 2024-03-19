@@ -1025,3 +1025,17 @@ TOTAL                                 1335     25    98%
         #3 Added testcases in test_usage2 and fixed few bugs which was having different result when I use dashes
 
 
+
+
+
+############# batu anthony 1130am 3/19
+
+parsing was split into parsers, Date.from_string, and utils.handle_string
+
+i moved your handle string into parseDateString and renamed parseDateString to parseManyDateStrings
+
+please document the logic of handle_string (now called parseDateString) in the doc string
+
+not working yet, please finish
+
+for the test on just_bds that should be in test_duration and not in test_calendar math.

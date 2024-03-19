@@ -16,9 +16,11 @@ import dateroll.parser.parser as parserModule
 
 TODAYSTRINGVALUES = ["today", "t0", "t"]
 
-
+def validate_month(m):
+    if int(m)>12 or int(m)<1:
+        raise ValueError(f'month should be between [1,12] but {m}')
+    
 class ParserStringsError(Exception): ...
-
 
 def parseTodayString(s):
     """
@@ -35,7 +37,78 @@ def parseTodayString(s):
     return s
 
 
-def parseDateString(s,gen):
+    if settings.convention == "MDY":
+        pattern = patterns.MDY
+        
+    elif settings.convention == "DMY":
+        pattern = patterns.DMY
+        dateparser = '%d/%m/%Y'
+    elif settings.convention == "YMD":
+        pattern = patterns.YMD
+        dateparser = '%Y/%m/%d'
+
+
+
+def parseDateString(s):
+    '''
+    2000 is the cutoff for 2-digit years, i.e. 01 and 99 are 2001 and 2099 respectively
+    '''
+    if '-' in s:
+        s = s.replace('-','/')
+    if '/' in s:
+        s2 = s.split('/')
+        if settings.convention=='YMD':
+            if len(s2[0])==2:
+                # make year 4 digit
+                s2[0] = f'20{s2[0]}'
+                validate_month(s2[1])
+        else:
+            if len(s2[-1])==2:
+                # lis is mutable
+                s2[-1] = f'20{s2[-1]}'
+            if settings.convention=='MDY':
+                m = s2[0]
+            else:
+                m = s2[1]
+            validate_month(m)
+        
+        s = '/'.join(s2)
+        date_time = datetime.datetime.strptime(after)
+        return date_time
+    
+    if settings.convention=='YMD':
+        fmt_string = '%Y/%m/%d'
+        d = s[-2:]
+        m = s[-4:-2]
+        y = s[:-4]
+        if len(y)==2:
+            # to avoid the error of datetime.strptime which requires 4 digit in year
+            y = f'20{y}'
+        after = f'{y}/{m}/{d}'
+    elif settings.convention=='MDY':
+        fmt_string = '%m/%d/%Y'
+        m = s[:2]
+        d = s[2:4]
+        y = s[4:]
+        if len(y)==2:
+            y = f'20{y}'
+        after = f'{m}/{d}/{y}'
+    elif settings.convention=='DMY':
+        fmt_string = '%d/%m/%Y'
+        d = s[:2]
+        m = s[2:4]
+        y = s[4:]
+        if len(y)==2:
+            y = f'20{y}'
+        after = f'{d}/{m}/{y}'
+    
+    validate_month(m)
+
+    date_time = datetime.datetime.strptime(after)
+
+    return date_time
+
+def parseManyDateStrings(s,gen):
     """
     for a given convention, see if string contains 1 or 2 dates
     regex to extract string, and Date.from_string(), which calls dateutil.parser.parse
@@ -50,29 +123,20 @@ def parseDateString(s,gen):
     
     if settings.convention == "MDY":
         pattern = patterns.MDY
-        # dateparser_kwargs = {"dayfirst": False,"yearfirst": False}
-        dateparser = '%m/%d/%Y'
     elif settings.convention == "DMY":
         pattern = patterns.DMY
-        # dateparser_kwargs = {"dayfirst": True, "yearfirst": True}
-        dateparser = '%d/%m/%Y'
     elif settings.convention == "YMD":
         pattern = patterns.YMD
-        # dateparser_kwargs = {"yearfirst": True,"dayfirst":False}
-        dateparser = '%Y/%m/%d'
 
     dates = {}
     matches = re.findall(pattern, s)
     res = s
     
     for match in matches:
-        # print('in match')
-        # code.interact(local=dict(globals(),**locals()))
-        match_new = utils.handle_dateString(match,settings.convention)
-        # date = dt.Date.from_string(match_new, **dateparser_kwargs)
-        date = dt.Date.from_string(match_new, dateparser)
-        next_letter = next(gen())
-        # match only 1st time!! or causes letter mismatch
+        date_time = parseDateString(match)
+        date = dt.Date.from_datetime(date_time)
+        
+        next_letter = next(gen()) # match only 1st time!! or causes letter mismatch
         res = res.replace(match, '+'+next_letter,1)
         dates[next_letter]=date
     

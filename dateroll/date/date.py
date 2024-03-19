@@ -4,7 +4,7 @@ from datetime import timezone
 import code
 
 import dateutil.relativedelta
-from dateutil.parser import parse
+from dateroll.parser.parsers import parseDateString
 from dateroll.settings import settings
 from dateroll.calendars.calendarmath import calmath
 from dateroll.duration.duration import Duration
@@ -20,20 +20,15 @@ class Date(datetime.date):
     '''
 
     @staticmethod
-    def from_string(o, dateparser):
+    def from_string(o):
         """
         if string provided use dateutil's parser
         note: dateutil's parser implements fall backs
         future: create custom string parser that explicitly checks mask matches string
         """
-        if isinstance(o,Date):
-            return o
-        elif isinstance(o,str):
-            # me = parse(o, **dateparser_kwargs)
-            me = datetime.datetime.strptime(o,dateparser)
-            
-            return Date.from_datetime(me)
-        
+        if isinstance(o,str):
+            date_time  = parseDateString(o)
+            return Date.from_datetime(date_time)
         else:
             raise TypeError(f'from_string requires string, cannot use {type(o).__name__}')
 
@@ -48,7 +43,7 @@ class Date(datetime.date):
             y, m, d = o.year, o.month, o.day
             return Date(y, m, d)
         else:
-            raise TypeError(f'from_datetime requires string, cannot use {type(o).__name__}')
+            raise TypeError(f'from_datetime requires datetime, cannot use {type(o).__name__}')
         
     @staticmethod
     def from_timestamp(o):
@@ -60,17 +55,6 @@ class Date(datetime.date):
             return Date.from_datetime(dt)
         else:
             raise TypeError(f'from_datetime requires int/float, cannot use {type(o).__name__}')           
-
-    # def to_string(self):
-    #     fmt = utils.convention_map[settings.convention]
-    #     date_string = self.strftime(fmt)
-    #     return date_string
-
-    def __str__(self):
-        return self.to_string()
-
-    # def __repr__(self):
-    #     return f'{self.__class__.__name__}("{self.to_string()}")'
 
     @staticmethod
     def today():
@@ -257,7 +241,9 @@ class Date(datetime.date):
             return self.strftime('%d-%m-%Y')
         else:
             return self.strftime('%Y-%m-%d')
-
+    
+    def __str__(self):
+        return self.to_string()
 
 DateLike = DateLike + (Date,)
 
