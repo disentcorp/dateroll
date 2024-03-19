@@ -32,16 +32,16 @@ class TestParser(unittest.TestCase):
         '''
         original = settings.convention
         try:
-            # settings.convention = 'YMD'
+            settings.convention = 'YMD'
             
-            dt = Parser.parse_one_part('20240101','YMD')
+            dt = Parser.parse_one_part('20240101')
             self.assertEqual(dt,Date(2024,1,1))
-
+            
             dur = Parser.parse_one_part('3m')
             
             self.assertEqual(dur,Duration(years=0, months=3, days=0, modified=False, debug=False))
 
-            dt_dur = Parser.parse_one_part('20240101+3m','YMD')
+            dt_dur = Parser.parse_one_part('20240101+3m')
             
             self.assertEqual(dt_dur,Date(2024,4,1))
         finally:
@@ -54,11 +54,12 @@ class TestParser(unittest.TestCase):
 
 
         # 1 part
-        dt = Parser.parse_maybe_many_parts('20240101','YMD')
+        settings.convention = 'YMD'
+        dt = Parser.parse_maybe_many_parts('20240101')
         self.assertEqual(dt,Date(2024,1,1))
 
         # 3 parts - valid schedule generation
-        dts = Parser.parse_maybe_many_parts('20240101,20240201,1bd','YMD')
+        dts = Parser.parse_maybe_many_parts('20240101,20240201,1bd')
         self.assertEqual(dts.dates[0],Date(2024,1,1))
         self.assertEqual(dts.dates[-1],Date(2024,2,1))
         self.assertEqual(len(dts),24)
@@ -80,14 +81,14 @@ class TestParser(unittest.TestCase):
 
         # 2 parts are wrong
         with self.assertRaises(Exception):
-            dt = Parser.parse_maybe_many_parts('t,t+3m','YMD')
+            dt = Parser.parse_maybe_many_parts('t,t+3m')
         
 
         # use_native NotImplmented for now
         with self.assertRaises(NotImplementedError):
             dt = parse_to_native('t')
 
-    
+        settings.convention = 'MDY'
 
 if __name__=='__main__':
     unittest.main()

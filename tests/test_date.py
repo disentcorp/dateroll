@@ -73,7 +73,7 @@ class TestDate(unittest.TestCase):
         """
         sunday = Date.from_string("3/3/2024","%m/%d/%Y")
         monday = Date.from_string("3/4/2024","%m/%d/%Y")
-        christmas = Date.from_string("12/25/2023","%m/%d/%Y")
+        christmas = Date.from_string("12/25/23","%m/%d/%y")
 
         self.assertFalse(sunday.is_bd(cals="WEuLN"))
         self.assertTrue(monday.is_bd(cals="WEuNYuBR"))
@@ -83,7 +83,7 @@ class TestDate(unittest.TestCase):
         """
         various properties
         """
-        d = Date.from_string("3/3/2024","%m/%d/%Y")
+        d = Date.from_string("3/3/24","%m/%d/%y")
         # iso
         self.assertEqual(d.iso, "2024-03-03")
 

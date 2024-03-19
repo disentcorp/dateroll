@@ -76,12 +76,12 @@ class TestDDH(unittest.TestCase):
             #european
             settings.convention = 'DMY'
             _b = dateroll.Date(year=2023,month=3,day=23)
-            b = ddh('23/3/23',convention="DMY")
+            b = ddh('23/3/23')
             self.assertEqual(_b,b)
             #international
             settings.convention = 'YMD'
             _c = dateroll.Date(year=2022,month=10,day=5)
-            c = ddh('20221005',convention='YMD')      
+            c = ddh('20221005')      
             self.assertEqual(_c,c)
         finally:
             # back to original

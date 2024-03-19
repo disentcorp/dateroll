@@ -35,7 +35,7 @@ def parseTodayString(s):
     return s
 
 
-def parseDateString(s,gen,convention):
+def parseDateString(s,gen):
     """
     for a given convention, see if string contains 1 or 2 dates
     regex to extract string, and Date.from_string(), which calls dateutil.parser.parse
@@ -48,15 +48,15 @@ def parseDateString(s,gen,convention):
 
     """
     
-    if convention == "MDY":
+    if settings.convention == "MDY":
         pattern = patterns.MDY
         # dateparser_kwargs = {"dayfirst": False,"yearfirst": False}
         dateparser = '%m/%d/%Y'
-    elif convention == "DMY":
+    elif settings.convention == "DMY":
         pattern = patterns.DMY
         # dateparser_kwargs = {"dayfirst": True, "yearfirst": True}
         dateparser = '%d/%m/%Y'
-    elif convention == "YMD":
+    elif settings.convention == "YMD":
         pattern = patterns.YMD
         # dateparser_kwargs = {"yearfirst": True,"dayfirst":False}
         dateparser = '%Y/%m/%d'
@@ -64,10 +64,11 @@ def parseDateString(s,gen,convention):
     dates = {}
     matches = re.findall(pattern, s)
     res = s
-
+    
     for match in matches:
-        
-        match_new = utils.handle_dateString(match,convention)
+        # print('in match')
+        # code.interact(local=dict(globals(),**locals()))
+        match_new = utils.handle_dateString(match,settings.convention)
         # date = dt.Date.from_string(match_new, **dateparser_kwargs)
         date = dt.Date.from_string(match_new, dateparser)
         next_letter = next(gen())
@@ -173,7 +174,6 @@ def parseDurationString(s,gen):
     """
     durations = {}
     matches = re.findall(patterns.COMPLETE_DURATION, s)
-
     for m in matches:
         duration = process_duration_match(m)
         dur_str = m[0]
@@ -207,7 +207,6 @@ def parseDateMathString(s, things):
         
     # good case, do the math
     gs = {k: v for k, v in things.items()}
-            
     try:
         total = eval(s,{},gs)
         return total

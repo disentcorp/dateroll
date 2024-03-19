@@ -10,6 +10,7 @@ from dateroll.schedule.schedule import Schedule
 from dateroll.date.date import Date
 from dateroll.duration.duration import Duration
 from dateroll.ddh.ddh import ddh
+from dateroll.settings import settings
 
 class TestSchedule(unittest.TestCase):
     @classmethod
@@ -73,11 +74,13 @@ class TestSchedule(unittest.TestCase):
         '''
             to_string 
         '''
-        schedule = ddh('20230101,20230201,1bd|NYuWE',convention='YMD')
+        settings.convention = 'YMD'
+        schedule = ddh('20230101,20230201,1bd|NYuWE')
         self.assertEqual(schedule.to_string(),'20230101,20230201,1bd|NYuWE')
         sch = Schedule(Date(2023,1,1),Date(2023,2,1),Duration(bd=1))
         with self.assertRaises(NotImplementedError):
             sch.to_string()
+        settings.convention = 'MDY'
     
     def test_split(self):
         '''

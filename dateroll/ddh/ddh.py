@@ -27,9 +27,9 @@ cals = calmath.cals
 class ddh:
     calmath = calmath
     cals = cals
-    def __new__(cls, o,convention='MDY'):
+    def __new__(cls, o):
         if isinstance(o,str):
-            obj = parse_to_dateroll(o,convention)
+            obj = parse_to_dateroll(o)
         elif isinstance(o,DateLike):
             return Date.from_datetime(o)
         elif isinstance(o,DurationLike):
@@ -58,6 +58,11 @@ if __name__=='__main__': # pragma: no cover
     # d = ddh('01/01/23,02/01/23,1bd|NYuWE')
     # d = ddh('20230101,20230201,1bd|NYuWE')
     # d = ddh('03/03/2011')
-    d = ddh('3/3/11')
-    print(d)
+    mdy = '01/10/2020'
+    settings.convention = 'YMD'
+    
+    ddh(mdy)
+
+
+    
         

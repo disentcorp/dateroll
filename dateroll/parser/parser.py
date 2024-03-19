@@ -88,7 +88,7 @@ class Parser:
     native_delta = dateutil.relativedelta.relativedelta
 
     def __new__(
-        self, string, convention='MDY',use_native_types=False,
+        self, string,use_native_types=False,
     ):
         """
         Algorithm works left to right implicitly:
@@ -108,18 +108,19 @@ class Parser:
 
         self.use_native_types = use_native_types
         
-        part = Parser.parse_maybe_many_parts(string,convention)
+        part = Parser.parse_maybe_many_parts(string)
+        
         return part
 
     @classmethod
-    def parse_one_part(cls, untouched,convention='MDY'):
+    def parse_one_part(cls, untouched):
         letters = [chr(i) for i in range(65, 65 + 26)]
         def gen():yield letters.pop(0)
         # 1
         notoday = parsers.parseTodayString(untouched)
 
         # 2
-        dates, nodates = parsers.parseDateString(notoday,gen,convention)
+        dates, nodates = parsers.parseDateString(notoday,gen)
         # print('s before/after:', untouched,nodates)
 
         # 3
@@ -132,10 +133,11 @@ class Parser:
         processed_answer = parsers.parseDateMathString(
             nodatesordurations, dates_durations
         )
+        
         return processed_answer
 
     @classmethod
-    def parse_maybe_many_parts(cls, s,convention='MDY'):
+    def parse_maybe_many_parts(cls, s):
         parts = s.split(",")
         if not s:
             TypeError("No empty strings")
@@ -144,15 +146,16 @@ class Parser:
 
         if num_parts == 1:
             part = parts[0]
-            date_or_period = cls.parse_one_part(part,convention)
+            date_or_period = cls.parse_one_part(part)
+            
             return date_or_period
 
         elif num_parts == 3:
             _maybe_start, _maybe_stop, _maybe_step = parts
 
-            maybe_start = cls.parse_one_part(_maybe_start,convention)
-            maybe_stop = cls.parse_one_part(_maybe_stop,convention)
-            maybe_step = cls.parse_one_part(_maybe_step,convention)
+            maybe_start = cls.parse_one_part(_maybe_start)
+            maybe_stop = cls.parse_one_part(_maybe_stop)
+            maybe_step = cls.parse_one_part(_maybe_step)
 
             if isinstance(maybe_start, dateModule.Date):
                 start = maybe_start
@@ -185,8 +188,8 @@ def parse_to_native(string):
     return Parser(string, use_native_types=True)
 
 
-def parse_to_dateroll(string,convention):
-    return Parser(string,convention)
+def parse_to_dateroll(string):
+    return Parser(string)
 
 if __name__=='__main__': # pragma:no cover
     # Parser.parse_maybe_many_parts('t,t+2m15d,1m')

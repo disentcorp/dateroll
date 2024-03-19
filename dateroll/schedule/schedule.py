@@ -1,5 +1,6 @@
 
 import code
+import pandas as pd
 from dateroll.calendars.calendarmath import calmath
 from dateroll import pretty
 import dateroll.date.date as date
@@ -78,7 +79,6 @@ class Schedule(list):
     
     @property
     def split(self):
-        import pandas as pd
         list_of_dates = self.dates
         start = list_of_dates[:-1]
         stop = list_of_dates[1:]

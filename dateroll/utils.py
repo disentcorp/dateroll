@@ -69,14 +69,21 @@ def handle_dateString(s,convention):
             if len(s2[0])==2:
                 # make year 4 digit
                 s2[0] = f'20{s2[0]}'
+                validate_month(s2[1])
+
                 
         else:
             if len(s2[-1])==2:
                 # lis is mutable
                 s2[-1] = f'20{s2[-1]}'
+            if convention=='MDY':
+                m = s2[0]
+            else:
+                m = s2[1]
+            validate_month(m)
         
         s = '/'.join(s2)
-        
+
         return s
        
 
@@ -103,9 +110,12 @@ def handle_dateString(s,convention):
             y = f'20{y}'
         after = f'{d}/{m}/{y}'
     
-    if int(m)>12 or int(m)<1:
-        raise ValueError(f'month should be between [1,12]')
+    validate_month(m)
     return after
+
+def validate_month(m):
+    if int(m)>12 or int(m)<1:
+        raise ValueError(f'month should be between [1,12] but {m}')
     
         
 

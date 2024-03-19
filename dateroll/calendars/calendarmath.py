@@ -247,32 +247,48 @@ class CalendarMath:
         """
         compute business days between two dates
         """
+        
         cals = CalendarMath.reverse_calstring(cals)
         cal_name = self.union_key(cals)
 
         if t1==t2:
             return 0
-
+        
         # exclude first or last based on ie (inclusion/exclusion rule)
-        if ie[0]=='(':
-            if t1 < t2:
-                a = self.add_bd(t1,1,cals=cals)
-            else:
-                a = self.sub_bd(t1,1,cals=cals)
-        else:
-            a = t1
+        # if ie[0]=='(':
+        #     if t1 < t2:
+        #         a = self.add_bd(t1,1,cals=cals)
+        #     else:
+        #         a = self.sub_bd(t1,1,cals=cals)
+        #         e = -1
+        # else:
+        #     a = t1
 
-        if ie[1]==')':
-            if t2 < a:
-                b = self.add_bd(t2,1,cals=cals)
-            else:
-                b = self.sub_bd(t2,1,cals=cals)
-        else:
-            b = t2
+        # if ie[1]==')':
+        #     if t2 < a:
+        #         b = self.add_bd(t2,1,cals=cals)
+        #     else:
+        #         b = self.sub_bd(t2,1,cals=cals)
+        # else:
+        #     b = t2
+
+        # fwd = self.fwd[cal_name]
+        # n = fwd[b] - fwd[a] + 1 
 
         fwd = self.fwd[cal_name]
-        n = fwd[b] - fwd[a] + 1
-
+        mult = 1 if t1<t2 else -1
+        a,b = (t1,t2) if t1<t2 else (t2,t1)
+        n = fwd[t2] - fwd[t1] + 1 * mult
+        if ie[0]=='[' and not a.is_bd(cals=cals):
+            # because of the fwd property e.g friday:1,sat:1,sun:1,mon(hol):1,tue:2 we subtract 1 more on the left side
+            n = n -1 * mult
+        if ie[0]=='(':
+            n = n - 1 * mult
+        
+        if ie[1]==')' and b.is_bd(cals=cals):
+            n = n -1 * mult
+        
+        
         return n
 
     def next_bd(self, d, cals):

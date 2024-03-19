@@ -986,5 +986,42 @@ TOTAL                                 1307     18    99%
         #3 ddh could not work with 03032011 it wanted the format of 03/03/2011 or 03-03-2011, so I created the handle_dateString in utils
             to make it work, please review
 
+############# batu 2024/3/19 8:15 AM EST
+Name                                 Stmts   Miss  Cover   Missing
+------------------------------------------------------------------
+dateroll/__init__.py                     5      0   100%
+dateroll/__main__.py                     0      0   100%
+dateroll/calendars/__init__.py           0      0   100%
+dateroll/calendars/__main__.py           0      0   100%
+dateroll/calendars/calendarmath.py     181      1    99%   255
+dateroll/calendars/calendars.py        153      0   100%
+dateroll/date/__init__.py                0      0   100%
+dateroll/date/__main__.py                0      0   100%
+dateroll/date/date.py                  142      5    96%   38, 58-62
+dateroll/ddh/__init__.py                 0      0   100%
+dateroll/ddh/__main__.py                 0      0   100%
+dateroll/ddh/ddh.py                     36      0   100%
+dateroll/duration/__init__.py            0      0   100%
+dateroll/duration/__main__.py            0      0   100%
+dateroll/duration/duration.py          347      1    99%   362
+dateroll/duration/old_duration.py        0      0   100%
+dateroll/parser/__init__.py              0      0   100%
+dateroll/parser/__main__.py              0      0   100%
+dateroll/parser/parser.py               62      0   100%
+dateroll/parser/parsers.py             102      0   100%
+dateroll/parser/patterns.py             27      0   100%
+dateroll/pretty.py                      69      0   100%
+dateroll/schedule/__init__.py            0      0   100%
+dateroll/schedule/__main__.py            0      0   100%
+dateroll/schedule/schedule.py           72      0   100%
+dateroll/settings.py                    61      0   100%
+dateroll/utils.py                       78     18    77%   71-72, 96, 98-111, 118
+------------------------------------------------------------------
+TOTAL                                 1335     25    98%
+
+    Summary:
+        #1 Removed passing convention
+        #2 Added testcases in calendarmatch ie cases, found a bug, modified the code to fix the bug, please review diff() func
+        #3 Added testcases in test_usage2 and fixed few bugs which was having different result when I use dashes
 
 

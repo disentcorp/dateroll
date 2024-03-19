@@ -262,4 +262,12 @@ class Date(datetime.date):
 DateLike = DateLike + (Date,)
 
 if __name__ == "__main__": # pragma: no cover
-    ...
+    from dateroll.calendars.calendarmath import CalendarMath
+    a = Date(2024,1,1)
+    b = Date(2024,1,5)
+    
+    # [b,a) is here
+    cals = CalendarMath()
+    b_minus_a = cals.diff(a,b,['NY','WE'],ie='[)')
+    
+    print(b_minus_a)
