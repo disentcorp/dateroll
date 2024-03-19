@@ -72,8 +72,8 @@ def parseDateString(s):
                 m = s2[1]
             validate_month(m)
         
-        s = '/'.join(s2)
-        date_time = datetime.datetime.strptime(after)
+        s = '/'.join(s2)  # 03/19/2024
+        date_time = datetime.datetime.strptime(s, "%m/%d/%Y")
         return date_time
     
     if settings.convention=='YMD':
