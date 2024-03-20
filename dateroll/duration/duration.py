@@ -5,7 +5,7 @@ import warnings
 import dateutil
 import dateutil.relativedelta
 import numpy as np
-
+import dateroll.utils as utils
 from dateroll.calendars.calendarmath import calmath
 import dateroll.parser.parsers as parsersModule
 import calendar
@@ -192,7 +192,7 @@ class Duration(dateutil.relativedelta.relativedelta):
             yield letters.pop(0)
 
         if isinstance(string, str):
-            durs, s = parsersModule.parseDurationString(string, gen)
+            durs, s = parsersModule.parseManyDurationString(string, gen)
             # first generating string is always A because of alphabetical order
             if len(durs) == 1 and s in ("+A", "A"):
 
@@ -603,7 +603,7 @@ class Duration(dateutil.relativedelta.relativedelta):
         if after.month != before.month or after.year != before.year:
             if bd_sign > 0:
                 # get the latest calendar date of before
-                _, num_days = calendar.monthrange(before.year, before.month)
+                num_days = utils.get_month_days(before.year,before.month)
 
                 after = Date(before.year, before.month, num_days)
                 after = after - Duration(bd=0, cals=self.cals)
@@ -775,7 +775,8 @@ if __name__ == "__main__":  # pragma: no cover
     # dur = ddh("4/15/24-1/15/24")
     dur = Duration(years=1,months=-2,days=3,bd=4,
                        cals = ['NY','WE'],modified=True)
-    print(dur.to_string())
+    print(dur.just_bds)
+
 
     ####### good test
     # x2 = Date(2022,10,9)

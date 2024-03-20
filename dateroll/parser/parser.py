@@ -124,7 +124,7 @@ class Parser:
         # print('s before/after:', untouched,nodates)
 
         # 3
-        durations, nodatesordurations = parsers.parseDurationString(nodates,gen)
+        durations, nodatesordurations = parsers.parseManyDurationString(nodates,gen)
         # print('s before/after:', nodates,nodatesordurations)
         dates_durations = {**dates,**durations}
         

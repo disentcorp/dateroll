@@ -3,8 +3,8 @@ import code
 import pandas as pd
 from dateroll.calendars.calendarmath import calmath
 from dateroll import pretty
-import dateroll.date.date as date
-import dateroll.duration.duration as duration
+
+import dateroll.parser.parsers as parsersModule
 
 class Schedule(list): 
     def __init__(self,start,stop,step,origin_string=None):
@@ -23,6 +23,12 @@ class Schedule(list):
         self.run()
         self.num_dates = len(self.dates)
 
+    @staticmethod
+    def from_string(string):
+        if isinstance(string, str):
+            return parsersModule.parseScheduleString(string)
+        else:
+            raise TypeError(f"Must be string not {type(string).__name__}")
     def __len__(self):
         return self.num_dates
 
@@ -44,6 +50,7 @@ class Schedule(list):
         else:
             # backward generation
             cursor = self.stop
+            
             while cursor > self.start:
                 dates.append(cursor)
                 cursor -= -self.step
@@ -51,6 +58,7 @@ class Schedule(list):
 
 
         self.dates = sorted(dates)
+        
         
     @property
     def cal(self):

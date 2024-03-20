@@ -63,17 +63,18 @@ class TestDate(unittest.TestCase):
 
         d2 = Date.from_datetime(b)
         self.assertEqual(ref, d2)
-
-        d3 = Date.from_string("1/1/1900","%m/%d/%Y")
+        settings.convention = 'MDY'
+        d3 = Date.from_string("1/1/1900")
         self.assertEqual(ref, d3)
 
     def test_is_bd(self):
         """
         check if day is a business day given a specific calendar
         """
-        sunday = Date.from_string("3/3/2024","%m/%d/%Y")
-        monday = Date.from_string("3/4/2024","%m/%d/%Y")
-        christmas = Date.from_string("12/25/23","%m/%d/%y")
+        settings.convention = 'MDY'
+        sunday = Date.from_string("3/3/2024")
+        monday = Date.from_string("3/4/2024")
+        christmas = Date.from_string("12/25/23")
 
         self.assertFalse(sunday.is_bd(cals="WEuLN"))
         self.assertTrue(monday.is_bd(cals="WEuNYuBR"))
@@ -83,7 +84,9 @@ class TestDate(unittest.TestCase):
         """
         various properties
         """
-        d = Date.from_string("3/3/24","%m/%d/%y")
+        
+        settings.convention = 'MDY'
+        d = Date.from_string("3/3/24")
         # iso
         self.assertEqual(d.iso, "2024-03-03")
 
@@ -226,9 +229,10 @@ class TestDate(unittest.TestCase):
             test from string, pass Date or bad instance to raise TypeError
         '''
 
-        x = Date(2023,1,1)
-        self.assertEqual(Date.from_string(x,'YMD'),x)
-        
+        x = '20230101'
+        settings.convention = 'YMD'
+        self.assertEqual(Date.from_string(x),Date(2023,1,1))
+        settings.convention = 'MDY'
         with self.assertRaises(TypeError):
             Date.from_string(10)
     
@@ -250,6 +254,16 @@ class TestDate(unittest.TestCase):
         rs = d.to_string()
         self.assertEqual(rs,'01-01-2023')
     
+    def test_fromtimestamp(self):
+        '''
+            test from timestamp
+        '''
+        timestamp = Date(2023,1,1).unix
+        self.assertEqual(Date.from_timestamp(timestamp),Date(2023,1,1))
+        with self.assertRaises(TypeError):
+            Date.from_timestamp('20230101')
+
+
     
         
 

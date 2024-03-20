@@ -33,6 +33,8 @@ class TestSchedule(unittest.TestCase):
         dts = [d.datetime for d in dts]
         expected = [datetime.datetime(2023, 1, 1, 0, 0), datetime.datetime(2023, 1, 2, 0, 0), datetime.datetime(2023, 1, 3, 0, 0), datetime.datetime(2023, 1, 4, 0, 0), datetime.datetime(2023, 1, 5, 0, 0), datetime.datetime(2023, 1, 6, 0, 0), datetime.datetime(2023, 1, 9, 0, 0), datetime.datetime(2023, 1, 10, 0, 0), datetime.datetime(2023, 1, 11, 0, 0), datetime.datetime(2023, 1, 12, 0, 0), datetime.datetime(2023, 1, 13, 0, 0), datetime.datetime(2023, 1, 16, 0, 0), datetime.datetime(2023, 1, 17, 0, 0), datetime.datetime(2023, 1, 18, 0, 0), datetime.datetime(2023, 1, 19, 0, 0), datetime.datetime(2023, 1, 20, 0, 0), datetime.datetime(2023, 1, 23, 0, 0), datetime.datetime(2023, 1, 24, 0, 0), datetime.datetime(2023, 1, 25, 0, 0), datetime.datetime(2023, 1, 26, 0, 0), datetime.datetime(2023, 1, 27, 0, 0), datetime.datetime(2023, 1, 30, 0, 0), datetime.datetime(2023, 1, 31, 0, 0), datetime.datetime(2023, 2, 1, 0, 0)]
         self.assertEqual(dts,expected)
+        Ssch = Schedule.from_string('01012023,02012023,1bd')
+        self.assertEqual(Ssch.dates,sch.dates)
 
     def test_dates_backward(self):
         '''
@@ -48,6 +50,11 @@ class TestSchedule(unittest.TestCase):
         expected = [datetime.datetime(2023, 1, 1, 0, 0),datetime.datetime(2023, 1, 2, 0, 0), datetime.datetime(2023, 1, 3, 0, 0), datetime.datetime(2023, 1, 4, 0, 0), datetime.datetime(2023, 1, 5, 0, 0), datetime.datetime(2023, 1, 6, 0, 0), datetime.datetime(2023, 1, 9, 0, 0), datetime.datetime(2023, 1, 10, 0, 0), datetime.datetime(2023, 1, 11, 0, 0), datetime.datetime(2023, 1, 12, 0, 0), datetime.datetime(2023, 1, 13, 0, 0), datetime.datetime(2023, 1, 16, 0, 0), datetime.datetime(2023, 1, 17, 0, 0), datetime.datetime(2023, 1, 18, 0, 0), datetime.datetime(2023, 1, 19, 0, 0), datetime.datetime(2023, 1, 20, 0, 0), datetime.datetime(2023, 1, 23, 0, 0), datetime.datetime(2023, 1, 24, 0, 0), datetime.datetime(2023, 1, 25, 0, 0), datetime.datetime(2023, 1, 26, 0, 0), datetime.datetime(2023, 1, 27, 0, 0), datetime.datetime(2023, 1, 30, 0, 0), datetime.datetime(2023, 1, 31, 0, 0), datetime.datetime(2023, 2, 1, 0, 0)]
         
         self.assertEqual(dts,expected)
+        # string
+        ssch = Schedule.from_string('01012023,02012023,-1bd')
+        sdts = ssch.dates
+        sdts = [d.datetime for d in sdts]
+        self.assertEqual(sdts,expected)
     
     
     def test_cal(self):
@@ -65,8 +72,19 @@ class TestSchedule(unittest.TestCase):
         sys.stdout = sys.__stdout__
 
         txt = capt.getvalue().strip()
-        self.assertGreater(txt,500)
-    
+        
+        self.assertGreater(len(txt),500)
+
+        Ssch = Schedule.from_string('01012023,02012023,-1bd')
+        capt = io.StringIO()
+        sys.stdout = capt
+        Ssch.cal
+
+        sys.stdout = sys.__stdout__
+
+        Stxt = capt.getvalue().strip()
+        self.assertEqual(Stxt,txt)
+
     def test_toString(self):
         '''
             to_string 
@@ -78,6 +96,9 @@ class TestSchedule(unittest.TestCase):
         with self.assertRaises(NotImplementedError):
             sch.to_string()
         settings.convention = 'MDY'
+        Ssch = Schedule.from_string('01012023,02012023,1bd|NYuWE')
+        with self.assertRaises(NotImplementedError):
+            Ssch.to_string()
     
     def test_split(self):
         '''
@@ -89,6 +110,9 @@ class TestSchedule(unittest.TestCase):
         stop = df.loc[0,'stop']
         step = df.loc[0,'step']
         self.assertEqual(stop,start+ddh(step))
+        
+        Ssch = Schedule.from_string('01012023,02012023,3bd')
+        self.assertTrue(df.equals(Ssch.split))
         
     
     def test_split_bond(self):
@@ -103,14 +127,27 @@ class TestSchedule(unittest.TestCase):
         days = [i for i in df['days'] if i is not None]
         ends_expected = [start + Duration(days=day) for start,day in zip(starts,days)]
         self.assertEqual(ends,ends_expected)
+
+        Ssch = Schedule.from_string('01012023,02012023,3bd')
+        self.assertTrue(df.equals(Ssch.split_bond.dropna()))
     
     def test_repr(self):
         sch = Schedule(Date(2023,1,1),Date(2023,2,1),Duration(bd=3))
         repr(sch)
 
+        Ssch = Schedule.from_string('01012023,02012023,3bd')
+        self.assertEqual(repr(sch),repr(Ssch))
+
     def test_str(self):
         sch = Schedule(Date(2023,1,1),Date(2023,2,1),Duration(bd=3))
         self.assertIsInstance(sch.__str__(),str)
+
+        Ssch = Schedule.from_string('01012023,02012023,3bd')
+        self.assertEqual(sch.__str__(),Ssch.__str__())
+
+        with self.assertRaises(TypeError):
+            Schedule.from_string(10)
+
         
         
 

@@ -1042,3 +1042,55 @@ for the test on just_bds that should be in test_duration and not in test_calenda
 
 the 2000 forced cutoff for 2-digit dates is a ok, it's an assumption, dateutil.parser used 1973, please add this to the documentation.
 
+
+################ batu 2024/3/20 8:15 AM EST
+Name                                 Stmts   Miss  Cover   Missing
+------------------------------------------------------------------
+dateroll/__init__.py                     5      0   100%
+dateroll/__main__.py                     0      0   100%
+dateroll/calendars/__init__.py           0      0   100%
+dateroll/calendars/__main__.py           0      0   100%
+dateroll/calendars/calendarmath.py     181      0   100%
+dateroll/calendars/calendars.py        153      0   100%
+dateroll/date/__init__.py                0      0   100%
+dateroll/date/__main__.py                0      0   100%
+dateroll/date/date.py                  140      0   100%
+dateroll/ddh/__init__.py                 0      0   100%
+dateroll/ddh/__main__.py                 0      0   100%
+dateroll/ddh/ddh.py                     36      0   100%
+dateroll/duration/__init__.py            0      0   100%
+dateroll/duration/__main__.py            0      0   100%
+dateroll/duration/duration.py          348      0   100%
+dateroll/duration/old_duration.py        0      0   100%
+dateroll/parser/__init__.py              0      0   100%
+dateroll/parser/__main__.py              0      0   100%
+dateroll/parser/parser.py               62      0   100%
+dateroll/parser/parsers.py             139      0   100%
+dateroll/parser/patterns.py             32      0   100%
+dateroll/pretty.py                      69      0   100%
+dateroll/schedule/__init__.py            0      0   100%
+dateroll/schedule/__main__.py            0      0   100%
+dateroll/schedule/schedule.py           76      0   100%
+dateroll/settings.py                    61      0   100%
+dateroll/utils.py                       39      0   100%
+------------------------------------------------------------------
+TOTAL                                 1341      0   100%
+
+    Summary:
+        #1 Rewrote parseDateString to cut half lines (review)
+        #2 Added cut dates, leap years , validate_date existence
+        #3 Cut dates explanation in doc string and DOC file
+        #4 Renamed process_duration into parseDurationString
+        #5 Moved test_just_bds into test_duration as a extension test
+        #6 Made 100 %
+        #7 Wrote schedule.from_string and tested and ensure the logic are same between date.from_string
+                duration.from_string and schedule.from_string
+
+    Question:
+        When it is backward is it 
+        schedule(20220101,20220130,-1bd)----> (20220101,20220102….20220130) or (20220130,20220129…)?
+
+        Our code is (20220101,20220102….20220130), please confirm
+
+
+

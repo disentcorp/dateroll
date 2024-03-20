@@ -6,7 +6,7 @@ from io import StringIO
 import datetime
 import dateutil.relativedelta
 from dateroll import Date,Duration,ddh
-
+from dateroll.settings import settings
 class TestDuration(unittest.TestCase):
     @classmethod
     def setUpClass(cls): ...
@@ -463,6 +463,121 @@ class TestDuration(unittest.TestCase):
         self.assertEqual(dur.to_string(),'+1y+2m+3d+4bd|NYuWE/MOD')
         self.assertEqual(dur2.to_string(),'+1y-2m+3d+4bd|NYuWE/MOD')
 
+    def test_just_bds(self):
+        '''
+            pick a calendar where on WEuNY you have 5 dates:
+
+            a. MTWRF No hol
+            b. M holiday, TWU no hol
+            c. F holiday, TWU no hol
+            d. MF holiday, TWU no hol
+            e. W holiday, MTU no hol
+
+        for each of the 5 above, you have 4 cases to test, so 20 test cases:
+
+        MTWRF No hol
+            () - 3
+            (] - 4
+            [) - 4
+            [] - 5
+        M holiday, TWU no hol
+            () - 3
+            (] - 4
+            [) - 3
+            [] - 4
+        F holiday, TWU no hol
+            () - 3
+            (] - 3
+            [) - 4
+            [] - 4
+        MF holiday, TWU no hol
+            () - 3
+            (] - 3
+            [) - 3
+            [] - 3
+        W holiday, MTU no hol
+            () - 2
+            (] - 3
+            [) - 3
+            [] - 4
+
+        e.g.
+        '''
+        #a MTWRF No hol
+        a = Date(2024,1,8)
+        b = Date(2024,1,12)
+        b_minus_a = b - a
+        b_minus_a.cals = ['NY','WE']
+        settings.ie = '(]'
+        self.assertEqual(b_minus_a.just_bds,4)
+        settings.ie = '()'
+        self.assertEqual(b_minus_a.just_bds,3)
+        settings.ie = '[)'
+        self.assertEqual(b_minus_a.just_bds,4)
+        settings.ie = '[]'
+        self.assertEqual(b_minus_a.just_bds,5)
+        
+        # b. M holiday, TWU no hol
+        a = Date(2024,1,1)
+        b = Date(2024,1,5)
+        b_minus_a = b-a
+        b_minus_a.cals = ['NY','WE']
+        settings.ie = '(]'
+        self.assertEqual(b_minus_a.just_bds,4)
+        settings.ie = '()'
+        self.assertEqual(b_minus_a.just_bds,3)
+        settings.ie = '[)'
+        self.assertEqual(b_minus_a.just_bds,3)
+        settings.ie = '[]'
+        self.assertEqual(b_minus_a.just_bds,4)
+
+        # c F holiday, MTWU no hol
+        a = Date(2020,12,28)
+        b = Date(2021,1,1)  # friday
+        b_minus_a = b-a
+        b_minus_a.cals = ['NY','WE']
+        settings.ie = '(]'
+        self.assertEqual(b_minus_a.just_bds,3)
+        settings.ie = '()'
+        self.assertEqual(b_minus_a.just_bds,3)
+        settings.ie = '[)'
+        self.assertEqual(b_minus_a.just_bds,4)
+        settings.ie = '[]'
+        self.assertEqual(b_minus_a.just_bds,4)
+
+        # d Tu holiday, MWUF no hol
+        a = Date(2018,12,31)
+        b = Date(2019,1,4)  # friday
+        b_minus_a = b-a
+        b_minus_a.cals = ['NY','WE']
+        settings.ie = '(]'
+        self.assertEqual(b_minus_a.just_bds,3)
+        settings.ie = '()'
+        self.assertEqual(b_minus_a.just_bds,2)
+        settings.ie = '[)'
+        self.assertEqual(b_minus_a.just_bds,3)
+        settings.ie = '[]'
+        self.assertEqual(b_minus_a.just_bds,4)
+
+        #e W holiday, MTU no hol
+        a = Date(2019,12,23)
+        b = Date(2019,12,27)  # friday
+        b_minus_a = b-a
+        b_minus_a.cals = ['NY','WE']
+        settings.ie = '(]'
+        self.assertEqual(b_minus_a.just_bds,3)
+        settings.ie = '()'
+        self.assertEqual(b_minus_a.just_bds,2)
+        settings.ie = '[)'
+        self.assertEqual(b_minus_a.just_bds,3)
+        settings.ie = '[]'
+        self.assertEqual(b_minus_a.just_bds,4)
+
+        dur = Duration(year=1)
+        with self.assertRaises(Exception):
+            dur.just_bds
+        # reset
+        settings.ie = '(]'
 
 
 

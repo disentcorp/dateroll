@@ -13,6 +13,7 @@ from tests.test_patterns import TestPatterns
 from tests.test_schedule import TestSchedule
 from tests.test_settings import TestSettings
 from tests.test_usage import TestUsage, TestUsageMore
+from tests.test_usage2 import TestUsage as TestUsage2
 
 def test_suite():
     '''
@@ -34,6 +35,7 @@ def test_suite():
     suite.addTest(unittest.makeSuite(TestUsage))
     suite.addTest(unittest.makeSuite(TestUsageMore))
     suite.addTest(unittest.makeSuite(TestSettings))
+    suite.addTest(unittest.makeSuite(TestUsage2))
     return suite
 
 if __name__=='__main__':

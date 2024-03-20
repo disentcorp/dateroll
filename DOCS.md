@@ -121,6 +121,17 @@ Adds business day handling, calendar math, and schedule generation when combined
 >>> Date(1984, 7 ,2)
 Date(year, month, day)
 ```
+Passing String
+```python
+>>>settings.convention='YMD'  # ensure the format YYYYMMDD
+>>>Date.from_string('19840702')
+```
+Note if the year has two digits, 1950 is the cutoff year which means that 01,49 are 2001,2049 respectively and 50,99 are 1950, 1999 respectively. Passing two digit year needs to have a format with '/' or '-', e.g, 23/02/01 NOT 230201
+```python
+>>>settings.convention='YMD'
+>>>Date.from_string('84/07/02')
+Date(year=1984,month=7,date=2)
+```
 ##### Constructor example
 <div class="disent-embed" data-defaultinput='Date(2024,7,2)'></div>
 <br>

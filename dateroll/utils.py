@@ -1,6 +1,7 @@
 import fcntl
 import pathlib
 import re
+import calendar
 import code
 
 XPRINT_ON = False
@@ -18,7 +19,9 @@ DEBUG_COLORS = {
 
 def color(s, color):
     return DEBUG_COLORS[color] + str(s) + DEBUG_COLORS["end"]
-
+def get_month_days(y,m):
+    _, num_days = calendar.monthrange(y, m)
+    return num_days
 
 def xprint(*args, **kwargs):  # pragma:no cover
     if XPRINT_ON:

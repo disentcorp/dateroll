@@ -58,10 +58,12 @@ if __name__=='__main__': # pragma: no cover
     # d = ddh('01/01/23,02/01/23,1bd|NYuWE')
     # d = ddh('20230101,20230201,1bd|NYuWE')
     # d = ddh('03/03/2011')
-    mdy = '01/10/2020'
-    settings.convention = 'YMD'
     
-    ddh(mdy)
+    dmy = '2/10/2020'
+    # rs = Date(2020,10,2)
+    
+    settings.convention = 'YMD'
+    ddh(dmy)
 
 
     

@@ -6,7 +6,8 @@ import datetime
 from dateroll.settings import settings
 from dateroll.date.date import Date
 from dateroll.duration.duration import Duration
-
+from dateroll.ddh.ddh import ddh
+from dateroll.schedule.schedule import Schedule
 
 class TestParsers(unittest.TestCase):
     @classmethod
@@ -87,26 +88,26 @@ class TestParsers(unittest.TestCase):
             #reset convention
             settings.convention = orig
     
-    def test_process_duration_match(self):
+    def test_parseDurationString(self):
         '''
             test duration match
         '''
         s = ('','+','1','y','0','q','0','m','1','w','1','d','0','bd','WE','NY','BR','ECB','FED','LN','','','MOD')
-        dur = parsers.process_duration_match(s)
+        dur = parsers.parseDurationString(s)
         self.assertEqual(dur,Duration(years=1, months=0, days=8, modified=True, cals="BRuECBuFEDuLNuNYuWE"))
 
         s2 = ('','-','1','y','0','q','0','m','1','w','1','d','0','bd','WE','NY','BR','ECB','FED','LN','','','MOD')
-        dur2 = parsers.process_duration_match(s2)
+        dur2 = parsers.parseDurationString(s2)
         self.assertEqual(dur2,Duration(years=-1, months=0, days=8, modified=True, cals="BRuECBuFEDuLNuNYuWE"))
 
         s3 = ('','*','1','y','0','q','0','m','1','w','1','d','0','bd','WE','NY','BR','ECB','FED','LN','','','P')
         with self.assertRaises(Exception) as cm:
-            parsers.process_duration_match(s3)
+            parsers.parseDurationString(s3)
         self.assertEqual(str(cm.exception),'Unknown operator')
         
         # no roll but it will have roll P
         s4 = ('','-','1','y','0','q','0','m','1','w','1','d','0','bd','WE','NY','BR','ECB','FED','LN','','','')
-        dur4 = parsers.process_duration_match(s4)
+        dur4 = parsers.parseDurationString(s4)
         self.assertEqual(dur4,Duration(years=-1, months=0, days=8, modified=False, cals="BRuECBuFEDuLNuNYuWE"))
     def test_parseCalendarUnionString(self):
         '''
@@ -129,7 +130,7 @@ class TestParsers(unittest.TestCase):
         letters = [chr(i) for i in range(65, 65 + 26)]
         def gen(): yield letters.pop(0)
         s = '1y3m4d'
-        s2 = parsers.parseDurationString(s,gen)
+        s2 = parsers.parseManyDurationString(s,gen)
         
         self.assertEqual(s2,({'A': Duration(years=1, months=3, days=4, modified=False, debug=False)}, '+A'))
     
@@ -156,6 +157,37 @@ class TestParsers(unittest.TestCase):
     
     def test_parsersConvention(self):
         s = settings
+    
+    def test_validates(self):
+        '''
+            test validate month and dates and other validation
+        '''
+        settings.convention = 'MDY'
+        with self.assertRaises(ValueError):
+            Date.from_string('13/1/2023')
+        with self.assertRaises(Exception):
+            Date.from_string('02/29/2022')
+        
+        mdy = '0312023'
+        with self.assertRaises(ValueError):
+            Date.from_string(mdy)
+        
+        mdy = '01/10/2020'
+        # MDY
+        settings.convention = 'YMD'
+        with self.assertRaises(ValueError):
+            Date.from_string(mdy)
+        settings.convention = 'MDY'
+
+        with self.assertRaises(Exception):
+            ddh('03012020,03302020,*1bd')
+        with self.assertRaises(Exception):
+            Schedule.from_string('03012020,1bd')
+        
+        with self.assertRaises(ValueError):
+            Schedule.from_string('xyz,dfs,1bd')
+        with self.assertRaises(ValueError):
+            Schedule.from_string('03012020,03302020,xssssssss')
         
         
 

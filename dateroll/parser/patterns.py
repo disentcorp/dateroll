@@ -38,6 +38,14 @@ MDY = re.compile(MDY)
 DMY = re.compile(DMY)
 COMPLETE_DURATION = re.compile(COMPLETE_DURATION)
 
+# No Compile
+# cY means captured Y
+cY = r"(\d{2,4})"
+cM = cD = r"(\d{1,2})"
+cYMD = f"{cY}{_}{cM}{_}{cD}"
+cMDY = f"{cM}{_}{cD}{_}{cY}"
+cDMY = f"{cD}{_}{cM}{_}{cY}"
+
 
 
 
