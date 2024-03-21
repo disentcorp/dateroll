@@ -122,11 +122,14 @@ class TestsPracticalExamples(unittest.TestCase):
     
     def test_badObj(self):
         '''
-            pass bad instace to rayse TypeError
+            pass bad instace to raise TypeError
         '''
         
         with self.assertRaises(TypeError):
             ddh(10)
+
+
+    
 if __name__ == "__main__":
     unittest.main()
 
