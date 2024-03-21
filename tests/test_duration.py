@@ -1,6 +1,4 @@
 import unittest
-
-import code
 import sys
 from io import StringIO
 import datetime
@@ -8,6 +6,9 @@ import dateutil.relativedelta
 from dateroll import Date,Duration,ddh
 from dateroll.parser import parsers
 from dateroll.settings import settings
+from dateroll.parser.parsers import ParserStringsError
+
+
 class TestDuration(unittest.TestCase):
     @classmethod
     def setUpClass(cls): ...
@@ -580,6 +581,31 @@ class TestDuration(unittest.TestCase):
         # reset
         settings.ie = '(]'
 
+
+    def test_badSyntax(self):
+        ''' pass some invalid duration strings
+            it must throw exception ParserStringsError
+        '''
+        with self.assertRaises(ParserStringsError):
+            dur = ddh("1d1y2d")
+
+        with self.assertRaises(ParserStringsError):
+            dur = ddh("1z")
+
+        with self.assertRaises(ParserStringsError):
+            dur = ddh("1bd1bd")
+
+        with self.assertRaises(ParserStringsError):
+            dur = ddh("1d1d")
+
+        with self.assertRaises(ParserStringsError):
+            dur = ddh("1m1m")
+
+        with self.assertRaises(ParserStringsError):
+            dur = ddh("1q1q")
+
+        with self.assertRaises(ParserStringsError):
+            dur = ddh("1y1y")
 
 
 if __name__=='__main__':
