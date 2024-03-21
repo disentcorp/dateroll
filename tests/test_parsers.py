@@ -169,13 +169,13 @@ class TestParsers(unittest.TestCase):
             Date.from_string('02/29/2022')
         
         mdy = '0312023'
-        with self.assertRaises(ValueError):
+        with self.assertRaises(parsers.ParserStringsError):
             Date.from_string(mdy)
         
         mdy = '01/10/2020'
         # MDY
         settings.convention = 'YMD'
-        with self.assertRaises(ValueError):
+        with self.assertRaises(parsers.ParserStringsError):
             Date.from_string(mdy)
         settings.convention = 'MDY'
 

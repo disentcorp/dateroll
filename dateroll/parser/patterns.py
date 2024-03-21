@@ -10,9 +10,9 @@ NUMBER = f"{INT_PART}{OPTIONAL_DECIMAL}"
 D = M = r"\d{1,2}"
 Y = r"\d{2,4}"
 _ = r"(?: ?-|/|\A\Z)?"
-YMD = f"{Y}{_}{M}{_}{D}"
-MDY = f"{M}{_}{D}{_}{Y}"
-DMY = f"{D}{_}{M}{_}{Y}"
+YMD = f"(({Y}){_}({M}){_}({D}))"
+MDY = f"(({M}){_}({D}){_}({Y}))"
+DMY = f"(({D}){_}({M}){_}({Y}))"
 
 # DurationString patterns
 PERIOD_LETTER = r"(?:bd|BD|[dDwWmMqQsShHyY])"
@@ -37,18 +37,6 @@ YMD = re.compile(YMD)
 MDY = re.compile(MDY)
 DMY = re.compile(DMY)
 COMPLETE_DURATION = re.compile(COMPLETE_DURATION)
-
-# No Compile
-# cY means captured Y
-cY = r"(\d{2,4})"
-cM = cD = r"(\d{1,2})"
-cYMD = f"{cY}{_}{cM}{_}{cD}"
-cMDY = f"{cM}{_}{cD}{_}{cY}"
-cDMY = f"{cD}{_}{cM}{_}{cY}"
-
-
-
-
 
 # Next iteration of patterns
 # DurationString patterns

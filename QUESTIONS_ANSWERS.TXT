@@ -1078,11 +1078,17 @@ TOTAL                                 1341      0   100%
 
     Summary:
         #1 Rewrote parseDateString to cut half lines (review)
+            better dsign, good, finish impl on our side
         #2 Added cut dates, leap years , validate_date existence
+            looks good
         #3 Cut dates explanation in doc string and DOC file
+            good
         #4 Renamed process_duration into parseDurationString
+            good
         #5 Moved test_just_bds into test_duration as a extension test
+            good
         #6 Made 100 %
+            great
         #7 Wrote schedule.from_string and tested and ensure the logic are same between date.from_string
                 duration.from_string and schedule.from_string
 
@@ -1093,4 +1099,19 @@ TOTAL                                 1341      0   100%
         Our code is (20220101,20220102….20220130), please confirm
 
 
+################ batu 2024/3/20 6:30pm
 
+>>> ddh('2/4/7')
+
+0.07142857142857142
+ ^ i add excaption in datmath, can you add test cases for:
+    both expected fails:
+      testcase1  2/4/7
+    testcase 2 2/4/007
+
+ Schedule.from_string('t,t+5y,1m')
+
+
+home/amalizzio/github/dateroll/tests/test_suite.py:38: DeprecationWarning: 
+unittest.makeSuite() is deprecated and will be removed in Python 3.13.
+Please use unittest.TestLoader.loadTestsFromTestCase() instead
