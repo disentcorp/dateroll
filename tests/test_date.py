@@ -230,12 +230,13 @@ class TestDate(unittest.TestCase):
         '''
 
         x = '20230101'
+        orig = settings.convention
         settings.convention = 'YMD'
         self.assertEqual(Date.from_string(x),Date(2023,1,1))
-        settings.convention = 'MDY'
         with self.assertRaises(TypeError):
             Date.from_string(10)
-    
+        settings.convention = orig
+
     def test_fromDatetime(self):
         '''
             pass bad instance will raise Type error
@@ -250,6 +251,7 @@ class TestDate(unittest.TestCase):
         '''
             test src which prints calendar
         '''
+        orig = settings.convention
         d = Date(2023,1,1)
         rs = d.to_string()
         self.assertEqual(rs,'01-01-2023')
@@ -260,7 +262,7 @@ class TestDate(unittest.TestCase):
         self.assertEqual(d.to_string(),'2023-01-02')
 
         # reset
-        settings.convention = 'MDY'
+        settings.convention = orig
     
     def test_fromtimestamp(self):
         '''

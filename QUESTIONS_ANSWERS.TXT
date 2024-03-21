@@ -1157,3 +1157,71 @@ TOTAL                                 1337      0   100%
 home/amalizzio/github/dateroll/tests/test_suite.py:38: DeprecationWarning: 
 unittest.makeSuite() is deprecated and will be removed in Python 3.13.
 Please use unittest.TestLoader.loadTestsFromTestCase() instead
+
+################ anthony 2024/3/20 9am
+
+i migrated makeSuite to loadTestsFromTestCase as per the deprecation message above
+
+i reworked settings module to be cleaner from module dunder properties
+
+yes in parsers there is ambiguity in our exception handling, sometimes parsers.ParserStringsError, sometimes ValueError, sometimes TypeError, this is a future project for cleanup, accepable for now
+
+when testing convention i found several places where it was not resetting back to original value (which may be different than hardcoded value), i have changed this
+
+parseDateString parses a string, not a tuple, the name of the funciton is "parseDateString", not parse "dateDateTuple", so i went back to your string parsing logic with some upgrades, now the docstrings show much more detailed logic on the expected beahvior and there are less edge cases
+
+yes you can call ParseManyDateStrings from Date.from_string, but Date.from_string must ONLY work for a date, multiple dates would pass this test this way.
+
+i added to Date.from_unix and Date.from_excel
+
+test_usage2 was commented, i uncommented
+
+1950 cutoff is actuall "2050" cutoff, i added "cutoff" as a setting, logic is more complex than we discussed, it is implemented, needs unit tests.
+
+please implement the unit tests missing from coverage report.
+
+Name                                 Stmts   Miss  Cover   Missing
+------------------------------------------------------------------
+dateroll/__init__.py                     5      0   100%
+dateroll/__main__.py                     0      0   100%
+dateroll/calendars/__init__.py           0      0   100%
+dateroll/calendars/__main__.py           0      0   100%
+dateroll/calendars/calendarmath.py     181      0   100%
+dateroll/calendars/calendars.py        153      0   100%
+dateroll/date/__init__.py                0      0   100%
+dateroll/date/__main__.py                0      0   100%
+dateroll/date/date.py                  156     12    92%   48-52, 59-67
+dateroll/ddh/__init__.py                 0      0   100%
+dateroll/ddh/__main__.py                 0      0   100%
+dateroll/ddh/ddh.py                     36      0   100%
+dateroll/duration/__init__.py            0      0   100%
+dateroll/duration/__main__.py            0      0   100%
+dateroll/duration/duration.py          342      0   100%
+dateroll/duration/old_duration.py        0      0   100%
+dateroll/parser/__init__.py              0      0   100%
+dateroll/parser/__main__.py              0      0   100%
+dateroll/parser/parser.py               63      0   100%
+dateroll/parser/parsers.py             176     11    94%   78, 87, 89, 110, 112, 152, 157, 161-162, 321, 327
+dateroll/parser/patterns.py             24      0   100%
+dateroll/pretty.py                      69      0   100%
+dateroll/schedule/__init__.py            0      0   100%
+dateroll/schedule/__main__.py            0      0   100%
+dateroll/schedule/schedule.py           76      0   100%
+dateroll/settings.py                    59      1    98%   98
+dateroll/utils.py                       39      0   100%
+------------------------------------------------------------------
+TOTAL                                 1379     24    98%
+
+
+barring and unuual bugs, we're pretty much ready for cleanup, packaging, and release!
+
+
+now it is time to cleanup the code by reviewing [each python source file] one by one:
+    remove code.interact lines
+    remove comments that are used for debugged
+    remove unused imports
+    review all print statements, remove them from code unless they are critical for function
+    anything we should address, now is the time to do it
+    are there any areas of testing you feel are not exhaustive and may ahve edge cases?
+
+i'm going to start moving into documentation. 

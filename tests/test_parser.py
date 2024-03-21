@@ -54,6 +54,7 @@ class TestParser(unittest.TestCase):
 
 
         # 1 part
+        original = settings.convention
         settings.convention = 'YMD'
         dt = Parser.parse_maybe_many_parts('20240101')
         self.assertEqual(dt,Date(2024,1,1))
@@ -88,7 +89,7 @@ class TestParser(unittest.TestCase):
         with self.assertRaises(NotImplementedError):
             dt = parse_to_native('t')
 
-        settings.convention = 'MDY'
+        settings.convention = original
 
 if __name__=='__main__':
     unittest.main()

@@ -19,23 +19,24 @@ def test_suite():
     '''
         add test cases into suite
     '''
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestStringMathMethods))
-    suite.addTest(unittest.makeSuite(TestStringMethods))
-    suite.addTest(unittest.makeSuite(TestDate))
-    suite.addTest(unittest.makeSuite(TestDDH))
-    suite.addTest(unittest.makeSuite(TestsPracticalExamples))
-    suite.addTest(unittest.makeSuite(TestDuration))
-    suite.addTest(unittest.makeSuite(TestOperations))
-    suite.addTest(unittest.makeSuite(TestParser))
-    suite.addTest(unittest.makeSuite(TestParsers))
-    suite.addTest(unittest.makeSuite(TestPatterns))
-    suite.addTest(unittest.makeSuite(TestPretty))
-    suite.addTest(unittest.makeSuite(TestSchedule))
-    suite.addTest(unittest.makeSuite(TestUsage))
-    suite.addTest(unittest.makeSuite(TestUsageMore))
-    suite.addTest(unittest.makeSuite(TestSettings))
-    suite.addTest(unittest.makeSuite(TestUsage2))
+    suite = unittest.TestSuite([    
+        unittest.TestLoader().loadTestsFromTestCase(TestStringMathMethods),
+        unittest.TestLoader().loadTestsFromTestCase(TestStringMethods),
+        unittest.TestLoader().loadTestsFromTestCase(TestDate),
+        unittest.TestLoader().loadTestsFromTestCase(TestDDH),
+        unittest.TestLoader().loadTestsFromTestCase(TestsPracticalExamples),
+        unittest.TestLoader().loadTestsFromTestCase(TestDuration),
+        unittest.TestLoader().loadTestsFromTestCase(TestOperations),
+        unittest.TestLoader().loadTestsFromTestCase(TestParser),
+        unittest.TestLoader().loadTestsFromTestCase(TestParsers),
+        unittest.TestLoader().loadTestsFromTestCase(TestPatterns),
+        unittest.TestLoader().loadTestsFromTestCase(TestPretty),
+        unittest.TestLoader().loadTestsFromTestCase(TestSchedule),
+        unittest.TestLoader().loadTestsFromTestCase(TestUsage),
+        unittest.TestLoader().loadTestsFromTestCase(TestUsageMore),
+        unittest.TestLoader().loadTestsFromTestCase(TestSettings),
+        unittest.TestLoader().loadTestsFromTestCase(TestUsage2),
+    ])
     return suite
 
 if __name__=='__main__':

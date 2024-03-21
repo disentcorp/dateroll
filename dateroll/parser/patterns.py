@@ -32,11 +32,14 @@ COMPLETE_DURATION = (
     f"({OPERATOR}{REPEATING_DATE_PERIODS} ?{PIPE_REPEAT_CAL_UNION}{PIPE_ROLL})"
 )
 
+MONTHNAMES = re.compile(r'\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec|January|February|March|April|June|July|August|September|October|November|December)\b')
+
+
 # Compiled
-YMD = re.compile(YMD)
-MDY = re.compile(MDY)
-DMY = re.compile(DMY)
-COMPLETE_DURATION = re.compile(COMPLETE_DURATION)
+# YMD = re.compile(YMD)
+# MDY = re.compile(MDY)
+# DMY = re.compile(DMY)
+# COMPLETE_DURATION = re.compile(COMPLETE_DURATION)
 
 # Next iteration of patterns
 # DurationString patterns

@@ -16,10 +16,12 @@ import dateroll
 
 class TestDDH(unittest.TestCase):
     @classmethod
-    def setUpClass(cls): ...
+    def setUpClass(cls): 
+        ...
 
     @classmethod
-    def tearDownClass(self): ...
+    def tearDownClass(self):
+        ...
 
     def testDateMathWithStr(self):
         """

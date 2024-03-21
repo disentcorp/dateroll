@@ -89,6 +89,7 @@ class TestSchedule(unittest.TestCase):
         '''
             to_string 
         '''
+        orig = settings.convention
         settings.convention = 'YMD'
         schedule = ddh('20230101,20230201,1bd|NYuWE')
         self.assertEqual(schedule.to_string(),'20230101,20230201,1bd|NYuWE')
@@ -99,7 +100,8 @@ class TestSchedule(unittest.TestCase):
         Ssch = Schedule.from_string('01012023,02012023,1bd|NYuWE')
         with self.assertRaises(NotImplementedError):
             Ssch.to_string()
-    
+        settings.convention = orig
+
     def test_split(self):
         '''
             test split properties which return dataframe with columns of start,stop, and step

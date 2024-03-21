@@ -117,6 +117,7 @@ class Parser:
     def parse_one_part(cls, untouched):
         letters = [chr(i) for i in range(65, 65 + 26)]
         def gen():yield letters.pop(0)
+        
         # 1
         notoday = parsers.parseTodayString(untouched)
 
@@ -194,6 +195,7 @@ def parse_to_dateroll(string):
 
 if __name__=='__main__': # pragma:no cover
     # Parser.parse_maybe_many_parts('t,t+2m15d,1m')
+    orig = settings.convention
     settings.convention = 'YMD'
     Parser.parse_one_part('20240101')
-    settings.convention = 'MDY'
+    settings.convention = orig

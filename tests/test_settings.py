@@ -12,37 +12,45 @@ from dateroll.duration.duration import Duration
 
 class TestSettings(unittest.TestCase):
     @classmethod
-    def setUpClass(cls): ...
+    def setUpClass(cls): 
+        ...
 
     @classmethod
-    def tearDownClass(self): ...
+    def tearDownClass(self): 
+        ...
 
     def test_init(self):
         '''
             test init of settings
         '''
-        settings = Settings()
-        settings.load_default()
-        
-        self.assertEqual(settings.convention,'MDY')
 
+        # try removing so defaults are inherited
         os.remove(path)
         settings = Settings()
         self.assertEqual(settings.convention,'MDY')
-    
-    def test_load(self):
+        
+    def test_load_validation_of_settings(self):
+        '''
+        test the validation of settings        
+        '''
+
+        # load
         settings = Settings()
-        settings.load_default()
-        settings.load()
-        self.assertEqual(settings.convention,'MDY')
-    
-    def test_validate(self):
-        settings = Settings()
+        # backup
+        original = settings.convention
+
+        # import code;code.interact(local=dict(**locals()))
+
+        # change /confirm
         settings.convention = 'YMD'
-        settings.validate()
         self.assertEqual(settings.convention,'YMD')
-        settings.convention = 'MDY'
-        settings.validate()
+        
+        # change /confirm
+        settings.convention = 'DMY'
+        self.assertEqual(settings.convention,'DMY')
+
+        # reset back to original
+        settings.convention = original
 
     def test_setattr(self):
         '''
@@ -60,19 +68,39 @@ class TestSettings(unittest.TestCase):
         settings = Settings()
         x = repr(settings)
 
+    def test_user_settings(self):
+        ...
+        # good key
+        settings = Settings()
+        backup = settings
+        with open(path,'w') as f:
+            f.write('convention="YMD"')
+        
+        settings = Settings()
+        self.assertEqual(settings.convention,'YMD')
+        settings = backup
+        settings.save()
+    
     def test_bad_settings(self):
         ...
-        # bad key
+        # bad key warns and ignores
+        settings = Settings()
+        backup = settings
         with self.assertWarns(Warning):
             with open(path,'w') as f:
                 f.write('bad_setting=123')
             settings = Settings()
+        settings = backup
+        settings.save()
 
         # syntax error
+        backup = settings
         with self.assertWarns(Warning):
             with open(path,'w') as f:
                 f.write('/')
             settings = Settings() 
+        settings = backup
+        settings.save()
 
 
 if __name__=='__main__':

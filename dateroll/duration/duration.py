@@ -185,22 +185,10 @@ class Duration(dateutil.relativedelta.relativedelta):
             self._anchor_days = (self._anchor_end.date - self._anchor_start.date).days
 
     @staticmethod
-    def from_string(string):
-        letters = [chr(i) for i in range(65, 65 + 26)]
-
-        def gen():
-            yield letters.pop(0)
-
-        if isinstance(string, str):
-            durs, s = parsersModule.parseManyDurationString(string, gen)
-            # first generating string is always A because of alphabetical order
-            if len(durs) == 1 and s in ("+A", "A"):
-
-                return durs["A"]
-            else:
-                raise TypeError(f"Could not validate duration string: {string}")
-        else:
-            raise TypeError(f"Must be string not {type(string).__name__}")
+    def from_string(o):
+        if not isinstance(o,str):
+            raise TypeError(f'Must be string not {type(o).__name__}')
+        return parsersModule.parseDurationString(o)
 
     @staticmethod
     def from_relativedelta(rd, _anchor_start=None, _anchor_end=None):

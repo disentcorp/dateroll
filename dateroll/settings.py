@@ -8,7 +8,8 @@ path = pathlib.Path("~/.dateroll/settings.py").expanduser()
 default_settings = {
     'debug':True,
     'convention':'MDY',
-    'ie':'(]'
+    'ie':'(]',
+    'twodigityear_cutoff':2050
 }
 
 default_settings_validation ={
@@ -23,6 +24,10 @@ default_settings_validation ={
     'ie': (
         lambda x: isinstance(x,str) and x in ['()','(]','[)','[]'],
         ValueError('must be one of (), (], [), or [] such that is the interval: (a,b])')
+    ),
+    'twodigityear_cutoff':(
+        lambda x: isinstance(x,int) and ((x==1900) or (x>=2000 and x<2100)),
+        ValueError('Cutoff must be either 1900 (all 2-digit are 1900), 2000 (all 2-digit are 2000), or some n >2001 and < 2099 as a cutoff level')
     )
 
 }
@@ -33,23 +38,18 @@ class Settings:
     '''
     def __init__(self):
         '''
-        if settings load and validate, if not load defaults and save
+        retrieve user settings and validate
         '''
-        self.load_default()
-
         if path.exists():
-            self.load()
-            self.validate()
+            d = self.retrieve()
+            d_validated = self.validate(d)
+            self.__dict__.update(d_validated)
+            
         else:
+            self.__dict__.update(default_settings)
             self.save()
-
-    def load_default(self):
-        '''
-        update singleton with settings
-        '''
-        self.__dict__.update(default_settings)
-    
-    def load(self):
+       
+    def retrieve(self):
         '''
         try to load settings file, if corrupted replace with defaults
         '''
@@ -57,44 +57,51 @@ class Settings:
             spec = importlib.util.spec_from_file_location("module.name", path)
             mod = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(mod)
-            settings = mod.__dict__
-            self.__dict__.update(settings)
+            d = mod.__dict__
         except Exception as e:
-            msg = f'Settings corrupted in {path}, restoring defaults.'
+            d = {}
+            msg = f'Unable to read settings file in {path}, will restoring defaults.'
             warnings.warn(msg)
-            self.load_default()
-            self.save()
+
+        d = {k:v for k,v in d.items() if not k.startswith('_')}    
+        return d
 
     def save(self):
         '''
-        save settings file
+        save settings file -- settings must be in default_settings
         '''
         path.parent.mkdir(parents=True, exist_ok=True)
         with path.open('w') as f:
             txt = f'# Dateroll settings file\n# {path}\n\n'
             for k,v in self.__dict__.items():
-                if not k.startswith('__'):
+                if not k.startswith('__') and k in default_settings:
                     txt += f'{k}={repr(v)}\n'
             f.write(txt)
 
-    def validate(self):
+    def validate(self, user_settings):
         '''
-        3 validate checks per setting / key is valid, type of value is valid, and value of value is valid
+        2 tests:
+            user settings key in default settings
+            user settings value passes default settings value check
+        1 adjustment:
+            append default settings not in user settings for a complete set of settings
         '''
-        # key check
+
         reset = False
-        for k,v in self.__dict__.items():
-            if k.startswith('__'):
-                continue
-            key_is_valid = k in default_settings
-            type_is_valid = isinstance(v,type(default_settings.get(k,None)))
-            missing_validation = (lambda x:False,ValueError(f'Setting {k} not found'))
-            func_value_is_valid, exc = default_settings_validation.get(k,missing_validation)
-            if  not (key_is_valid and type_is_valid and func_value_is_valid(v)):
-                msg = f'Settings corrupted in {path}, restoring defaults.'
+        for k,v in user_settings.items():
+            if k not in default_settings:
+                msg = f'Unkonwn setting {k}, ignoring'
                 warnings.warn(msg)
-                self.load_default()
-                break
+            else:
+                test,exc  = default_settings_validation[k]
+                if not test(v):
+                    raise exc
+
+        for k,v in default_settings.items():
+            if k not in user_settings:
+                user_settings[k] = v
+       
+        return user_settings
 
     def __setattr__(self,k,v):
         '''

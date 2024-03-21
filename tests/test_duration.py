@@ -6,6 +6,7 @@ from io import StringIO
 import datetime
 import dateutil.relativedelta
 from dateroll import Date,Duration,ddh
+from dateroll.parser import parsers
 from dateroll.settings import settings
 class TestDuration(unittest.TestCase):
     @classmethod
@@ -21,7 +22,7 @@ class TestDuration(unittest.TestCase):
         '''
         x = Duration.from_string('+3m|NY')
         self.assertIsInstance(x,Duration)
-        self.assertRaises(TypeError,lambda :Duration.from_string('garbage'))
+        self.assertRaises(parsers.ParserStringsError,lambda :Duration.from_string('garbage'))
         self.assertRaises(TypeError,lambda :Duration.from_string(3))
         
     def test_from_rd(self):

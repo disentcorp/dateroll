@@ -4,7 +4,7 @@ from datetime import timezone
 import code
 
 import dateutil.relativedelta
-from dateroll.parser.parsers import parseManyDateStrings
+import dateroll.parser.parsers as parsersModule
 from dateroll.settings import settings
 from dateroll.calendars.calendarmath import calmath
 from dateroll.duration.duration import Duration
@@ -22,24 +22,13 @@ class Date(datetime.date):
     @staticmethod
     def from_string(o):
         """
-        if string provided use dateutil's parser
-        note: dateutil's parser implements fall backs
-        future: create custom string parser that explicitly checks mask matches string
         """
-        letters = [chr(i) for i in range(65, 65 + 26)]
-        def gen():
-            yield letters.pop(0)
-        if isinstance(o,str):
-            date_dic,s  = parseManyDateStrings(o,gen)
-            if len(date_dic) == 1 and s in ("+A", "A"):
-
-                return date_dic["A"]
-            else:
-                
-                raise TypeError(f"Could not validate date string: {o}, (please check convention matches with the format)")
-            
-        else:
+        if not isinstance(o,str):
             raise TypeError(f'from_string requires string, cannot use {type(o).__name__}')
+        
+        dt = parsersModule.parseDateString(o)
+        return Date.from_datetime(dt)
+
 
     @staticmethod
     def from_datetime(o):
@@ -54,6 +43,30 @@ class Date(datetime.date):
         else:
             raise TypeError(f'from_datetime requires datetime, cannot use {type(o).__name__}')
         
+    @staticmethod
+    def from_unix(o):
+        if not isinstance(o,(int,float)):
+            raise TypeError('Must be int/float')
+        
+        dt = datetime.date.fromtimestamp(o)
+        return Date.from_datetime(dt)
+
+    @staticmethod
+    def from_xls(o):
+        '''
+        excel integer part is days since 12/30/1899, fraction is sub-day
+        '''
+        if not isinstance(o,(int,float)):
+            raise TypeError('Must be int/float')
+        
+        base_date = datetime.datetime(1899, 12, 30)
+        days = int(o)
+        fraction = o - days
+        seconds_in_day = int(fraction * 24 * 3600)
+        dt = base_date + datetime.timedelta(days=days, seconds=seconds_in_day)
+        return Date.from_datetime(dt)
+
+
     @staticmethod
     def from_timestamp(o):
         """
@@ -117,6 +130,8 @@ class Date(datetime.date):
     @property
     def unix(self):
         return self.datetime.timestamp()
+
+
 
     @property
     def iso(self):
