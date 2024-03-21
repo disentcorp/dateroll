@@ -10,9 +10,9 @@ NUMBER = f"{INT_PART}{OPTIONAL_DECIMAL}"
 D = M = r"\d{1,2}"
 Y = r"\d{2,4}"
 _ = r"(?: ?-|/|\A\Z)?"
-YMD = f"{Y}{_}{M}{_}{D}"
-MDY = f"{M}{_}{D}{_}{Y}"
-DMY = f"{D}{_}{M}{_}{Y}"
+YMD = f"(({Y}){_}({M}){_}({D}))"
+MDY = f"(({M}){_}({D}){_}({Y}))"
+DMY = f"(({D}){_}({M}){_}({Y}))"
 
 # DurationString patterns
 PERIOD_LETTER = r"(?:bd|BD|[dDwWmMqQsShHyY])"

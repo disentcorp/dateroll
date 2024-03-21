@@ -253,6 +253,14 @@ class TestDate(unittest.TestCase):
         d = Date(2023,1,1)
         rs = d.to_string()
         self.assertEqual(rs,'01-01-2023')
+        settings.convention = 'DMY'
+        d = Date(2023,1,2)
+        self.assertEqual(d.to_string(),'02-01-2023')
+        settings.convention = 'YMD'
+        self.assertEqual(d.to_string(),'2023-01-02')
+
+        # reset
+        settings.convention = 'MDY'
     
     def test_fromtimestamp(self):
         '''

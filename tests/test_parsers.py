@@ -63,22 +63,21 @@ class TestParsers(unittest.TestCase):
             settings.convention = 'MDY'
             a = '03/08/2024'
             l,s = parsers.parseManyDateStrings(a,gen)
-            
-            b = list(l.values())[0].to_string().replace('-','/')
+            b = list(l.values())[0].strftime('%m/%d/%Y')
             self.assertEqual(a,b)
 
             #european
             settings.convention = 'DMY'
             a = '08/03/2024'
             l,s = parsers.parseManyDateStrings(a,gen)
-            b = list(l.values())[0].to_string().replace('-','/')
+            b = list(l.values())[0].strftime('%d/%m/%Y')
             self.assertEqual(a,b)
 
             #international
             settings.convention = 'YMD'
             a = '2024/03/08'
             l,s = parsers.parseManyDateStrings(a,gen)
-            b = list(l.values())[0].to_string().replace('-','/')
+            b = list(l.values())[0].strftime('%Y/%m/%d')
             self.assertEqual(a,b)
 
             #negative testing
@@ -172,10 +171,11 @@ class TestParsers(unittest.TestCase):
         with self.assertRaises(ValueError):
             Date.from_string(mdy)
         
+        
         mdy = '01/10/2020'
         # MDY
         settings.convention = 'YMD'
-        with self.assertRaises(ValueError):
+        with self.assertRaises(TypeError):
             Date.from_string(mdy)
         settings.convention = 'MDY'
 

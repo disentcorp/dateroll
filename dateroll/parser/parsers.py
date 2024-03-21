@@ -16,6 +16,13 @@ import calendar
 
 TODAYSTRINGVALUES = ["today", "t0", "t"]
 
+def validate_year(y):
+    '''
+        y should be string, we currently only support 2,4 digit in a year
+    '''
+    if not (len(y)==2 or len(y)==4):
+        raise ValueError('We only support 2 digit or 4 digit in years, eg, 23 as 2023, or 2023')
+
 def validate_month(m):
     if m>12 or m<1:
         raise ValueError(f'month should be between [1,12] but {m}')
@@ -49,121 +56,33 @@ def parseTodayString(s):
 
 
 
-def parseDateString(s):
+def parseDateString(tup: tuple):
     '''
     1950 is the cutoff for 2-digit years, i.e. 01 and 49 are 2001 and 2049 respectively
     50,99 are 1950 and 1999 respectively
     '''
-    if not re.search(r'[-/]',s):
-        if len(s)!=8:
-            raise ValueError('Date without [-/] needs to have 8 digits,eg, yyyymmdd')
-        if settings.convention == "MDY":
-            m,d,y = s[:2],s[2:4],s[4:]
-        elif settings.convention == "DMY":
-            d,m,y = s[:2],s[2:4],s[4:]
-                
-        elif settings.convention == "YMD":
-            y,m,d = s[:4],s[4:6],s[6:]
-        y,m,d = int(y),int(m),int(d)
-    else:
-        s = s.replace('-','/')
-        ls = [int(i) for i in s.split('/')]
-        if settings.convention == "MDY":
-            m,d,y = ls
-        elif settings.convention == "DMY":
-            d,m,y = ls
-        elif settings.convention == "YMD":
-            y,m,d = ls
-    if y<100:
+        
+    if settings.convention == "MDY":
+        m,d,y = tup
+    elif settings.convention == "DMY":
+        d,m,y = tup
+    elif settings.convention == "YMD":
+        y,m,d = tup
+    validate_year(y)
+
+    y,m,d = int(y),int(m),int(d)
+    
+    if y < 100:
         # convert two digit year into 4 digit
-        y = 2000+y if y<50 else 1900+y
+        y = (2000+y if y<50 else 1900+y)
     validate_month(m)
     validate_date(y,m,d)
     date_time = datetime.datetime(y,m,d)
-    #     fmt = '%Y/%m/%d'
-    # if not re.search(r'[-/]',s):
-    #     if len(s)!=8:
-    #         raise ValueError('Date without [-/] needs to have 8 digits,eg, yyyymmdd')
-    #     s = re.sub(cpattern,r'\1/\2/\3',s)
-    # else:
-    #     # create dict e.g {Y:20,M:03,D:1} to find the Y without if statements
-    #     s = s.replace('-','/')
-    #     splitted = s.split('/')
-    #     convention = [char for char in settings.convention]
-    #     dic = {k:v for k,v in zip(convention,splitted)}
-    #     if len(dic)!=len(convention):
-    #         raise ValueError('Please check the convention matches with the date format')
-    #     y,m,d = dic['Y'],dic['M'],dic['D']
-    #     if len(y)==2:
-    #         # convert two digit year into 4 digit
-    #         y = f'20{y}' if int(y)<50 else f'19{y}'
-    #     validate_month(m)
-    #     validate_date(y,m,d)
-    #     dic['Y'],dic['M'],dic['D'] = y,m,d
-    #     s = '/'.join(list(dic.values()))
-    # date_time = datetime.datetime.strptime(s,fmt)
+    # print('parse2')
+    # code.interact(local=dict(globals(),**locals()))
     return date_time
 
-    # if settings.convention=='YMD':
-    #     fmt_string = '%Y/%m/%d'
-
-    # if '/' not in s:
-    #     raise ValueError('date string needs to have a format with dashes, e.g Y/m/d')
     
-    # s2 = s.split('/')
-    # if settings.convention=='YMD':
-    #     fmt_string = '%Y/%m/%d'
-    #     if len(s2[0])==2:
-    #         # make year 4 digit
-    #         s2[0] = f'20{s2[0]}'
-    #         validate_month(s2[1])
-    # else:
-    #     if len(s2[-1])==2:
-    #         # lis is mutable
-    #         s2[-1] = f'20{s2[-1]}'
-    #     if settings.convention=='MDY':
-    #         fmt_string = '%m/%d/%Y'
-    #         m = s2[0]
-    #     else:
-    #         fmt_string = '%d/%m/%Y'
-    #         m = s2[1]
-    #     validate_month(m)
-        
-    #     s = '/'.join(s2)  # 03/19/2024
-    #     date_time = datetime.datetime.strptime(s, fmt_string)
-    #     return date_time
-    
-    # if settings.convention=='YMD':
-    #     fmt_string = '%Y/%m/%d'
-    #     d = s[-2:]
-    #     m = s[-4:-2]
-    #     y = s[:-4]
-    #     if len(y)==2:
-    #         # to avoid the error of datetime.strptime which requires 4 digit in year
-    #         y = f'20{y}'
-    #     after = f'{y}/{m}/{d}'
-    # elif settings.convention=='MDY':
-    #     fmt_string = '%m/%d/%Y'
-    #     m = s[:2]
-    #     d = s[2:4]
-    #     y = s[4:]
-    #     if len(y)==2:
-    #         y = f'20{y}'
-    #     after = f'{m}/{d}/{y}'
-    # elif settings.convention=='DMY':
-    #     fmt_string = '%d/%m/%Y'
-    #     d = s[:2]
-    #     m = s[2:4]
-    #     y = s[4:]
-    #     if len(y)==2:
-    #         y = f'20{y}'
-    #     after = f'{d}/{m}/{y}'
-    
-    # validate_month(m)
-
-    # date_time = datetime.datetime.strptime(after,fmt_string)
-
-    # return date_time
 
 def parseManyDateStrings(s,gen):
     """
@@ -184,21 +103,22 @@ def parseManyDateStrings(s,gen):
         pattern = patterns.DMY
     elif settings.convention == "YMD":
         pattern = patterns.YMD
-
+    
     dates = {}
     matches = re.findall(pattern, s)
     res = s
-
+    
     for match in matches:
-        date_time = parseDateString(match)
-        date = dt.Date.from_datetime(date_time)
-        
-        next_letter = next(gen()) # match only 1st time!! or causes letter mismatch
-        res = res.replace(match, '+'+next_letter,1)
-        dates[next_letter]=date
+        # must hav 4 components per match
+        # match 0 is 1st capture group = whole thing
+        # match 1,2,3 are the y/m/d's as strings
 
-    
-    
+        dt_str = match[0]
+        date = parseDateString(match[1:])
+        date = dt.Date.from_datetime(date)
+        next_letter = next(gen()) # match only 1st time!! or causes letter mismatch
+        res = res.replace(dt_str, '+'+next_letter,1)
+        dates[next_letter]=date
     return dates, res
 
 
@@ -345,7 +265,8 @@ def parseDateMathString(s, things):
     letters_used = re.findall(r'[A-Z]',s)
     
     # bad case, letter mismatch
-    
+    if len(things)==0:
+        raise ParserStringsError("Cannot perform date math")
     for i in letters_used:
         if i not in things:
             print(s,things)
@@ -357,9 +278,9 @@ def parseDateMathString(s, things):
                 raise ParserStringsError("Cannot recognize as date math", s)
         
     # good case, do the math
-    gs = {k: v for k, v in things.items()}
+    
     try:
-        total = eval(s,{},gs)
+        total = eval(s,{},things)
         return total
     except Exception as e:
         raise ParserStringsError("Cannot recognize as date math", s)
@@ -374,7 +295,5 @@ if __name__=='__main__':  # pragma: no cover
     # print(rs)
     # rs = parseScheduleString('03012022,03302022,-1bd')
     # print(rs.dates)
-    letters = [chr(i) for i in range(65, 65 + 26)]
-    def gen():yield letters.pop(0)
-    rs = parseManyDurationString('//1Y',gen)
+    
     
