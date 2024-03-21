@@ -58,3 +58,4 @@ tests/test_schedule.py
 tests/test_settings.py
 tests/test_suite.py
 tests/test_usage.py
+tests/test_usage2.py

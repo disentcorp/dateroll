@@ -587,33 +587,16 @@ class TestDuration(unittest.TestCase):
             it must throw exception ParserStringsError
         '''
     
-        with self.assertRaises(ParserStringsError):
-            dur = ddh("1z")
-    
-        a = ddh("1bd1bd")
-        b = Duration(years=0, months=0, days=0, bd=2.0, modified=False)
-        self.assertEqual(a,b)
-
-        a = ddh("1d1d")
-        b = Duration(years=0, months=0, days=0, modified=False)
-        self.assertEqual(a,b)
-
-        dur = ddh("1m1m")
-        b = Duration(years=0, months=2, days=0, modified=False)
-        self.assertEqual(a,b)
-
-        dur = ddh("1q1q")
-        b = Duration(years=0, months=6, days=0, modified=False)
-        self.assertEqual(a,b)
-
-        dur = ddh("1y1y")
-        b = Duration(years=2, months=0, days=0, modified=False)
-        self.assertEqual(a,b)
-
-        a = dur = ddh("1d1y2d")
-        b = Duration(years=1, months=0, days=3, modified=False)
-        self.assertEqual(a,b)
-
-
+        # junk
+        self.assertRaises(ParserStringsError,lambda:ddh('1z'))
+        # duplicate, only 1 of bd, d, w, m, q, y allowed for parseDurationString, currently picks one of them
+        self.assertRaises(ParserStringsError,lambda:ddh("1bd1bd"))
+        self.assertRaises(ParserStringsError,lambda:ddh("1d1d"))
+        self.assertRaises(ParserStringsError,lambda:ddh("1w1w"))
+        self.assertRaises(ParserStringsError,lambda:ddh("1m1m"))
+        self.assertRaises(ParserStringsError,lambda:ddh("1q1q"))
+        self.assertRaises(ParserStringsError,lambda:ddh("1y1y"))
+        self.assertRaises(ParserStringsError,lambda:ddh("1y1y1m1d"))
+        
 if __name__=='__main__':
     unittest.main()

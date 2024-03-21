@@ -270,7 +270,7 @@ def parseDurationString_convert_capture_groups(capture_groups: tuple):
     Starts with empty, and adds as finds from incoming tuple
     """
     # operator becomes multiplier
-    duration_contructor_args = {}
+    duration_constructor_args = {}
 
     # get initial multplier (if any)
     op = capture_groups[1]
@@ -293,7 +293,10 @@ def parseDurationString_convert_capture_groups(capture_groups: tuple):
             if i < 4:
                 # use multiplier on first pair
                 number *= mult
-            duration_contructor_args[unit] = number
+            if unit in duration_constructor_args:
+                raise ParserStringsError('Only 1 number of each unit per duration string (i.e. no 5d3d or 7m1m)')
+            
+            duration_constructor_args[unit] = number
     
     # attach calendars if any
     cals = capture_groups[13:21]
@@ -302,7 +305,7 @@ def parseDurationString_convert_capture_groups(capture_groups: tuple):
     cals = tuple(filter(lambda x:x!='',cals))
     for cal in cals:
         (
-            duration_contructor_args.setdefault("cals", []).append(cal)
+            duration_constructor_args.setdefault("cals", []).append(cal)
             if cal and cal.isupper()
             else None
         )
@@ -310,14 +313,14 @@ def parseDurationString_convert_capture_groups(capture_groups: tuple):
     # attach roll if any
     modified = capture_groups[22]
     if modified:
-        duration_contructor_args["modified"] = True
+        duration_constructor_args["modified"] = True
 
     # add signed bd's if implicit scenario
-    if 'bd' not in duration_contructor_args and 'BD' not in duration_contructor_args:
+    if 'bd' not in duration_constructor_args and 'BD' not in duration_constructor_args:
         if modified or len(cals) > 0:
-            duration_contructor_args['bd'] = float(0.0)*mult
+            duration_constructor_args['bd'] = float(0.0)*mult
     
-    duration = dur.Duration(**duration_contructor_args)
+    duration = dur.Duration(**duration_constructor_args)
     return duration
 
 def parseCalendarUnionString(s):

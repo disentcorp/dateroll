@@ -76,9 +76,10 @@ class safe_open:
         """
         self.path = pathlib.Path(path)
         self.mode = mode
-        self.pathlock = self.path.with_suffix(".lockfile")
-        self.lockfile = open(self.pathlock, "w")
-        fcntl.lockf(self.lockfile, fcntl.LOCK_EX)
+        if mode.startswith('w'):
+            self.pathlock = self.path.with_suffix(".lockfile")
+            self.lockfile = open(self.pathlock, "w")
+            fcntl.lockf(self.lockfile, fcntl.LOCK_EX)
 
     def __enter__(self):
         """
@@ -92,9 +93,10 @@ class safe_open:
         release lock, then close both lockfile and user file
         do not delete lockfile (even if no exc)
         """
-        fcntl.lockf(self.lockfile, fcntl.LOCK_UN)
-        self.lockfile.close()
-        self.file.close()
+        if self.mode.startswith('w'):
+            fcntl.lockf(self.lockfile, fcntl.LOCK_UN)
+            self.lockfile.close()
+            self.file.close()
 
 
 convention_map = {"YMD": r"%Y-%m-%d", "DMY": r"%d-%m-%Y", "MDY": r"%m-%d-%Y"}
