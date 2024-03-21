@@ -16,12 +16,25 @@ import calendar
 
 TODAYSTRINGVALUES = ["today", "t0", "t"]
 
+def validate_year(y):
+    '''
+        y should be string, we currently only support 2,4 digit in a year
+    '''
+    if not (len(y)==2 or len(y)==4):
+        raise ValueError('We only support 2 digit or 4 digit in years, eg, 23 as 2023, or 2023')
+
 def validate_month(m):
-    if m > 12 or m <1:
-        raise ValueError(f'{m} is not a valid month.')
+    if m>12 or m<1:
+        raise ValueError(f'month should be between [1,12] but {m}')
 
 def validate_date(y,m,d):
-    num_days = utils.get_month_days(y,m)       
+    
+    num_days = utils.get_month_days(y,m)
+    # leapyear = lambda x: ((x%4==0) and (x%100!=0)) or x%400==0
+    if m==2 and num_days==29:
+        txt = f'Feb {y} has {num_days}(leapyear) the date {d} is out of range'
+    else:
+        txt = f'the date {d} is out of range'
     if d<1 or d>num_days:
         msg = f"{m}/{y} has {num_days}, {d} not valid."
         raise ValueError(msg)
@@ -43,58 +56,33 @@ def parseTodayString(s):
     return s
 
 
-def parseDateString(s):
+def parseDateString(tup: tuple):
     '''
     1950 is the cutoff for 2-digit years, i.e. 01 and 49 are 2001 and 2049 respectively
     50,99 are 1950 and 1999 respectively
     '''
-
-    if not isinstance(s,str):
-        raise ParserStringsError(f'Need string to parse, not {type(s).__name__}')
         
     if settings.convention == "MDY":
-        pattern = patterns.MDY
+        m,d,y = tup
     elif settings.convention == "DMY":
-        pattern = patterns.DMY
+        d,m,y = tup
     elif settings.convention == "YMD":
-        pattern = patterns.YMD
-    
-    matches = re.findall(pattern, s)
+        y,m,d = tup
+    validate_year(y)
 
-    if len(matches)==1:
-        triple = matches[1:]
-        if len(triple)==3:
-            triple = [int(i) for i in triple]
-            return validate_date_triple(triple)
-        else:
-            raise ParserStringsError(f'Wrong number of parts found')    
-    else:
-        raise ParserStringsError(f'Cannot recognize a single date')    
-
-def validate_date_triple(triple):
-
-    if not hasattr(triple,'__iter__'):
-        raise ValueError('Must be iterable')
-    if not len(triple)==3:
-        raise ValueError(f'Must be a triple, not {len(triple)}')
-
-    if settings.convention == "MDY":
-        m,d,y = triple
-    elif settings.convention == "DMY":
-        d,m,y = triple
-    elif settings.convention == "YMD":
-        y,m,d = triple
+    y,m,d = int(y),int(m),int(d)
     
     if y < 100:
         # convert two digit year into 4 digit
         y = (2000+y if y<50 else 1900+y)
-
     validate_month(m)
     validate_date(y,m,d)
-    
     date_time = datetime.datetime(y,m,d)
-    
+    # print('parse2')
+    # code.interact(local=dict(globals(),**locals()))
     return date_time
+
+    
 
 def parseManyDateStrings(s,gen):
     """
@@ -115,33 +103,22 @@ def parseManyDateStrings(s,gen):
         pattern = patterns.DMY
     elif settings.convention == "YMD":
         pattern = patterns.YMD
-
+    
     dates = {}
     matches = re.findall(pattern, s)
     res = s
-
+    
     for match in matches:
         # must hav 4 components per match
         # match 0 is 1st capture group = whole thing
         # match 1,2,3 are the y/m/d's as strings
 
-        if len(match) !=4:
-            raise ParserStringsError(f'Date not recognized {match}')
-        else:
-            full_match = match[0]
-            try:
-                triple = [int(i) for i in match[1:]]
-            except:
-                raise ValueError('Date parts must be integers')
-
-        date_time = validate_date_triple(triple)
-        
-        date = dt.Date.from_datetime(date_time)
-        
+        dt_str = match[0]
+        date = parseDateString(match[1:])
+        date = dt.Date.from_datetime(date)
         next_letter = next(gen()) # match only 1st time!! or causes letter mismatch
-        res = res.replace(full_match, '+'+next_letter,1)
+        res = res.replace(dt_str, '+'+next_letter,1)
         dates[next_letter]=date
-    
     return dates, res
 
 
@@ -286,7 +263,8 @@ def parseDateMathString(s, things):
     letters_used = re.findall(r'[A-Z]',s)
     
     # bad case, letter mismatch
-    
+    if len(things)==0:
+        raise ParserStringsError("Cannot perform date math")
     for i in letters_used:
         if i not in things:
             print(s,things)
@@ -301,9 +279,9 @@ def parseDateMathString(s, things):
         raise ParserStringsError("No valid dates or durations found.")
 
     # good case, do the math
-    gs = {k: v for k, v in things.items()}
+    
     try:
-        total = eval(s,{},gs)
+        total = eval(s,{},things)
         return total
     except Exception as e:
         raise ParserStringsError("Cannot recognize as date math", s)
@@ -318,7 +296,5 @@ if __name__=='__main__':  # pragma: no cover
     # print(rs)
     # rs = parseScheduleString('03012022,03302022,-1bd')
     # print(rs.dates)
-    letters = [chr(i) for i in range(65, 65 + 26)]
-    def gen():yield letters.pop(0)
-    rs = parseManyDurationString('//1Y',gen)
+    
     

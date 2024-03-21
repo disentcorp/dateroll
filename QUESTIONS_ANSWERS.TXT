@@ -1098,6 +1098,48 @@ TOTAL                                 1341      0   100%
 
         Our code is (20220101,20220102….20220130), please confirm
 
+############### batu 2024/3/21 8:40AM EST
+
+Name                                 Stmts   Miss  Cover   Missing
+------------------------------------------------------------------
+dateroll/__init__.py                     5      0   100%
+dateroll/__main__.py                     0      0   100%
+dateroll/calendars/__init__.py           0      0   100%
+dateroll/calendars/__main__.py           0      0   100%
+dateroll/calendars/calendarmath.py     181      0   100%
+dateroll/calendars/calendars.py        153      0   100%
+dateroll/date/__init__.py                0      0   100%
+dateroll/date/__main__.py                0      0   100%
+dateroll/date/date.py                  145      0   100%
+dateroll/ddh/__init__.py                 0      0   100%
+dateroll/ddh/__main__.py                 0      0   100%
+dateroll/ddh/ddh.py                     36      0   100%
+dateroll/duration/__init__.py            0      0   100%
+dateroll/duration/__main__.py            0      0   100%
+dateroll/duration/duration.py          348      0   100%
+dateroll/duration/old_duration.py        0      0   100%
+dateroll/parser/__init__.py              0      0   100%
+dateroll/parser/__main__.py              0      0   100%
+dateroll/parser/parser.py               63      0   100%
+dateroll/parser/parsers.py             129      0   100%
+dateroll/parser/patterns.py             32      0   100%
+dateroll/pretty.py                      69      0   100%
+dateroll/schedule/__init__.py            0      0   100%
+dateroll/schedule/__main__.py            0      0   100%
+dateroll/schedule/schedule.py           76      0   100%
+dateroll/settings.py                    61      0   100%
+dateroll/utils.py                       39      0   100%
+------------------------------------------------------------------
+TOTAL                                 1337      0   100%
+
+    Summary:
+        #1 Finished what AM left. I modified little bit to follow the duration.from_string logic where it used parseManyDateStrings 
+            instead of parseDateString
+        #2 Made 100
+        #3 Added some testcases with weird dates like 7/7/7 etc to raise our error instead of datetime error
+
+        
+
 
 ################ batu 2024/3/20 6:30pm
 

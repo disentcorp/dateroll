@@ -59,11 +59,12 @@ if __name__=='__main__': # pragma: no cover
     # d = ddh('20230101,20230201,1bd|NYuWE')
     # d = ddh('03/03/2011')
     
-    dmy = '2/10/2020'
-    # rs = Date(2020,10,2)
+    settings.convention = 'MDY'
+    mdy = '23/1/4'
+    print(ddh(mdy))
     
-    settings.convention = 'YMD'
-    ddh(dmy)
+
+
 
 
     

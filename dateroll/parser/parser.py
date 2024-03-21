@@ -10,6 +10,7 @@ import dateroll.date.date as dateModule
 import dateroll.duration.duration as durationModule
 from dateroll.parser import parsers
 from dateroll.schedule.schedule import Schedule
+from dateroll.settings import settings
 
 
 class ParserError(Exception): ...
@@ -193,4 +194,6 @@ def parse_to_dateroll(string):
 
 if __name__=='__main__': # pragma:no cover
     # Parser.parse_maybe_many_parts('t,t+2m15d,1m')
-    ...
+    settings.convention = 'YMD'
+    Parser.parse_one_part('20240101')
+    settings.convention = 'MDY'
