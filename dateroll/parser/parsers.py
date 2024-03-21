@@ -43,57 +43,29 @@ def parseTodayString(s):
     return s
 
 
-def parseDateString(s):
+def parseDateString(tup: tuple):
     '''
     1950 is the cutoff for 2-digit years, i.e. 01 and 49 are 2001 and 2049 respectively
     50,99 are 1950 and 1999 respectively
     '''
 
-    if not isinstance(s,str):
-        raise ParserStringsError(f'Need string to parse, not {type(s).__name__}')
+    if len(tup) !=4:
+        raise ParserStringsError(f'Date not recognized {tup}')
         
     if settings.convention == "MDY":
-        pattern = patterns.MDY
+        m,d,y = tup
     elif settings.convention == "DMY":
-        pattern = patterns.DMY
+        d,m,y = tup
     elif settings.convention == "YMD":
-        pattern = patterns.YMD
+        y,m,d = tup
     
-    matches = re.findall(pattern, s)
-
-    if len(matches)==1:
-        triple = matches[1:]
-        if len(triple)==3:
-            triple = [int(i) for i in triple]
-            return validate_date_triple(triple)
-        else:
-            raise ParserStringsError(f'Wrong number of parts found')    
-    else:
-        raise ParserStringsError(f'Cannot recognize a single date')    
-
-def validate_date_triple(triple):
-
-    if not hasattr(triple,'__iter__'):
-        raise ValueError('Must be iterable')
-    if not len(triple)==3:
-        raise ValueError(f'Must be a triple, not {len(triple)}')
-
-    if settings.convention == "MDY":
-        m,d,y = triple
-    elif settings.convention == "DMY":
-        d,m,y = triple
-    elif settings.convention == "YMD":
-        y,m,d = triple
-    
+    y,m,d = int(y),int(m),int(d)
     if y < 100:
         # convert two digit year into 4 digit
         y = (2000+y if y<50 else 1900+y)
-
     validate_month(m)
     validate_date(y,m,d)
-    
     date_time = datetime.datetime(y,m,d)
-    
     return date_time
 
 def parseManyDateStrings(s,gen):
@@ -125,21 +97,11 @@ def parseManyDateStrings(s,gen):
         # match 0 is 1st capture group = whole thing
         # match 1,2,3 are the y/m/d's as strings
 
-        if len(match) !=4:
-            raise ParserStringsError(f'Date not recognized {match}')
-        else:
-            full_match = match[0]
-            try:
-                triple = [int(i) for i in match[1:]]
-            except:
-                raise ValueError('Date parts must be integers')
-
-        date_time = validate_date_triple(triple)
-        
-        date = dt.Date.from_datetime(date_time)
+        dt_str = match[0]
+        date = parseDateString(match[1:])
         
         next_letter = next(gen()) # match only 1st time!! or causes letter mismatch
-        res = res.replace(full_match, '+'+next_letter,1)
+        res = res.replace(dt_str, '+'+next_letter,1)
         dates[next_letter]=date
     
     return dates, res

@@ -4,7 +4,7 @@ from datetime import timezone
 import code
 
 import dateutil.relativedelta
-from dateroll.parser.parsers import parseDateString
+from dateroll.parser.parsers import parseManyDateStrings
 from dateroll.settings import settings
 from dateroll.calendars.calendarmath import calmath
 from dateroll.duration.duration import Duration
@@ -27,7 +27,11 @@ class Date(datetime.date):
         future: create custom string parser that explicitly checks mask matches string
         """
         if isinstance(o,str):
-            date_time  = parseDateString(o)
+            letters = [chr(i) for i in range(65, 65 + 26)]
+
+            def gen():
+                yield letters.pop(0)
+            date_time  = parseManyDateStrings(o,gen)
             return Date.from_datetime(date_time)
         else:
             raise TypeError(f'from_string requires string, cannot use {type(o).__name__}')
