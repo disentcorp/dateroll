@@ -168,7 +168,7 @@ class TestParsers(unittest.TestCase):
             Date.from_string('02/29/2022')
         
         mdy = '0312023'
-        with self.assertRaises(parsers.ParserStringsError):
+        with self.assertRaises(ValueError):
             Date.from_string(mdy)
         
         

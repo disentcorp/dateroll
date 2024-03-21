@@ -60,7 +60,7 @@ if __name__=='__main__': # pragma: no cover
     # d = ddh('03/03/2011')
     
     settings.convention = 'MDY'
-    mdy = '23/1/4'
+    mdy = '7/7/7'
     print(ddh(mdy))
     
 

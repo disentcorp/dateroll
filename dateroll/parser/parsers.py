@@ -274,9 +274,6 @@ def parseDateMathString(s, things):
             if j not in letters_used:
                 print(s,things)
                 raise ParserStringsError("Cannot recognize as date math", s)
-        
-    if len(things)==0:
-        raise ParserStringsError("No valid dates or durations found.")
 
     # good case, do the math
     
