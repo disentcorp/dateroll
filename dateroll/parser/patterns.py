@@ -6,7 +6,7 @@ INT_PART = r"\d+"
 OPTIONAL_DECIMAL = r"(?:\.|\.\d+)?"
 NUMBER = f"{INT_PART}{OPTIONAL_DECIMAL}"
 
-# DateString Patterns (rough patterns, parser does validation)
+# # DateString Patterns (rough patterns, parser does validation)
 D = M = r"\d{1,2}"
 Y = r"\d{2,4}"
 _ = r"(?: ?-|/|\A\Z)?"
@@ -33,24 +33,3 @@ COMPLETE_DURATION = (
 )
 
 MONTHNAMES = re.compile(r'\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec|January|February|March|April|June|July|August|September|October|November|December)\b')
-
-
-# Compiled
-# YMD = re.compile(YMD)
-# MDY = re.compile(MDY)
-# DMY = re.compile(DMY)
-# COMPLETE_DURATION = re.compile(COMPLETE_DURATION)
-
-# Next iteration of patterns
-# DurationString patterns
-# OPERATOR = r'([+-])'
-# NUMBER = r'(\d+)'
-# UNIT = r"(bd|BD|[dDwWmMqQsShHyY])"
-# PERIOD = f'{NUMBER}{UNIT}'
-# MULTIPLE_PERIODS = f'{PERIOD}'*4
-# MULTIPLE_PERIODS_WITH_OPERATOR = f'{OPERATOR}? ?{MULTIPLE_PERIODS} ?'
-# CAL = r"([A-Z]{2,3})"
-# UNIONED_CALS = f'u{CAL}?'*7
-# PIPE_WITH_CALS= CAL + f'(?:| ?{CAL}{UNIONED_CALS} ?) ?'
-# MOD = r'(\MOD)?'
-# DURATION_STRING = f'{MULTIPLE_PERIODS_WITH_OPERATOR} ?{PIPE_WITH_CALS}? {MOD} '

@@ -213,14 +213,29 @@ def parseDateString_rearrange(tup):
 
 def parseManyDateStrings(s,gen):
     """
-    for a given convention, see if string contains 1 or 2 dates
-    regex to extract string, and Date.from_string(), which calls dateutil.parser.parse
+    for a given convention, see if string contains 1 or more dates, extract them out for "letters" for parseDateMath
+
+    it is a 2 pass process, once check for dates with regex, 2 actually check date in detail
 
     valid DateStrings for refence:
 
-        MDY: american: 1 or 2 digit month, 1 or 2 digit day, and 2 or 4 digit year
-        DMY: european: 1 or 2 digit day, 1 or 2 digit month, and 2 or 4 digit year
-        YMD: international: 2 or 4 digit year, 1 or 2 digit month, 1 or 2 digit day
+        MDY: american
+        DMY: european
+        YMD: international
+
+        if using slashes or dashes as separators all of the above support:
+        
+        1 or 2 digit days
+        1 or 2 digits months, or 3 letter or full named months
+        1,2,3 or 4 digit years
+
+        if using no slashes or dashes:
+        
+        2 digit days,
+        2 digits months, or 3 letter or full named months
+        2 or 4 digit years
+
+    note: for excel and unix serial dates, use the Date.from_* methods with the values as integers, this is just string parsing.
 
     """
     

@@ -1178,6 +1178,10 @@ test_usage2 was commented, i uncommented
 
 1950 cutoff is actuall "2050" cutoff, i added "cutoff" as a setting, logic is more complex than we discussed, it is implemented, needs unit tests.
 
+we have a couple of failes in test_duration_syntax_extras in test_duration:
+
+the case 1d1d 1y1y should be picked up by paraseDurationString (NOT DATEMATH), i.e. 1q1q = Duration(months=6), this was working in the past
+
 please implement the unit tests missing from coverage report.
 
 Name                                 Stmts   Miss  Cover   Missing

@@ -582,30 +582,37 @@ class TestDuration(unittest.TestCase):
         settings.ie = '(]'
 
 
-    def test_badSyntax(self):
+    def test_duration_syntax_extras(self):
         ''' pass some invalid duration strings
             it must throw exception ParserStringsError
         '''
-        with self.assertRaises(ParserStringsError):
-            dur = ddh("1d1y2d")
-
+    
         with self.assertRaises(ParserStringsError):
             dur = ddh("1z")
+    
+        a = ddh("1bd1bd")
+        b = Duration(years=0, months=0, days=0, bd=2.0, modified=False)
+        self.assertEqual(a,b)
 
-        with self.assertRaises(ParserStringsError):
-            dur = ddh("1bd1bd")
+        a = ddh("1d1d")
+        b = Duration(years=0, months=0, days=0, modified=False)
+        self.assertEqual(a,b)
 
-        with self.assertRaises(ParserStringsError):
-            dur = ddh("1d1d")
+        dur = ddh("1m1m")
+        b = Duration(years=0, months=2, days=0, modified=False)
+        self.assertEqual(a,b)
 
-        with self.assertRaises(ParserStringsError):
-            dur = ddh("1m1m")
+        dur = ddh("1q1q")
+        b = Duration(years=0, months=6, days=0, modified=False)
+        self.assertEqual(a,b)
 
-        with self.assertRaises(ParserStringsError):
-            dur = ddh("1q1q")
+        dur = ddh("1y1y")
+        b = Duration(years=2, months=0, days=0, modified=False)
+        self.assertEqual(a,b)
 
-        with self.assertRaises(ParserStringsError):
-            dur = ddh("1y1y")
+        a = dur = ddh("1d1y2d")
+        b = Duration(years=1, months=0, days=3, modified=False)
+        self.assertEqual(a,b)
 
 
 if __name__=='__main__':
