@@ -17,11 +17,11 @@ import calendar
 TODAYSTRINGVALUES = ["today", "t0", "t"]
 
 def validate_month(m):
-    if int(m)>12 or int(m)<1:
+    if m>12 or m<1:
         raise ValueError(f'month should be between [1,12] but {m}')
 
 def validate_date(y,m,d):
-    y,m,d = int(y),int(m),int(d)
+    
     num_days = utils.get_month_days(y,m)
     # leapyear = lambda x: ((x%4==0) and (x%100!=0)) or x%400==0
     if m==2 and num_days==29:
@@ -54,37 +54,54 @@ def parseDateString(s):
     1950 is the cutoff for 2-digit years, i.e. 01 and 49 are 2001 and 2049 respectively
     50,99 are 1950 and 1999 respectively
     '''
-
-    if settings.convention == "MDY":
-        cpattern = patterns.cMDY
-        fmt = '%m/%d/%Y'
-    elif settings.convention == "DMY":
-        cpattern = patterns.cDMY
-        fmt = '%d/%m/%Y'
-    elif settings.convention == "YMD":
-        cpattern = patterns.cYMD
-        fmt = '%Y/%m/%d'
     if not re.search(r'[-/]',s):
         if len(s)!=8:
             raise ValueError('Date without [-/] needs to have 8 digits,eg, yyyymmdd')
-        s = re.sub(cpattern,r'\1/\2/\3',s)
+        if settings.convention == "MDY":
+            m,d,y = s[:2],s[2:4],s[4:]
+        elif settings.convention == "DMY":
+            d,m,y = s[:2],s[2:4],s[4:]
+                
+        elif settings.convention == "YMD":
+            y,m,d = s[:4],s[4:6],s[6:]
+        y,m,d = int(y),int(m),int(d)
     else:
-        # create dict e.g {Y:20,M:03,D:1} to find the Y without if statements
         s = s.replace('-','/')
-        splitted = s.split('/')
-        convention = [char for char in settings.convention]
-        dic = {k:v for k,v in zip(convention,splitted)}
-        if len(dic)!=len(convention):
-            raise ValueError('Please check the convention matches with the date format')
-        y,m,d = dic['Y'],dic['M'],dic['D']
-        if len(y)==2:
-            # convert two digit year into 4 digit
-            y = f'20{y}' if int(y)<50 else f'19{y}'
-        validate_month(m)
-        validate_date(y,m,d)
-        dic['Y'],dic['M'],dic['D'] = y,m,d
-        s = '/'.join(list(dic.values()))
-    date_time = datetime.datetime.strptime(s,fmt)
+        ls = [int(i) for i in s.split('/')]
+        if settings.convention == "MDY":
+            m,d,y = ls
+        elif settings.convention == "DMY":
+            d,m,y = ls
+        elif settings.convention == "YMD":
+            y,m,d = ls
+    if y<100:
+        # convert two digit year into 4 digit
+        y = 2000+y if y<50 else 1900+y
+    validate_month(m)
+    validate_date(y,m,d)
+    date_time = datetime.datetime(y,m,d)
+    #     fmt = '%Y/%m/%d'
+    # if not re.search(r'[-/]',s):
+    #     if len(s)!=8:
+    #         raise ValueError('Date without [-/] needs to have 8 digits,eg, yyyymmdd')
+    #     s = re.sub(cpattern,r'\1/\2/\3',s)
+    # else:
+    #     # create dict e.g {Y:20,M:03,D:1} to find the Y without if statements
+    #     s = s.replace('-','/')
+    #     splitted = s.split('/')
+    #     convention = [char for char in settings.convention]
+    #     dic = {k:v for k,v in zip(convention,splitted)}
+    #     if len(dic)!=len(convention):
+    #         raise ValueError('Please check the convention matches with the date format')
+    #     y,m,d = dic['Y'],dic['M'],dic['D']
+    #     if len(y)==2:
+    #         # convert two digit year into 4 digit
+    #         y = f'20{y}' if int(y)<50 else f'19{y}'
+    #     validate_month(m)
+    #     validate_date(y,m,d)
+    #     dic['Y'],dic['M'],dic['D'] = y,m,d
+    #     s = '/'.join(list(dic.values()))
+    # date_time = datetime.datetime.strptime(s,fmt)
     return date_time
 
     # if settings.convention=='YMD':
