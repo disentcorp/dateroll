@@ -5,9 +5,6 @@ import hashlib
 import os
 import pathlib
 import pickle
-import time
-import code
-from random import choice
 
 from dateroll.utils import safe_open
 
@@ -206,7 +203,6 @@ class Calendars(dict):
     def info(self):
         pattern = lambda a, b, c, d: f"{a:6}|{b:>8}|{c:12}|{d:12}"
         with Drawer(self) as db:
-            stats = []
             print(pattern("name", "#dates", "min date", "max date"))
             print(pattern("-" * 6, "-" * 8, "-" * 12, "-" * 12))
             for i in db.keys():

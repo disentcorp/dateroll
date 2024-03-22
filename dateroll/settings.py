@@ -89,6 +89,7 @@ class Settings:
 
         reset = False
         for k,v in user_settings.items():
+            
             if k not in default_settings:
                 msg = f'Unkonwn setting {k}, ignoring'
                 warnings.warn(msg)
@@ -129,3 +130,5 @@ settings = Settings()
 
 if __name__=='__main__':  # pragma: no cover
     settings = Settings()
+    
+    

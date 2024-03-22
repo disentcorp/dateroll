@@ -1,8 +1,5 @@
 import os
-import datetime
 import pathlib
-import shutil
-import code
 from dateroll.parser.parser import parse_to_dateroll, parse_to_native
 
 """
@@ -15,7 +12,6 @@ ddh('t') +'3m' .... it's relaly close to the base but little extra.
 """
 
 from dateroll.calendars.calendarmath import calmath
-from dateroll.settings import settings
 from dateroll.date.date import DateLike, Date
 from dateroll.duration.duration import DurationLike, Duration
 
@@ -54,15 +50,7 @@ class ddh:
         cals._purge_all()
         calmath._purge_all()
     
-if __name__=='__main__': # pragma: no cover
-    # d = ddh('01/01/23,02/01/23,1bd|NYuWE')
-    # d = ddh('20230101,20230201,1bd|NYuWE')
-    # d = ddh('03/03/2011')
-    
-    settings.convention = 'MDY'
-    mdy = '7/7/7'
-    print(ddh(mdy))
-    
+
 
 
 

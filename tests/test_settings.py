@@ -5,7 +5,7 @@ import os
 
 import dateroll.parser.parsers as parsers
 import datetime
-from dateroll.settings import Settings, path
+from dateroll.settings import Settings, path,default_settings_validation
 from dateroll.date.date import Date
 from dateroll.duration.duration import Duration
 
@@ -38,8 +38,6 @@ class TestSettings(unittest.TestCase):
         settings = Settings()
         # backup
         original = settings.convention
-
-        # import code;code.interact(local=dict(**locals()))
 
         # change /confirm
         settings.convention = 'YMD'
@@ -101,6 +99,8 @@ class TestSettings(unittest.TestCase):
             settings = Settings() 
         settings = backup
         settings.save()
+        with self.assertRaises(Exception):
+            Settings().validate({'debug':10})
 
 
 if __name__=='__main__':

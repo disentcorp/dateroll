@@ -1164,13 +1164,19 @@ i migrated makeSuite to loadTestsFromTestCase as per the deprecation message abo
 
 i reworked settings module to be cleaner from module dunder properties
 
-yes in parsers there is ambiguity in our exception handling, sometimes parsers.ParserStringsError, sometimes ValueError, sometimes TypeError, this is a future project for cleanup, accepable for now
+yes in parsers there is ambiguity in our exception handling, sometimes parsers.ParserStringsError, sometimes ValueError, sometimes TypeError, 
 
-when testing convention i found several places where it was not resetting back to original value (which may be different than hardcoded value), i have changed this
+this is a future project for cleanup, accepable for now
 
-parseDateString parses a string, not a tuple, the name of the funciton is "parseDateString", not parse "dateDateTuple", so i went back to your string parsing logic with some upgrades, now the docstrings show much more detailed logic on the expected beahvior and there are less edge cases
+when testing convention i found several places where it was not resetting back to original value (which may be different than hardcoded value), 
 
-yes you can call ParseManyDateStrings from Date.from_string, but Date.from_string must ONLY work for a date, multiple dates would pass this test this way.
+i have changed this parseDateString parses a string, not a tuple, the name of the funciton is "parseDateString", not parse "dateDateTuple",
+
+ so i went back to your string parsing logic with some upgrades, now the docstrings show much more detailed logic on the expected beahvior 
+ 
+ and there are less edge cases yes you can call ParseManyDateStrings from Date.from_string, but Date.from_string must ONLY work for a date, 
+ 
+ multiple dates would pass this test this way.
 
 i added to Date.from_unix and Date.from_excel
 
@@ -1216,7 +1222,7 @@ dateroll/utils.py                       39      0   100%
 TOTAL                                 1379     24    98%
 
 
-barring and unuual bugs, we're pretty much ready for cleanup, packaging, and release!
+barring and unusual bugs, we're pretty much ready for cleanup, packaging, and release!
 
 
 now it is time to cleanup the code by reviewing [each python source file] one by one:
@@ -1228,3 +1234,47 @@ now it is time to cleanup the code by reviewing [each python source file] one by
     are there any areas of testing you feel are not exhaustive and may ahve edge cases?
 
 i'm going to start moving into documentation. 
+
+
+Name                                 Stmts   Miss  Cover   Missing
+------------------------------------------------------------------
+dateroll/__init__.py                     5      0   100%
+dateroll/__main__.py                     0      0   100%
+dateroll/calendars/__init__.py           0      0   100%
+dateroll/calendars/__main__.py           0      0   100%
+dateroll/calendars/calendarmath.py     181      0   100%
+dateroll/calendars/calendars.py        153      0   100%
+dateroll/date/__init__.py                0      0   100%
+dateroll/date/__main__.py                0      0   100%
+dateroll/date/date.py                  156      0   100%
+dateroll/ddh/__init__.py                 0      0   100%
+dateroll/ddh/__main__.py                 0      0   100%
+dateroll/ddh/ddh.py                     36      0   100%
+dateroll/duration/__init__.py            0      0   100%
+dateroll/duration/__main__.py            0      0   100%
+dateroll/duration/duration.py          342      0   100%
+dateroll/duration/old_duration.py        0      0   100%
+dateroll/parser/__init__.py              0      0   100%
+dateroll/parser/__main__.py              0      0   100%
+dateroll/parser/parser.py               63      0   100%
+dateroll/parser/parsers.py             169      0   100%
+dateroll/parser/patterns.py             24      0   100%
+dateroll/pretty.py                      69      0   100%
+dateroll/schedule/__init__.py            0      0   100%
+dateroll/schedule/__main__.py            0      0   100%
+dateroll/schedule/schedule.py           76      0   100%
+dateroll/settings.py                    59      0   100%
+dateroll/utils.py                       50      0   100%
+------------------------------------------------------------------
+TOTAL                                 1383      0   100%
+
+    Summary:
+        #1 Made 100
+        #2 Added new test_case in test_usage2 to find more edge cases, which automativally tests 200 date strings of MDY 
+            We can do same automation on other test cases
+        #3 Removed debug comments, code.interact, unused imports
+        #4 When month has a name, eg Aug, it failed so I modified the code to make it work. In #2 it covers date with month eg Aug072023
+
+        #5 I realize the code never goes to raise Errors so I deleted such as, len(s)>10: raise, it never gets there, also in parseDate parseDurationString
+            if not isinstance(str) deleted since it is checked before
+            

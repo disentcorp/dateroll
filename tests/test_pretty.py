@@ -11,6 +11,7 @@ class TestPretty(unittest.TestCase):
     def testPretty(self):
         
         # 1 cal
+        settings.convention = 'MDY'
         with io.StringIO() as buf, redirect_stdout(buf):
             s = ddh('5/5/95+5d').cal
             output = buf.getvalue()

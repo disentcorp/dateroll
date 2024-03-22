@@ -1,9 +1,6 @@
-import traceback
+
 import datetime
 import re
-import code
-
-# from dateroll.date.date import Date
 
 import dateroll.date.date as dt
 import dateroll.duration.duration as dur
@@ -11,8 +8,6 @@ from dateroll.parser import patterns
 from dateroll.schedule.schedule import Schedule
 from dateroll import utils
 from dateroll.settings import settings
-from dateroll.settings import default_settings_validation
-import dateroll.parser.parser as parserModule
 import calendar
 
 TODAYSTRINGVALUES = ["today", "t0", "t"]
@@ -74,12 +69,10 @@ def validate_year(y):
         validate year using settings twodigityear_cutoff, and convert all 2-digit years to 4-digit
     '''
 
-    if not isinstance(y,int):
-        raise TypeError('Year must be an integer')
 
     len_y = len(str(y))
     if len_y == 3 or len_y >4:
-        raise ValueError(f'Year ({y}) must be 1, 2 (subject to cutoff setting) or 4 digits, not {len_y}')
+        raise ParserStringsError(f'Year ({y}) must be 1, 2 (subject to cutoff setting) or 4 digits, not {len_y}')
     else:   
         if y < 100:
             cutoff = settings.twodigityear_cutoff
@@ -88,7 +81,7 @@ def validate_year(y):
             elif cutoff == 2000:
                 adj = 2000
             else:
-                if y > (cutoff - 2000):
+                if y >= (cutoff - 2000):
                     adj = 1900
                 else:
                     adj = 2000
@@ -106,7 +99,7 @@ def validate_monthday(y,m,d):
     num_days = utils.get_month_days(y,m)
 
     if d>num_days:
-        msg = f"{calendar.month_name(m)}/{y} has {num_days} days (you're trying {d})."
+        msg = f"{calendar.month_name[m]}/{y} has {num_days} days (you're trying {d})."
         raise ParserStringsError(msg)
     if d < 1:
         raise ParserStringsError('Number of days must be a postive integer')
@@ -148,19 +141,15 @@ def parseDateString(s:str):
             2 digit month, or 3 letter or full name month
             2 or 4 digit year
     '''
-    if not isinstance(s,str):
-        raise TypeError('Must be string')
-    
+
+    # swap month names for numbers
+    s = utils.swap_month_names(s,month_dict,patterns.MONTHNAMES)
+
     if len(s) < 6:
         raise ValueError('Date string must be at least 6 chars')
-    elif len(s) > 10:
-        raise ValueError('Date string must be at most 10 chars')
     
-    # swap month names for numbers
-    if re.search('[a-zA-Z]', s):
-        s = s.lower()
-        s = patterns.MONTHNAMES.sub(lambda x: month_dict.get(x.group(0)), s)
     
+        
     # slashes and dashes
     if '/' in s or '-' in s:
         # convert all to slash
@@ -191,7 +180,6 @@ def parseDateString(s:str):
     # construct
     dte = dt.Date(year=y,month=m,day=d)
 
-    # return
     return dte
 
 
@@ -238,7 +226,8 @@ def parseManyDateStrings(s,gen):
     note: for excel and unix serial dates, use the Date.from_* methods with the values as integers, this is just string parsing.
 
     """
-    
+    # swap month names for numbers
+    s = utils.swap_month_names(s,month_dict,patterns.MONTHNAMES)
     if settings.convention == "MDY":
         pattern = patterns.MDY
     elif settings.convention == "DMY":
@@ -254,12 +243,13 @@ def parseManyDateStrings(s,gen):
         # must hav 4 components per match
         # match 0 is 1st capture group = whole thing
         # match 1,2,3 are the y/m/d's as strings
-
+        
         date = parseDateString(match)
         date = dt.Date.from_datetime(date)
         next_letter = next(gen()) # match only 1st time!! or causes letter mismatch
         res = res.replace(match, '+'+next_letter,1)
         dates[next_letter]=date
+    
     return dates, res
 
 
@@ -335,8 +325,6 @@ def parseCalendarUnionString(s):
         raise Exception(f'{s} not a valid calendar string')
 
 def parseDurationString(s:str):
-    if not isinstance(s,str):
-        raise ValueError('Duration strings must be string')
         
     matches = re.findall(patterns.COMPLETE_DURATION, s)
     if len(matches)==0:
@@ -384,7 +372,6 @@ def parseManyDurationString(s,gen):
         next_letter = next(gen())
         s = s.replace(duration_string,'+'+next_letter,1)
         durations[next_letter] = duration
-    
     return durations, s
 
 def parseScheduleString(s):  # pragma: no cover
@@ -422,6 +409,7 @@ def parseDateMathString(s, things):
     
     # bad case, letter mismatch
     if len(things)==0:
+        
         raise ParserStringsError("Cannot perform date math")
     for i in letters_used:
         if i not in things:
@@ -439,15 +427,6 @@ def parseDateMathString(s, things):
     except Exception as e:
         raise ParserStringsError("Cannot recognize as date math", s)
 
-if __name__=='__main__':  # pragma: no cover
-    s = ' A+B'
-    s2 = ' +A+B -C'
-    s3 = ' +A'
-    things = {'A':4,'B':5}
-    things2 = {'A':4}
-    # rs = parseDateMathString(s,things)
-    # print(rs)
-    # rs = parseScheduleString('03012022,03302022,-1bd')
-    # print(rs.dates)
+
     
     

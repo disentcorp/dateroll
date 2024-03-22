@@ -74,6 +74,7 @@ class TestUsage(unittest.TestCase):
         '''
             test edge cases of ddh and dates subtraction
         '''
+        settings.convention = 'MDY'
         self.assertEqual(ddh('6m+6m'),durationModule.Duration(years=1, months=0, days=0, modified=False, debug=False))
         with self.assertRaises(Exception) as cm1:
             ddh('t+7dm')
@@ -111,8 +112,11 @@ class TestUsageMore(unittest.TestCase):
             s = row['ParserString']
             f = row['from']
             convention = row['convention']
+            # set correspoinding convention
+            settings.convention = convention
             _a = time.time()
             a = ddh(row['final'])
+            
             b = ddh(s)
             _b = time.time()
             ans = f'{str(b==a):<5}'
@@ -131,7 +135,8 @@ class TestUsageMore(unittest.TestCase):
         # assert True if an only if all 32 pass
         self.assertTrue(c==len(df))
     
-    
+        # reset
+        settings.convention = 'MDY'
 
 if __name__=='__main__':  
 
