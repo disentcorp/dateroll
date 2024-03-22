@@ -8,18 +8,15 @@ import numpy as np
 import dateroll.utils as utils
 from dateroll.calendars.calendarmath import calmath
 import dateroll.parser.parsers as parsersModule
-import calendar
 
 # NOTE: functools cache is defined starting from python 3.9
 # older versions of python can use functools lru_cache(maxsize=None)
 # for now, leave this commented out because it is not used
-#
-## from functools import cache
-## import code
+
 
 from dateroll.settings import settings
 
-from dateroll.utils import color, xprint, add_none, combine_none
+from dateroll.utils import xprint, add_none, combine_none
 
 cals = calmath.cals
 
@@ -743,38 +740,3 @@ class Duration(dateutil.relativedelta.relativedelta):
         return output
 
 DurationLike = (Duration,datetime.timedelta,dateutil.relativedelta.relativedelta)
-
-
-if __name__ == "__main__":  # pragma: no cover
-    from dateroll.ddh.ddh import ddh
-    from dateroll import Date
-    from dateroll import Duration
-
-    # x = ddh('12/1/2023+12m/MOD')
-    # x = ddh('6m+6m')
-    # ddh('t+7dm')
-    # ddh('t+7g')
-    # x = ddh('6m+3m+1y+1/5/24')
-    # print(x)
-    # print(ddh('6m+7m+1y'))
-    # x = ddh('2y-5m-4d')
-
-    # print(Date(2024,5,5)-Date(2022,10,9))
-    # dur = ddh("4/15/24-1/15/24")
-    dur = Duration(years=1,months=-2,days=3,bd=4,
-                       cals = ['NY','WE'],modified=True)
-    print(dur.just_bds)
-
-
-    ####### good test
-    # x2 = Date(2022,10,9)
-    # x = Date(2024,5,5)
-    # x3 = x2-x
-    # x4 = ddh('10/9/22 - 5/5/24')
-    # print(x3)
-    # print(x4)
-    # print(x4==x3)
-    #########
-
-    # x = ddh('1/12/24+11m13d|NYuWE')
-    # print(x)

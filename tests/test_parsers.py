@@ -162,7 +162,7 @@ class TestParsers(unittest.TestCase):
             test validate month and dates and other validation
         '''
         original = settings.convention 
-        settings.convention = 'MDY'
+        
         with self.assertRaises(parsers.ParserStringsError):
             Date.from_string('13/1/2023')
         with self.assertRaises(Exception):
@@ -175,7 +175,7 @@ class TestParsers(unittest.TestCase):
         mdy = '01/10/2020'
         # MDY
         settings.convention = 'YMD'
-        with self.assertRaises(TypeError):
+        with self.assertRaises(parsers.ParserStringsError):
             Date.from_string(mdy)
         settings.convention = original
 
@@ -186,8 +186,26 @@ class TestParsers(unittest.TestCase):
         
         with self.assertRaises(ValueError):
             Schedule.from_string('xyz,dfs,1bd')
+        settings.convention = 'MDY'
         with self.assertRaises(ValueError):
             Schedule.from_string('03012020,03302020,xssssssss')
+        
+        with self.assertRaises(TypeError):
+            Date.from_string(20230101)
+        
+        
+        with self.assertRaises(parsers.ParserStringsError):
+            Duration.from_string('1bd+1m')
+        settings.twodigityear_cutoff = 1900
+        self.assertEqual(ddh('030123'),Date(1923,3,1))
+        settings.twodigityear_cutoff = 2000
+        self.assertEqual(ddh('030123'),Date(2023,3,1))
+        settings.convention = 'MDY'
+        with self.assertRaises(parsers.ParserStringsError):
+            ddh('11002023')
+        # reset
+        settings.convention = 'MDY'
+        settings.twodigityear_cutoff = 2050
         
         
 

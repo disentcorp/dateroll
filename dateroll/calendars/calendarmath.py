@@ -3,8 +3,6 @@ import datetime
 import pathlib
 import pickle
 import time
-import warnings
-import code
 import math
 
 
@@ -151,23 +149,17 @@ class CalendarMath:
 
         last_cal = cal.pop(0)
         last_idx = 0
-        # last_good = None
         for idx, dt in enumerate(sorted(all)):
-            # goodbad = None
 
             if dt == last_cal:
-                # gb = "holiday"
                 fwd[dt] = last_idx
-                # Batu: we should not add date here when it is holiday
-                # if last_idx not in bck:
-                #     bck[last_idx] = dt
+               
                 
                 try:
                     last_cal = cal.pop(0)
                 except:
                     break
             else:
-                # is good bd
                 last_idx += 1
                 fwd[dt] = last_idx
                 if last_idx not in bck:
@@ -254,26 +246,6 @@ class CalendarMath:
         if t1==t2:
             return 0
         
-        # exclude first or last based on ie (inclusion/exclusion rule)
-        # if ie[0]=='(':
-        #     if t1 < t2:
-        #         a = self.add_bd(t1,1,cals=cals)
-        #     else:
-        #         a = self.sub_bd(t1,1,cals=cals)
-        #         e = -1
-        # else:
-        #     a = t1
-
-        # if ie[1]==')':
-        #     if t2 < a:
-        #         b = self.add_bd(t2,1,cals=cals)
-        #     else:
-        #         b = self.sub_bd(t2,1,cals=cals)
-        # else:
-        #     b = t2
-
-        # fwd = self.fwd[cal_name]
-        # n = fwd[b] - fwd[a] + 1 
 
         fwd = self.fwd[cal_name]
         mult = 1 if t1<t2 else -1
@@ -377,30 +349,6 @@ class CalendarMath:
 
 calmath = CalendarMath()
 
-if __name__ == "__main__": # pragma: no cover
 
-    import datetime
-    import time
-
-    from dateutil.relativedelta import relativedelta as rd
-
-    t = datetime.date(2024, 2, 25)
-
-    a = time.time()
-
-    print(t)
-    # calmath.add_bd(t,1,cals=['WE','NY'])
-
-    t2 = calmath.add_bd(t, 1, cals=["WE"])
-    print(t2)
-
-    t2 = calmath.add_bd(t, 100, cals=["WE"])
-    print(t2)
-    print(calmath.diff(t, t2, cals=["WE"]))
-    t2 = t + rd(days=31)
-    print(calmath.diff(t, t2, cals=["WE"]))
-
-    b = time.time()
-    print((b - a) * 1000, "ms")
 
     

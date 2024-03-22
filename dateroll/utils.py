@@ -2,7 +2,6 @@ import fcntl
 import pathlib
 import re
 import calendar
-import code
 
 XPRINT_ON = False
 
@@ -61,8 +60,21 @@ def add_none(a, b, dir=1):
         a = 0 if a is None else a
         b = 0 if b is None else b
         return a + b * dir
-
+def swap_month_names(s,month_dict,pattern):
+    '''
+        swap month names into number string eg, Aug-->08
+    '''
+    month_str = re.match('[a-zA-Z]+',s)
+    if month_str:
+        # aug or AUG --> Aug
         
+        month_str = month_str[0].lower()
+        month_str_numb = month_dict.get(month_str,None)
+        if month_str_numb is None:
+            
+            raise ValueError('Month name is wrong')
+        s = pattern.sub(month_str_numb,s.capitalize())
+    return s 
 
 class safe_open:
     """

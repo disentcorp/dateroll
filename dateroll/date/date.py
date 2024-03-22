@@ -1,14 +1,10 @@
-import calendar
-import datetime
-from datetime import timezone
-import code
 
+import datetime
 import dateutil.relativedelta
 import dateroll.parser.parsers as parsersModule
 from dateroll.settings import settings
 from dateroll.calendars.calendarmath import calmath
 from dateroll.duration.duration import Duration
-from dateroll import utils
 from dateroll import pretty
 
 DateLike = (datetime.datetime, datetime.date)
@@ -200,7 +196,6 @@ class Date(datetime.date):
             return Duration.from_relativedelta(relative_delta,_anchor_start=dt,_anchor_end=self.date)
         
         elif isinstance(o, Duration) or 'Duration' in o.__class__.__name__:
-            # sometimes Duration does not go here instead go as a dateutil, to make sure come here we use .__name__
             # date + duration
             # goes to __radd__ of Duration
             x = o.__rsub__(self)
@@ -271,13 +266,4 @@ class Date(datetime.date):
 
 DateLike = DateLike + (Date,)
 
-if __name__ == "__main__": # pragma: no cover
-    from dateroll.calendars.calendarmath import CalendarMath
-    a = Date(2024,1,1)
-    b = Date(2024,1,5)
-    
-    # [b,a) is here
-    cals = CalendarMath()
-    b_minus_a = cals.diff(a,b,['NY','WE'],ie='[)')
-    
-    print(b_minus_a)
+

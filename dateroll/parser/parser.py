@@ -2,11 +2,8 @@ import datetime
 import dateutil
 import dateutil.relativedelta
 import dateutil.rrule
-import code
 
-# from dateroll.date.date import Date
 import dateroll.date.date as dateModule
-# from dateroll.duration.duration import Duration
 import dateroll.duration.duration as durationModule
 from dateroll.parser import parsers
 from dateroll.schedule.schedule import Schedule
@@ -118,20 +115,14 @@ class Parser:
         letters = [chr(i) for i in range(65, 65 + 26)]
         def gen():yield letters.pop(0)
         
-        # 1
         notoday = parsers.parseTodayString(untouched)
 
-        # 2
         dates, nodates = parsers.parseManyDateStrings(notoday,gen)
-        # print('s before/after:', untouched,nodates)
 
-        # 3
         durations, nodatesordurations = parsers.parseManyDurationString(nodates,gen)
-        # print('s before/after:', nodates,nodatesordurations)
+
         dates_durations = {**dates,**durations}
         
-        # 4
-        # print('before pdms',nodatesordurations)
         processed_answer = parsers.parseDateMathString(
             nodatesordurations, dates_durations
         )
@@ -178,7 +169,6 @@ class Parser:
             return sch
 
         else:
-            # Must
             raise Exception(
                 f"String must contain either 1 or 3 parts (not {num_parts})"
             )
@@ -193,9 +183,3 @@ def parse_to_native(string):
 def parse_to_dateroll(string):
     return Parser(string)
 
-if __name__=='__main__': # pragma:no cover
-    # Parser.parse_maybe_many_parts('t,t+2m15d,1m')
-    orig = settings.convention
-    settings.convention = 'YMD'
-    Parser.parse_one_part('20240101')
-    settings.convention = orig

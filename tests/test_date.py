@@ -268,10 +268,22 @@ class TestDate(unittest.TestCase):
         '''
             test from timestamp
         '''
+        settings.convention = 'MDY'
         timestamp = Date(2023,1,1).unix
         self.assertEqual(Date.from_timestamp(timestamp),Date(2023,1,1))
         with self.assertRaises(TypeError):
             Date.from_timestamp('20230101')
+        self.assertEqual(Date.from_unix(timestamp),Date(2023,1,1))
+        with self.assertRaises(TypeError):
+            Date.from_unix('20230101')
+    
+    def test_from_xls(self):
+        with self.assertRaises(TypeError):
+            Date.from_xls('20230101')
+        xls = Date(2023,1,1).xls
+        self.assertEqual(Date.from_xls(xls),Date(2023,1,1))
+        
+
 
 
     

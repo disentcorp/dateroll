@@ -1,5 +1,5 @@
 
-import code
+
 import pandas as pd
 from dateroll.calendars.calendarmath import calmath
 from dateroll import pretty
@@ -126,11 +126,3 @@ class Schedule(list):
             raise NotImplementedError
     
     
-    
-    if __name__=='__main__':  # pragma: no cover
-        from dateroll import Date,Duration,Schedule
-        start = Date(2023,1,1)
-        stop = Date(2023,2,1)
-        step = Duration(bd=-1)
-        sch = Schedule(start,stop,step)
-        repr(sch)
