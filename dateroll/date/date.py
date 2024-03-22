@@ -42,8 +42,7 @@ class Date(datetime.date):
     @staticmethod
     def from_unix(o):
         if not isinstance(o,(int,float)):
-            raise TypeError('Must be int/float')
-        
+            raise TypeError('Must be int/float')        
         dt = datetime.date.fromtimestamp(o)
         return Date.from_datetime(dt)
 

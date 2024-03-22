@@ -152,9 +152,7 @@ class CalendarMath:
         for idx, dt in enumerate(sorted(all)):
 
             if dt == last_cal:
-                fwd[dt] = last_idx
-               
-                
+                fwd[dt] = last_idx 
                 try:
                     last_cal = cal.pop(0)
                 except:

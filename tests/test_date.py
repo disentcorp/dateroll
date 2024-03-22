@@ -264,7 +264,7 @@ class TestDate(unittest.TestCase):
         # reset
         settings.convention = orig
     
-    def test_fromtimestamp(self):
+    def test_from_unix(self):
         '''
             test from timestamp
         '''
@@ -311,12 +311,13 @@ class TestDate(unittest.TestCase):
             "216.666":datetime.date(1973, 1, 2),
             "21321+3":datetime.date(1963, 7, 21),
             "21/4605":datetime.date(1967, 5, 13),
+            ():datetime.date(1967, 5, 13),
         }
 
         # inbound
 
         for _a,_b in good.items():
-            a,b = Date.from_timestamp(_a), Date.from_datetime(_b)
+            a,b = Date.from_unix(_a), Date.from_datetime(_b)
             self.assertEqual(a,b)
             
         for _a,_b in bad1.items():
@@ -381,6 +382,7 @@ class TestDate(unittest.TestCase):
             "216.666":datetime.date(1973, 1, 2),
             "21321+3":datetime.date(1963, 7, 21),
             "21/4605":datetime.date(1967, 5, 13),
+            ():datetime.date(1967, 5, 13),
         }
 
         # inbound
@@ -397,8 +399,7 @@ class TestDate(unittest.TestCase):
             self.assertRaises(TypeError,lambda :Date.from_xls(_a))     
 
         # outbound   
-       
-                   
+
         for a,_b in good.items():
             b = Date.from_datetime(_b).xls
             self.assertEqual(int(a),b)
