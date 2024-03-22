@@ -53,7 +53,13 @@ class Date(datetime.date):
         excel integer part is days since 12/30/1899, fraction is sub-day
         '''
         if not isinstance(o,(int,float)):
-            raise TypeError('Must be int/float')
+            if isinstance(o,str):
+                try:
+                    o = int(o)
+                except:
+                    raise TypeError('Must be int/float or int-like string')
+            else:
+                raise TypeError('Must be int/float')
         
         base_date = datetime.datetime(1899, 12, 30)
         days = int(o)

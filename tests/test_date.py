@@ -268,30 +268,144 @@ class TestDate(unittest.TestCase):
         '''
             test from timestamp
         '''
-        settings.convention = 'MDY'
-        timestamp = Date(2023,1,1).unix
-        self.assertEqual(Date.from_timestamp(timestamp),Date(2023,1,1))
-        with self.assertRaises(TypeError):
-            Date.from_timestamp('20230101')
-        self.assertEqual(Date.from_unix(timestamp),Date(2023,1,1))
-        with self.assertRaises(TypeError):
-            Date.from_unix('20230101')
+        good = {
+            1711080000: datetime.datetime(2024, 3, 22, 0, 0),
+            1426651200: datetime.datetime(2015, 3, 18, 0, 0),
+            1372651200: datetime.datetime(2013, 7, 1, 0, 0),
+            1470283200: datetime.datetime(2016, 8, 4, 0, 0),
+            1745985600: datetime.datetime(2025, 4, 30, 0, 0),
+            1940644800: datetime.datetime(2031, 7, 1, 0, 0),
+            2108779200: datetime.datetime(2036, 10, 28, 0, 0),
+            1856232000: datetime.datetime(2028, 10, 27, 0, 0),
+            1644210000: datetime.datetime(2022, 2, 7, 0, 0),
+            1684296000: datetime.datetime(2023, 5, 17, 0, 0),
+            2104977600: datetime.datetime(2036, 9, 14, 0, 0),
+            2015643600: datetime.datetime(2033, 11, 15, 0, 0),
+            1745294400: datetime.datetime(2025, 4, 22, 0, 0),
+            1548219600: datetime.datetime(2019, 1, 23, 0, 0),
+            1263531600: datetime.datetime(2010, 1, 15, 0, 0),
+            1244433600: datetime.datetime(2009, 6, 8, 0, 0),
+            1436932800: datetime.datetime(2015, 7, 15, 0, 0),
+            1199854800: datetime.datetime(2008, 1, 9, 0, 0),
+            1589601600: datetime.datetime(2020, 5, 16, 0, 0),
+            1217131200: datetime.datetime(2008, 7, 27, 0, 0),
+            833256000.0: datetime.datetime(1996, 5, 28, 0, 0),
+            528609600.0: datetime.datetime(1986, 10, 2, 0, 0),
+            301464000.0: datetime.datetime(1979, 7, 22, 0, 0),
+            174801600.0: datetime.datetime(1975, 7, 17, 0, 0),
+            -83534400.0: datetime.datetime(1967, 5, 10, 0, 0),
+            112161600.0: datetime.datetime(1973, 7, 22, 0, 0),
+            -261864000.0: datetime.datetime(1961, 9, 14, 0, 0),
+            94798800.0: datetime.datetime(1973, 1, 2, 0, 0),
+            -203544000.0: datetime.datetime(1963, 7, 21, 0, 0),
+            -83275200.0: datetime.datetime(1967, 5, 13, 0, 0)
+        }
+        bad1 =  { # 1st 5 are wrong dates,
+            19058:datetime.date(1979, 7, 22),
+            17592:datetime.date(1975, 7, 17),
+            14602:datetime.date(1967, 5, 10),
+            16867:datetime.date(1973, 7, 22),
+            12538:datetime.date(1961, 9, 14),
+        }
+        bad2 ={ # bad strings
+            "216.666":datetime.date(1973, 1, 2),
+            "21321+3":datetime.date(1963, 7, 21),
+            "21/4605":datetime.date(1967, 5, 13),
+        }
+
+        # inbound
+
+        for _a,_b in good.items():
+            a,b = Date.from_timestamp(_a), Date.from_datetime(_b)
+            self.assertEqual(a,b)
+            
+        for _a,_b in bad1.items():
+            a,b = Date.from_timestamp(_a), Date.from_datetime(_b)
+            self.assertNotEqual(a,b)     
+
+        for _a in bad2:
+            self.assertRaises(TypeError,lambda :Date.from_timestamp(_a))    
+
+        # outbound
+            
+        for a,_b in good.items():
+            b = Date.from_datetime(_b).unix
+            self.assertEqual(a,b)
+            
+        for _a,_b in bad1.items():
+            b = Date.from_datetime(_b).unix
+            self.assertNotEqual(a,b)
     
     def test_from_xls(self):
-        with self.assertRaises(TypeError):
-            Date.from_xls('20230101')
-        xls = Date(2023,1,1).xls
-        self.assertEqual(Date.from_xls(xls),Date(2023,1,1))
+        good = { # randomly generated from excel
+            45373:datetime.date(2024, 3, 22),
+            42081:datetime.date(2015, 3, 18),
+            41456:datetime.date(2013, 7, 1),
+            42586:datetime.date(2016, 8, 4),
+            45777:datetime.date(2025, 4, 30),
+            48030:datetime.date(2031, 7, 1),
+            49976:datetime.date(2036, 10, 28),
+            47053:datetime.date(2028, 10, 27),
+            44599:datetime.date(2022, 2, 7),
+            45063:datetime.date(2023, 5, 17),
+            49932:datetime.date(2036, 9, 14),
+            48898:datetime.date(2033, 11, 15),
+            45769:datetime.date(2025, 4, 22),
+            43488:datetime.date(2019, 1, 23),
+            40193:datetime.date(2010, 1, 15),
+            39972:datetime.date(2009, 6, 8),
+            42200:datetime.date(2015, 7, 15),
+            39456:datetime.date(2008, 1, 9),
+            "43967":datetime.date(2020, 5, 16),
+            "39656":datetime.date(2008, 7, 27),
+            "35213":datetime.date(1996, 5, 28),
+            "31687":datetime.date(1986, 10, 2),
+            "29058":datetime.date(1979, 7, 22),
+            "27592":datetime.date(1975, 7, 17),
+            "24602":datetime.date(1967, 5, 10),
+            "26867":datetime.date(1973, 7, 22),
+            "22538":datetime.date(1961, 9, 14),
+            "26666":datetime.date(1973, 1, 2),
+            "23213":datetime.date(1963, 7, 21),
+            "24605":datetime.date(1967, 5, 13),
+        }
         
+        bad1 =  { # 1st 5 are wrong dates,
+            19058:datetime.date(1979, 7, 22),
+            17592:datetime.date(1975, 7, 17),
+            14602:datetime.date(1967, 5, 10),
+            16867:datetime.date(1973, 7, 22),
+            12538:datetime.date(1961, 9, 14),
+        }
+        bad2 ={ # bad strings
+            "216.666":datetime.date(1973, 1, 2),
+            "21321+3":datetime.date(1963, 7, 21),
+            "21/4605":datetime.date(1967, 5, 13),
+        }
 
+        # inbound
 
+        for _a,_b in good.items():
+            a,b = Date.from_xls(_a), Date.from_datetime(_b)
+            self.assertEqual(a,b)
+            
+        for _a,_b in bad1.items():
+            a,b = Date.from_xls(_a), Date.from_datetime(_b)
+            self.assertNotEqual(a,b)     
 
-    
-        
+        for _a in bad2:
+            self.assertRaises(TypeError,lambda :Date.from_xls(_a))     
 
-
-
-        
+        # outbound   
+       
+                   
+        for a,_b in good.items():
+            b = Date.from_datetime(_b).xls
+            self.assertEqual(int(a),b)
+            
+        for _a,_b in bad1.items():
+            b = Date.from_datetime(_b).xls
+            self.assertNotEqual(a,b)
 
 if __name__ == "__main__":
     unittest.main()

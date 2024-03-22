@@ -2,6 +2,7 @@ import fcntl
 import pathlib
 import re
 import calendar
+from dateroll.parser import patterns
 
 XPRINT_ON = False
 
@@ -16,8 +17,60 @@ DEBUG_COLORS = {
 }
 
 
+month_dict = {
+        "jan": "01", "feb": "02", "mar": "03",
+        "apr": "04", "may": "05", "jun": "06",
+        "jul": "07", "aug": "08", "sep": "09",
+        "oct": "10", "nov": "11", "dec": "12",
+        "january": "01", "february": "02", "march": "03",
+        "april": "04","may":"05", "june": "06", "july": "07",
+        "august": "08", "september": "09", "october": "10",
+        "november": "11", "december": "12"
+}
+
+date_string_coordinates = {
+    'YMD':{
+        6:{
+            'y':slice(0,2),
+            'm':slice(2,4),
+            'd':slice(4,6)
+        },
+        8:{
+            'y':slice(0,4),
+            'm':slice(4,6),
+            'd':slice(6,8)
+        }
+    },
+    'MDY':{
+        6:{
+            'y':slice(4,6),
+            'm':slice(0,2),
+            'd':slice(2,4)
+        },
+        8:{
+            'y':slice(4,8),
+            'm':slice(0,2),
+            'd':slice(2,4)
+        }
+    },
+    'DMY':{
+        6:{
+            'y':slice(4,6),
+            'm':slice(2,4),
+            'd':slice(0,2)
+        },
+        8:{
+            'y':slice(4,8),
+            'm':slice(2,4),
+            'd':slice(0,2)
+        }
+    }
+}
+
+
 def color(s, color):
     return DEBUG_COLORS[color] + str(s) + DEBUG_COLORS["end"]
+
 def get_month_days(y,m):
     _, num_days = calendar.monthrange(y, m)
     return num_days
@@ -60,7 +113,8 @@ def add_none(a, b, dir=1):
         a = 0 if a is None else a
         b = 0 if b is None else b
         return a + b * dir
-def swap_month_names(s,month_dict,pattern):
+    
+def swap_month_names(s):
     '''
         swap month names into number string eg, Aug-->08
     '''
@@ -71,9 +125,9 @@ def swap_month_names(s,month_dict,pattern):
         month_str = month_str[0].lower()
         month_str_numb = month_dict.get(month_str,None)
         if month_str_numb is None:
-            
+   
             raise ValueError('Month name is wrong')
-        s = pattern.sub(month_str_numb,s.capitalize())
+        s = patterns.MONTHNAMES.sub(month_str_numb,s.capitalize())
     return s 
 
 class safe_open:

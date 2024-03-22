@@ -12,63 +12,11 @@ import calendar
 
 TODAYSTRINGVALUES = ["today", "t0", "t"]
 
-month_dict = {
-        "jan": "01", "feb": "02", "mar": "03",
-        "apr": "04", "may": "05", "jun": "06",
-        "jul": "07", "aug": "08", "sep": "09",
-        "oct": "10", "nov": "11", "dec": "12",
-        "january": "01", "february": "02", "march": "03",
-        "april": "04","may":"05", "june": "06", "july": "07",
-        "august": "08", "september": "09", "october": "10",
-        "november": "11", "december": "12"
-}
-
-date_string_coordinates = {
-    'YMD':{
-        6:{
-            'y':slice(0,2),
-            'm':slice(2,4),
-            'd':slice(4,6)
-        },
-        8:{
-            'y':slice(0,4),
-            'm':slice(4,6),
-            'd':slice(6,8)
-        }
-    },
-    'MDY':{
-        6:{
-            'y':slice(4,6),
-            'm':slice(0,2),
-            'd':slice(2,4)
-        },
-        8:{
-            'y':slice(4,8),
-            'm':slice(0,2),
-            'd':slice(2,4)
-        }
-    },
-    'DMY':{
-        6:{
-            'y':slice(4,6),
-            'm':slice(2,4),
-            'd':slice(0,2)
-        },
-        8:{
-            'y':slice(4,8),
-            'm':slice(2,4),
-            'd':slice(0,2)
-        }
-    }
-}
         
-
-
 def validate_year(y):
     '''
         validate year using settings twodigityear_cutoff, and convert all 2-digit years to 4-digit
     '''
-
 
     len_y = len(str(y))
     if len_y == 3 or len_y >4:
@@ -143,13 +91,11 @@ def parseDateString(s:str):
     '''
 
     # swap month names for numbers
-    s = utils.swap_month_names(s,month_dict,patterns.MONTHNAMES)
+    s = utils.swap_month_names(s)
 
     if len(s) < 6:
         raise ValueError('Date string must be at least 6 chars')
     
-    
-        
     # slashes and dashes
     if '/' in s or '-' in s:
         # convert all to slash
@@ -163,7 +109,7 @@ def parseDateString(s:str):
         # either 6 digits or 8 digits forcing 2 digit month/day and 2 or 4 digit year according to user settings convention
         try:
             # lookup coords by convention and string length
-            coords = date_string_coordinates[settings.convention][len(s)]
+            coords = utils.date_string_coordinates[settings.convention][len(s)]
 
             # map coords to string slicer, slice, then cast
             y = int(s[coords['y']])
@@ -227,7 +173,7 @@ def parseManyDateStrings(s,gen):
 
     """
     # swap month names for numbers
-    s = utils.swap_month_names(s,month_dict,patterns.MONTHNAMES)
+    s = utils.swap_month_names(s)
     if settings.convention == "MDY":
         pattern = patterns.MDY
     elif settings.convention == "DMY":

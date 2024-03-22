@@ -1270,11 +1270,39 @@ TOTAL                                 1383      0   100%
 
     Summary:
         #1 Made 100
+
         #2 Added new test_case in test_usage2 to find more edge cases, which automativally tests 200 date strings of MDY 
             We can do same automation on other test cases
+
+        great
+
         #3 Removed debug comments, code.interact, unused imports
+
         #4 When month has a name, eg Aug, it failed so I modified the code to make it work. In #2 it covers date with month eg Aug072023
 
         #5 I realize the code never goes to raise Errors so I deleted such as, len(s)>10: raise, it never gets there, also in parseDate parseDurationString
             if not isinstance(str) deleted since it is checked before
-            
+
+
+
+################ anthony 2024/3/20 1130am
+
+#5 - I added len(s)>10 because if the use adds an extra year digit, for example, 07/02/20222 is 11 chars, it get 
+captured as an error, but in DateMath so the message to the user is non-sensical.
+How many other checks did you remove? In the future if you have a check, you're not sure how to get to it, write it down and ask.
+
+from_excel, from_timestamp did not have real tests, if you are
+not familar with excel serial dates or unix (aka posix aka timestamp) instead of just making it work
+you should do some research first:
+ask chatgpt "how do excel serial names work"?
+and "how do unix timestamps work", please spend time to understand these concepts, it's super important in data science work.
+
+creating utility funtions:
+
+def swap_month_names(s,month_dict,pattern):
+    ...
+
+good - writing a utility function because it is a concrete abstraction
+bad - you pass month_dict and pattern into swap_month_names, those are CONSTANT, they will never change
+arguements to a well written funciton need to be only things that change, otherwise they can be self-contained
+in that level of abstraction
