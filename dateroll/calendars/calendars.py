@@ -7,6 +7,7 @@ import pathlib
 import pickle
 from collections import OrderedDict
 
+from dateroll.date import date as dateModule
 from dateroll.calendars import calendarmath as calendarmathModule
 from dateroll.utils import safe_open
 
@@ -126,9 +127,13 @@ class DateSet:
 
     def add(self, item):
         dt = date_check(item)
-        self._data[dt] = None
+        self._data[dt] = dt
 
     def __contains__(self, item):
+        if isinstance(item,dateModule.Date):
+            item = item.date
+        if isinstance(item,datetime.datetime):
+            item = datetime.date(item.year,item.month,item.day)
         return item in self._data
     
     def extend(self, items):
@@ -230,7 +235,8 @@ class Calendars(dict):
     def get(self, k):
         with Drawer(self) as db:
             result = db[k]
-        return result
+            return result
+        raise KeyError(k)
 
     def clear(self):
         self.write = True

@@ -95,10 +95,10 @@ def parseDateString(s:str):
     s = utils.swap_month_names(s)
 
     if len(s) < 6:
-        raise ValueError('Date string must be at least 6 chars')
+        raise ParserStringsError('Date string must be at least 6 chars')
     
     if len(s)>10:  # pragma:no cover
-        raise ValueError('Date string must be less than 10 chars')
+        raise ParserStringsError('Date string must be less than 10 chars')
     # slashes and dashes
     if '/' in s or '-' in s:
         # convert all to slash
@@ -356,10 +356,13 @@ def parseDateMathString(s, things):
 
     letters_used = re.findall(r'[A-Z]',s)
     
+    if s=="":
+        raise ParserStringsError("Nothing to parse")
+
     # bad case, letter mismatch
     if len(things)==0:
-        
-        raise ParserStringsError("Cannot perform date math")
+        parseDateString(s)
+        raise ParserStringsError("No valid date/durations strings found.")
     for i in letters_used:
         if i not in things:
             raise ParserStringsError("Cannot recognize as date math", s)
