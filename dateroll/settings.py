@@ -9,7 +9,7 @@ default_settings = {
     'debug':True,
     'convention':'MDY',
     'ie':'(]',
-    'twodigityear_cutoff':2050
+    'twodigityear_cutoff':2050,
 }
 
 default_settings_validation ={

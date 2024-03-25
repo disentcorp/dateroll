@@ -1366,7 +1366,8 @@ TOTAL                                 1386     18    99%
 
 ############ anthony
 
-lets review is_bd together, walk me through what you did
-for validate_cals all you need to do is cache it, but we need to discuss invalidation 
-6.97s is too slow, must be <1s for big set of dates
+lets review is_bd together, walk me through what you did, looks super fast!
+for validate_cals you can cache it, i tried didn't see a speed up, you know how to do in memory cache?
+
+6.97s is too slow, must be <1s for big set of dates, let's see together
 

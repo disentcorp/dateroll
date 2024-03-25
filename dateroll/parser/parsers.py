@@ -95,7 +95,7 @@ def parseDateString(s:str):
     s = utils.swap_month_names(s)
 
     if len(s) < 6:
-        raise ParserStringsError('Date string must be at least 6 chars')
+        raise ParserStringsError('Date string must be at least 6 chars (or invalid settings.convention!)')
     
     if len(s)>10:  # pragma:no cover
         raise ParserStringsError('Date string must be less than 10 chars')
@@ -106,7 +106,10 @@ def parseDateString(s:str):
         # use slash as a splitter
         parts = s.split('/')
         # process according to convention
-        y,m,d = parseDateString_rearrange(parts)
+        try:
+            y,m,d = parseDateString_rearrange(parts)
+        except:
+            raise ParserStringsError('Check settings.convention!')
     else:
         # no slashes or dashes - more restrictive
         # either 6 digits or 8 digits forcing 2 digit month/day and 2 or 4 digit year according to user settings convention
@@ -361,7 +364,6 @@ def parseDateMathString(s, things):
 
     # bad case, letter mismatch
     if len(things)==0:
-        parseDateString(s)
         raise ParserStringsError("No valid date/durations strings found.")
     for i in letters_used:
         if i not in things:

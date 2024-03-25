@@ -103,8 +103,9 @@ class Drawer:
 
         return self.cals.db
 
-
     def __exit__(self, exc_type, exc_val, exc_tb):
+        if exc_val is not None:
+            raise exc_val
         if exc_type is None:
             if self.cals.write:
                 with safe_open(self.path, "wb") as f:
@@ -112,7 +113,6 @@ class Drawer:
                     print('[dateroll] Writing cache (calendars)')
                 self.cals.write = False
         else:
-
             return True
 
 class DateSet:
@@ -187,11 +187,10 @@ class Calendars(dict):
         return result
 
     def __setitem__(self, k, v):
-        self.write = True
 
         # invalidate calendar union caches, very important
         if calendarmathModule.DATA_LOCATION_FILE.exists():
-            os.remove(DATA_LOCATION_FILE)
+            os.remove(calendarmathModule.DATA_LOCATION_FILE)
 
         # key must be 2-3 letter string in uppercase
         if not isinstance(k, str):
@@ -205,10 +204,13 @@ class Calendars(dict):
             raise Exception(
                 f"{k} exists already, delete first.if you want to replace."
             )
+        
+        self.write = True
         with Drawer(self) as db:
             # value must be a set-like list of dates
             verified = DateSet(v)
             db[k] = verified
+            
 
     def __getitem__(self, k):
         return self.get(k)
@@ -223,6 +225,12 @@ class Calendars(dict):
             result = self.get(k)
         return result
     
+    def __setattr__(self,k,v):
+        if k in ('write','home','db_hash','db'):
+            return super().__setattr__(k,v)
+        
+        self.__setitem__(k,v)
+    
     def __contains__(self, k):
         with Drawer(self) as db:
             return str(k) in db
@@ -231,6 +239,12 @@ class Calendars(dict):
         self.write = True
         with Drawer(self) as db:
             del db[k]
+
+    def __delattr__(self, k):
+        if k in ('write','home','db_hash','db'):
+            return super().__setattr__(k)
+        else:
+            return self.__delitem__(k)
 
     def get(self, k):
         with Drawer(self) as db:
@@ -242,6 +256,7 @@ class Calendars(dict):
         self.write = True
         with Drawer(self) as db:
             db.clear()
+            self.db.clear()
 
     def __repr__(self):
         self.info

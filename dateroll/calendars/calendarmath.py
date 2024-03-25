@@ -21,6 +21,9 @@ WEEKEND_CALENDAR = 'WE'
 DEFAULT_IE = "(]"
 
 
+# in-memory fast for large list operations
+calstringunion_cache = {}
+
 class CalendarMath:
     """
     CalendarMath is a singleton that holds "compiled" version of your Calendars
@@ -201,8 +204,9 @@ class CalendarMath:
             # when direction is negative
             elif n<0:
                 n += 1
-        cals = CalendarMath.reverse_calstring(cals)
-        cal_name = self.union_key(cals)
+
+        _cals = CalendarMath.reverse_calstring(cals)
+        cal_name = self.union_key(_cals)
 
         A = self.fwd[cal_name]
         B = self.bck[cal_name]
