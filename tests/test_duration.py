@@ -8,6 +8,7 @@ from dateroll.parser import parsers
 from dateroll.settings import settings
 from dateroll.parser.parsers import ParserStringsError
 
+import code
 
 class TestDuration(unittest.TestCase):
     @classmethod

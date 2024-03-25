@@ -5,9 +5,8 @@ import dateutil.rrule
 
 import dateroll.date.date as dateModule
 import dateroll.duration.duration as durationModule
-from dateroll.parser import parsers
-from dateroll.schedule.schedule import Schedule
-from dateroll.settings import settings
+import dateroll.parser.parsers as parsersModule
+import dateroll.schedule.schedule as scheduleModule
 
 
 class ParserError(Exception): ...
@@ -115,15 +114,15 @@ class Parser:
         letters = [chr(i) for i in range(65, 65 + 26)]
         def gen():yield letters.pop(0)
         
-        notoday = parsers.parseTodayString(untouched)
+        notoday = parsersModule.parseTodayString(untouched)
 
-        dates, nodates = parsers.parseManyDateStrings(notoday,gen)
+        dates, nodates = parsersModule.parseManyDateStrings(notoday,gen)
 
-        durations, nodatesordurations = parsers.parseManyDurationString(nodates,gen)
+        durations, nodatesordurations = parsersModule.parseManyDurationString(nodates,gen)
 
         dates_durations = {**dates,**durations}
         
-        processed_answer = parsers.parseDateMathString(
+        processed_answer = parsersModule.parseDateMathString(
             nodatesordurations, dates_durations
         )
         
@@ -165,7 +164,7 @@ class Parser:
             else:
                 raise TypeError("Step of generation must be a valid Duration")
 
-            sch = Schedule(start=start, stop=stop, step=step, origin_string=s)
+            sch = scheduleModule.Schedule(start=start, stop=stop, step=step, origin_string=s)
             return sch
 
         else:

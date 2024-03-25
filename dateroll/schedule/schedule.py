@@ -1,7 +1,7 @@
 
 
 import pandas as pd
-from dateroll.calendars.calendarmath import calmath
+import dateroll.calendars.calendarmath as calendarmathModule
 from dateroll import pretty
 
 import dateroll.parser.parsers as parsersModule
@@ -62,7 +62,7 @@ class Schedule(list):
         
     @property
     def cal(self):
-        _ = pretty.pretty_between_two_dates(self.start,self.stop,self.cals,calmath)
+        _ = pretty.pretty_between_two_dates(self.start,self.stop,self.cals,calendarmathModule.calmath)
         print(_)
     
     def __str__(self):

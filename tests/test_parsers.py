@@ -1,7 +1,7 @@
 import code
 import unittest
 
-import dateroll.parser.parsers as parsers
+import dateroll.parser.parsers as parsersModule
 import datetime
 from dateroll.settings import settings
 from dateroll.date.date import Date
@@ -27,19 +27,19 @@ class TestParsers(unittest.TestCase):
             #american
             settings.convention = 'MDY'
             expected_mdy = datetime.date.today().strftime('%m/%d/%Y')
-            t = parsers.parseTodayString('t')
+            t = parsersModule.parseTodayString('t')
             self.assertEqual(t.replace('-','/'),expected_mdy)
 
             #european
             settings.convention = 'DMY'
             expected_dmy = datetime.date.today().strftime('%d/%m/%Y')
-            t = parsers.parseTodayString('t')
+            t = parsersModule.parseTodayString('t')
             self.assertEqual(t.replace('-','/'),expected_dmy)
 
             #international
             settings.convention = 'YMD'
             expected_ymd = datetime.date.today().strftime('%Y/%m/%d')
-            t = parsers.parseTodayString('t')
+            t = parsersModule.parseTodayString('t')
             self.assertEqual(t.replace('-','/'),expected_ymd)
 
             #negative testing
@@ -62,21 +62,21 @@ class TestParsers(unittest.TestCase):
             #american
             settings.convention = 'MDY'
             a = '03/08/2024'
-            l,s = parsers.parseManyDateStrings(a,gen)
+            l,s = parsersModule.parseManyDateStrings(a,gen)
             b = list(l.values())[0].strftime('%m/%d/%Y')
             self.assertEqual(a,b)
 
             #european
             settings.convention = 'DMY'
             a = '08/03/2024'
-            l,s = parsers.parseManyDateStrings(a,gen)
+            l,s = parsersModule.parseManyDateStrings(a,gen)
             b = list(l.values())[0].strftime('%d/%m/%Y')
             self.assertEqual(a,b)
 
             #international
             settings.convention = 'YMD'
             a = '2024/03/08'
-            l,s = parsers.parseManyDateStrings(a,gen)
+            l,s = parsersModule.parseManyDateStrings(a,gen)
             b = list(l.values())[0].strftime('%Y/%m/%d')
             self.assertEqual(a,b)
 
@@ -92,21 +92,21 @@ class TestParsers(unittest.TestCase):
             test duration match
         '''
         s = ('','+','1','y','0','q','0','m','1','w','1','d','0','bd','WE','NY','BR','ECB','FED','LN','','','MOD')
-        dur = parsers.parseDurationString(s)
+        dur = parsersModule.parseDurationString(s)
         self.assertEqual(dur,Duration(years=1, months=0, days=8, modified=True, cals="BRuECBuFEDuLNuNYuWE"))
 
         s2 = ('','-','1','y','0','q','0','m','1','w','1','d','0','bd','WE','NY','BR','ECB','FED','LN','','','MOD')
-        dur2 = parsers.parseDurationString(s2)
+        dur2 = parsersModule.parseDurationString(s2)
         self.assertEqual(dur2,Duration(years=-1, months=0, days=8, modified=True, cals="BRuECBuFEDuLNuNYuWE"))
 
         s3 = ('','*','1','y','0','q','0','m','1','w','1','d','0','bd','WE','NY','BR','ECB','FED','LN','','','P')
         with self.assertRaises(Exception) as cm:
-            parsers.parseDurationString(s3)
+            parsersModule.parseDurationString(s3)
         self.assertEqual(str(cm.exception),'Unknown operator')
         
         # no roll but it will have roll P
         s4 = ('','-','1','y','0','q','0','m','1','w','1','d','0','bd','WE','NY','BR','ECB','FED','LN','','','')
-        dur4 = parsers.parseDurationString(s4)
+        dur4 = parsersModule.parseDurationString(s4)
         self.assertEqual(dur4,Duration(years=-1, months=0, days=8, modified=False, cals="BRuECBuFEDuLNuNYuWE"))
     def test_parseCalendarUnionString(self):
         '''
@@ -114,12 +114,12 @@ class TestParsers(unittest.TestCase):
         '''
         
         s = 'NYuWE'
-        s2 = parsers.parseCalendarUnionString(s)
+        s2 = parsersModule.parseCalendarUnionString(s)
         self.assertEqual(s2,('NY','WE'))
 
         # wrong string raise error
         with self.assertRaises(Exception) as cm:
-            parsers.parseCalendarUnionString('ab')
+            parsersModule.parseCalendarUnionString('ab')
         self.assertEqual(str(cm.exception),'ab not a valid calendar string')
 
     def test_parseDurationString(self):
@@ -129,7 +129,7 @@ class TestParsers(unittest.TestCase):
         letters = [chr(i) for i in range(65, 65 + 26)]
         def gen(): yield letters.pop(0)
         s = '1y3m4d'
-        s2 = parsers.parseManyDurationString(s,gen)
+        s2 = parsersModule.parseManyDurationString(s,gen)
         
         self.assertEqual(s2,({'A': Duration(years=1, months=3, days=4, modified=False, debug=False)}, '+A'))
     
@@ -139,20 +139,20 @@ class TestParsers(unittest.TestCase):
         '''
 
         # good
-        self.assertEqual(parsers.parseDateMathString("A",{'A':4}),4)
-        self.assertEqual(parsers.parseDateMathString("-A",{'A':4}),-4)
-        self.assertEqual(parsers.parseDateMathString("+A",{'A':4}),4)
-        self.assertEqual(parsers.parseDateMathString('A+B', {'A':4,'B':5}),9)
-        self.assertEqual(parsers.parseDateMathString("A+B-C",{'A':4,'B':3,'C':1}),6)
-        self.assertEqual(parsers.parseDateMathString("A+B-C-D",{'A':4,'B':3,'C':1,'D':1}),5)
+        self.assertEqual(parsersModule.parseDateMathString("A",{'A':4}),4)
+        self.assertEqual(parsersModule.parseDateMathString("-A",{'A':4}),-4)
+        self.assertEqual(parsersModule.parseDateMathString("+A",{'A':4}),4)
+        self.assertEqual(parsersModule.parseDateMathString('A+B', {'A':4,'B':5}),9)
+        self.assertEqual(parsersModule.parseDateMathString("A+B-C",{'A':4,'B':3,'C':1}),6)
+        self.assertEqual(parsersModule.parseDateMathString("A+B-C-D",{'A':4,'B':3,'C':1,'D':1}),5)
 
         # bad
         with self.assertRaises(Exception) as cm:
-            parsers.parseDateMathString("A+B", {'A':4})
+            parsersModule.parseDateMathString("A+B", {'A':4})
     
         # bad
         with self.assertRaises(Exception) as cm:
-            parsers.parseDateMathString('B',{'A':4,'B':5})        
+            parsersModule.parseDateMathString('B',{'A':4,'B':5})        
     
     def test_parsersConvention(self):
         s = settings
@@ -163,19 +163,19 @@ class TestParsers(unittest.TestCase):
         '''
         original = settings.convention 
         
-        with self.assertRaises(parsers.ParserStringsError):
+        with self.assertRaises(parsersModule.ParserStringsError):
             Date.from_string('13/1/2023')
         with self.assertRaises(Exception):
             Date.from_string('02/29/2022')
         
         mdy = '0312023'
-        with self.assertRaises(parsers.ParserStringsError):
+        with self.assertRaises(parsersModule.ParserStringsError):
             Date.from_string(mdy)
         
         mdy = '01/10/2020'
         # MDY
         settings.convention = 'YMD'
-        with self.assertRaises(parsers.ParserStringsError):
+        with self.assertRaises(parsersModule.ParserStringsError):
             Date.from_string(mdy)
         settings.convention = original
 
@@ -194,14 +194,14 @@ class TestParsers(unittest.TestCase):
             Date.from_string(20230101)
         
         
-        with self.assertRaises(parsers.ParserStringsError):
+        with self.assertRaises(parsersModule.ParserStringsError):
             Duration.from_string('1bd+1m')
         settings.twodigityear_cutoff = 1900
         self.assertEqual(ddh('030123'),Date(1923,3,1))
         settings.twodigityear_cutoff = 2000
         self.assertEqual(ddh('030123'),Date(2023,3,1))
         settings.convention = 'MDY'
-        with self.assertRaises(parsers.ParserStringsError):
+        with self.assertRaises(parsersModule.ParserStringsError):
             ddh('11002023')
         # reset
         settings.convention = 'MDY'
