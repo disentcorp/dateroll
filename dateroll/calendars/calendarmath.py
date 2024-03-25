@@ -5,9 +5,11 @@ import pickle
 import time
 import math
 
+import code
 
 from dateroll.calendars.calendars import Calendars
 from dateroll.utils import safe_open
+import dateroll.date.date as dateModule
 
 PARENT_LOCATION = pathlib.Path.home() / ".dateroll/"
 PARENT_LOCATION.mkdir(exist_ok=True)
@@ -47,7 +49,7 @@ class CalendarMath:
 
         self.fwd = {}
         self.bck = {}
-
+        self.ibd = {}
         self.cached_compile_all()
 
     def load_cache(self):
@@ -70,6 +72,7 @@ class CalendarMath:
         cached = {
             "fwd": self.fwd,
             "bck": self.bck,
+            "ibd":self.ibd,
             "hash": self.hash,
         }
         with safe_open(self.home, "wb") as f:
@@ -97,7 +100,7 @@ class CalendarMath:
         for k, v in d.items():
             if k == "WE":
                 dates = v
-                self.fwd[k], self.bck[k] = self.gen_dicts(k, v, self.ALL)
+                self.fwd[k], self.bck[k], self.ibd[k] = self.gen_dicts(k, v, self.ALL)
 
         self.save_cache()
         self.hash = self.cals.hash
@@ -143,29 +146,33 @@ class CalendarMath:
 
         fwd = {}
         bck = {}
-
+        ibd = {}
         if len(cal) == 0:
-            return fwd, bck
+            return fwd, bck, ibd
 
         last_cal = cal.pop(0)
         last_idx = 0
         for idx, dt in enumerate(sorted(all)):
-
+            
             if dt == last_cal:
+                # it is holiday
+                ibd[dt] = False
                 fwd[dt] = last_idx 
                 try:
                     last_cal = cal.pop(0)
                 except:
                     break
             else:
+                # not holiday
+                ibd[dt] = True
                 last_idx += 1
                 fwd[dt] = last_idx
                 if last_idx not in bck:
                     bck[last_idx] = dt
                 
 
-        return fwd, bck
-
+        return fwd, bck, ibd
+   
     def add_bd(self, d, n, cals):
         """
         add's n business days on cal to d
@@ -174,6 +181,14 @@ class CalendarMath:
         
         # when not bd, we need to handle n; positive direction n=0-->1 and negative direction n=-1--->0
         # because of the property of fwd, bck dictionaries
+        if isinstance(d, datetime.datetime):
+            d = datetime.date(d.year, d.month, d.day)
+        elif isinstance(d, dateModule.Date):
+            d = d.date
+        elif isinstance(d, datetime.date):
+            pass
+        else:
+            raise TypeError(f"Date must be date (got {type(d).__name__})")
         if not self.is_bd(d,cals):
             # make sure direction is positive
             if n==0 and math.copysign(1,n)==1:
@@ -190,14 +205,7 @@ class CalendarMath:
             raise ValueError('Please provide holidays')
         from dateroll.date.date import Date
 
-        if isinstance(d, datetime.datetime):
-            d = datetime.date(d.year, d.month, d.day)
-        elif isinstance(d, Date):
-            d = d.date
-        elif isinstance(d, datetime.date):
-            pass
-        else:
-            raise TypeError(f"Date must be date (got {type(d).__name__})")
+        
             
         bd_index = A[d]
         new_bd_index = bd_index + n
@@ -221,17 +229,13 @@ class CalendarMath:
 
         """ cals can come in as str or list"""
         cals = CalendarMath.reverse_calstring(cals)
-
-        for cal in cals:
-            if cal not in self.cals:
-                raise KeyError(f"There is no calendar {cal}")
-            cal = self.cals[cal]
+        cal_name = self.union_key(cals)
+        BD = self.ibd[cal_name]
+        if len(BD)==0:
+            return False
         
-            if d in cal:
-                
-                return False
-        
-        return True
+        is_bd = self.ibd[cal_name][d]
+        return is_bd
 
     def diff(self, t1, t2, cals, ie=DEFAULT_IE):
         """
@@ -274,7 +278,6 @@ class CalendarMath:
         """
         new_d = self.sub_bd(d,1,cals)
         return new_d
-
 
     @staticmethod
     def reverse_calstring(cals):
@@ -331,7 +334,7 @@ class CalendarMath:
         # compile into large dict
         print(f"[dateroll] compiling new union [{cal_union_key}]")
         dict_tuple = self.gen_dicts(cal_union_key, unioned_dates, self.ALL)
-        self.fwd[cal_union_key], self.bck[cal_union_key] = dict_tuple
+        self.fwd[cal_union_key], self.bck[cal_union_key], self.ibd[cal_union_key] = dict_tuple
         # save cache
         self.save_cache()
 
@@ -346,6 +349,7 @@ class CalendarMath:
 
 
 calmath = CalendarMath()
+
 
 
 

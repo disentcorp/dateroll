@@ -10,6 +10,7 @@ from dateroll import utils
 from dateroll.settings import settings
 import calendar
 
+
 TODAYSTRINGVALUES = ["today", "t0", "t"]
 
         
@@ -96,6 +97,8 @@ def parseDateString(s:str):
     if len(s) < 6:
         raise ValueError('Date string must be at least 6 chars')
     
+    if len(s)>10:  # pragma:no cover
+        raise ValueError('Date string must be less than 10 chars')
     # slashes and dashes
     if '/' in s or '-' in s:
         # convert all to slash

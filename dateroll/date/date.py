@@ -6,8 +6,10 @@ from dateroll.settings import settings
 from dateroll.calendars.calendarmath import calmath
 from dateroll.duration.duration import Duration
 from dateroll import pretty
+import dateroll.ddh.ddh as ddhModule
 
 DateLike = (datetime.datetime, datetime.date)
+
 
 
 class Date(datetime.date):
@@ -24,7 +26,6 @@ class Date(datetime.date):
         
         dt = parsersModule.parseDateString(o)
         return Date.from_datetime(dt)
-
 
     @staticmethod
     def from_datetime(o):
@@ -144,8 +145,7 @@ class Date(datetime.date):
         """
         # convert string if first
         if isinstance(o, str):
-            from dateroll.ddh.ddh import ddh
-            o = ddh(o)
+            o = ddhModule.ddh(o)
 
         # apply rules by type
         if isinstance(o, DateLike):
@@ -171,7 +171,6 @@ class Date(datetime.date):
 
     def __pos__(self):
         return self
-
     def __sub__(self, o):
         
         """
@@ -179,10 +178,8 @@ class Date(datetime.date):
         """
         # convert string if first
         if isinstance(o, str):
-            from dateroll.ddh.ddh import ddh
-
-            o = ddh(o)
-
+            
+            o = ddhModule.ddh(o)
         # apply rules by type
         
         if isinstance(o, DateLike):
@@ -226,17 +223,15 @@ class Date(datetime.date):
 
     def __iadd__(self, o):
         if isinstance(o, str):
-            from dateroll.ddh.ddh import ddh
 
-            o = ddh(o)
+            o = ddhModule.ddh(o)
         self = self + o
         return self
 
     def __isub__(self, o):
         if isinstance(o, str):
-            from dateroll.ddh.ddh import ddh
 
-            o = ddh(o)
+            o = ddhModule.ddh(o)
         if isinstance(o, DateLike):
             self = self - (self - o)
         else:
@@ -270,5 +265,6 @@ class Date(datetime.date):
         return self.to_string()
 
 DateLike = DateLike + (Date,)
+
 
 

@@ -6,8 +6,11 @@ import dateutil
 import dateutil.relativedelta
 import numpy as np
 import dateroll.utils as utils
-from dateroll.calendars.calendarmath import calmath
+import dateroll.calendars.calendarmath as calendarmathModule
 import dateroll.parser.parsers as parsersModule
+import dateroll.date.date as dateModule
+
+import code
 
 # NOTE: functools cache is defined starting from python 3.9
 # older versions of python can use functools lru_cache(maxsize=None)
@@ -18,7 +21,7 @@ from dateroll.settings import settings
 
 from dateroll.utils import xprint, add_none, combine_none
 
-cals = calmath.cals
+cals = calendarmathModule.calmath.cals
 
 period_order = (*"yhsqmwd", "cals", "modifier")
 
@@ -157,7 +160,6 @@ class Duration(dateutil.relativedelta.relativedelta):
 
         # debug
         self.debug = debug
-
     def process_anchor_dates(self, _anchor_start, _anchor_end):
         """
         if a period is the result of dates, we can be "more exact" when the user needs the number of days in the period
@@ -166,12 +168,11 @@ class Duration(dateutil.relativedelta.relativedelta):
         self._anchor_start = _anchor_start
         self._anchor_end = _anchor_end
 
-        from dateroll.date.date import Date
 
         if self._anchor_start and self._anchor_end:
             # anchor months -- month diff without days and years collapses into months
-            self._anchor_start = Date.from_datetime(self._anchor_start)
-            self._anchor_end = Date.from_datetime(self._anchor_end)
+            self._anchor_start = dateModule.Date.from_datetime(self._anchor_start)
+            self._anchor_end = dateModule.Date.from_datetime(self._anchor_end)
             ydiff = self._anchor_end.year - self._anchor_start.year
             mdiff = self._anchor_end.month - self._anchor_start.month
             diff = mdiff + ydiff * 12
@@ -229,13 +230,12 @@ class Duration(dateutil.relativedelta.relativedelta):
             # str parser if required
             if isinstance(cals, str):
                 cals = parsersModule.parseCalendarUnionString(cals)
-
             # process normally
             if isinstance(cals, (list, set, tuple)):
                 for cal in cals:
                     if isinstance(cal, str):
                         if len(cal) in (2, 3):
-                            if cal in calmath.cals:
+                            if cal in calendarmathModule.calmath.cals:
                                 _cals |= {
                                     cal,
                                 }
@@ -249,7 +249,15 @@ class Duration(dateutil.relativedelta.relativedelta):
                         raise Exception(
                             f"Calendars must be strings (not {type(cal).__name__})"
                         )
+            ########### TODELETE BATU: this will make it faster
+            # for cal in cals:
+                
+            #     _cals|={cal}
+            ####################################
+                
+           
             # implicit weekend when using cals
+            
             _cals |= set([WEEKEND_CALENDAR])
             _cals = tuple(sorted(_cals))
 
@@ -342,7 +350,7 @@ class Duration(dateutil.relativedelta.relativedelta):
     @property
     def just_bds(self):
         if self._anchor_start and self._anchor_end:
-            return calmath.diff(self._anchor_start,self._anchor_end,self.cals,settings.ie)
+            return calendarmathModule.calmath.diff(self._anchor_start,self._anchor_end,self.cals,settings.ie)
         else:
             raise Exception('Cannot compute BDs on a duration that did not result from two dates')
 
@@ -394,12 +402,10 @@ class Duration(dateutil.relativedelta.relativedelta):
                 raise ValueError(message)
 
         return just_days
-
     def math(self, b, direction):
         """
         c = a + b
         """
-        from dateroll.date.date import DateLike, Date
 
         a = self
         # duration + duration
@@ -456,7 +462,7 @@ class Duration(dateutil.relativedelta.relativedelta):
 
             return dur
 
-        elif isinstance(b, DateLike):
+        elif isinstance(b, dateModule.DateLike):
             """
             if direction > 0:
                     (Date + Duration)
@@ -466,15 +472,14 @@ class Duration(dateutil.relativedelta.relativedelta):
             NOT (Duration - Date)
                 Date.__rsub__ throws TypeError before it gets here (non-sensical situation)
             """
-
             modifed = self.adjust_from_date(b, direction)
+            dt = dateModule.Date.from_datetime(modifed)
 
-            dt = Date.from_datetime(modifed)
             return dt
 
         else:
             raise NotImplementedError
-
+   
     def adjust_from_date(self, date_unadj, direction):
         """
         4 steps:
@@ -538,15 +543,14 @@ class Duration(dateutil.relativedelta.relativedelta):
             xprint("no modifier") if self.debug else None
 
         # 4 convert back to Date
-        from dateroll.date.date import Date
 
-        Date_modified = Date.from_datetime(date_modifed)
+        Date_modified = dateModule.Date.from_datetime(date_modifed)
         Date_modified.origin_dur_date = date_unadj
         Date_modified.origin_dur_cals = self.cals
         Date_modified.origin_dur_modified = self.modified
 
         return Date_modified
-
+    
     def adjust_bds(self, from_date):
         """
         This moves business days, using the sign of BD, yes, -0.0 means go backwards to the previous business day
@@ -562,16 +566,16 @@ class Duration(dateutil.relativedelta.relativedelta):
         bd_sign = math.copysign(1, self.bd)
         if bd_sign >= 0:
             # FOLLOWING ROLL CONVENTION is handled in +0.0 BD
-            date_hol_adj = calmath.add_bd(from_date, abs(self.bd), cals=self.cals)
+            date_hol_adj = calendarmathModule.calmath.add_bd(from_date, abs(self.bd), cals=self.cals)
         else:
             # PREVIOUS ROLL CONVENTION is handled in -0.0 BD
-            date_hol_adj = calmath.sub_bd(from_date, abs(self.bd), cals=self.cals)
+            date_hol_adj = calendarmathModule.calmath.sub_bd(from_date, abs(self.bd), cals=self.cals)
 
         return bd_sign, date_hol_adj
 
     def __hash__(self):
         return hash(str(self.__dict__))
-
+    
     def apply_modifier(self, before, after, bd_sign):
         """
         based upon the sign of the business date (yes, includes -0.0 as a previous) perform MODIFIER
@@ -583,18 +587,17 @@ class Duration(dateutil.relativedelta.relativedelta):
         MODIFIED PREVIOUS is -0.0, then HERE
 
         """
-        from dateroll.date.date import Date
 
         if after.month != before.month or after.year != before.year:
             if bd_sign > 0:
                 # get the latest calendar date of before
                 num_days = utils.get_month_days(before.year,before.month)
 
-                after = Date(before.year, before.month, num_days)
+                after = dateModule.Date(before.year, before.month, num_days)
                 after = after - Duration(bd=0, cals=self.cals)
 
             else:
-                after = Date(before.year, before.month, 1)
+                after = dateModule.Date(before.year, before.month, 1)
                 after = after + Duration(bd=0, cals=self.cals)
 
         return after
@@ -602,7 +605,7 @@ class Duration(dateutil.relativedelta.relativedelta):
     def __radd__(self, x):
         xprint(type(x), "radd") if self.debug else None
         return self.math(x, 1)
-
+    
     def __rsub__(self, x):
         xprint(type(x), "rsub") if self.debug else None
 
@@ -614,9 +617,8 @@ class Duration(dateutil.relativedelta.relativedelta):
 
     def __sub__(self, x):
         xprint(type(x), "sub") if self.debug else None
-        from dateroll import Date
 
-        if isinstance(x, Date):
+        if isinstance(x, dateModule.Date):
             raise TypeError("Cannot sub Date from Duration")
         return self.math(x, -1)
 
@@ -740,3 +742,14 @@ class Duration(dateutil.relativedelta.relativedelta):
         return output
 
 DurationLike = (Duration,datetime.timedelta,dateutil.relativedelta.relativedelta)
+
+if __name__=='__main__':
+    a = dateModule.Date(2024,1,8)
+    b = dateModule.Date(2024,1,12)
+    b_minus_a = b - a
+    b_minus_a.cals = ['NY','WE']
+    settings.ie = '()'
+    # b_minus_a = b-a
+    print(b_minus_a.just_bds)
+    print('duration')
+    code.interact(local=dict(globals(),**locals()))
