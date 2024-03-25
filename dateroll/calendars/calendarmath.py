@@ -56,14 +56,18 @@ class CalendarMath:
         '''
             self.home always exsist because load_cache called if it exists
         '''
-        with open(self.home, "rb") as f:
-            try:
-                cached = pickle.load(f)
-                return cached
-            except:
-                print(f'[dateroll] calendar math cache corrupted, cleaning.')
-                os.remove(self.home)
-        
+
+        if self.home.exists():
+            with open(self.home, "rb") as f:
+                try:
+                    cached = pickle.load(f)
+                    return cached
+                except Exception as e:
+                    import traceback;traceback.print_exc()
+                    print(f'[dateroll] Cannot load cache for calmath unions, clearing.')
+                    os.remove(self.home)
+        else:
+            self.save_cache()
 
     def save_cache(self):
         """
@@ -76,7 +80,8 @@ class CalendarMath:
             "hash": self.hash,
         }
         with safe_open(self.home, "wb") as f:
-            pickle.dump(cached, f)
+            print('[dateroll] Writing cache (calmath unions)')
+            pickle.dump(cached,f)
 
     def cached_compile_all(self):
         """
@@ -95,7 +100,7 @@ class CalendarMath:
         self.compile_all()
 
     def compile_all(self):
-        print("[dateroll] compiling calendars")
+        print("[dateroll] Optimizing calendars")
         d = self.cals.copy()
         for k, v in d.items():
             if k == "WE":

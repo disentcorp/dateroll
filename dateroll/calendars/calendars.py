@@ -5,7 +5,9 @@ import hashlib
 import os
 import pathlib
 import pickle
+from collections import OrderedDict
 
+from dateroll.calendars import calendarmath as calendarmathModule
 from dateroll.utils import safe_open
 
 ROOT_DIR = pathlib.Path(__file__).parents[2]
@@ -16,11 +18,37 @@ MODULE_LOCATION.mkdir(exist_ok=True)
 DATA_LOCATION_FILE = MODULE_LOCATION / "holiday_lists"
 SAMPLE_DATA_PATH = ROOT_DIR / "dateroll" / "sampledata" / "*.csv"
 
-SLEEP_TIMES = [25 / 1000, 50 / 1000, 100 / 1000, 300 / 1000]
-
-
 INCEPTION = datetime.date(1824,2,29)
 
+
+# if numpy or pandas is available use it's list-like object for date_check
+try:
+    import numpy as np
+    NumpyArray = np.ndarray
+except:
+    NumpyArray = list
+
+try:
+    import pandas as pd
+    PandasSeries = pd.Series
+except:
+    PandasSeries = list
+
+SetLike = (list,tuple,set,NumpyArray,PandasSeries)
+
+def date_check(i):
+    if isinstance(i, datetime.datetime):
+        dt = datetime.date(i.year, i.month, i.day)
+    elif isinstance(i, datetime.date):
+        dt = i
+    else:
+        raise TypeError(
+            f"All cal dates must be of dateroll.Date or datetime.date{{time}} (got {type(i).__name__})"
+        )
+    if dt < INCEPTION:
+        raise ValueError('Holiday before 29-Feb-1824 not supported, ask if you need it.')
+    
+    return dt
 
 def load_sample_data():
     files = glob.glob(str(SAMPLE_DATA_PATH))
@@ -29,12 +57,14 @@ def load_sample_data():
         name = pathlib.Path(file).stem
         with open(file) as f:
             ls = f.readlines()
-            ld = {}
+            l = []
             for i in ls:
                 dt = datetime.date(int(i[0:4]), int(i[5:7]), int(i[8:10]))
-                if dt > INCEPTION:
-                    ld[dt]=True
-            data[name] = ld
+                if dt >= INCEPTION:
+                    l.append(dt)
+
+            ds = DateSet(l)
+            data[name] = ds
     return data
 
 
@@ -47,31 +77,74 @@ class Drawer:
     def __enter__(self):
         if self.cals.hash == self.cals.db_hash:
             return self.cals.db
+        
+        if self.path.exists():
+            try:
+                with safe_open(self.path, "rb") as f:
+                    self.data = pickle.load(f)
+                    self.cals.db_hash = self.cals.hash
+                    self.cals.db = self.data
+                    return self.cals.db
+            except Exception as e:
+                import traceback;traceback.print_exc()
+                msg = 'Cache is corrupted'
+        else:
+            msg = 'No cache found'
+        
+        print(f"[dateroll] Loading sample calendars ({msg})")
+        data = load_sample_data()
 
-        try:
-            with safe_open(self.path, "rb") as f:
-                self.data = pickle.load(f)
-                self.cals.db_hash = self.cals.hash
-                self.cals.db = self.data
-                return self.cals.db
-        except:
-            print(f"[dateroll] no saved calendars, loading sample data")
-            data = load_sample_data()
-            self.cals.db = data
-            with safe_open(self.path, "wb") as f:
-                pickle.dump(self.cals.db, f)
+        self.cals.db = data
+        with safe_open(self.path, "wb") as f:
+            pickle.dump(self.cals.db, f)
+            print('[dateroll] Writing cache (calendars)')
+            self.cals.write = False
 
-            return self.cals.db
+        return self.cals.db
+
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         if exc_type is None:
             if self.cals.write:
                 with safe_open(self.path, "wb") as f:
                     pickle.dump(self.cals.db, f)
+                    print('[dateroll] Writing cache (calendars)')
                 self.cals.write = False
         else:
 
             return True
+
+class DateSet:
+    def __init__(self,content):
+        if not isinstance(content,SetLike):
+            raise TypeError('DateSet content must be set-like (castable)')
+        
+        # ordered dict constructure requires dict not set
+        d = {date_check(i):True for i in content if i is not None}
+        od = OrderedDict(d)
+        self._data = od
+
+    def add(self, item):
+        dt = date_check(item)
+        self._data[dt] = None
+
+    def __contains__(self, item):
+        return item in self._data
+    
+    def extend(self, items):
+        if not isinstance(items,SetLike):
+            raise TypeError('Must be cast-able into set')
+        extension = {date_check(i) for i in items}
+        self._data.update(extension)
+
+    def __iter__(self):
+        return iter(self._data)
+
+    def __len__(self):
+        return len(self._data)
+
+    def __repr__(self):
+        return f'{type(self).__name__}({list(self._data.keys())})'
 
 
 class Calendars(dict):
@@ -84,10 +157,6 @@ class Calendars(dict):
         self.db_hash = None  # initial hash
         self.db = {}  # cache
         self.write = False  # sentinel to invalidate cache
-
-        with Drawer(self) as db:
-            pass
-
 
     def keys(self):
         '''
@@ -113,11 +182,11 @@ class Calendars(dict):
         return result
 
     def __setitem__(self, k, v):
-        from dateroll.calendars.calendarmath import \
-            DATA_LOCATION_FILE as calendar_math_file
+        self.write = True
 
-        if calendar_math_file.exists():
-            os.remove(calendar_math_file)
+        # invalidate calendar union caches, very important
+        if calendarmathModule.DATA_LOCATION_FILE.exists():
+            os.remove(DATA_LOCATION_FILE)
 
         # key must be 2-3 letter string in uppercase
         if not isinstance(k, str):
@@ -126,35 +195,15 @@ class Calendars(dict):
             raise Exception(f"Cal name be 2 or 3 charts (got {len(k)})")
         if not k.isupper():
             raise Exception(f"Cal name must be all uppercase")
-        # value must be a list of dates
-        if not isinstance(v, (set, list, tuple)):
-            raise Exception(
-                f"Cal values must be a set/list/tuple (got {type(v).__name__})"
-            )
 
-        processed = []
-        for i in v:
-            
-            if isinstance(i, datetime.datetime):
-                dt = datetime.date(i.year, i.month, i.day)
-            elif isinstance(i, datetime.date):
-                dt = i
-            else:
-                raise Exception(
-                    f"All cal dates must be of dateroll.Date or datetime.date{{time}} (got {type(i).__name__})"
-                )
-            if dt >= INCEPTION:
-                
-                processed.append(dt) 
-
-        self.write = True
         if k in self.db.keys():
             raise Exception(
                 f"{k} exists already, delete first.if you want to replace."
             )
         with Drawer(self) as db:
-            s = {k:True for k in list(sorted(list(set(processed))))}
-            db[k] = s
+            # value must be a set-like list of dates
+            verified = DateSet(v)
+            db[k] = verified
 
     def __getitem__(self, k):
         return self.get(k)
@@ -168,7 +217,7 @@ class Calendars(dict):
         else:
             result = self.get(k)
         return result
-
+    
     def __contains__(self, k):
         with Drawer(self) as db:
             return str(k) in db

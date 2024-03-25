@@ -2,6 +2,7 @@ import fcntl
 import pathlib
 import re
 import calendar
+import pickle
 from dateroll.parser import patterns
 
 XPRINT_ON = False
@@ -140,6 +141,7 @@ class safe_open:
         """
         open lockfile and attempt to lock, will block
         """
+
         self.path = pathlib.Path(path)
         self.mode = mode
         if mode.startswith('w'):
@@ -151,9 +153,10 @@ class safe_open:
         """
         open user file and send it to them
         """
+
         self.file = open(self.path, self.mode)
         return self.file
-
+    
     def __exit__(self, exc_type, exc_val, exc_tb):
         """
         release lock, then close both lockfile and user file
