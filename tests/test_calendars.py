@@ -153,6 +153,7 @@ class TestStringMethods(unittest.TestCase):
         '''
             when the key of getattr not in (hash,home)
         '''
+        self.cals.FED = [datetime.date(1984,7,2)]
         x = self.cals.FED
         self.assertIsInstance(x,DateSet)
         self.assertTrue(len(x)>0)
@@ -213,39 +214,37 @@ class TestStringMethods(unittest.TestCase):
         '''
             clear the db
         '''
-        print(self.cals)
-        i = len(self.cals)
-        print(self.cals.db)
-        self.assertGreater(i,0)
-        self.cals.clear()
-        # dict becomes 0
 
+        self.cals.BOB = []
+               
+        self.assertTrue(len(self.cals.db)!=0)
+        self.cals.clear()
         self.assertTrue(len(self.cals.db)==0)
     
-#     def test_emptyDBInfo(self):
-#         '''
-#             clear the db and show the info
-#         '''
+    def test_emptyDBInfo(self):
+        '''
+            clear the db and show the info
+        '''
        
-#         capt = StringIO()
-#         sys.stdout = capt
+        capt = StringIO()
+        sys.stdout = capt
 
-#         self.cals.info
-#         sys.stdout = sys.__stdout__
+        self.cals.info
+        sys.stdout = sys.__stdout__
 
-#         printed_output = capt.getvalue()
-#         expected_output = 'name  |  #dates|min date    |max date    \n------|--------|------------|------------\nFED   |    4556|1824-01-01  |2223-12-25  \nECB   |    2400|1824-01-01  |2223-12-26  \nLN    |    3951|1824-01-01  |2223-12-26  \nWE    |   41742|1824-02-29  |2224-02-28  \nALL   |  146097|1824-02-29  |2224-02-28  \nBR    |    3586|1824-01-01  |2223-12-25  \nNY    |    4556|1824-01-01  |2223-12-25  \n'
-#         self.assertTrue(printed_output,expected_output)
-#         self.cals.clear()
-#         self.cals['AC'] = []
-#         capt = StringIO()
-#         sys.stdout = capt
+        printed_output = capt.getvalue()
+        expected_output = 'name  |  #dates|min date    |max date    \n------|--------|------------|------------\nFED   |    4556|1824-01-01  |2223-12-25  \nECB   |    2400|1824-01-01  |2223-12-26  \nLN    |    3951|1824-01-01  |2223-12-26  \nWE    |   41742|1824-02-29  |2224-02-28  \nALL   |  146097|1824-02-29  |2224-02-28  \nBR    |    3586|1824-01-01  |2223-12-25  \nNY    |    4556|1824-01-01  |2223-12-25  \n'
+        self.assertTrue(printed_output,expected_output)
+        self.cals.clear()
+        self.cals['AC'] = []
+        capt = StringIO()
+        sys.stdout = capt
 
-#         self.cals.info
-#         sys.stdout = sys.__stdout__
-#         printed_output_empty = capt.getvalue()
-#         expected_output_empty = 'name  |  #dates|min date    |max date    \n------|--------|------------|------------\nAC    |       0|None        |None        \n'
-#         self.assertTrue(printed_output_empty,expected_output_empty)
+        self.cals.info
+        sys.stdout = sys.__stdout__
+        printed_output_empty = capt.getvalue()
+        expected_output_empty = 'name  |  #dates|min date    |max date    \n------|--------|------------|------------\nAC    |       0|None        |None        \n'
+        self.assertTrue(printed_output_empty,expected_output_empty)
 
     
 
