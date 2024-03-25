@@ -22,20 +22,7 @@ SAMPLE_DATA_PATH = ROOT_DIR / "dateroll" / "sampledata" / "*.csv"
 INCEPTION = datetime.date(1824,2,29)
 
 
-# if numpy or pandas is available use it's list-like object for date_check
-try:
-    import numpy as np
-    NumpyArray = np.ndarray
-except:
-    NumpyArray = list
-
-try:
-    import pandas as pd
-    PandasSeries = pd.Series
-except:
-    PandasSeries = list
-
-SetLike = (list,tuple,set,NumpyArray,PandasSeries)
+SetLike = (list,tuple,set)
 
 def date_check(i):
     if isinstance(i, datetime.datetime):

@@ -20,10 +20,6 @@ DATA_LOCATION_FILE = MODULE_LOCATION / "compiled_cals"
 WEEKEND_CALENDAR = 'WE'
 DEFAULT_IE = "(]"
 
-
-# in-memory fast for large list operations
-calstringunion_cache = {}
-
 class CalendarMath:
     """
     CalendarMath is a singleton that holds "compiled" version of your Calendars
@@ -47,6 +43,7 @@ class CalendarMath:
     def __init__(self, home=DATA_LOCATION_FILE):
         self.home = home
         self.cals = Calendars()
+        self.cal_names = list(self.cals.keys())
         self.hash = self.cals.hash
         self.ALL = self.cals["ALL"]
 
@@ -111,6 +108,7 @@ class CalendarMath:
                 self.fwd[k], self.bck[k], self.ibd[k] = self.gen_dicts(k, v, self.ALL)
 
         self.save_cache()
+        self.cal_names = list(d.keys())
         self.hash = self.cals.hash
 
 
@@ -123,6 +121,11 @@ class CalendarMath:
         '''
         cache_is_valid = not self.home.exists()
         return cache_is_valid
+    
+    @property
+    def cal_list(self):
+        if not self.has_mutated:
+            return self.cal_names
 
     @property
     def recompile_if_mutated(self):
@@ -237,8 +240,10 @@ class CalendarMath:
         self.recompile_if_mutated
 
         """ cals can come in as str or list"""
-        cals = CalendarMath.reverse_calstring(cals)
-        cal_name = self.union_key(cals)
+
+        _cals = CalendarMath.reverse_calstring(cals)
+        cal_name = self.union_key(_cals)
+
         BD = self.ibd[cal_name]
         if len(BD)==0:
             return False

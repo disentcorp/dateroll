@@ -1366,8 +1366,43 @@ TOTAL                                 1386     18    99%
 
 ############ anthony
 
-lets review is_bd together, walk me through what you did, looks super fast!
-for validate_cals you can cache it, i tried didn't see a speed up, you know how to do in memory cache?
+is_bd caching, good move
+i changed some of the cache logic, it's 4 seconds now, that is fine for now
+combination of your is_bd caching (dropped average time from 35-10ms) + cal_names cacching brings average operation to <1ms!
+#3 - they were not wrong, it was a was timezone issue, i set tolerances to be <=1d for the conversion, in future we should have exact but ensure UTC time-zone awareness
 
-6.97s is too slow, must be <1s for big set of dates, let's see together
+tests all passcoverage 
 
+
+Name                                 Stmts   Miss  Cover   Missing
+------------------------------------------------------------------
+dateroll/__init__.py                     5      0   100%
+dateroll/__main__.py                     0      0   100%
+dateroll/calendars/__init__.py           0      0   100%
+dateroll/calendars/__main__.py           0      0   100%
+dateroll/calendars/calendarmath.py     194      1    99%   70
+dateroll/calendars/calendars.py        194     18    91%   37, 76-78, 103, 108, 116-117, 123, 127-130, 139, 231-234, 240
+dateroll/date/__init__.py                0      0   100%
+dateroll/date/__main__.py                0      0   100%
+dateroll/date/date.py                  155      1    99%   46
+dateroll/ddh/__init__.py                 0      0   100%
+dateroll/ddh/__main__.py                 0      0   100%
+dateroll/ddh/ddh.py                     32      0   100%
+dateroll/duration/__init__.py            0      0   100%
+dateroll/duration/__main__.py            0      0   100%
+dateroll/duration/duration.py          347      8    98%   747-755
+dateroll/parser/__init__.py              0      0   100%
+dateroll/parser/__main__.py              0      0   100%
+dateroll/parser/parser.py               61      0   100%
+dateroll/parser/parsers.py             168      0   100%
+dateroll/parser/patterns.py             24      0   100%
+dateroll/pretty.py                      69      0   100%
+dateroll/schedule/__init__.py            0      0   100%
+dateroll/schedule/__main__.py            0      0   100%
+dateroll/schedule/schedule.py           75      0   100%
+dateroll/settings.py                    59      0   100%
+dateroll/utils.py                       65      9    86%   174-183
+------------------------------------------------------------------
+TOTAL                                 1448     37    97%
+
+i made quite a few changes to get this if you can get coverage to 100% pls.

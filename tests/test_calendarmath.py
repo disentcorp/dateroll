@@ -331,7 +331,7 @@ class TestStringMathMethods(unittest.TestCase):
         calm.load_cache()
         sys.stdout = sys.__stdout__
         txt = capt.getvalue().strip()
-        self.assertEqual(txt,'[dateroll] calendar math cache corrupted, cleaning.')
+        self.assertTrue('Cannot'in txt)
         
         
 

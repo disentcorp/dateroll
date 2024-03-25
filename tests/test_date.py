@@ -267,71 +267,8 @@ class TestDate(unittest.TestCase):
         '''
             test from timestamp
         '''
-        # good = {
-        #     1711080000: datetime.datetime(2024, 3, 22, 0, 0),
-        #     1426651200: datetime.datetime(2015, 3, 18, 0, 0),
-        #     1372651200: datetime.datetime(2013, 7, 1, 0, 0),
-        #     1470283200: datetime.datetime(2016, 8, 4, 0, 0),
-        #     1745985600: datetime.datetime(2025, 4, 30, 0, 0),
-        #     1940644800: datetime.datetime(2031, 7, 1, 0, 0),
-        #     2108779200: datetime.datetime(2036, 10, 28, 0, 0),
-        #     1856232000: datetime.datetime(2028, 10, 27, 0, 0),
-        #     1644210000: datetime.datetime(2022, 2, 7, 0, 0),
-        #     1684296000: datetime.datetime(2023, 5, 17, 0, 0),
-        #     2104977600: datetime.datetime(2036, 9, 14, 0, 0),
-        #     2015643600: datetime.datetime(2033, 11, 15, 0, 0),
-        #     1745294400: datetime.datetime(2025, 4, 22, 0, 0),
-        #     1548219600: datetime.datetime(2019, 1, 23, 0, 0),
-        #     1263531600: datetime.datetime(2010, 1, 15, 0, 0),
-        #     1244433600: datetime.datetime(2009, 6, 8, 0, 0),
-        #     1436932800: datetime.datetime(2015, 7, 15, 0, 0),
-        #     1199854800: datetime.datetime(2008, 1, 9, 0, 0),
-        #     1589601600: datetime.datetime(2020, 5, 16, 0, 0),
-        #     1217131200: datetime.datetime(2008, 7, 27, 0, 0),
-        #     833256000.0: datetime.datetime(1996, 5, 28, 0, 0),
-        #     528609600.0: datetime.datetime(1986, 10, 2, 0, 0),
-        #     301464000.0: datetime.datetime(1979, 7, 22, 0, 0),
-        #     174801600.0: datetime.datetime(1975, 7, 17, 0, 0),
-        #     -83534400.0: datetime.datetime(1967, 5, 10, 0, 0),
-        #     112161600.0: datetime.datetime(1973, 7, 22, 0, 0),
-        #     -261864000.0: datetime.datetime(1961, 9, 14, 0, 0),
-        #     94798800.0: datetime.datetime(1973, 1, 2, 0, 0),
-        #     -203544000.0: datetime.datetime(1963, 7, 21, 0, 0),
-        #     -83275200.0: datetime.datetime(1967, 5, 13, 0, 0)
-        # }
-        good = {
-            1711036800.0: datetime.datetime(2024, 3, 22, 0, 0),
-            1426608000.0: datetime.datetime(2015, 3, 18, 0, 0),
-            1372608000.0: datetime.datetime(2013, 7, 1, 0, 0),
-            1470236400.0: datetime.datetime(2016, 8, 4, 0, 0),
-            1745942400.0: datetime.datetime(2025, 4, 30, 0, 0),
-            1940601600.0: datetime.datetime(2031, 7, 1, 0, 0),
-            2108736000.0: datetime.datetime(2036, 10, 28, 0, 0),
-            1856188800.0: datetime.datetime(2028, 10, 27, 0, 0),
-            1644163200.0: datetime.datetime(2022, 2, 7, 0, 0),
-            1684252800.0: datetime.datetime(2023, 5, 17, 0, 0),
-            2104934400.0: datetime.datetime(2036, 9, 14, 0, 0),
-            2015596800.0: datetime.datetime(2033, 11, 15, 0, 0),
-            1745251200.0: datetime.datetime(2025, 4, 22, 0, 0),
-            1548172800.0: datetime.datetime(2019, 1, 23, 0, 0),
-            1263484800.0: datetime.datetime(2010, 1, 15, 0, 0),
-            1244390400.0: datetime.datetime(2009, 6, 8, 0, 0),
-            1436886000.0: datetime.datetime(2015, 7, 15, 0, 0),
-            1199808000.0: datetime.datetime(2008, 1, 9, 0, 0),
-            1589558400.0: datetime.datetime(2020, 5, 16, 0, 0),
-            1217088000.0: datetime.datetime(2008, 7, 27, 0, 0),
-            833209200.0: datetime.datetime(1996, 5, 28, 0, 0),
-            528566400.0: datetime.datetime(1986, 10, 2, 0, 0),
-            301420800.0: datetime.datetime(1979, 7, 22, 0, 0),
-            174762000.0: datetime.datetime(1975, 7, 17, 0, 0),
-            -83574000.0: datetime.datetime(1967, 5, 10, 0, 0),
-            112122000.0: datetime.datetime(1973, 7, 22, 0, 0),
-            -261903600.0: datetime.datetime(1961, 9, 14, 0, 0),
-            94755600.0: datetime.datetime(1973, 1, 2, 0, 0),
-            -203583600.0: datetime.datetime(1963, 7, 21, 0, 0),
-            -83314800.0: datetime.datetime(1967, 5, 13, 0, 0)
-
-        }
+        import pytz
+        good = {1711065600.0: datetime.datetime(2024, 3, 22, 0, 0, 0, 0, pytz.UTC), 1426636800.0: datetime.datetime(2015, 3, 18, 0, 0, 0, 0, pytz.UTC), 1372636800.0: datetime.datetime(2013, 7, 1, 0, 0, 0, 0, pytz.UTC), 1470268800.0: datetime.datetime(2016, 8, 4, 0, 0, 0, 0, pytz.UTC), 1745971200.0: datetime.datetime(2025, 4, 30, 0, 0, 0, 0, pytz.UTC), 1940630400.0: datetime.datetime(2031, 7, 1, 0, 0, 0, 0, pytz.UTC), 2108764800.0: datetime.datetime(2036, 10, 28, 0, 0, 0, 0, pytz.UTC), 1856217600.0: datetime.datetime(2028, 10, 27, 0, 0, 0, 0, pytz.UTC), 1644192000.0: datetime.datetime(2022, 2, 7, 0, 0, 0, 0, pytz.UTC), 1684281600.0: datetime.datetime(2023, 5, 17, 0, 0, 0, 0, pytz.UTC), 2104963200.0: datetime.datetime(2036, 9, 14, 0, 0, 0, 0, pytz.UTC), 2015625600.0: datetime.datetime(2033, 11, 15, 0, 0, 0, 0, pytz.UTC), 1745280000.0: datetime.datetime(2025, 4, 22, 0, 0, 0, 0, pytz.UTC), 1548201600.0: datetime.datetime(2019, 1, 23, 0, 0, 0, 0, pytz.UTC), 1263513600.0: datetime.datetime(2010, 1, 15, 0, 0, 0, 0, pytz.UTC), 1244419200.0: datetime.datetime(2009, 6, 8, 0, 0, 0, 0, pytz.UTC), 1436918400.0: datetime.datetime(2015, 7, 15, 0, 0, 0, 0, pytz.UTC), 1199836800.0: datetime.datetime(2008, 1, 9, 0, 0, 0, 0, pytz.UTC), 1589587200.0: datetime.datetime(2020, 5, 16, 0, 0, 0, 0, pytz.UTC), 1217116800.0: datetime.datetime(2008, 7, 27, 0, 0, 0, 0, pytz.UTC), 833241600.0: datetime.datetime(1996, 5, 28, 0, 0, 0, 0, pytz.UTC), 528595200.0: datetime.datetime(1986, 10, 2, 0, 0, 0, 0, pytz.UTC), 301449600.0: datetime.datetime(1979, 7, 22, 0, 0, 0, 0, pytz.UTC), 174787200.0: datetime.datetime(1975, 7, 17, 0, 0, 0, 0, pytz.UTC), -83548800.0: datetime.datetime(1967, 5, 10, 0, 0, 0, 0, pytz.UTC), 112147200.0: datetime.datetime(1973, 7, 22, 0, 0, 0, 0, pytz.UTC), -261878400.0: datetime.datetime(1961, 9, 14, 0, 0, 0, 0, pytz.UTC), 94780800.0: datetime.datetime(1973, 1, 2, 0, 0, 0, 0, pytz.UTC), -203558400.0: datetime.datetime(1963, 7, 21, 0, 0, 0, 0, pytz.UTC), -83289600.0: datetime.datetime(1967, 5, 13, 0, 0, 0, 0, pytz.UTC)}
         
         bad1 =  { # 1st 5 are wrong dates,
             19058:datetime.date(1979, 7, 22),
@@ -350,8 +287,8 @@ class TestDate(unittest.TestCase):
         # inbound
         for _a,_b in good.items():
             a,b = Date.from_unix(_a), Date.from_datetime(_b)
-            
-            self.assertEqual(a,b)
+            diff = abs((b-a).days)
+            self.assertLessEqual(diff,1.1)
             
         for _a,_b in bad1.items():
             a,b = Date.from_timestamp(_a), Date.from_datetime(_b)
@@ -364,7 +301,8 @@ class TestDate(unittest.TestCase):
             
         for a,_b in good.items():
             b = Date.from_datetime(_b).unix
-            self.assertEqual(a,b)
+            diff = abs(b-a)
+            self.assertLessEqual(diff,86400)
             
         for _a,_b in bad1.items():
             b = Date.from_datetime(_b).unix

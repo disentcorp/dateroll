@@ -1,4 +1,4 @@
-
+import pytz
 import datetime
 import dateutil.relativedelta
 import dateroll.parser.parsers as parsersModule
@@ -28,7 +28,7 @@ class Date(datetime.date):
         return Date.from_datetime(dt)
 
     @staticmethod
-    def from_datetime(o):
+    def from_datetime(o,utc=False):
         """
         Create a Date instance from a datetime.datetime (drops time information), or datetime.date
         """
