@@ -28,7 +28,6 @@ dateroll/ddh/ddh.py
 dateroll/duration/__init__.py
 dateroll/duration/__main__.py
 dateroll/duration/duration.py
-dateroll/duration/old_duration.py
 dateroll/parser/__init__.py
 dateroll/parser/__main__.py
 dateroll/parser/parser.py
