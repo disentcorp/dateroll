@@ -22,8 +22,8 @@ REPEATING_DATE_PERIODS = (
 )
 PIPE = r"(\|)?"
 CAL = r"([A-Z]{2,3})"
-OPTIONAL_CALS= f'(?:u{CAL})?'*7
-CALS = f'{CAL}{OPTIONAL_CALS}'
+OPTIONAL_CALS = f"(?:u{CAL})?" * 7
+CALS = f"{CAL}{OPTIONAL_CALS}"
 REPEATING_CALUNIONS = f" ?(?:{PIPE}) ?{CALS}"
 ROLL = r" ?(/)? ?(MOD) ?"
 PIPE_ROLL = f"(?:{ROLL})?"
@@ -32,4 +32,6 @@ COMPLETE_DURATION = (
     f"({OPERATOR}{REPEATING_DATE_PERIODS} ?{PIPE_REPEAT_CAL_UNION}{PIPE_ROLL})"
 )
 
-MONTHNAMES = re.compile(r'(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec|January|February|March|April|June|July|August|September|October|November|December)')
+MONTHNAMES = re.compile(
+    r"(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec|January|February|March|April|June|July|August|September|October|November|December)"
+)

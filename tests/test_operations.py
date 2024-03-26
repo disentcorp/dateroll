@@ -1,11 +1,13 @@
 import unittest
 
+
 class TestOperations(unittest.TestCase):
     @classmethod
     def setUpClass(cls): ...
 
     @classmethod
     def tearDownClass(self): ...
+
 
 # no fol
 
@@ -43,6 +45,6 @@ class TestOperations(unittest.TestCase):
 # YYMMDD
 # MMDDYY
 # DDMMYY
-    
-if __name__=='__main__':
+
+if __name__ == "__main__":
     unittest.main()

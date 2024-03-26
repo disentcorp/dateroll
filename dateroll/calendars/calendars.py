@@ -7,9 +7,10 @@ import pathlib
 import pickle
 from collections import OrderedDict
 
-from dateroll.date import date as dateModule
 from dateroll.calendars import calendarmath as calendarmathModule
-from dateroll.utils import safe_open
+from dateroll.date import date as dateModule
+from dateroll.utils import safe_open, date_slice, convention_map
+from dateroll import settings
 
 ROOT_DIR = pathlib.Path(__file__).parents[2]
 PARENT_LOCATION = pathlib.Path.home() / ".dateroll/"
@@ -19,10 +20,11 @@ MODULE_LOCATION.mkdir(exist_ok=True)
 DATA_LOCATION_FILE = MODULE_LOCATION / "holiday_lists"
 SAMPLE_DATA_PATH = ROOT_DIR / "dateroll" / "sampledata" / "*.csv"
 
-INCEPTION = datetime.date(1824,2,29)
+INCEPTION = datetime.date(1824, 2, 29)
 
 
-SetLike = (list,tuple,set)
+SetLike = (list, tuple, set)
+
 
 def date_check(i):
     if isinstance(i, datetime.datetime):
@@ -34,9 +36,12 @@ def date_check(i):
             f"All cal dates must be of dateroll.Date or datetime.date{{time}} (got {type(i).__name__})"
         )
     if dt < INCEPTION:
-        raise ValueError('Holiday before 29-Feb-1824 not supported, ask if you need it.')
-    
+        raise ValueError(
+            "Holiday before 29-Feb-1824 not supported, ask if you need it."
+        )
+
     return dt
+
 
 def load_sample_data():
     files = glob.glob(str(SAMPLE_DATA_PATH))
@@ -58,58 +63,61 @@ def load_sample_data():
 
 class Drawer:
     def __init__(self, cals):
-        
+
         self.path = pathlib.Path(cals.home)
         self.cals = cals
 
     def __enter__(self):
-        
+
         if self.cals.hash == self.cals.db_hash:
             return self.cals.db
-        
+
         if self.path.exists():
             try:
                 with safe_open(self.path, "rb") as f:
                     self.data = pickle.load(f)
                     self.cals.db_hash = self.cals.hash
                     self.cals.db = self.data
-                    
+
                     return self.cals.db
             except Exception as e:
-                import traceback;traceback.print_exc()
-                msg = 'Cache is corrupted'
+                import traceback
+
+                traceback.print_exc()
+                msg = "Cache is corrupted"
         else:
-            msg = 'No cache found'
-        
+            msg = "No cache found"
+
         print(f"[dateroll] Loading sample calendars ({msg})")
         data = load_sample_data()
 
         self.cals.db = data
         with safe_open(self.path, "wb") as f:
             pickle.dump(self.cals.db, f)
-            print('[dateroll] Writing cache (calendars)')
+            print("[dateroll] Writing cache (calendars)")
             self.cals.write = False
 
         return self.cals.db
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        
+
         if exc_val is not None:
             raise exc_val
         else:
             if self.cals.write:
                 with safe_open(self.path, "wb") as f:
                     pickle.dump(self.cals.db, f)
-                    print('[dateroll] Writing cache (calendars)')
+                    print("[dateroll] Writing cache (calendars)")
                 self.cals.write = False
 
+
 class DateSet:
-    def __init__(self,content):
-        if not isinstance(content,SetLike):
-            raise TypeError('DateSet content must be set-like (castable)')
-        
+    def __init__(self, content):
+        if not isinstance(content, SetLike):
+            raise TypeError("DateSet content must be set-like (castable)")
+
         # ordered dict constructure requires dict not set
-        d = {date_check(i):True for i in content if i is not None}
+        d = {date_check(i): True for i in content if i is not None}
         od = OrderedDict(d)
         self._data = od
 
@@ -118,17 +126,23 @@ class DateSet:
         self._data[dt] = True
 
     def __contains__(self, item):
-        if isinstance(item,dateModule.Date):
+        if isinstance(item, dateModule.Date):
             item = item.date
-        if isinstance(item,datetime.datetime):
-            item = datetime.date(item.year,item.month,item.day)
+        if isinstance(item, datetime.datetime):
+            item = datetime.date(item.year, item.month, item.day)
         return item in self._data
-    
+
     def extend(self, items):
-        if not isinstance(items,SetLike):
-            raise TypeError('Must be cast-able into set')
-        extension = {date_check(i):None for i in items if i is not None}
+        if not isinstance(items, SetLike):
+            raise TypeError("Must be cast-able into set")
+        extension = {date_check(i): None for i in items if i is not None}
         self._data.update(extension)
+
+    def __getitem__(self,k):
+        if isinstance(k,slice):
+            return date_slice(k,self._data)
+        else:
+            raise TypeError('Indexation on DateSet only accepts date string slicing')
 
     def __iter__(self):
         return iter(self._data)
@@ -137,10 +151,11 @@ class DateSet:
         return len(self._data)
 
     def __repr__(self):
-        return f'{type(self).__name__}({list(self._data.keys())})'
+        return f"{type(self).__name__}({list(self._data.keys())})"
 
 
-CALENDARS_ATTRIBUTES = ('write','home','db_hash','db')
+CALENDARS_ATTRIBUTES = ("write", "home", "db_hash", "db")
+
 
 class Calendars(dict):
     """
@@ -154,9 +169,9 @@ class Calendars(dict):
         self.write = False  # sentinel to invalidate cache
 
     def keys(self):
-        '''
-            return date keys
-        '''
+        """
+        return date keys
+        """
         with Drawer(self) as db:
             return list(db.keys())
 
@@ -191,19 +206,17 @@ class Calendars(dict):
             raise Exception(f"Cal name must be all uppercase")
 
         if k in self.db.keys():
-            raise Exception(
-                f"{k} exists already, delete first.if you want to replace."
-            )
-        
+            raise Exception(f"{k} exists already, delete first.if you want to replace.")
+
         self.write = True
         with Drawer(self) as db:
             # value must be a set-like list of dates
             verified = DateSet(v)
             db[k] = verified
-            
 
     def __getitem__(self, k):
         return self.get(k)
+
 
     def __getattr__(self, k):
         """
@@ -216,13 +229,13 @@ class Calendars(dict):
                 return self.get(k)
             except KeyError:
                 raise AttributeError(k)
-    
-    def __setattr__(self,k,v):
+
+    def __setattr__(self, k, v):
         if k in CALENDARS_ATTRIBUTES:
             return super().__setattr__(k, v)
-        
-        self.__setitem__(k,v)
-    
+
+        self.__setitem__(k, v)
+
     def __contains__(self, k):
         with Drawer(self) as db:
             return str(k) in db
@@ -233,28 +246,27 @@ class Calendars(dict):
             del db[k]
 
     def __delattr__(self, k):
-        '''
-        if user deletes an attribute it's either 
+        """
+        if user deletes an attribute it's either
         a - a calendar
         b - an actual attribute, probably by mistake but we should still call super()
-        '''
+        """
         try:
             # case a
             self.__delitem__(k)
         except:
             # case b
-            super().__delattr__(k)            
+            super().__delattr__(k)
 
     def get(self, k):
-        
+
         with Drawer(self) as db:
             result = db.get(k)
 
         if result is not None:
             return result
         else:
-            raise KeyError(k) 
-        
+            raise KeyError(k)
 
     def clear(self):
         self.write = True
@@ -262,8 +274,26 @@ class Calendars(dict):
             db.clear()
             self.db.clear()
 
+    def __str__(self):
+        pattern = lambda a, b, c, d: f"{a:6}|{b:12}|{c:12}|{d:12}"
+        s = ""
+        conv = convention_map[settings.settings.convention]
+        with Drawer(self) as db:
+            s+= pattern("name", " num dates", "min date", "max date") +'\n'
+            s+=pattern("-" * 6, "-" * 12, "-" * 12, "-" * 12)+'\n'
+            for i in sorted(db.keys()):
+
+                l = db.get(i)
+                if len(l) > 0:
+                    n = len(l)
+                    mn = min(l).strftime(conv)
+                    mx = max(l).strftime(conv)
+                else:
+                    n, mn, mx = 0, None, None
+                s+=pattern(str(i), f'{n:>12,}', str(mn), str(mx))+'\n'
+        return s
+
     def __repr__(self):
-        self.info
         return f'{self.__class__.__name__}(home="{self.home}")'
 
     def copy(self):
@@ -275,22 +305,8 @@ class Calendars(dict):
 
     @property
     def info(self):
-        pattern = lambda a, b, c, d: f"{a:6}|{b:>8}|{c:12}|{d:12}"
-        with Drawer(self) as db:
-            print(pattern("name", "#dates", "min date", "max date"))
-            print(pattern("-" * 6, "-" * 8, "-" * 12, "-" * 12))
-            for i in db.keys():
-                
-                l = db.get(i)
-                if len(l) > 0:
-                    n = len(l)
-                    mn = min(l)
-                    mx = max(l)
-                else:
-                    n, mn, mx = 0, None, None
-                print(pattern(str(i), str(n), str(mn), str(mx)))
+        print(self.__str__)
 
 
-if __name__ == '__main__': # pragma: no cover
+if __name__ == "__main__":  # pragma: no cover
     ...
-    

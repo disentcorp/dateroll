@@ -1,14 +1,13 @@
-import os
 import datetime
+import math
+import os
 import pathlib
 import pickle
 import time
-import math
 
-
+import dateroll.date.date as dateModule
 from dateroll.calendars.calendars import Calendars
 from dateroll.utils import safe_open
-import dateroll.date.date as dateModule
 
 PARENT_LOCATION = pathlib.Path.home() / ".dateroll/"
 PARENT_LOCATION.mkdir(exist_ok=True)
@@ -16,8 +15,9 @@ MODULE_LOCATION = PARENT_LOCATION / "calendars/"
 MODULE_LOCATION.mkdir(exist_ok=True)
 DATA_LOCATION_FILE = MODULE_LOCATION / "compiled_cals"
 
-WEEKEND_CALENDAR = 'WE'
+WEEKEND_CALENDAR = "WE"
 DEFAULT_IE = "(]"
+
 
 class CalendarMath:
     """
@@ -52,17 +52,19 @@ class CalendarMath:
         self.cached_compile_all()
 
     def load_cache(self):
-        '''
-            self.home always exsist because load_cache called if it exists
-        '''
+        """
+        self.home always exsist because load_cache called if it exists
+        """
         if self.home.exists():
             with open(self.home, "rb") as f:
                 try:
                     cached = pickle.load(f)
                     return cached
                 except Exception as e:
-                    import traceback;traceback.print_exc()
-                    print(f'[dateroll] Cannot load cache for calmath unions, clearing.')
+                    import traceback
+
+                    traceback.print_exc()
+                    print(f"[dateroll] Cannot load cache for calmath unions, clearing.")
                     os.remove(self.home)
         else:
             self.save_cache()
@@ -74,12 +76,12 @@ class CalendarMath:
         cached = {
             "fwd": self.fwd,
             "bck": self.bck,
-            "ibd":self.ibd,
+            "ibd": self.ibd,
             "hash": self.hash,
         }
         with safe_open(self.home, "wb") as f:
-            print('[dateroll] Writing cache (calmath unions)')
-            pickle.dump(cached,f)
+            print("[dateroll] Writing cache (calmath unions)")
+            pickle.dump(cached, f)
 
     def cached_compile_all(self):
         """
@@ -92,8 +94,8 @@ class CalendarMath:
                 cached = self.load_cache()
                 if cached is not None:
                     self.__dict__.update(cached)
-                    return 
-         
+                    return
+
         # compile
         self.compile_all()
 
@@ -109,17 +111,16 @@ class CalendarMath:
         self.cal_names = list(d.keys())
         self.hash = self.cals.hash
 
-
     @property
     def has_mutated(self):
-        '''
+        """
         only time "mutation" occurs is if an underlying calendar has changed
         all __setitem__ to a calendar will automatically trigger removal of the
         calendarmath cache file, thus it's existence confirms cache validity
-        '''
+        """
         cache_is_valid = not self.home.exists()
         return cache_is_valid
-    
+
     @property
     def cal_list(self):
         if not self.has_mutated:
@@ -162,11 +163,11 @@ class CalendarMath:
         last_cal = cal.pop(0)
         last_idx = 0
         for idx, dt in enumerate(sorted(all)):
-            
+
             if dt == last_cal:
                 # it is holiday
                 ibd[dt] = False
-                fwd[dt] = last_idx 
+                fwd[dt] = last_idx
                 try:
                     last_cal = cal.pop(0)
                 except:
@@ -178,16 +179,15 @@ class CalendarMath:
                 fwd[dt] = last_idx
                 if last_idx not in bck:
                     bck[last_idx] = dt
-                
 
         return fwd, bck, ibd
-   
+
     def add_bd(self, d, n, cals):
         """
         add's n business days on cal to d
         careful, if n==0, B should auto backtrack, need to verify
         """
-        
+
         # when not bd, we need to handle n; positive direction n=0-->1 and negative direction n=-1--->0
         # because of the property of fwd, bck dictionaries
         if isinstance(d, datetime.datetime):
@@ -198,12 +198,12 @@ class CalendarMath:
             pass
         else:
             raise TypeError(f"Date must be date (got {type(d).__name__})")
-        if not self.is_bd(d,cals):
+        if not self.is_bd(d, cals):
             # make sure direction is positive
-            if n==0 and math.copysign(1,n)==1:
+            if n == 0 and math.copysign(1, n) == 1:
                 n = 1
             # when direction is negative
-            elif n<0:
+            elif n < 0:
                 n += 1
 
         _cals = CalendarMath.reverse_calstring(cals)
@@ -211,25 +211,23 @@ class CalendarMath:
 
         A = self.fwd[cal_name]
         B = self.bck[cal_name]
-        if len(A)==0:
-            raise ValueError('Please provide holidays')
+        if len(A) == 0:
+            raise ValueError("Please provide holidays")
         from dateroll.date.date import Date
 
-        
-            
         bd_index = A[d]
         new_bd_index = bd_index + n
         new_dt = B[new_bd_index]
-        
+
         return new_dt
 
     def sub_bd(self, d, n, cals):
         """
         subtract (opposed of add)
         """
-        if n<0:
-            raise ValueError(f'n needs to be positive number')
-        
+        if n < 0:
+            raise ValueError(f"n needs to be positive number")
+
         n = -1 * float(n)
         return self.add_bd(d, n, cals)
 
@@ -243,9 +241,9 @@ class CalendarMath:
         cal_name = self.union_key(_cals)
 
         BD = self.ibd[cal_name]
-        if len(BD)==0:
+        if len(BD) == 0:
             return False
-        
+
         is_bd = self.ibd[cal_name][d]
         return is_bd
 
@@ -253,42 +251,40 @@ class CalendarMath:
         """
         compute business days between two dates
         """
-        
+
         cals = CalendarMath.reverse_calstring(cals)
         cal_name = self.union_key(cals)
 
-        if t1==t2:
+        if t1 == t2:
             return 0
-        
 
         fwd = self.fwd[cal_name]
-        mult = 1 if t1<t2 else -1
-        a,b = (t1,t2) if t1<t2 else (t2,t1)
+        mult = 1 if t1 < t2 else -1
+        a, b = (t1, t2) if t1 < t2 else (t2, t1)
         n = fwd[t2] - fwd[t1] + 1 * mult
-        if ie[0]=='[' and not a.is_bd(cals=cals):
+        if ie[0] == "[" and not a.is_bd(cals=cals):
             # because of the fwd property e.g friday:1,sat:1,sun:1,mon(hol):1,tue:2 we subtract 1 more on the left side
-            n = n -1 * mult
-        if ie[0]=='(':
             n = n - 1 * mult
-        
-        if ie[1]==')' and b.is_bd(cals=cals):
-            n = n -1 * mult
-        
-        
+        if ie[0] == "(":
+            n = n - 1 * mult
+
+        if ie[1] == ")" and b.is_bd(cals=cals):
+            n = n - 1 * mult
+
         return n
 
     def next_bd(self, d, cals):
         """
         the next business date from d on calendars cals
         """
-        new_d = self.add_bd(d,1,cals)
+        new_d = self.add_bd(d, 1, cals)
         return new_d
 
     def prev_bd(self, d, cals):
         """
         the previous business date from d on calendars cals
         """
-        new_d = self.sub_bd(d,1,cals)
+        new_d = self.sub_bd(d, 1, cals)
         return new_d
 
     @staticmethod
@@ -303,7 +299,9 @@ class CalendarMath:
         always return list of individuals (decompose unions)
         """
         if cals is None:
-            cals = [WEEKEND_CALENDAR]  # define at top of file..future user might want WKD instad of WE
+            cals = [
+                WEEKEND_CALENDAR
+            ]  # define at top of file..future user might want WKD instad of WE
 
         if isinstance(cals, str):
             if "u" in cals:
@@ -316,17 +314,16 @@ class CalendarMath:
     def union_key(self, cals):
         """
         takes a cals as either  str of 1 cal or a list of str cals and return a sorted tuple, if empty list assume weekends
-        
+
         """
         # cals always come as a tuple,list,set, no need to raise error here
-        cal_union_key = 'u'.join(cals)
+        cal_union_key = "u".join(cals)
 
         if cal_union_key not in self.fwd:
             # union dates wasnt' cached, call _generate_union
             self._generate_union(cal_union_key)
-        
+
         return cal_union_key
-        
 
     def _generate_union(self, cal_union_key):
         """
@@ -337,16 +334,18 @@ class CalendarMath:
         for cal in cals:
             # saftey checks
             if cal not in self.cals:
-                
+
                 raise KeyError(f"There is no calendar {cal}")
-            
+
             # the union operation
             unioned_dates |= set(self.cals[cal])
 
         # compile into large dict
         print(f"[dateroll] compiling new union [{cal_union_key}]")
         dict_tuple = self.gen_dicts(cal_union_key, unioned_dates, self.ALL)
-        self.fwd[cal_union_key], self.bck[cal_union_key], self.ibd[cal_union_key] = dict_tuple
+        self.fwd[cal_union_key], self.bck[cal_union_key], self.ibd[cal_union_key] = (
+            dict_tuple
+        )
         # save cache
         self.save_cache()
 
@@ -361,8 +360,3 @@ class CalendarMath:
 
 
 calmath = CalendarMath()
-
-
-
-
-    

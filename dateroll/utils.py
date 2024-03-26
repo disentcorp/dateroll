@@ -1,10 +1,14 @@
+import calendar
 import fcntl
+import functools
 import pathlib
 import re
-import calendar
-from dateroll.parser import patterns
-import functools
 import time
+
+from dateroll.parser import patterns
+from dateroll.date import date as dateModule
+from dateroll.ddh import ddh as ddhModule
+
 XPRINT_ON = False
 
 DEBUG_COLORS = {
@@ -19,62 +23,56 @@ DEBUG_COLORS = {
 
 
 month_dict = {
-        "jan": "01", "feb": "02", "mar": "03",
-        "apr": "04", "may": "05", "jun": "06",
-        "jul": "07", "aug": "08", "sep": "09",
-        "oct": "10", "nov": "11", "dec": "12",
-        "january": "01", "february": "02", "march": "03",
-        "april": "04","may":"05", "june": "06", "july": "07",
-        "august": "08", "september": "09", "october": "10",
-        "november": "11", "december": "12"
+    "jan": "01",
+    "feb": "02",
+    "mar": "03",
+    "apr": "04",
+    "may": "05",
+    "jun": "06",
+    "jul": "07",
+    "aug": "08",
+    "sep": "09",
+    "oct": "10",
+    "nov": "11",
+    "dec": "12",
+    "january": "01",
+    "february": "02",
+    "march": "03",
+    "april": "04",
+    "may": "05",
+    "june": "06",
+    "july": "07",
+    "august": "08",
+    "september": "09",
+    "october": "10",
+    "november": "11",
+    "december": "12",
 }
 
 date_string_coordinates = {
-    'YMD':{
-        6:{
-            'y':slice(0,2),
-            'm':slice(2,4),
-            'd':slice(4,6)
-        },
-        8:{
-            'y':slice(0,4),
-            'm':slice(4,6),
-            'd':slice(6,8)
-        }
+    "YMD": {
+        6: {"y": slice(0, 2), "m": slice(2, 4), "d": slice(4, 6)},
+        8: {"y": slice(0, 4), "m": slice(4, 6), "d": slice(6, 8)},
     },
-    'MDY':{
-        6:{
-            'y':slice(4,6),
-            'm':slice(0,2),
-            'd':slice(2,4)
-        },
-        8:{
-            'y':slice(4,8),
-            'm':slice(0,2),
-            'd':slice(2,4)
-        }
+    "MDY": {
+        6: {"y": slice(4, 6), "m": slice(0, 2), "d": slice(2, 4)},
+        8: {"y": slice(4, 8), "m": slice(0, 2), "d": slice(2, 4)},
     },
-    'DMY':{
-        6:{
-            'y':slice(4,6),
-            'm':slice(2,4),
-            'd':slice(0,2)
-        },
-        8:{
-            'y':slice(4,8),
-            'm':slice(2,4),
-            'd':slice(0,2)
-        }
-    }
+    "DMY": {
+        6: {"y": slice(4, 6), "m": slice(2, 4), "d": slice(0, 2)},
+        8: {"y": slice(4, 8), "m": slice(2, 4), "d": slice(0, 2)},
+    },
 }
 
 
 def color(s, color):
     return DEBUG_COLORS[color] + str(s) + DEBUG_COLORS["end"]
 
-def get_month_days(y,m):
+
+def get_month_days(y, m):
     _, num_days = calendar.monthrange(y, m)
     return num_days
+
 
 def xprint(*args, **kwargs):  # pragma:no cover
     if XPRINT_ON:
@@ -114,22 +112,24 @@ def add_none(a, b, dir=1):
         a = 0 if a is None else a
         b = 0 if b is None else b
         return a + b * dir
-    
+
+
 def swap_month_names(s):
-    '''
-        swap month names into number string eg, Aug-->08
-    '''
-    month_str = re.match('[a-zA-Z]+',s)
+    """
+    swap month names into number string eg, Aug-->08
+    """
+    month_str = re.match("[a-zA-Z]+", s)
     if month_str:
         # aug or AUG --> Aug
-        
+
         month_str = month_str[0].lower()
-        month_str_numb = month_dict.get(month_str,None)
+        month_str_numb = month_dict.get(month_str, None)
         if month_str_numb is None:
-   
-            raise ValueError('Month name is wrong')
-        s = patterns.MONTHNAMES.sub(month_str_numb,s.capitalize())
-    return s 
+
+            raise ValueError("Month name is wrong")
+        s = patterns.MONTHNAMES.sub(month_str_numb, s.capitalize())
+    return s
+
 
 class safe_open:
     """
@@ -144,7 +144,7 @@ class safe_open:
 
         self.path = pathlib.Path(path)
         self.mode = mode
-        if mode.startswith('w'):
+        if mode.startswith("w"):
             self.pathlock = self.path.with_suffix(".lockfile")
             self.lockfile = open(self.pathlock, "w")
             fcntl.lockf(self.lockfile, fcntl.LOCK_EX)
@@ -156,24 +156,28 @@ class safe_open:
 
         self.file = open(self.path, self.mode)
         return self.file
-    
+
     def __exit__(self, exc_type, exc_val, exc_tb):
         """
         release lock, then close both lockfile and user file
         do not delete lockfile (even if no exc)
         """
-        if self.mode.startswith('w'):
+        if self.mode.startswith("w"):
             fcntl.lockf(self.lockfile, fcntl.LOCK_UN)
             self.lockfile.close()
             self.file.close()
 
+
 import functools
 import time
+
+
 def timer(func):  # pragma:no cover
-    '''
-        timer function is used for performance improvement
-        we use it as a wrapper on the function to see the run time of the function
-    '''
+    """
+    timer function is used for performance improvement
+    we use it as a wrapper on the function to see the run time of the function
+    """
+
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
         start_time = time.perf_counter()
@@ -185,4 +189,44 @@ def timer(func):  # pragma:no cover
 
     return wrapper
 
-convention_map = {"YMD": r"%Y-%m-%d", "DMY": r"%d-%m-%Y", "MDY": r"%m-%d-%Y"}
+
+convention_map = {"YMD": r"%Y-%m-%d", "DMY": r"%d/%m/%Y", "MDY": r"%m/%d/%Y"}
+
+
+def str_or_date(s):
+    if isinstance(s,str):
+        d = ddhModule.ddh(s)
+    elif isinstance(dateModule.DateLike):
+        d = dateModule.Date.from_datetime(s)
+    else:
+        raise Exception('Slicing only supports dateroll datestrings')
+    return d
+
+
+def date_slice(s:slice,l:list):
+    '''
+    s[t1:]   -- after t1 (inclusive)
+    s[:t2]   -- before t2 (inclusive)
+    s[t1:t2]  -- between t1 and t2 (inclusive)
+    
+    '''
+    start,stop,step = s.start,s.stop,s.step
+    if start is not None and stop is None and step is None:
+        # after
+        start = str_or_date(start)
+        return [i for i in l if i >= start]
+    elif start is None and stop is not None and step is None:
+        # before
+        stop = str_or_date(stop)
+        return [i for i in l if i <= stop]
+    elif start is not None and stop is not None:
+        # between
+        start = str_or_date(start)
+        stop = str_or_date(stop)
+        return [i for i in l if i >= start and i <=stop]
+    elif start is None and stop is None and step is None:
+        # all
+        return l
+    elif step is not None:
+        # neither
+        raise Exception('Slicing only supports start, stop, and start+stop, not step.')

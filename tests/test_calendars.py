@@ -1,16 +1,15 @@
 import datetime
 import os
 import pathlib
+import sys
 import tempfile
 import unittest
 import uuid
-import sys
 from io import StringIO
 from unittest import expectedFailure
 
-from dateroll.calendars.calendars import Calendars,Drawer, DateSet
 import dateroll
-
+from dateroll.calendars.calendars import Calendars, DateSet, Drawer
 
 
 class TestStringMethods(unittest.TestCase):
@@ -21,7 +20,7 @@ class TestStringMethods(unittest.TestCase):
             / f"dateroll.testing.{uuid.uuid4()}.cals"
         )
         cls.cals = Calendars(home=cls.filename_base)
-        
+
     @classmethod
     def tearDownClass(self):
         filename = str(self.filename_base)
@@ -48,11 +47,11 @@ class TestStringMethods(unittest.TestCase):
 
     def test_tests4(self):
         self.cals.AA = []
-        del self.cals['AA']
+        del self.cals["AA"]
         self.cals["AA"] = []
 
     def test_tests5(self):
-        if 'AA' in self.cals:
+        if "AA" in self.cals:
             del self.cals["AA"]
         else:
             ...
@@ -72,142 +71,146 @@ class TestStringMethods(unittest.TestCase):
         dates = [datetime.date.today()]
         self.cals["BBB"] = dates
         back_out = list(self.cals["BBB"])
-        
-        self.assertEqual(dates,back_out)
-    
+
+        self.assertEqual(dates, back_out)
+
     def test_exitReturnTrue(self):
-        '''
-            context manager fails in the __exit__
-        '''
+        """
+        context manager fails in the __exit__
+        """
         cals = Calendars()
         with Drawer(cals) as db:
             try:
-                db.update('Hello')
+                db.update("Hello")
             except Exception as e:
-                exc_type,exc_value,exc_traceback = sys.exc_info()
-        self.assertEqual(exc_type.__name__,'ValueError')
-        
+                exc_type, exc_value, exc_traceback = sys.exc_info()
+        self.assertEqual(exc_type.__name__, "ValueError")
+
     def test_contains(self):
-        '''
-            test contains has a k in its dict keys
-        '''
+        """
+        test contains has a k in its dict keys
+        """
         cals = Calendars()
-        cond = 'FED' in cals
+        cond = "FED" in cals
         self.assertTrue(cond)
-    
+
     def test_setitemkeyNonString(self):
-        '''
-            when setitem key is Non String should raise error
-        '''
+        """
+        when setitem key is Non String should raise error
+        """
         with self.assertRaises(Exception) as context:
             self.cals[30] = []
-        self.assertEqual(str(context.exception),'Cal name must be string (got int)')
-    
-    def test_setitemValWrong(self):
-        '''
-            when setitem val is not list,tuple,set
-        '''
-        with self.assertRaises(Exception) as context:
-            self.cals['AA'] = 10
+        self.assertEqual(str(context.exception), "Cal name must be string (got int)")
 
-    
+    def test_setitemValWrong(self):
+        """
+        when setitem val is not list,tuple,set
+        """
+        with self.assertRaises(Exception) as context:
+            self.cals["AA"] = 10
+
     def test_seitemValDate(self):
-        '''
-            when we assign the list of datetime.date
-        '''
-        self.cals['AA'] = [dateroll.Date(2023,1,1)]
-        self.assertTrue(dateroll.Date(2023,1,1) in self.cals['AA'])
-    
+        """
+        when we assign the list of datetime.date
+        """
+        self.cals["AA"] = [dateroll.Date(2023, 1, 1)]
+        self.assertTrue(dateroll.Date(2023, 1, 1) in self.cals["AA"])
+
     def test_seitemValDateTime(self):
-        '''
-            when we assign the list of datetime.datetime
-        '''
-        del self.cals['AA']
-        self.cals['AA'] = [datetime.datetime(2023,1,1)]
-        self.assertTrue(dateroll.Date(2023,1,1) in self.cals['AA'])
-        del self.cals['AA']
+        """
+        when we assign the list of datetime.datetime
+        """
+        del self.cals["AA"]
+        self.cals["AA"] = [datetime.datetime(2023, 1, 1)]
+        self.assertTrue(dateroll.Date(2023, 1, 1) in self.cals["AA"])
+        del self.cals["AA"]
         with self.assertRaises(ValueError):
             # when date is before 2/29/1824 will raise error
-            
-            self.cals['AA'] = [datetime.datetime(1823,12,12)]
+
+            self.cals["AA"] = [datetime.datetime(1823, 12, 12)]
 
     def test_seitemValDateClass(self):
-        '''
-            when we assign the list of Date Class
-        '''
-        x = dateroll.Date(2020,1,1)
-        self.cals['AB'] = [x]
-        
-        self.assertTrue(dateroll.Date(2020,1,1) in self.cals['AB'])
-    
+        """
+        when we assign the list of Date Class
+        """
+        x = dateroll.Date(2020, 1, 1)
+        self.cals["AB"] = [x]
+
+        self.assertTrue(dateroll.Date(2020, 1, 1) in self.cals["AB"])
+
     def test_setitemValWrong2(self):
-        '''
-            when we assign the val which is not date related
-        '''
-        if 'AA' in self.cals:
-            del self.cals['AA']
+        """
+        when we assign the val which is not date related
+        """
+        if "AA" in self.cals:
+            del self.cals["AA"]
         with self.assertRaises(Exception) as context:
-            self.cals['AA'] = ['20230101']
-        self.assertEqual(str(context.exception),'All cal dates must be of dateroll.Date or datetime.date{time} (got str)')
-    
+            self.cals["AA"] = ["20230101"]
+        self.assertEqual(
+            str(context.exception),
+            "All cal dates must be of dateroll.Date or datetime.date{time} (got str)",
+        )
+
     def test_setitemKeyExistsAlready(self):
-        '''
-            when the key already exists, it wont set the new value
-        '''
-        self.cals['EEE'] = []
+        """
+        when the key already exists, it wont set the new value
+        """
+        self.cals["EEE"] = []
         with self.assertRaises(Exception) as cm:
-            self.cals['EEE'] = [dateroll.Date(2024,2,1)]
-    
+            self.cals["EEE"] = [dateroll.Date(2024, 2, 1)]
+
     def test_getattrNotHashHome(self):
-        '''
-            test get calendar via getattr
-        '''
-        self.cals.DDD = [datetime.date(1984,7,2)]
+        """
+        test get calendar via getattr
+        """
+        self.cals.DDD = [datetime.date(1984, 7, 2)]
         x = self.cals.DDD
-        self.assertIsInstance(x,DateSet)
-        self.assertTrue(len(x)>0)
-    
+        self.assertIsInstance(x, DateSet)
+        self.assertTrue(len(x) > 0)
+
     def test_getattrHashHome(self):
-        '''
-            when the key of getattr in (hash,home)
-        '''
+        """
+        when the key of getattr in (hash,home)
+        """
         cals = Calendars()
-        x = cals.__getattr__('home')
+        x = cals.__getattr__("home")
         # dont want to put home/batu in the result
-        x = x.split('dateroll')[-1]
-        self.assertEqual(x,'/calendars/holiday_lists')
+        x = x.split("dateroll")[-1]
+        self.assertEqual(x, "/calendars/holiday_lists")
 
     def test_delitem(self):
-        '''
-            test delitem of calendar
-        '''
+        """
+        test delitem of calendar
+        """
         print(self.cals)
-        self.cals['AA'] = [dateroll.Date(2023,2,1)]
+        self.cals["AA"] = [dateroll.Date(2023, 2, 1)]
         print(self.cals)
-        import time;time.sleep(0.5)
-        self.assertTrue('AA' in self.cals)
-        del self.cals['AA']
-        self.assertFalse('AA' in self.cals)
-    
+        import time
+
+        time.sleep(0.5)
+        self.assertTrue("AA" in self.cals)
+        del self.cals["AA"]
+        self.assertFalse("AA" in self.cals)
+
     def test_repr(self):
-        '''
-            test __repr__ of calendar
-        '''
+        """
+        test __repr__ of calendar
+        """
         expected_str = 'Calendars(home="/tmp/dateroll.'
-        self.assertEqual(repr(self.cals).split('testing')[0],expected_str)
-    
+        self.assertEqual(repr(self.cals).split("testing")[0], expected_str)
+
     def test_copy(self):
-        '''
-            the copy of the db should be as same as cals
-        '''
+        """
+        the copy of the db should be as same as cals
+        """
         cals = Calendars()
         copy_db = cals.copy()
-        self.assertTrue(copy_db,self.cals.db)
-    
+        self.assertTrue(copy_db, self.cals.db)
+
     def test_info(self):
-        '''
-            test the info of calendar
-        '''
+        """
+        test the info of calendar
+        """
         cals = Calendars()
         capt = StringIO()
         sys.stdout = capt
@@ -216,25 +219,25 @@ class TestStringMethods(unittest.TestCase):
         sys.stdout = sys.__stdout__
 
         printed_output = capt.getvalue()
-        expected_output = 'name  |  #dates|min date    |max date    \n------|--------|------------|------------\nFED   |    4556|1824-01-01  |2223-12-25  \nECB   |    2400|1824-01-01  |2223-12-26  \nLN    |    3951|1824-01-01  |2223-12-26  \nWE    |   41742|1824-02-29  |2224-02-28  \nALL   |  146097|1824-02-29  |2224-02-28  \nBR    |    3586|1824-01-01  |2223-12-25  \nNY    |    4556|1824-01-01  |2223-12-25  \n'
-        self.assertTrue(printed_output,expected_output)
-    
+        expected_output = "name  |  #dates|min date    |max date    \n------|--------|------------|------------\nFED   |    4556|1824-01-01  |2223-12-25  \nECB   |    2400|1824-01-01  |2223-12-26  \nLN    |    3951|1824-01-01  |2223-12-26  \nWE    |   41742|1824-02-29  |2224-02-28  \nALL   |  146097|1824-02-29  |2224-02-28  \nBR    |    3586|1824-01-01  |2223-12-25  \nNY    |    4556|1824-01-01  |2223-12-25  \n"
+        self.assertTrue(printed_output, expected_output)
+
     def test_clear(self):
-        '''
-            clear the db
-        '''
+        """
+        clear the db
+        """
 
         self.cals.BOB = []
-               
-        self.assertTrue(len(self.cals.db)!=0)
+
+        self.assertTrue(len(self.cals.db) != 0)
         self.cals.clear()
-        self.assertTrue(len(self.cals.db)==0)
-    
+        self.assertTrue(len(self.cals.db) == 0)
+
     def test_emptyDBInfo(self):
-        '''
-            clear the db and show the info
-        '''
-       
+        """
+        clear the db and show the info
+        """
+
         capt = StringIO()
         sys.stdout = capt
 
@@ -242,83 +245,82 @@ class TestStringMethods(unittest.TestCase):
         sys.stdout = sys.__stdout__
 
         printed_output = capt.getvalue()
-        expected_output = 'name  |  #dates|min date    |max date    \n------|--------|------------|------------\nFED   |    4556|1824-01-01  |2223-12-25  \nECB   |    2400|1824-01-01  |2223-12-26  \nLN    |    3951|1824-01-01  |2223-12-26  \nWE    |   41742|1824-02-29  |2224-02-28  \nALL   |  146097|1824-02-29  |2224-02-28  \nBR    |    3586|1824-01-01  |2223-12-25  \nNY    |    4556|1824-01-01  |2223-12-25  \n'
-        self.assertTrue(printed_output,expected_output)
+        expected_output = "name  |  #dates|min date    |max date    \n------|--------|------------|------------\nFED   |    4556|1824-01-01  |2223-12-25  \nECB   |    2400|1824-01-01  |2223-12-26  \nLN    |    3951|1824-01-01  |2223-12-26  \nWE    |   41742|1824-02-29  |2224-02-28  \nALL   |  146097|1824-02-29  |2224-02-28  \nBR    |    3586|1824-01-01  |2223-12-25  \nNY    |    4556|1824-01-01  |2223-12-25  \n"
+        self.assertTrue(printed_output, expected_output)
         self.cals.clear()
-        self.cals['AC'] = []
+        self.cals["AC"] = []
         capt = StringIO()
         sys.stdout = capt
 
         self.cals.info
         sys.stdout = sys.__stdout__
         printed_output_empty = capt.getvalue()
-        expected_output_empty = 'name  |  #dates|min date    |max date    \n------|--------|------------|------------\nAC    |       0|None        |None        \n'
-        self.assertTrue(printed_output_empty,expected_output_empty)
-
+        expected_output_empty = "name  |  #dates|min date    |max date    \n------|--------|------------|------------\nAC    |       0|None        |None        \n"
+        self.assertTrue(printed_output_empty, expected_output_empty)
 
     def test_dateset(self):
-        '''
-            test adding,extend
-        '''
+        """
+        test adding,extend
+        """
         # test add
-        dt = [datetime.datetime(2023,1,1),datetime.datetime(2023,1,3)]
+        dt = [datetime.datetime(2023, 1, 1), datetime.datetime(2023, 1, 3)]
         dateset = DateSet(dt)
-        dateset.add(datetime.datetime(2023,1,5))
-        self.assertTrue(dateset._data[datetime.date(2023,1,5)])
+        dateset.add(datetime.datetime(2023, 1, 5))
+        self.assertTrue(dateset._data[datetime.date(2023, 1, 5)])
 
         # extend
         with self.assertRaises(TypeError):
-            dateset.extend('20230101')
-        dateset.extend([datetime.date(2023,2,1),datetime.date(2023,2,3)])
-        self.assertTrue(datetime.date(2023,2,1) in dateset)
-        self.assertTrue(datetime.datetime(2023,2,1) in dateset)
+            dateset.extend("20230101")
+        dateset.extend([datetime.date(2023, 2, 1), datetime.date(2023, 2, 3)])
+        self.assertTrue(datetime.date(2023, 2, 1) in dateset)
+        self.assertTrue(datetime.datetime(2023, 2, 1) in dateset)
 
         # repr
         repr(dateset)
-    
-    def test_delattr(self):
-        '''
-            test delattr where some attributes are protected to delete
-        '''
 
-        #a test deletion of a calendar via delattr
-        self.cals.CCC = [datetime.date(1984,7,2)]
-        test_func = lambda : hasattr(self.cals,'CCC')
+    def test_delattr(self):
+        """
+        test delattr where some attributes are protected to delete
+        """
+
+        # a test deletion of a calendar via delattr
+        self.cals.CCC = [datetime.date(1984, 7, 2)]
+        test_func = lambda: hasattr(self.cals, "CCC")
         self.assertTrue(test_func())
         del self.cals.CCC
         self.assertFalse(test_func())
 
-        #b test deletion of an attribute (bad actually, just calling super) - back it up!
+        # b test deletion of an attribute (bad actually, just calling super) - back it up!
 
         backup_home = self.cals.home
-        test_func = lambda : hasattr(self.cals,'home')
+        test_func = lambda: hasattr(self.cals, "home")
         self.assertTrue(test_func())
         del self.cals.home
         self.assertFalse(test_func())
-        
+
         # restore backup
-        self.cals.home = backup_home 
+        self.cals.home = backup_home
         self.assertTrue(test_func())
-    
+
     def test_corrupt_cache(self):
-        '''
+        """
         corrupt the calendar cache
-        '''
+        """
         cals = Calendars()
         # corrupt file
-        with open(cals.home,'wb') as f:
+        with open(cals.home, "wb") as f:
             f.seek(10)
-            f.write(b'corrupt')
-        
+            f.write(b"corrupt")
+
         import io
+
         capt = io.StringIO()
         sys.stdout = capt
         cals.keys()
         sys.stdout = sys.__stdout__
         txt = capt.getvalue().strip()
-        self.assertTrue('Cache is corrupted'in txt)
-    
-        
+        self.assertTrue("Cache is corrupted" in txt)
+
 
 if __name__ == "__main__":
     unittest.main()

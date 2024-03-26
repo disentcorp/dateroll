@@ -1,24 +1,25 @@
-import datetime
 import copy
+import datetime
 import math
 import warnings
+
 import dateutil
 import dateutil.relativedelta
 import numpy as np
-import dateroll.utils as utils
-import dateroll.calendars.calendarmath as calendarmathModule
-import dateroll.parser.parsers as parsersModule
-import dateroll.date.date as dateModule
 
+import dateroll.calendars.calendarmath as calendarmathModule
+import dateroll.date.date as dateModule
+import dateroll.parser.parsers as parsersModule
+import dateroll.utils as utils
+from dateroll.settings import settings
+from dateroll.utils import add_none, combine_none, xprint
 
 # NOTE: functools cache is defined starting from python 3.9
 # older versions of python can use functools lru_cache(maxsize=None)
 # for now, leave this commented out because it is not used
 
 
-from dateroll.settings import settings
 
-from dateroll.utils import xprint, add_none, combine_none
 
 cals = calendarmathModule.calmath.cals
 
@@ -159,6 +160,7 @@ class Duration(dateutil.relativedelta.relativedelta):
 
         # debug
         self.debug = debug
+
     def process_anchor_dates(self, _anchor_start, _anchor_end):
         """
         if a period is the result of dates, we can be "more exact" when the user needs the number of days in the period
@@ -166,7 +168,6 @@ class Duration(dateutil.relativedelta.relativedelta):
 
         self._anchor_start = _anchor_start
         self._anchor_end = _anchor_end
-
 
         if self._anchor_start and self._anchor_end:
             # anchor months -- month diff without days and years collapses into months
@@ -183,8 +184,8 @@ class Duration(dateutil.relativedelta.relativedelta):
 
     @staticmethod
     def from_string(o):
-        if not isinstance(o,str):
-            raise TypeError(f'Must be string not {type(o).__name__}')
+        if not isinstance(o, str):
+            raise TypeError(f"Must be string not {type(o).__name__}")
         return parsersModule.parseDurationString(o)
 
     @staticmethod
@@ -238,7 +239,7 @@ class Duration(dateutil.relativedelta.relativedelta):
                                 _cals |= {
                                     cal,
                                 }
-                                
+
                             else:
                                 raise ValueError(f"Calendar {cal} not found")
                         else:
@@ -249,10 +250,9 @@ class Duration(dateutil.relativedelta.relativedelta):
                         raise Exception(
                             f"Calendars must be strings (not {type(cal).__name__})"
                         )
-                
-           
+
             # implicit weekend when using cals
-            
+
             _cals |= set([WEEKEND_CALENDAR])
             _cals = tuple(sorted(_cals))
 
@@ -341,14 +341,17 @@ class Duration(dateutil.relativedelta.relativedelta):
     def just_exact_days(self):
         # raise execption instead of warn
         return self._just_days(_force_exact=True)
-    
+
     @property
     def just_bds(self):
         if self._anchor_start and self._anchor_end:
-            return calendarmathModule.calmath.diff(self._anchor_start,self._anchor_end,self.cals,settings.ie)
+            return calendarmathModule.calmath.diff(
+                self._anchor_start, self._anchor_end, self.cals, settings.ie
+            )
         else:
-            raise Exception('Cannot compute BDs on a duration that did not result from two dates')
-
+            raise Exception(
+                "Cannot compute BDs on a duration that did not result from two dates"
+            )
 
     def _just_days(self, _force_approx=False, _force_exact=False):
         """
@@ -397,6 +400,7 @@ class Duration(dateutil.relativedelta.relativedelta):
                 raise ValueError(message)
 
         return just_days
+
     def math(self, b, direction):
         """
         c = a + b
@@ -474,7 +478,7 @@ class Duration(dateutil.relativedelta.relativedelta):
 
         else:
             raise NotImplementedError
-   
+
     def adjust_from_date(self, date_unadj, direction):
         """
         4 steps:
@@ -505,7 +509,9 @@ class Duration(dateutil.relativedelta.relativedelta):
             xprint("negation: none") if self.debug else None
 
         # 2 non-holiday adjustments, add D,M,Y
-        date_nonhol_adj = date_unadj.date + negated_self.relativedelta
+        if isinstance(date_unadj,dateModule.Date):
+            date_unadj = date_unadj.date
+        date_nonhol_adj = date_unadj + negated_self.relativedelta
         (
             xprint(lbl="cal adj", before=date_unadj, after=date_nonhol_adj)
             if self.debug
@@ -545,7 +551,7 @@ class Duration(dateutil.relativedelta.relativedelta):
         Date_modified.origin_dur_modified = self.modified
 
         return Date_modified
-    
+
     def adjust_bds(self, from_date):
         """
         This moves business days, using the sign of BD, yes, -0.0 means go backwards to the previous business day
@@ -561,16 +567,20 @@ class Duration(dateutil.relativedelta.relativedelta):
         bd_sign = math.copysign(1, self.bd)
         if bd_sign >= 0:
             # FOLLOWING ROLL CONVENTION is handled in +0.0 BD
-            date_hol_adj = calendarmathModule.calmath.add_bd(from_date, abs(self.bd), cals=self.cals)
+            date_hol_adj = calendarmathModule.calmath.add_bd(
+                from_date, abs(self.bd), cals=self.cals
+            )
         else:
             # PREVIOUS ROLL CONVENTION is handled in -0.0 BD
-            date_hol_adj = calendarmathModule.calmath.sub_bd(from_date, abs(self.bd), cals=self.cals)
+            date_hol_adj = calendarmathModule.calmath.sub_bd(
+                from_date, abs(self.bd), cals=self.cals
+            )
 
         return bd_sign, date_hol_adj
 
     def __hash__(self):
         return hash(str(self.__dict__))
-    
+
     def apply_modifier(self, before, after, bd_sign):
         """
         based upon the sign of the business date (yes, includes -0.0 as a previous) perform MODIFIER
@@ -586,7 +596,7 @@ class Duration(dateutil.relativedelta.relativedelta):
         if after.month != before.month or after.year != before.year:
             if bd_sign > 0:
                 # get the latest calendar date of before
-                num_days = utils.get_month_days(before.year,before.month)
+                num_days = utils.get_month_days(before.year, before.month)
 
                 after = dateModule.Date(before.year, before.month, num_days)
                 after = after - Duration(bd=0, cals=self.cals)
@@ -600,7 +610,7 @@ class Duration(dateutil.relativedelta.relativedelta):
     def __radd__(self, x):
         xprint(type(x), "radd") if self.debug else None
         return self.math(x, 1)
-    
+
     def __rsub__(self, x):
         xprint(type(x), "rsub") if self.debug else None
 
@@ -661,14 +671,21 @@ class Duration(dateutil.relativedelta.relativedelta):
 
     def __gt__(a, b):
         if isinstance(b, int):
-            b = Duration(days=b)
+            if b == 0:
+                tdy = dateModule.Date.from_string('t')
+                return (tdy+a)>tdy
+            else:
+                b = Duration(days=b)
 
         return a.just_days > b.just_days
 
     def __ge__(a, b):
         if isinstance(b, int):
+            if b == 0:
+                tdy = datetime.date.today()
+                return (tdy+a)>=tdy
+            
             b = Duration(days=b)
-
         return a.just_days >= b.just_days
 
     def __lt__(a, b):
@@ -719,22 +736,21 @@ class Duration(dateutil.relativedelta.relativedelta):
     def day(self):
         return self.days
 
-
     def to_string(self):
-        output = ''
-        if self.years!=0:
-            output+=f'{self.years:+}y'
-        if self.months!=0:
-            output+=f'{self.months:+}m'
-        if self.days!=0:
-            output+=f'{self.days:+}d'
+        output = ""
+        if self.years != 0:
+            output += f"{self.years:+}y"
+        if self.months != 0:
+            output += f"{self.months:+}m"
+        if self.days != 0:
+            output += f"{self.days:+}d"
         if self.bd:
-            output+=f'{int(self.bd):+}bd'
+            output += f"{int(self.bd):+}bd"
         if self.cals:
-            output+=f'|{"u".join(self.cals)}'
+            output += f'|{"u".join(self.cals)}'
         if self.modified:
-            output+=f'/MOD'
+            output += f"/MOD"
         return output
 
-DurationLike = (Duration,datetime.timedelta,dateutil.relativedelta.relativedelta)
 
+DurationLike = (Duration, datetime.timedelta, dateutil.relativedelta.relativedelta)

@@ -1,28 +1,28 @@
-
+import calendar
 import datetime
 import re
 
 import dateroll.date.date as dt
 import dateroll.duration.duration as dur
+from dateroll import utils
 from dateroll.parser import patterns
 from dateroll.schedule.schedule import Schedule
-from dateroll import utils
 from dateroll.settings import settings
-import calendar
-
 
 TODAYSTRINGVALUES = ["today", "t0", "t"]
 
-        
+
 def validate_year(y):
-    '''
-        validate year using settings twodigityear_cutoff, and convert all 2-digit years to 4-digit
-    '''
+    """
+    validate year using settings twodigityear_cutoff, and convert all 2-digit years to 4-digit
+    """
 
     len_y = len(str(y))
-    if len_y == 3 or len_y >4:
-        raise ParserStringsError(f'Year ({y}) must be 1, 2 (subject to cutoff setting) or 4 digits, not {len_y}')
-    else:   
+    if len_y == 3 or len_y > 4:
+        raise ParserStringsError(
+            f"Year ({y}) must be 1, 2 (subject to cutoff setting) or 4 digits, not {len_y}"
+        )
+    else:
         if y < 100:
             cutoff = settings.twodigityear_cutoff
             if cutoff == 1900:
@@ -36,30 +36,34 @@ def validate_year(y):
                     adj = 2000
         else:
             adj = 0
-    return y + adj  
+    return y + adj
+
 
 def validate_month(m):
-    if m>12 or m<1:
-        raise ParserStringsError(f'month should be between [1,12] but {m}')
+    if m > 12 or m < 1:
+        raise ParserStringsError(f"month should be between [1,12] but {m}")
     else:
         return m
 
-def validate_monthday(y,m,d):
-    num_days = utils.get_month_days(y,m)
 
-    if d>num_days:
+def validate_monthday(y, m, d):
+    num_days = utils.get_month_days(y, m)
+
+    if d > num_days:
         msg = f"{calendar.month_name[m]}/{y} has {num_days} days (you're trying {d})."
         raise ParserStringsError(msg)
     if d < 1:
-        raise ParserStringsError('Number of days must be a postive integer')
+        raise ParserStringsError("Number of days must be a postive integer")
 
     return d
-    
+
+
 class ParserStringsError(Exception): ...
+
 
 def parseTodayString(s):
     """
-        this is [the] place where "t" is replaced
+    this is [the] place where "t" is replaced
     """
     today = datetime.date.today()
     fmt = utils.convention_map[settings.convention]
@@ -72,8 +76,8 @@ def parseTodayString(s):
     return s
 
 
-def parseDateString(s:str):
-    '''
+def parseDateString(s: str):
+    """
     takes string outputs date
     valid formats are:
 
@@ -89,22 +93,22 @@ def parseDateString(s:str):
             2 digit day
             2 digit month, or 3 letter or full name month
             2 or 4 digit year
-    '''
+    """
 
     # swap month names for numbers
     s = utils.swap_month_names(s)
 
     # slashes and dashes
-    if '/' in s or '-' in s:
+    if "/" in s or "-" in s:
         # convert all to slash
-        s = s.replace('-','/')
+        s = s.replace("-", "/")
         # use slash as a splitter
-        parts = s.split('/')
+        parts = s.split("/")
         # process according to convention
         try:
-            y,m,d = parseDateString_rearrange(parts)
+            y, m, d = parseDateString_rearrange(parts)
         except:
-            raise ParserStringsError('Check settings.convention!')
+            raise ParserStringsError("Check settings.convention!")
     else:
         # no slashes or dashes - more restrictive
         # either 6 digits or 8 digits forcing 2 digit month/day and 2 or 4 digit year according to user settings convention
@@ -113,40 +117,43 @@ def parseDateString(s:str):
             coords = utils.date_string_coordinates[settings.convention][len(s)]
 
             # map coords to string slicer, slice, then cast
-            y = int(s[coords['y']])
-            m = int(s[coords['m']])
-            d = int(s[coords['d']])
+            y = int(s[coords["y"]])
+            m = int(s[coords["m"]])
+            d = int(s[coords["d"]])
         except:
-            raise ParserStringsError('If no slashes or dashes, must be 2 digit year an dmonth, and 2 or 4 digit year in YMD format ONLY')
+            raise ParserStringsError(
+                "If no slashes or dashes, must be 2 digit year an dmonth, and 2 or 4 digit year in YMD format ONLY"
+            )
 
     # validate
     y = validate_year(y)
     m = validate_month(m)
-    d = validate_monthday(y,m,d)
-    
+    d = validate_monthday(y, m, d)
+
     # construct
-    dte = dt.Date(year=y,month=m,day=d)
+    dte = dt.Date(year=y, month=m, day=d)
 
     return dte
 
 
 def parseDateString_rearrange(tup):
-    '''
+    """
     1950 is the cutoff for 2-digit years, i.e. 01 and 49 are 2001 and 2049 respectively
     50,99 are 1950 and 1999 respectively
-    '''
+    """
 
     if settings.convention == "MDY":
-        m,d,y = tup
+        m, d, y = tup
     elif settings.convention == "DMY":
-        d,m,y = tup
+        d, m, y = tup
     elif settings.convention == "YMD":
-        y,m,d = tup
-    
-    y,m,d = int(y),int(m),int(d)
-    return y,m,d
+        y, m, d = tup
 
-def parseManyDateStrings(s,gen):
+    y, m, d = int(y), int(m), int(d)
+    return y, m, d
+
+
+def parseManyDateStrings(s, gen):
     """
     for a given convention, see if string contains 1 or more dates, extract them out for "letters" for parseDateMath
 
@@ -159,13 +166,13 @@ def parseManyDateStrings(s,gen):
         YMD: international
 
         if using slashes or dashes as separators all of the above support:
-        
+
         1 or 2 digit days
         1 or 2 digits months, or 3 letter or full named months
         1,2,3 or 4 digit years
 
         if using no slashes or dashes:
-        
+
         2 digit days,
         2 digits months, or 3 letter or full named months
         2 or 4 digit years
@@ -181,22 +188,22 @@ def parseManyDateStrings(s,gen):
         pattern = patterns.DMY
     elif settings.convention == "YMD":
         pattern = patterns.YMD
-    
+
     dates = {}
     matches = re.findall(pattern, s)
     res = s
-    
-    for match,_,_,_ in matches:
+
+    for match, _, _, _ in matches:
         # must hav 4 components per match
         # match 0 is 1st capture group = whole thing
         # match 1,2,3 are the y/m/d's as strings
-        
+
         date = parseDateString(match)
         date = dt.Date.from_datetime(date)
-        next_letter = next(gen()) # match only 1st time!! or causes letter mismatch
-        res = res.replace(match, '+'+next_letter,1)
-        dates[next_letter]=date
-    
+        next_letter = next(gen())  # match only 1st time!! or causes letter mismatch
+        res = res.replace(match, "+" + next_letter, 1)
+        dates[next_letter] = date
+
     return dates, res
 
 
@@ -211,8 +218,8 @@ def parseDurationString_convert_capture_groups(capture_groups: tuple):
 
     # get initial multplier (if any)
     op = capture_groups[1]
-    
-    mult = 1 
+
+    mult = 1
     if op == "+" or op == "":
         mult = 1
     elif op == "-":
@@ -221,24 +228,26 @@ def parseDurationString_convert_capture_groups(capture_groups: tuple):
     # get all the pairs
     for i in range(2, 12, 2):
         number = capture_groups[i]
-        unit = capture_groups[i + 1] 
+        unit = capture_groups[i + 1]
 
         if number and unit:
             # cast number to integer y,s,q,m,w,d
-            number = int(number) if unit!='bd' else float(number)
+            number = int(number) if unit != "bd" else float(number)
             if i < 4:
                 # use multiplier on first pair
                 number *= mult
             if unit in duration_constructor_args:
-                raise ParserStringsError('Only 1 number of each unit per duration string (i.e. no 5d3d or 7m1m)')
-            
+                raise ParserStringsError(
+                    "Only 1 number of each unit per duration string (i.e. no 5d3d or 7m1m)"
+                )
+
             duration_constructor_args[unit] = number
-    
+
     # attach calendars if any
     cals = capture_groups[13:21]
-    
+
     # remove empty strings from cals
-    cals = tuple(filter(lambda x:x!='',cals))
+    cals = tuple(filter(lambda x: x != "", cals))
     for cal in cals:
         (
             duration_constructor_args.setdefault("cals", []).append(cal)
@@ -252,38 +261,40 @@ def parseDurationString_convert_capture_groups(capture_groups: tuple):
         duration_constructor_args["modified"] = True
 
     # add signed bd's if implicit scenario
-    if 'bd' not in duration_constructor_args and 'BD' not in duration_constructor_args:
+    if "bd" not in duration_constructor_args and "BD" not in duration_constructor_args:
         if modified or len(cals) > 0:
-            duration_constructor_args['bd'] = float(0.0)*mult
-    
+            duration_constructor_args["bd"] = float(0.0) * mult
+
     duration = dur.Duration(**duration_constructor_args)
     return duration
 
+
 def parseCalendarUnionString(s):
-    '''
+    """
     use regex for validation of calendar string, if valid, then split on 'u' is SAFE
-    '''
-    matches = re.match(patterns.CALS,s)
+    """
+    matches = re.match(patterns.CALS, s)
     if matches:
-        cals = tuple(sorted(s.split('u')))
+        cals = tuple(sorted(s.split("u")))
         return cals
     else:
-        raise Exception(f'{s} not a valid calendar string')
+        raise Exception(f"{s} not a valid calendar string")
 
-def parseDurationString(s:str):
-        
+
+def parseDurationString(s: str):
+
     matches = re.findall(patterns.COMPLETE_DURATION, s)
-    if len(matches)==0:
-        raise ParserStringsError('No duration found')
-    elif len(matches)>1:
-        raise ParserStringsError('Multiple durations found, need 1')
+    if len(matches) == 0:
+        raise ParserStringsError("No duration found")
+    elif len(matches) > 1:
+        raise ParserStringsError("Multiple durations found, need 1")
     else:
         capture_groups = matches[0]
         dt = parseDurationString_convert_capture_groups(capture_groups)
         return dt
-    
 
-def parseManyDurationString(s,gen):
+
+def parseManyDurationString(s, gen):
     """
     check for any DurationString:
 
@@ -311,17 +322,18 @@ def parseManyDurationString(s,gen):
     """
     durations = {}
     matches = re.findall(patterns.COMPLETE_DURATION, s)
-    
+
     for match in matches:
         duration_string = match[0]
-        duration = parseDurationString(duration_string)        
+        duration = parseDurationString(duration_string)
         next_letter = next(gen())
-        s = s.replace(duration_string,'+'+next_letter,1)
+        s = s.replace(duration_string, "+" + next_letter, 1)
         durations[next_letter] = duration
     return durations, s
 
+
 def parseScheduleString(s):
-    """ 
+    """
     takes a schedule string as "start,stop,step"
     where start resolves to a date
         stop resolves to a date
@@ -329,33 +341,32 @@ def parseScheduleString(s):
 
     """
 
-
-    parts = s.split(',')
+    parts = s.split(",")
     num_parts = len(parts)
-    if num_parts!=3:
-        raise Exception(
-                f"String must contain either 3 parts (not {num_parts})"
-            )
+    if num_parts != 3:
+        raise Exception(f"String must contain either 3 parts (not {num_parts})")
     # unpack parts
-    start,stop,step = parts
+    start, stop, step = parts
 
     # setup letters for date math replacement
     letters = [chr(i) for i in range(65, 65 + 26)]
-    def gen(): yield letters.pop(0)
 
-    # part each part separately 
-    dstart,_ = parseManyDateStrings(start,gen)
-    dstop,_ = parseManyDateStrings(stop,gen)
-    dstep,_ = parseManyDurationString(step,gen)
+    def gen():
+        yield letters.pop(0)
 
-    if any([len(dstart)!=1,len(dstop)!=1,len(dstep)!=1]):
-        raise ParserStringsError(f'Could not parse {s}')
-    
+    # part each part separately
+    dstart, _ = parseManyDateStrings(start, gen)
+    dstop, _ = parseManyDateStrings(stop, gen)
+    dstep, _ = parseManyDurationString(step, gen)
+
+    if any([len(dstart) != 1, len(dstop) != 1, len(dstep) != 1]):
+        raise ParserStringsError(f"Could not parse {s}")
+
     # construct and return
     t1 = list(dstart.values())[0]
     t2 = list(dstop.values())[0]
     dur = list(dstep.values())[0]
-    sch = Schedule(t1,t2,dur)
+    sch = Schedule(t1, t2, dur)
     return sch
 
 
@@ -365,13 +376,13 @@ def parseDateMathString(s, things):
     Uses substitution and evaluation. Safe because wouldn't get here if *things were not validated, and regex didn't match.
     """
 
-    letters_used = re.findall(r'[A-Z]',s)
-    
-    if s=="":
+    letters_used = re.findall(r"[A-Z]", s)
+
+    if s == "":
         raise ParserStringsError("Nothing to parse")
 
     # bad case, letter mismatch
-    if len(things)==0:
+    if len(things) == 0:
         raise ParserStringsError("No valid date/durations strings found.")
     for i in letters_used:
         if i not in things:
@@ -382,13 +393,9 @@ def parseDateMathString(s, things):
                 raise ParserStringsError("Cannot recognize as date math", s)
 
     # good case, do the math
-    
+
     try:
-        total = eval(s,{},things)
+        total = eval(s, {}, things)
         return total
     except Exception as e:
         raise ParserStringsError("Cannot recognize as date math", s)
-
-
-    
-    

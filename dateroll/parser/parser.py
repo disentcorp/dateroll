@@ -1,4 +1,5 @@
 import datetime
+
 import dateutil
 import dateutil.relativedelta
 import dateutil.rrule
@@ -85,7 +86,9 @@ class Parser:
     native_delta = dateutil.relativedelta.relativedelta
 
     def __new__(
-        self, string,use_native_types=False,
+        self,
+        string,
+        use_native_types=False,
     ):
         """
         Algorithm works left to right implicitly:
@@ -100,32 +103,36 @@ class Parser:
         if not isinstance(string, str):
             raise ParserError("Must be string")
 
-        if use_native_types: 
+        if use_native_types:
             raise NotImplementedError("only dateroll types for now")
 
         self.use_native_types = use_native_types
-        
+
         part = Parser.parse_maybe_many_parts(string)
-        
+
         return part
 
     @classmethod
     def parse_one_part(cls, untouched):
         letters = [chr(i) for i in range(65, 65 + 26)]
-        def gen():yield letters.pop(0)
-        
+
+        def gen():
+            yield letters.pop(0)
+
         notoday = parsersModule.parseTodayString(untouched)
 
-        dates, nodates = parsersModule.parseManyDateStrings(notoday,gen)
+        dates, nodates = parsersModule.parseManyDateStrings(notoday, gen)
 
-        durations, nodatesordurations = parsersModule.parseManyDurationString(nodates,gen)
+        durations, nodatesordurations = parsersModule.parseManyDurationString(
+            nodates, gen
+        )
 
-        dates_durations = {**dates,**durations}
-        
+        dates_durations = {**dates, **durations}
+
         processed_answer = parsersModule.parseDateMathString(
             nodatesordurations, dates_durations
         )
-        
+
         return processed_answer
 
     @classmethod
@@ -139,7 +146,7 @@ class Parser:
         if num_parts == 1:
             part = parts[0]
             date_or_period = cls.parse_one_part(part)
-            
+
             return date_or_period
 
         elif num_parts == 3:
@@ -164,15 +171,15 @@ class Parser:
             else:
                 raise TypeError("Step of generation must be a valid Duration")
 
-            sch = scheduleModule.Schedule(start=start, stop=stop, step=step, origin_string=s)
+            sch = scheduleModule.Schedule(
+                start=start, stop=stop, step=step, origin_string=s
+            )
             return sch
 
         else:
             raise Exception(
                 f"String must contain either 1 or 3 parts (not {num_parts})"
             )
-
-        
 
 
 def parse_to_native(string):
@@ -181,4 +188,3 @@ def parse_to_native(string):
 
 def parse_to_dateroll(string):
     return Parser(string)
-

@@ -5,22 +5,21 @@ import tempfile
 import unittest
 import uuid
 from unittest import expectedFailure
-import dateroll.calendars.calendars as calendars
 
-from dateroll.settings import settings
-from dateroll import ddh,cals
 import dateroll
+import dateroll.calendars.calendars as calendars
+from dateroll import cals, ddh
+from dateroll.settings import settings
+
 # import dateroll.duration.duration as durationModule
 
 
 class TestDDH(unittest.TestCase):
     @classmethod
-    def setUpClass(cls): 
-        ...
+    def setUpClass(cls): ...
 
     @classmethod
-    def tearDownClass(self):
-        ...
+    def tearDownClass(self): ...
 
     def testDateMathWithStr(self):
         """
@@ -59,34 +58,35 @@ class TestDDH(unittest.TestCase):
         """
 
     def testPurge(self):
-        '''
+        """
         purge all
-        '''
+        """
         ddh.purge_all()
-        base_cals = sorted(['FED', 'ECB', 'LN', 'WE', 'ALL', 'BR', 'NY'])
-        self.assertEqual(sorted(cals.keys()),base_cals)
+        base_cals = sorted(["FED", "ECB", "LN", "WE", "ALL", "BR", "NY"])
+        self.assertEqual(sorted(cals.keys()), base_cals)
 
     def testConvention(self):
         original = settings.convention
-        try: 
+        try:
             # american
-            settings.convention = 'MDY'
-            _a = dateroll.Date(year=2024,month=12,day=1)
-            a = ddh('12/1/24')
-            self.assertEqual(_a,a)
-            #european
-            settings.convention = 'DMY'
-            _b = dateroll.Date(year=2023,month=3,day=23)
-            b = ddh('23/3/23')
-            self.assertEqual(_b,b)
-            #international
-            settings.convention = 'YMD'
-            _c = dateroll.Date(year=2022,month=10,day=5)
-            c = ddh('20221005')      
-            self.assertEqual(_c,c)
+            settings.convention = "MDY"
+            _a = dateroll.Date(year=2024, month=12, day=1)
+            a = ddh("12/1/24")
+            self.assertEqual(_a, a)
+            # european
+            settings.convention = "DMY"
+            _b = dateroll.Date(year=2023, month=3, day=23)
+            b = ddh("23/3/23")
+            self.assertEqual(_b, b)
+            # international
+            settings.convention = "YMD"
+            _c = dateroll.Date(year=2022, month=10, day=5)
+            c = ddh("20221005")
+            self.assertEqual(_c, c)
         finally:
             # back to original
             settings.convention = original
+
 
 class TestsPracticalExamples(unittest.TestCase):
     def testNothing(self):
@@ -115,22 +115,24 @@ class TestsPracticalExamples(unittest.TestCase):
         assert ddh("t") == datetime.date.today()
 
     def test_durationLike(self):
-        '''
-            pass durationlike into ddh
-        '''
+        """
+        pass durationlike into ddh
+        """
         x = ddh(datetime.timedelta(days=10))
-        self.assertEqual(x,dateroll.Duration(years=0, months=0, days=10, modified=False, debug=False))
-    
+        self.assertEqual(
+            x,
+            dateroll.Duration(years=0, months=0, days=10, modified=False, debug=False),
+        )
+
     def test_badObj(self):
-        '''
-            pass bad instace to raise TypeError
-        '''
-        
+        """
+        pass bad instace to raise TypeError
+        """
+
         with self.assertRaises(TypeError):
             ddh(10)
 
 
-    
 if __name__ == "__main__":
     unittest.main()
 

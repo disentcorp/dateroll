@@ -74,6 +74,6 @@ def generate_sample_data(cals, n=DEFAULT_YEAR_RANGE):
 
 if __name__ == "__main__":
     ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
-    data = generate_sample_data('Na')
+    data = generate_sample_data("Na")
     for k, v in data.items():
         print(k, len(v))
