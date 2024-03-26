@@ -1445,11 +1445,39 @@ TOTAL                                 1427      0   100%
         #1 Made 100pct
         #2 Modified little bit in Dateset
         #3 in delattr of calendars, if k in ('write','home','db_hash','db'), we do nothing right, 
+            no we call super, i wrote a comment and worded the code differently. we are not overriding default __delattr__ behavior, we are
+            only augmenting it for attributes that we allow the user to add
+
             why do we need to setattr, in addition setattr requires 2 vals, which we don’t have
+            it's a copy/paste error, super() should be called on the function being overwritten, so i chagned to delitem duner
+
         #4 I put pragma:no cover in 3 places because the code does not go there (needs confirm)
+
+        [never do this]!
+            only to be used on debug facilities / __main__ sections that are used during testing
+            either the test case is non-obvious to write, or the code needs to be re-factored,
+            either case we need to review together one by one
+
                 first, __enter__ of Drawer/calendars.py exception part, looks like the safe_open prevents from
                 corrupting the file, so it never goes to exception
+
+                    what if the user corrupts the file? don't we have a test cases where we write bad code to the cache?
+
                 second, when exc_type is not None, exc_val also not None, so it never goes to True part
+
+                    i rewrote, should be cleaner, either an exeception comes in or it doesn't
+
                 third, get/calendars, it never goes to keyError
 
-                
+                    did you try calling a bad calendar name? cals.bob = ... i rewrote this function a little better 
+
+
+############## anthony 945am, 3/26
+
+comments above
+
+test_delattr test cases was wrong, you should be using chatgpt if the test case is not obvious, a prompt like: 
+"i need to write a test case for a __delattr__ function, what should i assert"
+
+logic is, test is to delete attribute, so delete it, then test if it exists, (not the file), and don't forget to put it back, because it crashes
+future tests

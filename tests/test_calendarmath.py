@@ -332,7 +332,19 @@ class TestStringMathMethods(unittest.TestCase):
         txt = capt.getvalue().strip()
         self.assertTrue('Cannot'in txt)
         
+
+    def test_missing_calmath_cache(self):
+        calm = CalendarMath()
+        import shutil
+        home = calm.home
+        bkp = str(home)+ '.bkp'
+        shutil.move(home,bkp)
+        calm.load_cache()
+        self.assertTrue(home.exists())
+        shutil.move(bkp,home)
         
+
+
 
 
 

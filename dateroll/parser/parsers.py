@@ -94,11 +94,6 @@ def parseDateString(s:str):
     # swap month names for numbers
     s = utils.swap_month_names(s)
 
-    if len(s) < 6:
-        raise ParserStringsError('Date string must be at least 6 chars (or invalid settings.convention!)')
-    
-    if len(s)>10:  # pragma:no cover
-        raise ParserStringsError('Date string must be less than 10 chars')
     # slashes and dashes
     if '/' in s or '-' in s:
         # convert all to slash
@@ -217,12 +212,11 @@ def parseDurationString_convert_capture_groups(capture_groups: tuple):
     # get initial multplier (if any)
     op = capture_groups[1]
     
+    mult = 1 
     if op == "+" or op == "":
         mult = 1
     elif op == "-":
         mult = -1
-    else: # pragma:no cover
-        raise Exception(f"Unknown operator {op}")  
 
     # get all the pairs
     for i in range(2, 12, 2):
@@ -326,24 +320,38 @@ def parseManyDurationString(s,gen):
         durations[next_letter] = duration
     return durations, s
 
-def parseScheduleString(s):  # pragma: no cover
-    """ """
+def parseScheduleString(s):
+    """ 
+    takes a schedule string as "start,stop,step"
+    where start resolves to a date
+        stop resolves to a date
+        step resolves to a duration
+
+    """
+
+
     parts = s.split(',')
     num_parts = len(parts)
     if num_parts!=3:
         raise Exception(
                 f"String must contain either 3 parts (not {num_parts})"
             )
-    letters = [chr(i) for i in range(65, 65 + 26)]
-    def gen():yield letters.pop(0)
+    # unpack parts
     start,stop,step = parts
+
+    # setup letters for date math replacement
+    letters = [chr(i) for i in range(65, 65 + 26)]
+    def gen(): yield letters.pop(0)
+
+    # part each part separately 
     dstart,_ = parseManyDateStrings(start,gen)
     dstop,_ = parseManyDateStrings(stop,gen)
     dstep,_ = parseManyDurationString(step,gen)
-    if len(dstart)==0 or len(dstop)==0:
-        raise ValueError(f'Please provide correct date format string')
-    if len(dstep)==0:
-        raise ValueError(f'Please provide correct duration format string')
+
+    if any([len(dstart)!=1,len(dstop)!=1,len(dstep)!=1]):
+        raise ParserStringsError(f'Could not parse {s}')
+    
+    # construct and return
     t1 = list(dstart.values())[0]
     t2 = list(dstop.values())[0]
     dur = list(dstep.values())[0]

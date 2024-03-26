@@ -187,7 +187,7 @@ class TestParsers(unittest.TestCase):
         with self.assertRaises(ValueError):
             Schedule.from_string('xyz,dfs,1bd')
         settings.convention = 'MDY'
-        with self.assertRaises(ValueError):
+        with self.assertRaises(parsersModule.ParserStringsError):
             Schedule.from_string('03012020,03302020,xssssssss')
         
         with self.assertRaises(TypeError):
@@ -206,14 +206,6 @@ class TestParsers(unittest.TestCase):
         # reset
         settings.convention = 'MDY'
         settings.twodigityear_cutoff = 2050
-        
-        
-
-
-
-
-
-
 
 if __name__=='__main__':
     unittest.main()

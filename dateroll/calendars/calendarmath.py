@@ -55,7 +55,6 @@ class CalendarMath:
         '''
             self.home always exsist because load_cache called if it exists
         '''
-
         if self.home.exists():
             with open(self.home, "rb") as f:
                 try:
@@ -65,7 +64,7 @@ class CalendarMath:
                     import traceback;traceback.print_exc()
                     print(f'[dateroll] Cannot load cache for calmath unions, clearing.')
                     os.remove(self.home)
-        else:  # pragma:no cover
+        else:
             self.save_cache()
 
     def save_cache(self):

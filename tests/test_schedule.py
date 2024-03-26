@@ -155,9 +155,14 @@ class TestSchedule(unittest.TestCase):
         with self.assertRaises(TypeError):
             Schedule.from_string(10)
 
-        
-        
+    def test_badparts(self):
 
+        # bad start
+        self.assertRaises(TypeError,lambda :ddh('3m,t+5y,1m'))
+        # bad stop
+        self.assertRaises(TypeError,lambda :ddh('t,5y,1m'))
+        # bad end
+        self.assertRaises(TypeError,lambda :ddh('t,t+5y,t'))
 
         
 

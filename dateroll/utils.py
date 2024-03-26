@@ -184,4 +184,5 @@ def timer(func):  # pragma:no cover
         return value
 
     return wrapper
+
 convention_map = {"YMD": r"%Y-%m-%d", "DMY": r"%d-%m-%Y", "MDY": r"%m-%d-%Y"}

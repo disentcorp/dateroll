@@ -75,7 +75,7 @@ class Drawer:
                     self.cals.db = self.data
                     
                     return self.cals.db
-            except Exception as e:  # pragma:no cover
+            except Exception as e:
                 import traceback;traceback.print_exc()
                 msg = 'Cache is corrupted'
         else:
@@ -96,15 +96,12 @@ class Drawer:
         
         if exc_val is not None:
             raise exc_val
-        
-        if exc_type is None:
+        else:
             if self.cals.write:
                 with safe_open(self.path, "wb") as f:
                     pickle.dump(self.cals.db, f)
                     print('[dateroll] Writing cache (calendars)')
                 self.cals.write = False
-        else:
-            return True  # pragma:no cover
 
 class DateSet:
     def __init__(self,content):
@@ -130,7 +127,7 @@ class DateSet:
     def extend(self, items):
         if not isinstance(items,SetLike):
             raise TypeError('Must be cast-able into set')
-        extension = {date_check(i):True for i in items if i is not None}
+        extension = {date_check(i):None for i in items if i is not None}
         self._data.update(extension)
 
     def __iter__(self):
@@ -142,6 +139,8 @@ class DateSet:
     def __repr__(self):
         return f'{type(self).__name__}({list(self._data.keys())})'
 
+
+CALENDARS_ATTRIBUTES = ('write','home','db_hash','db')
 
 class Calendars(dict):
     """
@@ -210,15 +209,17 @@ class Calendars(dict):
         """
         allows for dot notation
         """
-        if k in ("hash", "home"):
-            result = super().__getattribute__(k)
+        if k in CALENDARS_ATTRIBUTES:
+            return super().__getattribute__(k)
         else:
-            result = self.get(k)
-        return result
+            try:
+                return self.get(k)
+            except KeyError:
+                raise AttributeError(k)
     
     def __setattr__(self,k,v):
-        if k in ('write','home','db_hash','db'):
-            return super().__setattr__(k,v)
+        if k in CALENDARS_ATTRIBUTES:
+            return super().__setattr__(k, v)
         
         self.__setitem__(k,v)
     
@@ -232,18 +233,28 @@ class Calendars(dict):
             del db[k]
 
     def __delattr__(self, k):
-        if k in ('write','home','db_hash','db'):
-            
-            # return super().__setattr__(k)
-            pass
-        else:
-            return self.__delitem__(k)
+        '''
+        if user deletes an attribute it's either 
+        a - a calendar
+        b - an actual attribute, probably by mistake but we should still call super()
+        '''
+        try:
+            # case a
+            self.__delitem__(k)
+        except:
+            # case b
+            super().__delattr__(k)            
 
     def get(self, k):
+        
         with Drawer(self) as db:
-            result = db[k]
+            result = db.get(k)
+
+        if result is not None:
             return result
-        raise KeyError(k)  # pragma:no cover
+        else:
+            raise KeyError(k) 
+        
 
     def clear(self):
         self.write = True

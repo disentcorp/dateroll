@@ -234,9 +234,6 @@ class Duration(dateutil.relativedelta.relativedelta):
                 for cal in cals:
                     if isinstance(cal, str):
                         if len(cal) in (2, 3):
-                            
-                            import time
-                            st = time.time()
                             if cal in calendarmathModule.calmath.cal_list:
                                 _cals |= {
                                     cal,

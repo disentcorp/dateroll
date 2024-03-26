@@ -71,7 +71,9 @@ class TestStringMethods(unittest.TestCase):
     def test_tests9(self):
         dates = [datetime.date.today()]
         self.cals["BBB"] = dates
-        assert list(self.cals["BBB"]) == dates
+        back_out = list(self.cals["BBB"])
+        
+        self.assertEqual(dates,back_out)
     
     def test_exitReturnTrue(self):
         '''
@@ -152,15 +154,16 @@ class TestStringMethods(unittest.TestCase):
         '''
             when the key already exists, it wont set the new value
         '''
+        self.cals['EEE'] = []
         with self.assertRaises(Exception) as cm:
-            self.cals['FED'] = [dateroll.Date(2024,2,1)]
+            self.cals['EEE'] = [dateroll.Date(2024,2,1)]
     
     def test_getattrNotHashHome(self):
         '''
-            when the key of getattr not in (hash,home)
+            test get calendar via getattr
         '''
-        self.cals.FED = [datetime.date(1984,7,2)]
-        x = self.cals.FED
+        self.cals.DDD = [datetime.date(1984,7,2)]
+        x = self.cals.DDD
         self.assertIsInstance(x,DateSet)
         self.assertTrue(len(x)>0)
     
@@ -278,24 +281,43 @@ class TestStringMethods(unittest.TestCase):
             test delattr where some attributes are protected to delete
         '''
 
-        if 'AA' in self.cals:
-            del self.cals.AA
-        else:
-            self.cals['AA'] = [datetime.date(2023,1,1)]
-            del self.cals.AA
-        self.assertTrue('AA' not in self.cals)
-        
+        #a test deletion of a calendar via delattr
+        self.cals.CCC = [datetime.date(1984,7,2)]
+        test_func = lambda : hasattr(self.cals,'CCC')
+        self.assertTrue(test_func())
+        del self.cals.CCC
+        self.assertFalse(test_func())
+
+        #b test deletion of an attribute (bad actually, just calling super) - back it up!
+
+        backup_home = self.cals.home
+        test_func = lambda : hasattr(self.cals,'home')
+        self.assertTrue(test_func())
         del self.cals.home
+        self.assertFalse(test_func())
         
-        self.assertTrue(os.path.exists(self.cals.home))
+        # restore backup
+        self.cals.home = backup_home 
+        self.assertTrue(test_func())
+    
+    def test_corrupt_cache(self):
+        '''
+        corrupt the calendar cache
+        '''
+        cals = Calendars()
+        # corrupt file
+        with open(cals.home,'wb') as f:
+            f.seek(10)
+            f.write(b'corrupt')
         
-
-        
-
-
-        
-
-
+        import io
+        capt = io.StringIO()
+        sys.stdout = capt
+        cals.keys()
+        sys.stdout = sys.__stdout__
+        txt = capt.getvalue().strip()
+        self.assertTrue('Cache is corrupted'in txt)
+    
         
 
 if __name__ == "__main__":
