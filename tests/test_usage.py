@@ -6,7 +6,6 @@ import unittest
 import uuid
 from unittest import expectedFailure
 import pandas as pd
-import code
 import time
 
 from dateroll.utils import color

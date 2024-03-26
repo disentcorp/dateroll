@@ -1,4 +1,4 @@
-import code
+
 import unittest
 
 import dateroll.parser.parsers as parsersModule

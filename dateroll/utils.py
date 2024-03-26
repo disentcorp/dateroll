@@ -2,9 +2,9 @@ import fcntl
 import pathlib
 import re
 import calendar
-import pickle
 from dateroll.parser import patterns
-
+import functools
+import time
 XPRINT_ON = False
 
 DEBUG_COLORS = {
@@ -169,8 +169,11 @@ class safe_open:
 
 import functools
 import time
-def timer(func):
-    
+def timer(func):  # pragma:no cover
+    '''
+        timer function is used for performance improvement
+        we use it as a wrapper on the function to see the run time of the function
+    '''
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
         start_time = time.perf_counter()

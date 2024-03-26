@@ -4,13 +4,13 @@ import pathlib
 import tempfile
 import unittest
 import uuid
-import code
 import sys
 from io import StringIO
 from unittest import expectedFailure
 
 from dateroll.calendars.calendars import Calendars,Drawer, DateSet
 import dateroll
+
 
 
 class TestStringMethods(unittest.TestCase):
@@ -21,7 +21,7 @@ class TestStringMethods(unittest.TestCase):
             / f"dateroll.testing.{uuid.uuid4()}.cals"
         )
         cls.cals = Calendars(home=cls.filename_base)
-
+        
     @classmethod
     def tearDownClass(self):
         filename = str(self.filename_base)
@@ -123,6 +123,11 @@ class TestStringMethods(unittest.TestCase):
         del self.cals['AA']
         self.cals['AA'] = [datetime.datetime(2023,1,1)]
         self.assertTrue(dateroll.Date(2023,1,1) in self.cals['AA'])
+        del self.cals['AA']
+        with self.assertRaises(ValueError):
+            # when date is before 2/29/1824 will raise error
+            
+            self.cals['AA'] = [datetime.datetime(1823,12,12)]
 
     def test_seitemValDateClass(self):
         '''
@@ -137,7 +142,8 @@ class TestStringMethods(unittest.TestCase):
         '''
             when we assign the val which is not date related
         '''
-        del self.cals['AA']
+        if 'AA' in self.cals:
+            del self.cals['AA']
         with self.assertRaises(Exception) as context:
             self.cals['AA'] = ['20230101']
         self.assertEqual(str(context.exception),'All cal dates must be of dateroll.Date or datetime.date{time} (got str)')
@@ -246,7 +252,45 @@ class TestStringMethods(unittest.TestCase):
         expected_output_empty = 'name  |  #dates|min date    |max date    \n------|--------|------------|------------\nAC    |       0|None        |None        \n'
         self.assertTrue(printed_output_empty,expected_output_empty)
 
+
+    def test_dateset(self):
+        '''
+            test adding,extend
+        '''
+        # test add
+        dt = [datetime.datetime(2023,1,1),datetime.datetime(2023,1,3)]
+        dateset = DateSet(dt)
+        dateset.add(datetime.datetime(2023,1,5))
+        self.assertTrue(dateset._data[datetime.date(2023,1,5)])
+
+        # extend
+        with self.assertRaises(TypeError):
+            dateset.extend('20230101')
+        dateset.extend([datetime.date(2023,2,1),datetime.date(2023,2,3)])
+        self.assertTrue(datetime.date(2023,2,1) in dateset)
+        self.assertTrue(datetime.datetime(2023,2,1) in dateset)
+
+        # repr
+        repr(dateset)
     
+    def test_delattr(self):
+        '''
+            test delattr where some attributes are protected to delete
+        '''
+
+        if 'AA' in self.cals:
+            del self.cals.AA
+        else:
+            self.cals['AA'] = [datetime.date(2023,1,1)]
+            del self.cals.AA
+        self.assertTrue('AA' not in self.cals)
+        
+        del self.cals.home
+        
+        self.assertTrue(os.path.exists(self.cals.home))
+        
+
+        
 
 
         

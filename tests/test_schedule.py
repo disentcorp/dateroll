@@ -4,7 +4,6 @@ import io
 import re
 import sys
 import numpy as np
-import code
 
 from dateroll.schedule.schedule import Schedule
 from dateroll.date.date import Date

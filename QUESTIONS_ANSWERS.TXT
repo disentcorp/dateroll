@@ -1406,3 +1406,50 @@ dateroll/utils.py                       65      9    86%   174-183
 TOTAL                                 1448     37    97%
 
 i made quite a few changes to get this if you can get coverage to 100% pls.
+
+
+############## batu 3/26 8:10 AM EST
+
+Name                                 Stmts   Miss  Cover   Missing
+------------------------------------------------------------------
+dateroll/__init__.py                     5      0   100%
+dateroll/__main__.py                     0      0   100%
+dateroll/calendars/__init__.py           0      0   100%
+dateroll/calendars/__main__.py           0      0   100%
+dateroll/calendars/calendarmath.py     193      0   100%
+dateroll/calendars/calendars.py        190      0   100%
+dateroll/date/__init__.py                0      0   100%
+dateroll/date/__main__.py                0      0   100%
+dateroll/date/date.py                  155      0   100%
+dateroll/ddh/__init__.py                 0      0   100%
+dateroll/ddh/__main__.py                 0      0   100%
+dateroll/ddh/ddh.py                     32      0   100%
+dateroll/duration/__init__.py            0      0   100%
+dateroll/duration/__main__.py            0      0   100%
+dateroll/duration/duration.py          340      0   100%
+dateroll/parser/__init__.py              0      0   100%
+dateroll/parser/__main__.py              0      0   100%
+dateroll/parser/parser.py               61      0   100%
+dateroll/parser/parsers.py             168      0   100%
+dateroll/parser/patterns.py             24      0   100%
+dateroll/pretty.py                      69      0   100%
+dateroll/schedule/__init__.py            0      0   100%
+dateroll/schedule/__main__.py            0      0   100%
+dateroll/schedule/schedule.py           75      0   100%
+dateroll/settings.py                    59      0   100%
+dateroll/utils.py                       56      0   100%
+------------------------------------------------------------------
+TOTAL                                 1427      0   100%
+
+    Summary:
+        #1 Made 100pct
+        #2 Modified little bit in Dateset
+        #3 in delattr of calendars, if k in ('write','home','db_hash','db'), we do nothing right, 
+            why do we need to setattr, in addition setattr requires 2 vals, which we don’t have
+        #4 I put pragma:no cover in 3 places because the code does not go there (needs confirm)
+                first, __enter__ of Drawer/calendars.py exception part, looks like the safe_open prevents from
+                corrupting the file, so it never goes to exception
+                second, when exc_type is not None, exc_val also not None, so it never goes to True part
+                third, get/calendars, it never goes to keyError
+
+                

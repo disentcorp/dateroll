@@ -6,7 +6,6 @@ import unittest
 import uuid
 from unittest import expectedFailure
 import dateroll.calendars.calendars as calendars
-import code
 
 from dateroll.settings import settings
 from dateroll import ddh,cals

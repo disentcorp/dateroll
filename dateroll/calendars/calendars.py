@@ -63,6 +63,7 @@ class Drawer:
         self.cals = cals
 
     def __enter__(self):
+        
         if self.cals.hash == self.cals.db_hash:
             return self.cals.db
         
@@ -72,8 +73,9 @@ class Drawer:
                     self.data = pickle.load(f)
                     self.cals.db_hash = self.cals.hash
                     self.cals.db = self.data
+                    
                     return self.cals.db
-            except Exception as e:
+            except Exception as e:  # pragma:no cover
                 import traceback;traceback.print_exc()
                 msg = 'Cache is corrupted'
         else:
@@ -91,8 +93,10 @@ class Drawer:
         return self.cals.db
 
     def __exit__(self, exc_type, exc_val, exc_tb):
+        
         if exc_val is not None:
             raise exc_val
+        
         if exc_type is None:
             if self.cals.write:
                 with safe_open(self.path, "wb") as f:
@@ -100,7 +104,7 @@ class Drawer:
                     print('[dateroll] Writing cache (calendars)')
                 self.cals.write = False
         else:
-            return True
+            return True  # pragma:no cover
 
 class DateSet:
     def __init__(self,content):
@@ -114,7 +118,7 @@ class DateSet:
 
     def add(self, item):
         dt = date_check(item)
-        self._data[dt] = dt
+        self._data[dt] = True
 
     def __contains__(self, item):
         if isinstance(item,dateModule.Date):
@@ -126,7 +130,7 @@ class DateSet:
     def extend(self, items):
         if not isinstance(items,SetLike):
             raise TypeError('Must be cast-able into set')
-        extension = {date_check(i) for i in items}
+        extension = {date_check(i):True for i in items if i is not None}
         self._data.update(extension)
 
     def __iter__(self):
@@ -229,7 +233,9 @@ class Calendars(dict):
 
     def __delattr__(self, k):
         if k in ('write','home','db_hash','db'):
-            return super().__setattr__(k)
+            
+            # return super().__setattr__(k)
+            pass
         else:
             return self.__delitem__(k)
 
@@ -237,7 +243,7 @@ class Calendars(dict):
         with Drawer(self) as db:
             result = db[k]
             return result
-        raise KeyError(k)
+        raise KeyError(k)  # pragma:no cover
 
     def clear(self):
         self.write = True

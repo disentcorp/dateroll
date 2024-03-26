@@ -7,7 +7,6 @@ import uuid
 import io
 import sys
 
-import code
 from unittest import expectedFailure
 
 from dateroll.calendars.calendarmath import CalendarMath,DATA_LOCATION_FILE

@@ -1,7 +1,6 @@
 import warnings
 import pathlib
 import importlib.util
-import code
 
 path = pathlib.Path("~/.dateroll/settings.py").expanduser()
 

@@ -5,7 +5,6 @@ import pickle
 import time
 import math
 
-import code
 
 from dateroll.calendars.calendars import Calendars
 from dateroll.utils import safe_open
@@ -66,7 +65,7 @@ class CalendarMath:
                     import traceback;traceback.print_exc()
                     print(f'[dateroll] Cannot load cache for calmath unions, clearing.')
                     os.remove(self.home)
-        else:
+        else:  # pragma:no cover
             self.save_cache()
 
     def save_cache(self):

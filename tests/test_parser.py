@@ -1,5 +1,4 @@
 import unittest
-import code
 
 from dateroll.settings import settings
 from dateroll.parser.parser import Parser, parse_to_native

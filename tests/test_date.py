@@ -307,6 +307,10 @@ class TestDate(unittest.TestCase):
         for _a,_b in bad1.items():
             b = Date.from_datetime(_b).unix
             self.assertNotEqual(a,b)
+
+        with self.assertRaises(TypeError):
+            Date.from_unix('hello')
+            
     
     def test_from_xls(self):
         good = { # randomly generated from excel
