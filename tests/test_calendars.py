@@ -10,6 +10,7 @@ from unittest import expectedFailure
 
 import dateroll
 from dateroll.calendars.calendars import Calendars, DateSet, Drawer
+from dateroll.ddh.ddh import ddh
 
 
 class TestStringMethods(unittest.TestCase):
@@ -320,6 +321,43 @@ class TestStringMethods(unittest.TestCase):
         sys.stdout = sys.__stdout__
         txt = capt.getvalue().strip()
         self.assertTrue("Cache is corrupted" in txt)
+    
+    def test_getitem(self):
+        """
+             Dateset, it receives a slice, if not raise typeError
+        """
+        
+        ds = ddh('02012023,12312023,1bd').list
+        
+        dset = DateSet(ds)
+        self.assertEqual(dset['05012023':],ddh('05012023,12312023,1bd').list)
+        self.assertEqual(dset[:'03012023'],ddh('02012023,03012023,1bd').list)
+        
+        ds_compare = [l for l in ds if l>=ddh('04012023') and l<=ddh('06012023')]
+        self.assertEqual(dset['04012023':'06012023'],ds_compare)
+        self.assertEqual(dset[:],ds)
+        self.assertRaises(Exception,dset['05012023':'06012023':'2bd'])
+        with self.assertRaises(TypeError):
+            dset[10]
+        
+        self.assertEqual(dset[ddh('05012023'):],ddh('05012023,12312023,1bd').list)
+        with self.assertRaises(Exception):
+            dset[10:]
+        # when step is not None
+        with self.assertRaises(Exception):
+            dset[::'1bd']
+        
+    
+    def test_str(self):
+        """
+            test str
+        """
+        
+        cal = Calendars()
+        cal['AA'] = []
+        str(cal)
+        
+
 
 
 if __name__ == "__main__":

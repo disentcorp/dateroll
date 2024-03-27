@@ -61,7 +61,6 @@ class Schedule:
         direction of date generations is given by the sign of step
         """
         dates = []
-
         # backward generation
         if self.direction == "forward":
             cursor = self.start
@@ -126,12 +125,17 @@ class Schedule:
             yield i
 
     def __contains__(self, x):
+        if isinstance(x, dateModule.Date):
+            x = x.date
+        elif isinstance(x, datetime.datetime):
+            # does not do TZ check
+            x = datetime.date(x.year, x.month, x.day)
         for i in self._dates:
-            if isinstance(i, dateModule):
+            if isinstance(i, dateModule.Date):
                 i = i.date
-            elif isinstance(i, datetime.datetime):
-                # does not do TZ check
-                i = datetime.date(i.year, i.month, i.day)
+            # elif isinstance(i, datetime.datetime):
+            #     # does not do TZ check
+            #     i = datetime.date(i.year, i.month, i.day)
 
             if x == i:
                 return True
