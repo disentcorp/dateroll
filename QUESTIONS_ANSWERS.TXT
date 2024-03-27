@@ -1481,3 +1481,8 @@ test_delattr test cases was wrong, you should be using chatgpt if the test case 
 
 logic is, test is to delete attribute, so delete it, then test if it exists, (not the file), and don't forget to put it back, because it crashes
 future tests
+
+
+make a file test_performance, doesn't use unittest
+do all 75 form the excel, and the 200 from your tests, can goin to report a dicitonary: {code:millisecconds}, 
+later i'll take into a json, and we'll do a plotly histogram on the docs
