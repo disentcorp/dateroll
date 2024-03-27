@@ -11,6 +11,7 @@ from dateroll.calendars import calendarmath as calendarmathModule
 from dateroll.date import date as dateModule
 from dateroll.utils import safe_open, date_slice, convention_map
 from dateroll import settings
+from dateroll.tblfmt import pretty_table
 
 ROOT_DIR = pathlib.Path(__file__).parents[2]
 PARENT_LOCATION = pathlib.Path.home() / ".dateroll/"
@@ -274,23 +275,33 @@ class Calendars(dict):
             db.clear()
             self.db.clear()
 
-    def __str__(self):
-        pattern = lambda a, b, c, d: f"{a:6}|{b:12}|{c:12}|{d:12}"
-        s = ""
+    @property
+    def _calsdata(self):
+        data = []
         conv = convention_map[settings.settings.convention]
         with Drawer(self) as db:
-            s+= pattern("name", " num dates", "min date", "max date") +'\n'
-            s+=pattern("-" * 6, "-" * 12, "-" * 12, "-" * 12)+'\n'
             for i in sorted(db.keys()):
-
                 l = db.get(i)
+                years = {}
+                for j in l:
+                    if j.year > 1950 < j.year < 2050:
+                        if j.year in years:
+                            years[j.year]+=1
+                        else:
+                            years[j.year]=1
+                num_this_year = years[datetime.date.today().year]
                 if len(l) > 0:
                     n = len(l)
                     mn = min(l).strftime(conv)
                     mx = max(l).strftime(conv)
                 else:
                     n, mn, mx = 0, None, None
-                s+=pattern(str(i), f'{n:>12,}', str(mn), str(mx))+'\n'
+                data.append({'name':i,'non-working days':n,'oldest':mn,'newest':mx,'# this year':num_this_year})
+        return data
+    
+    def __str__(self):
+        data = self._calsdata
+        s = pretty_table(data)
         return s
 
     def __repr__(self):

@@ -350,6 +350,13 @@ class TestDate(unittest.TestCase):
         with self.assertRaises(TypeError):
             Date.from_unix("hello")
 
+    def test_hms(self):
+        d = Date(2024,2,2)
+        self.assertTrue(hasattr(d,'hour'))
+        self.assertTrue(hasattr(d,'minute'))
+        self.assertTrue(hasattr(d,'second'))
+        self.assertTrue(hasattr(d,'microsecond'))
+
     def test_from_xls(self):
         good = {  # randomly generated from excel
             45373: datetime.date(2024, 3, 22),

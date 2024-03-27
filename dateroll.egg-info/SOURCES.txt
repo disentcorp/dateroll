@@ -7,6 +7,7 @@ dateroll/__init__.py
 dateroll/__main__.py
 dateroll/pretty.py
 dateroll/settings.py
+dateroll/tblfmt.py
 dateroll/utils.py
 dateroll.egg-info/PKG-INFO
 dateroll.egg-info/SOURCES.txt
@@ -52,6 +53,7 @@ tests/test_operations.py
 tests/test_parser.py
 tests/test_parsers.py
 tests/test_patterns.py
+tests/test_performance.py
 tests/test_pretty.py
 tests/test_schedule.py
 tests/test_settings.py
