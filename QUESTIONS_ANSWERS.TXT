@@ -1481,8 +1481,52 @@ test_delattr test cases was wrong, you should be using chatgpt if the test case 
 
 logic is, test is to delete attribute, so delete it, then test if it exists, (not the file), and don't forget to put it back, because it crashes
 future tests
-
-
 make a file test_performance, doesn't use unittest
 do all 75 form the excel, and the 200 from your tests, can goin to report a dicitonary: {code:millisecconds}, 
 later i'll take into a json, and we'll do a plotly histogram on the docs
+
+
+########## batu 2024/3/27 8AM EST
+
+Name                                 Stmts   Miss  Cover   Missing
+------------------------------------------------------------------
+dateroll/__init__.py                     5      0   100%
+dateroll/__main__.py                     0      0   100%
+dateroll/calendars/__init__.py           0      0   100%
+dateroll/calendars/__main__.py           0      0   100%
+dateroll/calendars/calendarmath.py     194      0   100%
+dateroll/calendars/calendars.py        207      0   100%
+dateroll/date/__init__.py                0      0   100%
+dateroll/date/__main__.py                0      0   100%
+dateroll/date/date.py                  153      0   100%
+dateroll/ddh/__init__.py                 0      0   100%
+dateroll/ddh/__main__.py                 0      0   100%
+dateroll/ddh/ddh.py                     32      0   100%
+dateroll/duration/__init__.py            0      0   100%
+dateroll/duration/__main__.py            0      0   100%
+dateroll/duration/duration.py          345      0   100%
+dateroll/parser/__init__.py              0      0   100%
+dateroll/parser/__main__.py              0      0   100%
+dateroll/parser/parser.py               62      0   100%
+dateroll/parser/parsers.py             187      0   100%
+dateroll/parser/patterns.py             24      0   100%
+dateroll/pretty.py                      69      0   100%
+dateroll/schedule/__init__.py            0      0   100%
+dateroll/schedule/__main__.py            0      0   100%
+dateroll/schedule/schedule.py          112      0   100%
+dateroll/settings.py                    58      0   100%
+dateroll/utils.py                       81      0   100%
+------------------------------------------------------------------
+TOTAL                                 1529      0   100%
+
+    Summary:
+        #1 Made 100
+        #2 Fixed some bugs such as, Date.from_string('t') failed
+        #3 Schedule(arg).list always returns the list of Date instances, so I commented out the if isinstance(i,datetime.datetime)
+            part from __contain__/schedule
+        #4 created the new file test_performance.py where dictionary has the code and run_time, if success : Fail, intentionally
+        failed the code(below)
+{"ddh('12/26/2023')": {'success': True, 'run_time': 0.07}, "ddh('12/24/23+0bd|WEuNY')": {'success': True, 'run_time': 0.19},...}
+
+
+two of your 200 tests come back with 2414 as year, are these false positives? please review

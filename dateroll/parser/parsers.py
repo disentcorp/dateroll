@@ -96,6 +96,7 @@ def parseDateString(s: str):
     """
 
     # swap month names for numbers
+    s = parseTodayString(s)
     s = utils.swap_month_names(s)
 
     # slashes and dashes

@@ -196,7 +196,7 @@ convention_map = {"YMD": r"%Y-%m-%d", "DMY": r"%d/%m/%Y", "MDY": r"%m/%d/%Y"}
 def str_or_date(s):
     if isinstance(s,str):
         d = ddhModule.ddh(s)
-    elif isinstance(dateModule.DateLike):
+    elif isinstance(s,dateModule.DateLike):
         d = dateModule.Date.from_datetime(s)
     else:
         raise Exception('Slicing only supports dateroll datestrings')
@@ -226,7 +226,7 @@ def date_slice(s:slice,l:list):
         return [i for i in l if i >= start and i <=stop]
     elif start is None and stop is None and step is None:
         # all
-        return l
+        return list(l.keys())
     elif step is not None:
         # neither
         raise Exception('Slicing only supports start, stop, and start+stop, not step.')

@@ -271,6 +271,21 @@ class Date(datetime.date):
 
     def __str__(self):
         return self.to_string()
+    
 
+    # Backwards compatibility with datetime.datetime, some 3rd party libraries assume subclasses have <1d properties, we assume 00:00:00
+
+    @property
+    def hour(self):
+        return 0
+    @property
+    def minute(self):
+        return 0
+    @property
+    def second(self):
+        return 0
+    @property
+    def microsecond(self):
+        return 0
 
 DateLike = DateLike + (Date,)

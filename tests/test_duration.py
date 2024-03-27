@@ -697,6 +697,22 @@ class TestDuration(unittest.TestCase):
         self.assertRaises(ParserStringsError, lambda: ddh("1y1y"))
         self.assertRaises(ParserStringsError, lambda: ddh("1y1y1m1d"))
 
+    def test_gt(self):
+        """
+            test when b = 0 to compare a= Duration(something) and a>b 
+
+
+        """
+        
+        b = 0
+        # a is positive duration
+        a = Duration(days=10)
+        self.assertTrue(a>b)
+
+        # a is negative
+        a = Duration(days=-10)
+        self.assertFalse(a>b)
+        
 
 if __name__ == "__main__":
     unittest.main()

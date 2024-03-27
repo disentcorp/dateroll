@@ -651,6 +651,9 @@ class Duration(dateutil.relativedelta.relativedelta):
 
     def __pos__(self):
         return self
+    
+    def __str__(self):
+        return self.to_string()
 
     def __repr__(self):
         """
