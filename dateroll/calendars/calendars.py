@@ -304,8 +304,8 @@ class Calendars(dict):
         s = pretty_table(data)
         return s
 
-    def __repr__(self):
-        return f'{self.__class__.__name__}(home="{self.home}")'
+    # def __repr__(self):
+    #     return f'{self.__class__.__name__}(home="{self.home}")'
 
     def copy(self):
         with Drawer(self) as db:

@@ -16,16 +16,20 @@ ddh('t') +'3m' .... it's relaly close to the base but little extra.
 # import dateroll.calendars.calendarmath as calendarmathModule
 import dateroll.date.date as dateModule
 import dateroll.duration.duration as durationModule
-from dateroll.calendars.calendarmath import calmath
+import dateroll.schedule.schedule as scheduleModule
+import dateroll.calendars.calendarmath as calendarmathModule
+import dateroll.calendars.calendars as calendarModule
+import dateroll.settings as settingsModule
 
 DEBUG = False
 
-cals = calmath.cals
-
-
 class ddh:
-    calmath = calmath
-    cals = cals
+    Date = dateModule.Date
+    Duration = durationModule.Duration
+    Schedule = scheduleModule.Schedule
+    settings = settingsModule.settings
+    calmath = calendarmathModule.calmath
+    hols = calendarmathModule.calmath.cals
 
     def __new__(cls, o):
         if isinstance(o, str):
@@ -39,8 +43,7 @@ class ddh:
 
         return obj
 
-    @staticmethod
-    def purge_all():
+    def purge_all(self):
         """
         dangerous, deletes all calendars and lockfiles
         """
@@ -52,8 +55,36 @@ class ddh:
             if not file.endswith("lockfile"):
                 if pathlib.Path(file).is_file():
                     os.remove(file)
-        cals._purge_all()
-        calmath._purge_all()
+        self.hols._purge_all()
+        self.calmath._purge_all()
+
+
+    class YMD:
+        global settings
+        def __init__(self):
+            self.orig = ddh.settings.convention
+        def __enter__(self):
+            ddh.settings.convention = 'YMD'
+        def __exit__(self,*e):
+            ddh.settings.convention = self.orig
+
+    class MDY:
+        global settings
+        def __init__(self):
+            self.orig = ddh.settings.convention
+        def __enter__(self):
+            ddh.settings.convention = 'MDY'
+        def __exit__(self,*e):
+            ddh.settings.convention = self.orig
+
+    class DMY:
+        global settings
+        def __init__(self):
+            self.orig = ddh.settings.convention
+        def __enter__(self):
+            ddh.settings.convention = 'DMY'
+        def __exit__(self,*e):
+            ddh.settings.convention = self.orig
 
 
 if __name__ == "__main__":  # pragma:no cover
