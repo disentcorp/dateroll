@@ -9,7 +9,7 @@ import dateroll.settings as settingsModule
 
 settings = settingsModule.settings
 calmath = calendarmathModule.calmath
-hols = cals = calendarmathModule.calmath.cals
+cals = calendarmathModule.calmath.cals
 
 
 # for backwards compatibility testing
