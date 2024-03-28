@@ -9,6 +9,8 @@ from dateroll.parser import patterns
 from dateroll.schedule.schedule import Schedule
 from dateroll.settings import settings
 
+import code
+
 TODAYSTRINGVALUES = ["today", "t0", "t"]
 
 
@@ -193,7 +195,7 @@ def parseManyDateStrings(s, gen):
     dates = {}
     matches = re.findall(pattern, s)
     res = s
-
+    
     for match, _, _, _ in matches:
         # must hav 4 components per match
         # match 0 is 1st capture group = whole thing
@@ -400,3 +402,8 @@ def parseDateMathString(s, things):
         return total
     except Exception as e:
         raise ParserStringsError("Cannot recognize as date math", s)
+
+if __name__=='__main__':  # pragma:no cover
+    from dateroll.ddh.ddh import ddh
+    x = ddh('111422414')
+    print(x)

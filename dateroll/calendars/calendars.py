@@ -284,18 +284,19 @@ class Calendars(dict):
                 l = db.get(i)
                 years = {}
                 for j in l:
-                    if j.year > 1950 < j.year < 2050:
+                    if j.year > 1950 and j.year < 2050:
                         if j.year in years:
                             years[j.year]+=1
                         else:
                             years[j.year]=1
-                num_this_year = years[datetime.date.today().year]
+            
+                num_this_year = years.get(datetime.date.today().year,0)
                 if len(l) > 0:
                     n = len(l)
                     mn = min(l).strftime(conv)
                     mx = max(l).strftime(conv)
                 else:
-                    n, mn, mx = 0, None, None
+                    n, mn, mx = 0, "", ""
                 data.append({'name':i,'non-working days':n,'oldest':mn,'newest':mx,'# this year':num_this_year})
         return data
     

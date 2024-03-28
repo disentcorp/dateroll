@@ -1530,3 +1530,18 @@ TOTAL                                 1529      0   100%
 
 
 two of your 200 tests come back with 2414 as year, are these false positives? please review
+
+
+#################### batu 3/28 8:20 AM EST
+Name                                 Stmts   Miss  Cover   Missing
+------------------------------------------------------------------
+
+------------------------------------------------------------------
+TOTAL                                 1582      0   100%
+
+Summary:
+    #1 100%
+    #2 year 22414  was not false positive because mdy = '11222414 ' where m = 11 d=2 y=22414, 
+        if we make d=22 --> mdy=112222414 will get error  dateroll.parser.parsers.ParserStringsError: ('Cannot recognize as date math', '+A4')
+    
+    #3 Put my design in batu_dev branch of mrquery/src/TEMPO_batu_design.py
