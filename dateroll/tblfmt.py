@@ -1,7 +1,8 @@
 def pretty_table(ld, col_widths=None):
+    if len(ld)==0:
+        return ""
     headers = list(ld[0].keys())
     data = [headers] + [list(d.values()) for d in ld]
-    row1 = data[1]
 
     if col_widths is None:
         col_widths = [max(max([len(str(d[h])) for d in ld]),len(h))+2 for h in headers]
@@ -40,8 +41,8 @@ def pretty_table(ld, col_widths=None):
 
     return x
 
-if __name__ == '__main__':
+if __name__ == '__main__':  # pragma:no cover
     from dateroll import cals
-    data = cals._calsdata()
+    data = cals._calsdata
     s = pretty_table(data)
     print(s)

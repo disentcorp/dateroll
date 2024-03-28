@@ -168,9 +168,6 @@ class safe_open:
             self.file.close()
 
 
-import functools
-import time
-
 
 def timer(func):  # pragma:no cover
     """

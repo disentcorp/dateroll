@@ -105,7 +105,7 @@ def get_tests():
     tmt = [{'category':'date math','string':i} for i in _]
     xprint(sample(tmt))
 
-    # combinded
+    # combined
     tests = d + t + dmd + dpd + dmt + tpt + tmt
     return tests
 
