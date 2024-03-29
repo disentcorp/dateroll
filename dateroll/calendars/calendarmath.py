@@ -125,6 +125,9 @@ class CalendarMath:
     def cal_list(self):
         if not self.has_mutated:
             return self.cal_names
+        else:
+            self.compile_all()
+            return self.cal_names
 
     @property
     def recompile_if_mutated(self):

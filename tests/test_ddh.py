@@ -10,6 +10,7 @@ import dateroll
 import dateroll.calendars.calendars as calendars
 from dateroll import cals, ddh
 from dateroll.settings import settings
+from dateroll.parser.parsers import ParserStringsError
 
 # import dateroll.duration.duration as durationModule
 
@@ -132,6 +133,22 @@ class TestsPracticalExamples(unittest.TestCase):
         with self.assertRaises(TypeError):
             ddh(10)
 
+    def test_ctxmgrs(self):
+
+        with ddh.DMY():
+            self.assertTrue(ddh('02/07/84').month,7)
+        with ddh.YMD():
+            self.assertTrue(ddh('84/07/02').day,2)
+            self.assertTrue(ddh('84/07/02').year,1984)
+        with ddh.MDY():
+            self.assertTrue(ddh('02/07/84').month,2)
+
+        with ddh.DMY():
+            self.assertRaises(ParserStringsError,lambda :ddh('1984/07/02'))
+        with ddh.YMD():
+            self.assertRaises(ParserStringsError,lambda :ddh('07/24/1984'))
+        with ddh.MDY():
+            self.assertRaises(ParserStringsError,lambda :ddh('1984/07/02'))
 
 if __name__ == "__main__":
     unittest.main()

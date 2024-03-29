@@ -224,6 +224,7 @@ class Duration(dateutil.relativedelta.relativedelta):
         """
         validates calendars are correct
         """
+        callist = calendarmathModule.calmath.cal_list
         _cals = set()
         if cals is not None:
 
@@ -235,7 +236,7 @@ class Duration(dateutil.relativedelta.relativedelta):
                 for cal in cals:
                     if isinstance(cal, str):
                         if len(cal) in (2, 3):
-                            if cal in calendarmathModule.calmath.cal_list:
+                            if cal in callist:
                                 _cals |= {
                                     cal,
                                 }
