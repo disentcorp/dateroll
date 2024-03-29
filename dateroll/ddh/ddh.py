@@ -20,6 +20,7 @@ import dateroll.schedule.schedule as scheduleModule
 import dateroll.calendars.calendarmath as calendarmathModule
 import dateroll.calendars.calendars as calendarModule
 import dateroll.settings as settingsModule
+# from dateroll.settings import settings
 
 DEBUG = False
 
@@ -30,6 +31,7 @@ class ddh:
     settings = settingsModule.settings
     calmath = calendarmathModule.calmath
     hols = calendarmathModule.calmath.cals
+    # settings = settings
 
     def __new__(cls, o):
         if isinstance(o, str):
@@ -42,8 +44,8 @@ class ddh:
             raise TypeError(f"ddh() cannot handle {type(o).__name__})")
 
         return obj
-
-    def purge_all(self):
+    @staticmethod
+    def purge_all():
         """
         dangerous, deletes all calendars and lockfiles
         """
@@ -55,8 +57,8 @@ class ddh:
             if not file.endswith("lockfile"):
                 if pathlib.Path(file).is_file():
                     os.remove(file)
-        self.hols._purge_all()
-        self.calmath._purge_all()
+        ddh.hols._purge_all()
+        ddh.calmath._purge_all()
 
 
     class YMD:
@@ -88,9 +90,9 @@ class ddh:
 
 
 if __name__ == "__main__":  # pragma:no cover
-    import time
+    
+    import code
+    code.interact(local=dict(globals(),**locals()))
 
-    a = time.time()
-    # [calmath.bck['NYuWE'][calmath.fwd['NYuWE'][i]-1] for i in ddh('1/1/1900,1/1/2100,1d').dates]
-    [i - "1bd|NYuWE" for i in ddh("1/1/1900,1/1/2100,1d").dates]
-    print(time.time() - a)
+
+    

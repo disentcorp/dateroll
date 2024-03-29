@@ -305,8 +305,8 @@ class Calendars(dict):
         s = pretty_table(data)
         return s
 
-    # def __repr__(self):
-    #     return f'{self.__class__.__name__}(home="{self.home}")'
+    def __repr__(self):
+        return self.__str__()
 
     def copy(self):
         with Drawer(self) as db:
@@ -323,8 +323,7 @@ class Calendars(dict):
 if __name__ == "__main__":  # pragma: no cover
     
     
-    import code
-    code.interact(local=dict(globals(),**locals()))
+    ...
     
 
     
