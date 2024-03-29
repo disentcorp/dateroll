@@ -1545,3 +1545,8 @@ Summary:
         if we make d=22 --> mdy=112222414 will get error  dateroll.parser.parsers.ParserStringsError: ('Cannot recognize as date math', '+A4')
     
     #3 Put my design in batu_dev branch of mrquery/src/TEMPO_batu_design.py
+
+
+#################### anthony 3/29 5pm ET
+
+misc changes, added context libs, please check coverage and test cases.
