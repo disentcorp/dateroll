@@ -143,8 +143,8 @@ Date(year=1984,month=7,date=2)
 |`.datetime`            | <div class="disent-embed" data-defaultinput='Date(2024,7,2).datetime'></div> |
 |`.date`                | <div class="disent-embed" data-defaultinput='Date(2024,7,2).date'></div>|
 |`.iso`                 | <div class="disent-embed" data-defaultinput='Date(2024,7,2).iso'></div>|
-|`.xls`                 | <div class="disent-embed" data-defaultinput='Date(2024,7,2).xls'></div>|
-|`.unix`                | <div class="disent-embed" data-defaultinput='Date(2024,7,2).unix'></div>|
+|`.to_xls`                 | <div class="disent-embed" data-defaultinput='Date(2024,7,2).to_xls'></div>|
+|`.to_unix`                | <div class="disent-embed" data-defaultinput='Date(2024,7,2).to_unix'></div>|
 |`.dotw`                | <div class="disent-embed" data-defaultinput='Date(2024,7,2).dotw'></div>|
 |`.woty`                | <div class="disent-embed" data-defaultinput='Date(2024,7,2).woty'></div>|                                                  |
 |`.is_bd(calendar)`¹    |<div class="disent-embed" data-defaultinput='Date(2024,7,2).is_bd("NY")'></div>|

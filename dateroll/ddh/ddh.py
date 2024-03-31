@@ -31,7 +31,6 @@ class ddh:
     settings = settingsModule.settings
     calmath = calendarmathModule.calmath
     hols = calendarmathModule.calmath.cals
-    # settings = settings
 
     def __new__(cls, o):
         if isinstance(o, str):

@@ -1572,3 +1572,29 @@ TOTAL                                 1613      0   100%
             #3 I put their command and I tried to put disent command (in mrquery folder, TEMP_batu_design2.py) eg, stock/ load('msft'), mr = MrQuery(); mr('msft').load
 
             I think we should put the commant/first then develop the design might be a better way
+    
+############### batu 3/29 9:00 AM
+    Name                                 Stmts   Miss  Cover   Missing
+------------------------------------------------------------------
+
+------------------------------------------------------------------
+TOTAL                                 1613      0   100%
+
+        Summary:
+            #1 100pct
+            #2 Went through openBB
+                data sources are: polygon, yahoofinance, alphavantage etc same as we were looking to use
+                it is terminal, and the work flow is like clicking menu1 -->menu2-->menu3 to get data, very fast!
+                    eg, stock/ load('msft'), --> stock/fa/ income   # shows income stmt of msft
+                
+                one thing i dont like, after getting data no place to analyze the data, just download the data into xlsx
+
+                good thing about disent is that we get data and we have desk to toggle the data
+
+                I am still in progress of learning their open souce code, in my opinion very clean very impressive!
+
+                They have 18 people
+
+            #3 I put their command and I tried to put disent command (in mrquery folder, TEMP_batu_design2.py) eg, stock/ load('msft'), mr = MrQuery(); mr('msft').load
+
+            I think we should put the commant/first then develop the design might be a better way

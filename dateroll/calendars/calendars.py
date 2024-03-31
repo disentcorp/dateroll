@@ -57,7 +57,7 @@ def load_sample_data():
                 if dt >= INCEPTION:
                     l.append(dt)
 
-            ds = DateSet(l)
+            ds = DateSet(l,name=name)
             data[name] = ds
     return data
 
@@ -113,7 +113,8 @@ class Drawer:
 
 
 class DateSet:
-    def __init__(self, content):
+    def __init__(self, content, name=None):
+        self.name = name
         if not isinstance(content, SetLike):
             raise TypeError("DateSet content must be set-like (castable)")
 
@@ -125,6 +126,11 @@ class DateSet:
     def add(self, item):
         dt = date_check(item)
         self._data[dt] = True
+        if self.name is not None:
+            tothing = f' to {self.name}'
+        else:
+            tothing = ''
+        print(f'[dateroll] {item} added{tothing}.')
 
     def __contains__(self, item):
         if isinstance(item, dateModule.Date):
@@ -212,8 +218,10 @@ class Calendars(dict):
         self.write = True
         with Drawer(self) as db:
             # value must be a set-like list of dates
-            verified = DateSet(v)
+            verified = DateSet(v,name=k)
             db[k] = verified
+        
+        print(f'[dateroll] {k} now has {len(verified)} holidays.')
 
     def __getitem__(self, k):
         return self.get(k)

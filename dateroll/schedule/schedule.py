@@ -146,8 +146,8 @@ class Schedule:
         list_of_dates = self._dates
         start = list_of_dates[:-1]
         stop = list_of_dates[1:]
-        step = [self.step.to_string()] * (len(list_of_dates) - 1)
-        df = pd.DataFrame({"start": start, "stop": stop, "step": step})
+        df = pd.DataFrame({"start": start, "stop": stop})
+        df['step']=df.stop-df.start
         df.index.name = "per"
 
         return df

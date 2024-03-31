@@ -128,15 +128,15 @@ class Date(datetime.date):
         return self.isocalendar()[1]
 
     @property
-    def xls(self):
+    def to_xls(self):
         offset = 693594
         n = self.toordinal()
         rs = n - offset
         return rs
 
     @property
-    def unix(self):
-        return self.datetime.timestamp()
+    def to_unix(self):
+        return int(self.datetime.timestamp())
 
     @property
     def iso(self):

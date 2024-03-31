@@ -90,11 +90,11 @@ class TestDate(unittest.TestCase):
         self.assertEqual(d.iso, "2024-03-03")
 
         # xls
-        self.assertEqual(d.xls, 45354)
+        self.assertEqual(d.to_xls, 45354)
 
         # unix
         ts = d.datetime.timestamp()
-        self.assertEqual(d.unix, ts)
+        self.assertEqual(d.to_unix, ts)
 
         # #dotw
         dotw = d.dotw
@@ -339,12 +339,12 @@ class TestDate(unittest.TestCase):
         # outbound
 
         for a, _b in good.items():
-            b = Date.from_datetime(_b).unix
+            b = Date.from_datetime(_b).to_unix
             diff = abs(b - a)
             self.assertLessEqual(diff, 86400)
 
         for _a, _b in bad1.items():
-            b = Date.from_datetime(_b).unix
+            b = Date.from_datetime(_b).to_unix
             self.assertNotEqual(a, b)
 
         with self.assertRaises(TypeError):
@@ -421,11 +421,11 @@ class TestDate(unittest.TestCase):
         # outbound
 
         for a, _b in good.items():
-            b = Date.from_datetime(_b).xls
+            b = Date.from_datetime(_b).to_xls
             self.assertEqual(int(a), b)
 
         for _a, _b in bad1.items():
-            b = Date.from_datetime(_b).xls
+            b = Date.from_datetime(_b).to_xls
             self.assertNotEqual(a, b)
 
 
