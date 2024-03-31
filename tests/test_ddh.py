@@ -11,7 +11,7 @@ import dateroll.calendars.calendars as calendars
 from dateroll import cals, ddh
 from dateroll.settings import settings
 from dateroll.parser.parsers import ParserStringsError
-
+import dateroll.date.date as dateModule
 # import dateroll.duration.duration as durationModule
 
 
@@ -88,6 +88,28 @@ class TestDDH(unittest.TestCase):
             # back to original
             settings.convention = original
 
+    def testLocalCOnvention(self):
+        """
+            test the local convention, with statement converts convention and returns to the original convention
+        """
+        
+        # YMD
+        with ddh.YMD():
+            self.assertEqual(ddh("20230101"),dateModule.Date(2023,1,1))
+            self.assertEqual(settings.convention, "YMD")
+        self.assertEqual(settings.convention,"MDY")
+
+        # DMY
+        with ddh.DMY():
+            self.assertEqual(ddh("01022023"),dateModule.Date(2023,2,1))
+            self.assertEqual(settings.convention, "DMY")
+        self.assertEqual(settings.convention,"MDY")
+
+        # MDY
+        with ddh.MDY():
+            self.assertEqual(ddh("02012023"),dateModule.Date(2023,2,1))
+            self.assertEqual(settings.convention, "MDY")
+        self.assertEqual(settings.convention,"MDY")
 
 class TestsPracticalExamples(unittest.TestCase):
     def testNothing(self):

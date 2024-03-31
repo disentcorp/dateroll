@@ -22,6 +22,7 @@ import dateroll.schedule.schedule as scheduleModule
 import dateroll.calendars.calendarmath as calendarmathModule
 import dateroll.calendars.calendars as calendarModule
 import dateroll.settings as settingsModule
+# from dateroll.settings import settings
 
 DEBUG = False
 
@@ -32,6 +33,7 @@ class ddh:
     settings = settingsModule.settings
     calmath = calendarmathModule.calmath
     hols = calendarmathModule.calmath.cals
+    # settings = settings
 
     def __str__(self):
         s = """
@@ -141,9 +143,9 @@ class ddh:
                 ddh.settings.convention = self.orig
 
 if __name__ == "__main__":  # pragma:no cover
-    import time
+    
+    import code
+    code.interact(local=dict(globals(),**locals()))
 
-    a = time.time()
-    # [calmath.bck['NYuWE'][calmath.fwd['NYuWE'][i]-1] for i in ddh('1/1/1900,1/1/2100,1d').dates]
-    [i - "1bd|NYuWE" for i in ddh("1/1/1900,1/1/2100,1d").dates]
-    print(time.time() - a)
+
+    

@@ -331,8 +331,7 @@ class Calendars(dict):
 if __name__ == "__main__":  # pragma: no cover
     
     
-    import code
-    code.interact(local=dict(globals(),**locals()))
+    ...
     
 
     
