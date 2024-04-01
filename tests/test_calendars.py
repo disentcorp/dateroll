@@ -197,9 +197,8 @@ class TestStringMethods(unittest.TestCase):
         """
         test __repr__ of calendar
         """
-        expected_str = 'Calendars(home="/tmp/dateroll.'
-        ddh.hols.__repr__()
-        self.assertTrue(True)
+        
+        self.assertTrue(len(repr(self.cals))>300)
 
     def test_copy(self):
         """

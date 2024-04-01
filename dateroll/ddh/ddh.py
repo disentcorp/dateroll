@@ -1,7 +1,5 @@
 import os
 import pathlib
-import contextlib
-import io
 
 # from dateroll.parser.parser import parse_to_dateroll, parse_to_native
 import dateroll.parser.parser as parserModule
@@ -22,6 +20,7 @@ import dateroll.schedule.schedule as scheduleModule
 import dateroll.calendars.calendarmath as calendarmathModule
 import dateroll.calendars.calendars as calendarModule
 import dateroll.settings as settingsModule
+# from dateroll.settings import settings
 
 DEBUG = False
 
@@ -33,62 +32,17 @@ class ddh:
     calmath = calendarmathModule.calmath
     hols = calendarmathModule.calmath.cals
 
-    def __str__(self):
-        s = """
-
-    dateroll types:
-      ddh.Date (Date class)
-      ddh.Duration (Duration class)
-      ddh.Schedule (Schedule class)
-    
-    dateroll settings:
-      ddh.settings (stored in ~/.dateroll/settings.py)
-    
-    dataroll data containers:
-      ddh.hols (Calendars singleton instance)
-      ddh.calmath (CalendarMath singleton instance)
-
-    dateroll context managers for temporary convention changes:
-      ddh.YMM()
-      ddh.MDY()
-      ddh.DMY()
-
-      ^ use like with ddh.YMD():
-                         ddh(some_string_in_YMD_format)
-"""
-        return s
-
-    def __repr__(self):
-        return self.__str__()
-
-    @classmethod
-    def validate_args(cls, date_string):
-        if isinstance(date_string, str):
-            obj = parserModule.parse_to_dateroll(date_string)
-        elif isinstance(date_string, dateModule.DateLike):
-            obj = dateModule.Date.from_datetime(date_string)
-        elif isinstance(date_string, durationModule.DurationLike):
-            obj = durationModule.Duration.from_relativedelta(date_string)
+    def __new__(cls, o):
+        if isinstance(o, str):
+            obj = parserModule.parse_to_dateroll(o)
+        elif isinstance(o, dateModule.DateLike):
+            return dateModule.Date.from_datetime(o)
+        elif isinstance(o, durationModule.DurationLike):
+            obj = durationModule.Duration.from_relativedelta(o)
         else:
-            raise TypeError(f"ddh() cannot handle {type(date_string).__name__})")
+            raise TypeError(f"ddh() cannot handle {type(o).__name__})")
+
         return obj
-
-    def __new__(cls, date_string):
-        '''
-        if list-like, ie has iter dunder, return a list of each item processed
-        if str call parser
-        if python date/datetime or dateutil.relativedelta cast into equiv dateroll type
-        '''
-        if isinstance(date_string,(str,dateModule.DateLike,durationModule.DurationLike)):
-            return cls.validate_args(date_string)
-        elif hasattr(date_string,'__iter__'):
-            l = []
-            for i in date_string:
-                l.append(cls.validate_args(i))
-            return l
-        else:
-            raise TypeError(f"ddh() cannot handle {type(date_string).__name__})")
-
     @staticmethod
     def purge_all():
         """
@@ -105,45 +59,39 @@ class ddh:
         ddh.hols._purge_all()
         ddh.calmath._purge_all()
 
-    # context managers, these let you change the convention temporaily
 
     class YMD:
         global settings
         def __init__(self):
             self.orig = ddh.settings.convention
         def __enter__(self):
-            with contextlib.redirect_stdout(io.StringIO()) as buf:
-                ddh.settings.convention = 'YMD'
+            ddh.settings.convention = 'YMD'
         def __exit__(self,*e):
-            with contextlib.redirect_stdout(io.StringIO()) as buf:
-                ddh.settings.convention = self.orig
+            ddh.settings.convention = self.orig
 
     class MDY:
         global settings
         def __init__(self):
             self.orig = ddh.settings.convention
         def __enter__(self):
-            with contextlib.redirect_stdout(io.StringIO()) as buf:
-                ddh.settings.convention = 'MDY'
+            ddh.settings.convention = 'MDY'
         def __exit__(self,*e):
-            with contextlib.redirect_stdout(io.StringIO()) as buf:
-                ddh.settings.convention = self.orig
+            ddh.settings.convention = self.orig
 
     class DMY:
         global settings
         def __init__(self):
             self.orig = ddh.settings.convention
         def __enter__(self):
-            with contextlib.redirect_stdout(io.StringIO()) as buf:
-                ddh.settings.convention = 'DMY'
+            ddh.settings.convention = 'DMY'
         def __exit__(self,*e):
-            with contextlib.redirect_stdout(io.StringIO()) as buf:
-                ddh.settings.convention = self.orig
+            ddh.settings.convention = self.orig
+
 
 if __name__ == "__main__":  # pragma:no cover
-    import time
+    
+    import code
+    code.interact(local=dict(globals(),**locals()))
 
-    a = time.time()
-    # [calmath.bck['NYuWE'][calmath.fwd['NYuWE'][i]-1] for i in ddh('1/1/1900,1/1/2100,1d').dates]
-    [i - "1bd|NYuWE" for i in ddh("1/1/1900,1/1/2100,1d").dates]
-    print(time.time() - a)
+
+    
