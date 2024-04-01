@@ -130,63 +130,6 @@ def swap_month_names(s):
         s = patterns.MONTHNAMES.sub(month_str_numb, s.capitalize())
     return s
 
-
-class safe_open:
-    """
-    use separate write lockfile to lock/unlock (fcntl removes dealock if pid w/ lock dies)
-    lock is removed if pid dies
-    """
-
-    def __init__(self, path, mode="r"):
-        """
-        open lockfile and attempt to lock, will block
-        """
-
-        self.path = pathlib.Path(path)
-        self.mode = mode
-        if mode.startswith("w"):
-            self.pathlock = self.path.with_suffix(".lockfile")
-            self.lockfile = open(self.pathlock, "w")
-            fcntl.lockf(self.lockfile, fcntl.LOCK_EX)
-
-    def __enter__(self):
-        """
-        open user file and send it to them
-        """
-
-        self.file = open(self.path, self.mode)
-        return self.file
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        """
-        release lock, then close both lockfile and user file
-        do not delete lockfile (even if no exc)
-        """
-        if self.mode.startswith("w"):
-            fcntl.lockf(self.lockfile, fcntl.LOCK_UN)
-            self.lockfile.close()
-            self.file.close()
-
-
-
-def timer(func):  # pragma:no cover
-    """
-    timer function is used for performance improvement
-    we use it as a wrapper on the function to see the run time of the function
-    """
-
-    @functools.wraps(func)
-    def wrapper(*args, **kwargs):
-        start_time = time.perf_counter()
-        value = func(*args, **kwargs)
-        end_time = time.perf_counter()
-        run_time = end_time - start_time
-        print("Finished {} in {} secs".format(repr(func.__name__), round(run_time, 7)))
-        return value
-
-    return wrapper
-
-
 convention_map = {"YMD": r"%Y-%m-%d", "DMY": r"%d/%m/%Y", "MDY": r"%m/%d/%Y"}
 
 

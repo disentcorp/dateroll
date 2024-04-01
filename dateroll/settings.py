@@ -117,7 +117,6 @@ class Settings:
 
         super().__setattr__(k, v)
         self.save()
-        print(f'[dateroll] ddh.settings.{k} updated to {v}')
 
     def __repr__(self):
         """

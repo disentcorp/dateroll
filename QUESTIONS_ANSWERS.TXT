@@ -1458,7 +1458,7 @@ TOTAL                                 1427      0   100%
             either the test case is non-obvious to write, or the code needs to be re-factored,
             either case we need to review together one by one
 
-                first, __enter__ of Drawer/calendars.py exception part, looks like the safe_open prevents from
+                first, __enter__ of Drawer/calendars.py exception part, looks like the open prevents from
                 corrupting the file, so it never goes to exception
 
                     what if the user corrupts the file? don't we have a test cases where we write bad code to the cache?

@@ -7,7 +7,7 @@ import time
 
 import dateroll.date.date as dateModule
 from dateroll.calendars.calendars import Calendars
-from dateroll.utils import safe_open
+from dateroll.utils import open
 
 PARENT_LOCATION = pathlib.Path.home() / ".dateroll/"
 PARENT_LOCATION.mkdir(exist_ok=True)
@@ -79,7 +79,7 @@ class CalendarMath:
             "ibd": self.ibd,
             "hash": self.hash,
         }
-        with safe_open(self.home, "wb") as f:
+        with open(self.home, "wb") as f:
             print("[dateroll] Writing cache (calmath unions)")
             pickle.dump(cached, f)
 

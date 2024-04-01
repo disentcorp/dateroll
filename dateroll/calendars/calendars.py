@@ -9,7 +9,7 @@ from collections import OrderedDict
 
 from dateroll.calendars import calendarmath as calendarmathModule
 from dateroll.date import date as dateModule
-from dateroll.utils import safe_open, date_slice, convention_map
+from dateroll.utils import open, date_slice, convention_map
 from dateroll import settings
 from dateroll.tblfmt import pretty_table
 
@@ -75,7 +75,7 @@ class Drawer:
 
         if self.path.exists():
             try:
-                with safe_open(self.path, "rb") as f:
+                with open(self.path, "rb") as f:
                     self.data = pickle.load(f)
                     self.cals.db_hash = self.cals.hash
                     self.cals.db = self.data
@@ -93,7 +93,7 @@ class Drawer:
         data = load_sample_data()
 
         self.cals.db = data
-        with safe_open(self.path, "wb") as f:
+        with open(self.path, "wb") as f:
             pickle.dump(self.cals.db, f)
             print("[dateroll] Writing cache (calendars)")
             self.cals.write = False
@@ -106,7 +106,7 @@ class Drawer:
             raise exc_val
         else:
             if self.cals.write:
-                with safe_open(self.path, "wb") as f:
+                with open(self.path, "wb") as f:
                     pickle.dump(self.cals.db, f)
                     print("[dateroll] Writing cache (calendars)")
                 self.cals.write = False
