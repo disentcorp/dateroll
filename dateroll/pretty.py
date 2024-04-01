@@ -32,7 +32,8 @@ def pretty_between_two_dates(dt1, dt2, cals, calmath):
     else:
         _1, _2 = dt2, dt1
 
-    print("from", _1, "to", _2, "cals", cals)
+    banner = f'From {_1}, to {_2}, holidays: {cals}'
+    print(banner)
 
     y1, m1, d1 = _1.year, _1.month, _1.day
     y2, m2, d2 = _2.year, _2.month, _2.day
@@ -82,7 +83,7 @@ def pretty_between_two_dates(dt1, dt2, cals, calmath):
         cal2 = "\n".join([" " + i for i in str(c2).splitlines()][1:])
         for i in range(0, 32):
             try:
-                _ = datetime.date(year=y1, month=m1, day=i)
+                _ = datetime.date(year=y2, month=m2, day=i)
                 ishol = not calmath.is_bd(_, cals)
             except:
                 ishol = False
@@ -98,7 +99,7 @@ def pretty_between_two_dates(dt1, dt2, cals, calmath):
             "yellow",
         )
         for idx, (i, j) in enumerate(zip(cal1.splitlines(), cal2.splitlines())):
-            res += "\n" + f"  {i}  {' '+j}"
+            res += "\n" + f"  {i}   {' '+j}"
             prev = len(i)
 
     return res

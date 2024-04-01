@@ -53,9 +53,6 @@ class TestSettings(unittest.TestCase):
         settings = Settings()
 
         with self.assertRaises(Exception):
-            settings.debug = "hello"
-
-        with self.assertRaises(Exception):
             settings.convention = "ABC"
 
     def test_repr(self):
@@ -95,8 +92,6 @@ class TestSettings(unittest.TestCase):
             settings = Settings()
         settings = backup
         settings.save()
-        with self.assertRaises(Exception):
-            Settings().validate({"debug": 10})
 
 
 if __name__ == "__main__":

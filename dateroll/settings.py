@@ -4,11 +4,11 @@ import warnings
 
 path = pathlib.Path("~/.dateroll/settings.py").expanduser()
 
+ctx_conv = '_ctx_convention'
+
 default_settings = {
-    "debug": True,
     "convention": "MDY",
-    "ie": "(]",
-    "twodigityear_cutoff": 2050,
+    "twodigityear_cutoff": 2050
 }
 
 default_settings_validation = {
@@ -79,6 +79,8 @@ class Settings:
                     txt += f"{k}={repr(v)}\n"
             f.write(txt)
 
+    
+
     def validate(self, user_settings):
         """
         2 tests:
@@ -104,19 +106,29 @@ class Settings:
                 user_settings[k] = v
 
         return user_settings
+    
+    def __getattribute__(self, k):
+        if k=='convention':
+            if hasattr(self,'_convention_override'):
+                return self._convention_override
+
+        return super().__getattribute__(k)
 
     def __setattr__(self, k, v):
         """
-        add a new setting
+        if a new setting value, validate and save
         """
-        # check, set, save
-        func_value_is_valid, exc = default_settings_validation[k]
+        if k in default_settings:
+            # check, set, save
+            func_value_is_valid, exc = default_settings_validation[k]
 
-        if not func_value_is_valid(v):
-            raise exc
+            if not func_value_is_valid(v):
+                raise exc
 
-        super().__setattr__(k, v)
-        self.save()
+            super().__setattr__(k, v)
+            self.save()
+        else:
+            super().__setattr__(k, v)
 
     def __repr__(self):
         """

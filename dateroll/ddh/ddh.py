@@ -63,29 +63,29 @@ class ddh:
     class YMD:
         global settings
         def __init__(self):
-            self.orig = ddh.settings.convention
+            pass
         def __enter__(self):
-            ddh.settings.convention = 'YMD'
+            ddh.settings._convention_override = 'YMD'
         def __exit__(self,*e):
-            ddh.settings.convention = self.orig
+            del ddh.settings._convention_override
 
     class MDY:
         global settings
         def __init__(self):
-            self.orig = ddh.settings.convention
+            pass
         def __enter__(self):
-            ddh.settings.convention = 'MDY'
+            ddh.settings._convention_override = 'MDY'
         def __exit__(self,*e):
-            ddh.settings.convention = self.orig
+            del ddh.settings._convention_override
 
     class DMY:
         global settings
         def __init__(self):
-            self.orig = ddh.settings.convention
+            pass
         def __enter__(self):
-            ddh.settings.convention = 'DMY'
+            ddh.settings._convention_override = 'DMY'
         def __exit__(self,*e):
-            ddh.settings.convention = self.orig
+            del ddh.settings._convention_override
 
 
 if __name__ == "__main__":  # pragma:no cover
