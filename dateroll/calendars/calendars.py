@@ -9,7 +9,7 @@ from collections import OrderedDict
 
 from dateroll.calendars import calendarmath as calendarmathModule
 from dateroll.date import date as dateModule
-from dateroll.utils import open, date_slice, convention_map
+from dateroll.utils import date_slice, convention_map
 from dateroll import settings
 from dateroll.tblfmt import pretty_table
 

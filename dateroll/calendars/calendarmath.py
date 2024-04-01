@@ -7,7 +7,6 @@ import time
 
 import dateroll.date.date as dateModule
 from dateroll.calendars.calendars import Calendars
-from dateroll.utils import open
 
 PARENT_LOCATION = pathlib.Path.home() / ".dateroll/"
 PARENT_LOCATION.mkdir(exist_ok=True)
