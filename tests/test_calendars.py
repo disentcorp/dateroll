@@ -278,6 +278,9 @@ class TestStringMethods(unittest.TestCase):
 
         # repr
         repr(dateset)
+        dateset = DateSet(dt,name='dates')
+        dateset.add(datetime.datetime(2023, 1, 5))
+        self.assertTrue(dateset._data[datetime.date(2023, 1, 5)])
 
     def test_delattr(self):
         """

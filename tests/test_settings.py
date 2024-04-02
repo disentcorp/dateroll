@@ -93,6 +93,11 @@ class TestSettings(unittest.TestCase):
         settings = backup
         settings.save()
 
+    def test_validate_settings(self):
+        sett = {'convention':False}
+        settings = Settings()
+        with self.assertRaises(Exception):
+            settings.validate(sett)
 
 if __name__ == "__main__":
     unittest.main()

@@ -94,7 +94,7 @@ class Settings:
         for k, v in user_settings.items():
 
             if k not in default_settings:
-                msg = f"Unkonwn setting {k}, ignoring"
+                msg = f"Unknown setting {k}, ignoring"
                 warnings.warn(msg)
             else:
                 test, exc = default_settings_validation[k]
@@ -143,3 +143,4 @@ settings = Settings()
 
 if __name__ == "__main__":  # pragma: no cover
     settings = Settings()
+    

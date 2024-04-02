@@ -1598,3 +1598,6 @@ TOTAL                                 1613      0   100%
             #3 I put their command and I tried to put disent command (in mrquery folder, TEMP_batu_design2.py) eg, stock/ load('msft'), mr = MrQuery(); mr('msft').load
 
             I think we should put the commant/first then develop the design might be a better way
+
+########### batu 04/02 12:07AM EST
+    made 100%
