@@ -79,7 +79,6 @@ class CalendarMath:
             "hash": self.hash,
         }
         with open(self.home, "wb") as f:
-            print("[dateroll] Writing cache (calmath unions)")
             pickle.dump(cached, f)
 
     def cached_compile_all(self):
@@ -343,7 +342,7 @@ class CalendarMath:
             unioned_dates |= set(self.cals[cal])
 
         # compile into large dict
-        print(f"[dateroll] compiling new union [{cal_union_key}]")
+        # print(f"[dateroll] compiling new union [{cal_union_key}]")
         dict_tuple = self.gen_dicts(cal_union_key, unioned_dates, self.ALL)
         self.fwd[cal_union_key], self.bck[cal_union_key], self.ibd[cal_union_key] = (
             dict_tuple

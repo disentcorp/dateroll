@@ -403,7 +403,7 @@ class Duration(dateutil.relativedelta.relativedelta):
             w = ",".join(warns)
             message = f"[dateroll] just_days using approx: {w} "
             if not _force_exact:
-                warnings.warn(message)
+                print(message)
             else:
                 raise ValueError(message)
 

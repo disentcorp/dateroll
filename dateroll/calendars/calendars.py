@@ -95,7 +95,6 @@ class Drawer:
         self.cals.db = data
         with open(self.path, "wb") as f:
             pickle.dump(self.cals.db, f)
-            print("[dateroll] Writing cache (calendars)")
             self.cals.write = False
 
         return self.cals.db
@@ -108,7 +107,6 @@ class Drawer:
             if self.cals.write:
                 with open(self.path, "wb") as f:
                     pickle.dump(self.cals.db, f)
-                    print("[dateroll] Writing cache (calendars)")
                 self.cals.write = False
 
 
