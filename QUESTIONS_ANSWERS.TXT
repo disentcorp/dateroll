@@ -1647,3 +1647,6 @@ I deleted this, you only needed it because i<4 condition, which was wrong in the
 the multipler should be applied evenly to all in the grouping.
 
 good catch!!!
+
+i found another one: 
+ddh('t+3m-2y+700bd-t')  <-- then t1-t2, and t1 < t2, we have to flip the anchor dates, i did this,  its ok now
