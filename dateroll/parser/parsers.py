@@ -230,6 +230,7 @@ def parseDurationString_convert_capture_groups(capture_groups: tuple):
         mult = -1
 
     # get all the pairs
+    print(capture_groups)
     for i in range(2, 12, 2):
         number = capture_groups[i]
         unit = capture_groups[i + 1]
@@ -237,16 +238,10 @@ def parseDurationString_convert_capture_groups(capture_groups: tuple):
         if number and unit:
             # cast number to integer y,s,q,m,w,d
             number = int(number) if unit != "bd" else float(number)
-            if i < 4:
-                # use multiplier on first pair
-                number *= mult
             if unit in duration_constructor_args:
                 raise ParserStringsError(
                     "Only 1 number of each unit per duration string (i.e. no 5d3d or 7m1m)"
                 )
-            if unit.lower() in ['s','q','m','w','d']:
-                number = mult * abs(number)
-                
             duration_constructor_args[unit] = number
     
     # attach calendars if any
