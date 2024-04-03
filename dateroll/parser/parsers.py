@@ -336,7 +336,8 @@ def parseManyDurationString(s, gen):
         if idx==1:
             # its because there is bd in string, eg ddh('-1y3bd), so need to flip the sign of bd when main sign is neg
             op = -1 if '-' in matches[0][0] else 1
-            duration.bd = op * duration.bd
+            if isinstance(duration.bd,(float,int)):
+                duration.bd = op * duration.bd 
         
         next_letter = next(gen())
         s = s.replace(duration_string, "+" + next_letter, 1)
