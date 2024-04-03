@@ -1637,6 +1637,13 @@ TOTAL                                 1613      0   100%
             * after Quarters, but there is not explanation about the start
         
         
+########### anthony 4/3 10am:
 
+    please review the code (line 246,247/parsers.py):
+            if unit.lower() in ['s','q','m','w','d']:
+                number = mult * abs(number)
         
+I deleted this, you only needed it because i<4 condition, which was wrong in the first place, so i removed that to.
+the multipler should be applied evenly to all in the grouping.
 
+good catch!!!
