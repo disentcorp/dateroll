@@ -1601,3 +1601,12 @@ TOTAL                                 1613      0   100%
 
 ########### batu 04/02 12:07AM EST
     made 100%
+
+
+    ######### batu 4/3 20:00 AM EST
+
+    please review the code (line 246,247/parsers.py):
+            if unit.lower() in ['s','q','m','w','d']:
+                number = mult * abs(number)
+
+    this is fixed the problem of ddh('t-1y3m)---> 2023/7/3
