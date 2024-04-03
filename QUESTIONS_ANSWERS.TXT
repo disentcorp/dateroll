@@ -1610,3 +1610,33 @@ TOTAL                                 1613      0   100%
                 number = mult * abs(number)
 
     this is fixed the problem of ddh('t-1y3m)---> 2023/7/3
+
+
+    #####  disent.com review
+        #1 dateroll/Math/ Date-String: ddh('t') - '1bd|NYuLN' does not show the result 
+        #2 in dateroll the typo is : You can user them
+        #3 in dateroll get today's date: For a comphrensive review
+        #4 in snpricer part: Extenstive payoff support
+        #5 in dateroll, specific date: Default ordering is month is assumed to be first (American convention)
+        #6 in dateroll, Subtract a year ( from some date): Additionally, the .cal property of our Date's shows you a calendar ------> should be "Date shows"
+        #7 ddh('t-1y3m') = '2023/7/3' I fixed in dateroll/dev branch
+            also fixed ddh('-1y6m6bd) --> '-1y+6m+6bd into '-1y-6m-6bd'
+        #8 dateroll/transforms from relativedelta, to_relativedelta does not show full result
+        #9 dateroll/Date's ( is it typo and Dates??) Date is a businessday does not show full result
+        #10 dateroll/Duration's (is it typo, Durations??) Days between days does not show full
+                    -Also than should be then "If the duration is the result of two dates, and is not a duration specified by itself, than the exact days..."
+                    -Exact days between days does not show full
+                    -Approximate days in some period does not show full
+        #11 Dateroll/Schedule Split_bond mode form schedule-----> typo--> Split_bond mode from schedule
+        #12 Dateroll/Accounting:
+            Adding /MOD will bound the the business day adjustment to the the current month. (bd adjustment is after y/q/m/w/d!).
+            If rolling forwards, and the next business day falls in next month, bounch backwards to the previous business day.
+
+            twice the before business and current ; bounch-->bounce; 
+        #13 Dateroll/Intervals
+            * after Quarters, but there is not explanation about the start
+        
+        
+
+        
+

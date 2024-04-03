@@ -118,7 +118,6 @@ class Parser:
 
         def gen():
             yield letters.pop(0)
-
         notoday = parsersModule.parseTodayString(untouched)
 
         dates, nodates = parsersModule.parseManyDateStrings(notoday, gen)
@@ -128,7 +127,6 @@ class Parser:
         )
 
         dates_durations = {**dates, **durations}
-        
         processed_answer = parsersModule.parseDateMathString(
             nodatesordurations, dates_durations
         )
@@ -193,5 +191,6 @@ if __name__=='__main__': # pragma:no cover
     from dateroll import ddh
     import dateroll
     dateroll.settings.convention = "MDY"
-    x = ddh('t-1y3m')
+    x = ddh('-1y2q3m4w5d6BD')
+    # x = ddh('t') + ddh('+3m') + ddh('-2y')+ ddh('700bd')-ddh('t')
     print(x)

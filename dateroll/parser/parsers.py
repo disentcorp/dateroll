@@ -1,6 +1,7 @@
 import calendar
 import datetime
 import re
+import math
 
 import dateroll.date.date as dt
 import dateroll.duration.duration as dur
@@ -245,6 +246,7 @@ def parseDurationString_convert_capture_groups(capture_groups: tuple):
                 )
             if unit.lower() in ['s','q','m','w','d']:
                 number = mult * abs(number)
+                
             duration_constructor_args[unit] = number
     
     # attach calendars if any
@@ -268,7 +270,7 @@ def parseDurationString_convert_capture_groups(capture_groups: tuple):
     if "bd" not in duration_constructor_args and "BD" not in duration_constructor_args:
         if modified or len(cals) > 0:
             duration_constructor_args["bd"] = float(0.0) * mult
-    
+
     duration = dur.Duration(**duration_constructor_args)
     return duration
 
@@ -326,13 +328,20 @@ def parseManyDurationString(s, gen):
     """
     durations = {}
     matches = re.findall(patterns.COMPLETE_DURATION, s)
-
-    for match in matches:
+    
+    for idx,match in enumerate(matches):
         duration_string = match[0]
         duration = parseDurationString(duration_string)
+
+        if idx==1:
+            # its because there is bd in string, eg ddh('-1y3bd), so need to flip the sign of bd when main sign is neg
+            op = -1 if '-' in matches[0][0] else 1
+            duration.bd = op * duration.bd
+        
         next_letter = next(gen())
         s = s.replace(duration_string, "+" + next_letter, 1)
         durations[next_letter] = duration
+    
     return durations, s
 
 
