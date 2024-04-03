@@ -98,7 +98,6 @@ class CalendarMath:
         self.compile_all()
 
     def compile_all(self):
-        print("[dateroll] Optimizing calendars")
         d = self.cals.copy()
         for k, v in d.items():
             if k == "WE":
@@ -342,7 +341,6 @@ class CalendarMath:
             unioned_dates |= set(self.cals[cal])
 
         # compile into large dict
-        # print(f"[dateroll] compiling new union [{cal_union_key}]")
         dict_tuple = self.gen_dicts(cal_union_key, unioned_dates, self.ALL)
         self.fwd[cal_union_key], self.bck[cal_union_key], self.ibd[cal_union_key] = (
             dict_tuple
