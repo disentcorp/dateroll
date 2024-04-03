@@ -89,9 +89,10 @@ class ddh:
 
 
 if __name__ == "__main__":  # pragma:no cover
+
+    ddh('t-1y3m')
     
-    import code
-    code.interact(local=dict(globals(),**locals()))
+    ...
 
 
     

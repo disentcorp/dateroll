@@ -142,5 +142,6 @@ class Settings:
 settings = Settings()
 
 if __name__ == "__main__":  # pragma: no cover
-    settings = Settings()
+    # settings = Settings()
+    ...
     

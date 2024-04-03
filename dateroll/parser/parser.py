@@ -128,7 +128,7 @@ class Parser:
         )
 
         dates_durations = {**dates, **durations}
-
+        
         processed_answer = parsersModule.parseDateMathString(
             nodatesordurations, dates_durations
         )
@@ -188,3 +188,10 @@ def parse_to_native(string):
 
 def parse_to_dateroll(string):
     return Parser(string)
+
+if __name__=='__main__': # pragma:no cover
+    from dateroll import ddh
+    import dateroll
+    dateroll.settings.convention = "MDY"
+    x = ddh('t-1y3m')
+    print(x)

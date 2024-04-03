@@ -243,9 +243,12 @@ def parseDurationString_convert_capture_groups(capture_groups: tuple):
                 raise ParserStringsError(
                     "Only 1 number of each unit per duration string (i.e. no 5d3d or 7m1m)"
                 )
-
+            # print('in dur')
+            # code.interact(local=dict(globals(),**locals()))
+            if unit.lower() in ['s','q','m','w','d']:
+                number = mult * abs(number)
             duration_constructor_args[unit] = number
-
+    
     # attach calendars if any
     cals = capture_groups[13:21]
 
@@ -267,7 +270,7 @@ def parseDurationString_convert_capture_groups(capture_groups: tuple):
     if "bd" not in duration_constructor_args and "BD" not in duration_constructor_args:
         if modified or len(cals) > 0:
             duration_constructor_args["bd"] = float(0.0) * mult
-
+    
     duration = dur.Duration(**duration_constructor_args)
     return duration
 
@@ -321,7 +324,7 @@ def parseManyDurationString(s, gen):
                 WEuNY -> all weekend holidays + NY holidays
                 WUuNYuEU -> union of all 3 sets
         modifier after  /
-                /MOD means modified the direction of travel for bd's to stay in current month
+                /MOD means modified the direction of travel for bd's to stay in current month 
     """
     durations = {}
     matches = re.findall(patterns.COMPLETE_DURATION, s)
