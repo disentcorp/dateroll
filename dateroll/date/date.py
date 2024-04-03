@@ -181,7 +181,6 @@ class Date(datetime.date):
         """
         # convert string if first
         if isinstance(o, str):
-
             o = ddhModule.ddh(o)
         # apply rules by type
 
@@ -196,7 +195,7 @@ class Date(datetime.date):
             else:
                 if isinstance(o, datetime.date):
                     dt = o
-
+          
             relative_delta = dateutil.relativedelta.relativedelta(self.date, dt)
             return Duration.from_relativedelta(
                 relative_delta, _anchor_start=dt, _anchor_end=self.date

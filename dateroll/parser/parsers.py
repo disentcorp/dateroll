@@ -241,7 +241,7 @@ def parseDurationString_convert_capture_groups(capture_groups: tuple):
                 raise ParserStringsError(
                     "Only 1 number of each unit per duration string (i.e. no 5d3d or 7m1m)"
                 )
-            duration_constructor_args[unit] = number
+            duration_constructor_args[unit] = number * mult
     
     # attach calendars if any
     cals = capture_groups[13:21]

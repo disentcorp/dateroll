@@ -193,6 +193,13 @@ class Duration(dateutil.relativedelta.relativedelta):
         if isinstance(rd, Duration):
             return rd
         elif isinstance(rd, dateutil.relativedelta.relativedelta):
+            if _anchor_start < _anchor_end:
+                a = _anchor_start
+                b = _anchor_start
+            else:
+                a= _anchor_end
+                b = _anchor_start
+
             return Duration(
                 years=rd.years,
                 months=rd.months,
@@ -754,6 +761,8 @@ class Duration(dateutil.relativedelta.relativedelta):
             output += f'|{"u".join(self.cals)}'
         if self.modified:
             output += f"/MOD"
+        if output=="":
+            output = "+0d"
         return output
 
 
