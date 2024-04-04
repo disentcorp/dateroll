@@ -1660,3 +1660,34 @@ ddh('t+3m-2y+700bd-t')  <-- then t1-t2, and t1 < t2, we have to flip the anchor 
         #2 Added duration += str -->duration in duration.py
         #3 Fixed a bug of new change
         
+For the -A+A bug we had more remnant code.
+In parsers.
+
+multiplier was originally on the first matching pair
+parseManyDurationString, multiplier was added here for bd
+parseDurationString_convert_capture_groups , multiplier was added here for d,w,q,m,y
+
+i removed the multiplier from two different places which are separated by the unit, and
+and have it just inside the parseDurationString_convert_capture_groups:
+    duration_constructor_args[unit] = number * mult
+so, if there is a negative captured by the duration capture group, it is applied equally to all sub items.
+
+Here are some test cases:
+
+droll t+1d-1bd==t
+droll t+1d-1d==t
+droll t+1y1m==t+13m
+droll t-1y1m==t-13m
+droll t+1y1m-13m==t
+droll t-1y1m+13m==t
+droll t+1y+1m-1y-1m==t
+droll t+1y1m-1y1m==t
+droll t+1w-7d==t
+
+droll is a an executable python file in dateroll package, it can be used for quick CLI testing. 
+usually i do [python -c 'from dateroll import *; print(ddh("t+1bd-1bd==t"))']
+
+todo: need to figureout how to put droll in site-packages on $PATH (now i do export PATH=$PATH:. for local testing)
+
+
+

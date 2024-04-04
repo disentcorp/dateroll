@@ -222,12 +222,7 @@ def parseDurationString_convert_capture_groups(capture_groups: tuple):
 
     # get initial multplier (if any)
     op = capture_groups[1]
-
-    mult = 1
-    if op == "+" or op == "":
-        mult = 1
-    elif op == "-":
-        mult = -1
+    mult = -1 if op=='-' else 1
 
     # get all the pairs
     for i in range(2, 12, 2):
@@ -325,16 +320,7 @@ def parseManyDurationString(s, gen):
     
     for idx,match in enumerate(matches):
         duration_string = match[0]
-        duration = parseDurationString(duration_string)
-
-        if idx==1:
-            # its because there is bd in string, eg ddh('-1y3bd), so need to flip the sign of bd when main sign is neg
-            op = -1 if '-' in matches[0][0] else 1
-            # print('in parsers')
-            # import code;code.interact(local=dict(globals(),**locals()))
-            if isinstance(duration.bd,(float,int)):
-                duration.bd = op * duration.bd 
-        
+        duration = parseDurationString(duration_string)        
         next_letter = next(gen())
         s = s.replace(duration_string, "+" + next_letter, 1)
         durations[next_letter] = duration
