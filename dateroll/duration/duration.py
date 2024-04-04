@@ -7,9 +7,11 @@ import dateutil
 import dateutil.relativedelta
 import numpy as np
 
+import dateroll
 import dateroll.calendars.calendarmath as calendarmathModule
 import dateroll.date.date as dateModule
 import dateroll.parser.parsers as parsersModule
+
 import dateroll.utils as utils
 from dateroll.settings import settings
 from dateroll.utils import add_none, combine_none, xprint
@@ -193,12 +195,12 @@ class Duration(dateutil.relativedelta.relativedelta):
         if isinstance(rd, Duration):
             return rd
         elif isinstance(rd, dateutil.relativedelta.relativedelta):
-            if _anchor_start < _anchor_end:
-                a = _anchor_start
-                b = _anchor_start
-            else:
-                a= _anchor_end
-                b = _anchor_start
+            if _anchor_start is not None and _anchor_end is not None:
+                if  _anchor_start < _anchor_end:
+                    ...
+
+                else:
+                    _anchor_start,_anchor_end = _anchor_end,_anchor_start
 
             return Duration(
                 years=rd.years,
@@ -483,6 +485,14 @@ class Duration(dateutil.relativedelta.relativedelta):
             dt = dateModule.Date.from_datetime(modifed)
 
             return dt
+        
+        elif isinstance(b,str):
+            
+            dur_str = self.to_string()
+            dur_str = f"{dur_str}{b}"
+            dur = dateroll.ddh(dur_str)
+            
+            return dur
 
         else:
             raise NotImplementedError

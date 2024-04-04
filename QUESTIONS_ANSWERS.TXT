@@ -1650,3 +1650,13 @@ good catch!!!
 
 i found another one: 
 ddh('t+3m-2y+700bd-t')  <-- then t1-t2, and t1 < t2, we have to flip the anchor dates, i did this,  its ok now
+
+
+######### batu 4/4 6:40AM EST
+    TOTAL                                 1626      0   100%
+
+    Summary:
+        #1 Filled tests of test_ddh
+        #2 Added duration += str -->duration in duration.py
+        #3 Fixed a bug of new change
+        

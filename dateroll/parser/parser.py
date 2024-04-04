@@ -193,4 +193,5 @@ if __name__=='__main__': # pragma:no cover
     dateroll.settings.convention = "MDY"
     x = ddh('-1y2q3m4w5d6BD')
     # x = ddh('t') + ddh('+3m') + ddh('-2y')+ ddh('700bd')-ddh('t')
+    import code;code.interact(local=dict(globals(),**locals()))
     print(x)

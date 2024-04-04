@@ -11,6 +11,8 @@ import dateroll.calendars.calendars as calendars
 from dateroll import cals, ddh
 from dateroll.settings import settings
 import dateroll.date.date as dateModule
+import dateroll.duration.duration as durationModule
+import dateroll.schedule.schedule as scheduleModule
 # import dateroll.duration.duration as durationModule
 
 
@@ -28,6 +30,13 @@ class TestDDH(unittest.TestCase):
         str + str->Date
         """
 
+        d1 = dateModule.Date(2023,3,1)
+        d1 += "1d"
+
+        d2 = d1 + "1d"
+        self.assertEqual(d1,dateModule.Date(2023,3,2))
+        self.assertEqual(d2,dateModule.Date(2023,3,3))
+
     def testDurationMathWithStr(self):
         """
         str->Duration + str
@@ -35,6 +44,12 @@ class TestDDH(unittest.TestCase):
         str + str->Duration
 
         """
+        dur1 = durationModule.Duration(years=1)
+        dur1 += "1bd"
+        self.assertEqual(dur1,durationModule.Duration(years=1, months=0, days=0, modified=False, bd=1.0, cals="WE"))
+        dur2 = dur1 + "1bd"
+        self.assertEqual(dur2,durationModule.Duration(years=1, months=0, days=0, modified=False, bd=2.0, cals="WE"))
+        
 
     def testDateMathAdd(self):
         """
@@ -44,6 +59,12 @@ class TestDDH(unittest.TestCase):
         str->Duration + str->Duration
         """
 
+        d1 = dateModule.Date(2023,3,1)
+        with self.assertRaises(TypeError):
+            d2 = d1 + "02012023"
+        
+        
+        
     def testDateMathSub(self):
         """
         str->Date - str->Date
@@ -51,12 +72,23 @@ class TestDDH(unittest.TestCase):
         str->Duration - str->Date
         str->Duration - str->Duration
         """
-
+        d1 = dateModule.Date(2023,3,1)
+        
+        d2 = d1 - "02012023"
+        self.assertEqual(d2.to_string(),"+1m")
+        
     def testSchedule(self):
         """
         str->Schedule (1bd,1d,1w,1m,1y)
         """
-
+        # 
+        start = dateModule.Date(2023,1,3)
+        end = dateModule.Date(2023,6,3)
+        self.assertEqual(ddh('01032023,06032023,1bd').list,scheduleModule.Schedule(start,end,durationModule.Duration(bd=1)).list)
+        self.assertEqual(ddh('01032023,06032023,1d').list,scheduleModule.Schedule(start,end,durationModule.Duration(days=1)).list)
+        self.assertEqual(ddh('01032023,06032023,1w').list,scheduleModule.Schedule(start,end,durationModule.Duration(weeks=1)).list)
+        self.assertEqual(ddh('01032023,06032023,1m').list,scheduleModule.Schedule(start,end,durationModule.Duration(months=1)).list)
+        self.assertEqual(ddh('01032023,06032023,1y').list,scheduleModule.Schedule(start,end,durationModule.Duration(years=1)).list)
     def testPurge(self):
         """
         purge all
@@ -153,6 +185,14 @@ class TestsPracticalExamples(unittest.TestCase):
 
         with self.assertRaises(TypeError):
             ddh(10)
+        
+    def test_bds(self):
+        """
+            when string has years and bds with a negative sign
+        """
+
+        x = ddh('-1y2q3m4w5d6BD')
+        self.assertEqual(x,durationModule.Duration(years=-1, months=-9, days=-33, modified=False, bd=-6.0, cals="WE"))
 
 
 if __name__ == "__main__":
