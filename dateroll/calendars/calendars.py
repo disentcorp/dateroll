@@ -75,7 +75,7 @@ class Drawer:
 
         if self.path.exists():
             try:
-                with self.path.open("rb") as f:
+                with open(self.path, "rb") as f:
                     self.data = pickle.load(f)
                     self.cals.db_hash = self.cals.hash
                     self.cals.db = self.data
