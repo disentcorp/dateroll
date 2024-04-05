@@ -118,6 +118,7 @@ class Parser:
 
         def gen():
             yield letters.pop(0)
+
         notoday = parsersModule.parseTodayString(untouched)
 
         dates, nodates = parsersModule.parseManyDateStrings(notoday, gen)
@@ -187,11 +188,9 @@ def parse_to_native(string):
 def parse_to_dateroll(string):
     return Parser(string)
 
-if __name__=='__main__': # pragma:no cover
-    from dateroll import ddh
+
+if __name__ == "__main__":  # pragma:no cover
     import dateroll
+    from dateroll import ddh
+
     dateroll.settings.convention = "MDY"
-    x = ddh('-1y2q3m4w5d6BD')
-    # x = ddh('t') + ddh('+3m') + ddh('-2y')+ ddh('700bd')-ddh('t')
-    import code;code.interact(local=dict(globals(),**locals()))
-    print(x)

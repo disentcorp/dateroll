@@ -9,12 +9,13 @@ from dateroll.date import date as dateModule
 from dateroll.duration import duration as durationModule
 from dateroll.ddh import ddh as ddhModule
 from dateroll import utils
-from dateroll import settings
+
 
 class Schedule:
-    '''
+    """
     list-like schedule generator
-    '''
+    """
+
     def __init__(self, start, stop, step, origin_string=None):
 
         self.start = start
@@ -40,19 +41,19 @@ class Schedule:
 
     def __len__(self):
         return self.num_dates
-    
+
     @property
     def list(self):
-        '''
+        """
         returns list of dates
-        '''
+        """
         return self._dates
 
     @property
     def dates(self):
-        '''
+        """
         returns list of dates
-        '''
+        """
         return self._dates
 
     def run(self):
@@ -87,19 +88,19 @@ class Schedule:
         )
         print(_)
 
-    def __getitem__(self,k):
-        if isinstance(k,int):
+    def __getitem__(self, k):
+        if isinstance(k, int):
             return self._dates[k]
-        elif isinstance(k,str):
+        elif isinstance(k, str):
             d = ddhModule.ddh(k)
             if d in self._dates:
                 return d
             else:
                 raise KeyError(d)
-        elif isinstance(k,slice):
-            return utils.date_slice(k,self._dates)
+        elif isinstance(k, slice):
+            return utils.date_slice(k, self._dates)
         else:
-            raise TypeError('Indexation only support ints, date strings, or slices.')
+            raise TypeError("Indexation only support ints, date strings, or slices.")
 
     def __str__(self):
         s = f"""Schedule:
@@ -147,7 +148,7 @@ class Schedule:
         start = list_of_dates[:-1]
         stop = list_of_dates[1:]
         df = pd.DataFrame({"start": start, "stop": stop})
-        df['step']=df.stop-df.start
+        df["step"] = df.stop - df.start
         df.index.name = "per"
 
         return df

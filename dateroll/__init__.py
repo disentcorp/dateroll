@@ -1,3 +1,4 @@
+
 from dateroll.ddh.ddh import ddh
 from dateroll.date.date import Date
 from dateroll.duration.duration import Duration
@@ -13,7 +14,6 @@ import dateroll.settings as settingsModule
 settings = settingsModule.settings
 calmath = calendarmathModule.calmath
 cals = calendarmathModule.calmath.cals
-
 
 # for backwards compatibility testing
 # import sys

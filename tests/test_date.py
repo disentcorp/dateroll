@@ -351,11 +351,11 @@ class TestDate(unittest.TestCase):
             Date.from_unix("hello")
 
     def test_hms(self):
-        d = Date(2024,2,2)
-        self.assertTrue(hasattr(d,'hour'))
-        self.assertTrue(hasattr(d,'minute'))
-        self.assertTrue(hasattr(d,'second'))
-        self.assertTrue(hasattr(d,'microsecond'))
+        d = Date(2024, 2, 2)
+        self.assertTrue(hasattr(d, "hour"))
+        self.assertTrue(hasattr(d, "minute"))
+        self.assertTrue(hasattr(d, "second"))
+        self.assertTrue(hasattr(d, "microsecond"))
 
     def test_from_xls(self):
         good = {  # randomly generated from excel

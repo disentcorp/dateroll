@@ -1,7 +1,6 @@
 import calendar
 import datetime
 import re
-import math
 
 import dateroll.date.date as dt
 import dateroll.duration.duration as dur
@@ -9,8 +8,6 @@ from dateroll import utils
 from dateroll.parser import patterns
 from dateroll.schedule.schedule import Schedule
 from dateroll.settings import settings
-
-import code
 
 TODAYSTRINGVALUES = ["today", "t0", "t"]
 
@@ -196,7 +193,7 @@ def parseManyDateStrings(s, gen):
     dates = {}
     matches = re.findall(pattern, s)
     res = s
-    
+
     for match, _, _, _ in matches:
         # must hav 4 components per match
         # match 0 is 1st capture group = whole thing
@@ -222,10 +219,10 @@ def parseDurationString_convert_capture_groups(capture_groups: tuple):
 
     # get initial multplier (if any)
     op = capture_groups[1]
-    mult = -1 if op=='-' else 1
+    mult = -1 if op == "-" else 1
 
     # get all the pairs
-    for i in range(2, 12, 2):
+    for i in range(2, 26, 2):
         number = capture_groups[i]
         unit = capture_groups[i + 1]
 
@@ -237,10 +234,9 @@ def parseDurationString_convert_capture_groups(capture_groups: tuple):
                     "Only 1 number of each unit per duration string (i.e. no 5d3d or 7m1m)"
                 )
             duration_constructor_args[unit] = number * mult
-    
-    # attach calendars if any
-    cals = capture_groups[13:21]
 
+    # attach calendars if any
+    cals = capture_groups[27:38]
     # remove empty strings from cals
     cals = tuple(filter(lambda x: x != "", cals))
     for cal in cals:
@@ -251,7 +247,7 @@ def parseDurationString_convert_capture_groups(capture_groups: tuple):
         )
 
     # attach roll if any
-    modified = capture_groups[22]
+    modified = capture_groups[39]
     if modified:
         duration_constructor_args["modified"] = True
 
@@ -313,18 +309,18 @@ def parseManyDurationString(s, gen):
                 WEuNY -> all weekend holidays + NY holidays
                 WUuNYuEU -> union of all 3 sets
         modifier after  /
-                /MOD means modified the direction of travel for bd's to stay in current month 
+                /MOD means modified the direction of travel for bd's to stay in current month
     """
     durations = {}
     matches = re.findall(patterns.COMPLETE_DURATION, s)
-    
-    for idx,match in enumerate(matches):
+
+    for idx, match in enumerate(matches):
         duration_string = match[0]
-        duration = parseDurationString(duration_string)        
+        duration = parseDurationString(duration_string)
         next_letter = next(gen())
         s = s.replace(duration_string, "+" + next_letter, 1)
         durations[next_letter] = duration
-    
+
     return durations, s
 
 
@@ -396,7 +392,9 @@ def parseDateMathString(s, things):
     except Exception as e:
         raise ParserStringsError("Cannot recognize as date math", s)
 
-if __name__=='__main__':  # pragma:no cover
+
+if __name__ == "__main__":  # pragma:no cover
     from dateroll.ddh.ddh import ddh
-    x = ddh('111422414')
+
+    x = ddh("111422414")
     print(x)

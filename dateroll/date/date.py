@@ -195,7 +195,7 @@ class Date(datetime.date):
             else:
                 if isinstance(o, datetime.date):
                     dt = o
-          
+
             relative_delta = dateutil.relativedelta.relativedelta(self.date, dt)
             return Duration.from_relativedelta(
                 relative_delta, _anchor_start=dt, _anchor_end=self.date
@@ -266,25 +266,27 @@ class Date(datetime.date):
         """
         mask = utils.convention_map[settings.convention]
         return self.strftime(mask)
-    
 
     def __str__(self):
         return self.to_string()
-    
 
     # Backwards compatibility with datetime.datetime, some 3rd party libraries assume subclasses have <1d properties, we assume 00:00:00
 
     @property
     def hour(self):
         return 0
+
     @property
     def minute(self):
         return 0
+
     @property
     def second(self):
         return 0
+
     @property
     def microsecond(self):
         return 0
+
 
 DateLike = DateLike + (Date,)

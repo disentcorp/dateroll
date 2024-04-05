@@ -13,16 +13,16 @@ ddh('t') +'3m' .... it's relaly close to the base but little extra.
 
 """
 
-# import dateroll.calendars.calendarmath as calendarmathModule
 import dateroll.date.date as dateModule
 import dateroll.duration.duration as durationModule
 import dateroll.schedule.schedule as scheduleModule
 import dateroll.calendars.calendarmath as calendarmathModule
 import dateroll.calendars.calendars as calendarModule
 import dateroll.settings as settingsModule
-# from dateroll.settings import settings
+
 
 DEBUG = False
+
 
 class ddh:
     Date = dateModule.Date
@@ -43,6 +43,7 @@ class ddh:
             raise TypeError(f"ddh() cannot handle {type(o).__name__})")
 
         return obj
+
     @staticmethod
     def purge_all():
         """
@@ -59,40 +60,45 @@ class ddh:
         ddh.hols._purge_all()
         ddh.calmath._purge_all()
 
-
     class YMD:
         global settings
+
         def __init__(self):
             pass
+
         def __enter__(self):
-            ddh.settings._convention_override = 'YMD'
-        def __exit__(self,*e):
+            ddh.settings._convention_override = "YMD"
+
+        def __exit__(self, *e):
             del ddh.settings._convention_override
 
     class MDY:
         global settings
+
         def __init__(self):
             pass
+
         def __enter__(self):
-            ddh.settings._convention_override = 'MDY'
-        def __exit__(self,*e):
+            ddh.settings._convention_override = "MDY"
+
+        def __exit__(self, *e):
             del ddh.settings._convention_override
 
     class DMY:
         global settings
+
         def __init__(self):
             pass
+
         def __enter__(self):
-            ddh.settings._convention_override = 'DMY'
-        def __exit__(self,*e):
+            ddh.settings._convention_override = "DMY"
+
+        def __exit__(self, *e):
             del ddh.settings._convention_override
 
 
 if __name__ == "__main__":  # pragma:no cover
 
-    ddh('t-1y3m')
-    
+    ddh("t-1y3m")
+
     ...
-
-
-    

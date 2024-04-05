@@ -1,3 +1,4 @@
+import code
 import datetime
 import itertools
 import os
@@ -7,7 +8,6 @@ import tempfile
 import unittest
 import uuid
 from unittest import expectedFailure
-import code
 
 import pandas as pd
 
@@ -260,6 +260,21 @@ class TestUsage(unittest.TestCase):
         with self.assertRaises(parsers.ParserStringsError):
             ddh("11553")
 
+    def test_weirdStrings(self):
+        """
+        convention is mdy
+        """
+
+        ddh("t+1d-1bd") == ddh("t")
+        ddh("t+1d-1d") == ddh("t")
+        ddh("t+1y1m") == ddh("t+13m")
+        ddh("t-1y1m") == ddh("t-13m")
+        ddh("t+1y1m-13m") == ddh("t")
+        ddh("t-1y1m+13m") == ddh("t")
+        ddh("t+1y+1m-1y-1m") == ddh("t")
+        ddh("t+1y1m-1y1m") == ddh("t")
+        ddh("t+1w-7d") == ddh("t")
+
     def test_parseComboMDY(self):
         """
         test combinations of m,d,y, where month can be 1,2,3 digits, 3 letter, 4 letter, full letter
@@ -324,7 +339,7 @@ class TestUsage(unittest.TestCase):
                             ddh(mdy)
                     else:
                         # should not raise error
-                        
+
                         ddh(mdy_new)
                 else:
                     # should raise error
@@ -356,7 +371,7 @@ class TestUsage(unittest.TestCase):
                                 ddh(mdy)
                         else:
                             # it should not raise error
-                            
+
                             ddh(mdy)
                     else:
                         combo_count += 1

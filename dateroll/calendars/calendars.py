@@ -57,7 +57,7 @@ def load_sample_data():
                 if dt >= INCEPTION:
                     l.append(dt)
 
-            ds = DateSet(l,name=name)
+            ds = DateSet(l, name=name)
             data[name] = ds
     return data
 
@@ -125,10 +125,10 @@ class DateSet:
         dt = date_check(item)
         self._data[dt] = True
         if self.name is not None:
-            tothing = f' to {self.name}'
+            tothing = f" to {self.name}"
         else:
-            tothing = ''
-        print(f'[dateroll] {item} added{tothing}.')
+            tothing = ""
+        print(f"[dateroll] {item} added{tothing}.")
 
     def __contains__(self, item):
         if isinstance(item, dateModule.Date):
@@ -143,11 +143,11 @@ class DateSet:
         extension = {date_check(i): None for i in items if i is not None}
         self._data.update(extension)
 
-    def __getitem__(self,k):
-        if isinstance(k,slice):
-            return date_slice(k,self._data)
+    def __getitem__(self, k):
+        if isinstance(k, slice):
+            return date_slice(k, self._data)
         else:
-            raise TypeError('Indexation on DateSet only accepts date string slicing')
+            raise TypeError("Indexation on DateSet only accepts date string slicing")
 
     def __iter__(self):
         return iter(self._data)
@@ -216,14 +216,13 @@ class Calendars(dict):
         self.write = True
         with Drawer(self) as db:
             # value must be a set-like list of dates
-            verified = DateSet(v,name=k)
+            verified = DateSet(v, name=k)
             db[k] = verified
-        
-        print(f'[dateroll] {k} now has {len(verified)} holidays.')
+
+        print(f"[dateroll] {k} now has {len(verified)} holidays.")
 
     def __getitem__(self, k):
         return self.get(k)
-
 
     def __getattr__(self, k):
         """
@@ -292,20 +291,28 @@ class Calendars(dict):
                 for j in l:
                     if j.year > 1950 and j.year < 2050:
                         if j.year in years:
-                            years[j.year]+=1
+                            years[j.year] += 1
                         else:
-                            years[j.year]=1
-            
-                num_this_year = years.get(datetime.date.today().year,0)
+                            years[j.year] = 1
+
+                num_this_year = years.get(datetime.date.today().year, 0)
                 if len(l) > 0:
                     n = len(l)
                     mn = min(l).strftime(conv)
                     mx = max(l).strftime(conv)
                 else:
                     n, mn, mx = 0, "", ""
-                data.append({'name':i,'non-working days':n,'oldest':mn,'newest':mx,'# this year':num_this_year})
+                data.append(
+                    {
+                        "name": i,
+                        "non-working days": n,
+                        "oldest": mn,
+                        "newest": mx,
+                        "# this year": num_this_year,
+                    }
+                )
         return data
-    
+
     def __str__(self):
         data = self._calsdata
         s = pretty_table(data)
@@ -327,9 +334,5 @@ class Calendars(dict):
 
 
 if __name__ == "__main__":  # pragma: no cover
-    
-    
-    ...
-    
 
-    
+    ...

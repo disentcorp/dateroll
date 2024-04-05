@@ -1,3 +1,4 @@
+import code
 import copy
 import datetime
 import math
@@ -11,7 +12,6 @@ import dateroll
 import dateroll.calendars.calendarmath as calendarmathModule
 import dateroll.date.date as dateModule
 import dateroll.parser.parsers as parsersModule
-
 import dateroll.utils as utils
 from dateroll.settings import settings
 from dateroll.utils import add_none, combine_none, xprint
@@ -19,8 +19,6 @@ from dateroll.utils import add_none, combine_none, xprint
 # NOTE: functools cache is defined starting from python 3.9
 # older versions of python can use functools lru_cache(maxsize=None)
 # for now, leave this commented out because it is not used
-
-
 
 
 cals = calendarmathModule.calmath.cals
@@ -196,11 +194,11 @@ class Duration(dateutil.relativedelta.relativedelta):
             return rd
         elif isinstance(rd, dateutil.relativedelta.relativedelta):
             if _anchor_start is not None and _anchor_end is not None:
-                if  _anchor_start < _anchor_end:
+                if _anchor_start < _anchor_end:
                     ...
 
                 else:
-                    _anchor_start,_anchor_end = _anchor_end,_anchor_start
+                    _anchor_start, _anchor_end = _anchor_end, _anchor_start
 
             return Duration(
                 years=rd.years,
@@ -481,17 +479,18 @@ class Duration(dateutil.relativedelta.relativedelta):
             NOT (Duration - Date)
                 Date.__rsub__ throws TypeError before it gets here (non-sensical situation)
             """
+
             modifed = self.adjust_from_date(b, direction)
             dt = dateModule.Date.from_datetime(modifed)
 
             return dt
-        
-        elif isinstance(b,str):
-            
+
+        elif isinstance(b, str):
+
             dur_str = self.to_string()
             dur_str = f"{dur_str}{b}"
             dur = dateroll.ddh(dur_str)
-            
+
             return dur
 
         else:
@@ -527,7 +526,7 @@ class Duration(dateutil.relativedelta.relativedelta):
             xprint("negation: none") if self.debug else None
 
         # 2 non-holiday adjustments, add D,M,Y
-        if isinstance(date_unadj,dateModule.Date):
+        if isinstance(date_unadj, dateModule.Date):
             date_unadj = date_unadj.date
         date_nonhol_adj = date_unadj + negated_self.relativedelta
         (
@@ -669,7 +668,7 @@ class Duration(dateutil.relativedelta.relativedelta):
 
     def __pos__(self):
         return self
-    
+
     def __str__(self):
         return self.to_string()
 
@@ -693,8 +692,8 @@ class Duration(dateutil.relativedelta.relativedelta):
     def __gt__(a, b):
         if isinstance(b, int):
             if b == 0:
-                tdy = dateModule.Date.from_string('t')
-                return (tdy+a)>tdy
+                tdy = dateModule.Date.from_string("t")
+                return (tdy + a) > tdy
             else:
                 b = Duration(days=b)
 
@@ -704,8 +703,8 @@ class Duration(dateutil.relativedelta.relativedelta):
         if isinstance(b, int):
             if b == 0:
                 tdy = datetime.date.today()
-                return (tdy+a)>=tdy
-            
+                return (tdy + a) >= tdy
+
             b = Duration(days=b)
         return a.just_days >= b.just_days
 
@@ -771,7 +770,7 @@ class Duration(dateutil.relativedelta.relativedelta):
             output += f'|{"u".join(self.cals)}'
         if self.modified:
             output += f"/MOD"
-        if output=="":
+        if output == "":
             output = "+0d"
         return output
 

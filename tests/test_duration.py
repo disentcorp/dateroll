@@ -566,8 +566,7 @@ class TestDuration(unittest.TestCase):
 
         self.assertEqual(dur.to_string(), "+1y+2m+3d+4bd|NYuWE/MOD")
         self.assertEqual(dur2.to_string(), "+1y-2m+3d+4bd|NYuWE/MOD")
-        self.assertEqual(dur3.to_string(),"+0d")
-        
+        self.assertEqual(dur3.to_string(), "+0d")
 
     def test_just_bds(self):
         """
@@ -703,20 +702,20 @@ class TestDuration(unittest.TestCase):
 
     def test_gt(self):
         """
-            test when b = 0 to compare a= Duration(something) and a>b 
+        test when b = 0 to compare a= Duration(something) and a>b
 
 
         """
-        
+
         b = 0
         # a is positive duration
         a = Duration(days=10)
-        self.assertTrue(a>b)
+        self.assertTrue(a > b)
 
         # a is negative
         a = Duration(days=-10)
-        self.assertFalse(a>b)
-        
+        self.assertFalse(a > b)
+
 
 if __name__ == "__main__":
     unittest.main()

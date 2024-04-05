@@ -1,13 +1,13 @@
 import calendar
-import fcntl
-import functools
-import pathlib
 import re
-import time
 
+# from dateroll.date import date as dateModule
+# from dateroll.ddh import ddh as ddhModule
 from dateroll.parser import patterns
-from dateroll.date import date as dateModule
-from dateroll.ddh import ddh as ddhModule
+
+import dateroll.date.date as dateModule
+import dateroll.ddh.ddh as ddhModule
+
 
 XPRINT_ON = False
 
@@ -130,27 +130,28 @@ def swap_month_names(s):
         s = patterns.MONTHNAMES.sub(month_str_numb, s.capitalize())
     return s
 
+
 convention_map = {"YMD": r"%Y-%m-%d", "DMY": r"%d/%m/%Y", "MDY": r"%m/%d/%Y"}
 
 
 def str_or_date(s):
-    if isinstance(s,str):
+    if isinstance(s, str):
         d = ddhModule.ddh(s)
-    elif isinstance(s,dateModule.DateLike):
+    elif isinstance(s, dateModule.DateLike):
         d = dateModule.Date.from_datetime(s)
     else:
-        raise Exception('Slicing only supports dateroll datestrings')
+        raise Exception("Slicing only supports dateroll datestrings")
     return d
 
 
-def date_slice(s:slice,l:list):
-    '''
+def date_slice(s: slice, l: list):
+    """
     s[t1:]   -- after t1 (inclusive)
     s[:t2]   -- before t2 (inclusive)
     s[t1:t2]  -- between t1 and t2 (inclusive)
-    
-    '''
-    start,stop,step = s.start,s.stop,s.step
+
+    """
+    start, stop, step = s.start, s.stop, s.step
     if start is not None and stop is None and step is None:
         # after
         start = str_or_date(start)
@@ -163,10 +164,10 @@ def date_slice(s:slice,l:list):
         # between
         start = str_or_date(start)
         stop = str_or_date(stop)
-        return [i for i in l if i >= start and i <=stop]
+        return [i for i in l if i >= start and i <= stop]
     elif start is None and stop is None and step is None:
         # all
         return list(l.keys())
     elif step is not None:
         # neither
-        raise Exception('Slicing only supports start, stop, and start+stop, not step.')
+        raise Exception("Slicing only supports start, stop, and start+stop, not step.")

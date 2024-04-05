@@ -1689,5 +1689,15 @@ usually i do [python -c 'from dateroll import *; print(ddh("t+1bd-1bd==t"))']
 
 todo: need to figureout how to put droll in site-packages on $PATH (now i do export PATH=$PATH:. for local testing)
 
+########## batu 4:07 AM EST
+
+TOTAL                                 1610      0   100%
+
+    Summary: 
+            #1 Fix bugs
+            #2 Clean code
+            #3 Added new tests after droll into testcases
+
+
 
 

@@ -1,8 +1,6 @@
 import calendar
 import datetime
 
-from dateroll.settings import settings
-
 calendar.setfirstweekday(calendar.SUNDAY)
 
 from dateroll.utils import color
@@ -32,7 +30,7 @@ def pretty_between_two_dates(dt1, dt2, cals, calmath):
     else:
         _1, _2 = dt2, dt1
 
-    banner = f'From {_1}, to {_2}, holidays: {cals}'
+    banner = f"From {_1}, to {_2}, holidays: {cals}"
     print(banner)
 
     y1, m1, d1 = _1.year, _1.month, _1.day
