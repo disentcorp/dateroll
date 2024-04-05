@@ -36,7 +36,7 @@ Date(2024,2,29)
 Use strings for all your date needs with `dateroll.ddh` (ddh= date duration helper).
 Our `Date` class is a drop-in replacement for `datetime.date`, and our `Duration` class is a drop-in replacement for `datetime.timedelta` or `datetime.relativedelta.relativedelta`. You can also use schedule strings to define a `Schedule` class, which is not so different than `RRULE`.
 
-Please visit our interactive documentation! (dateroll.disent.com)[https://dateroll.disent.com]
+Please visit our interactive documentation! [dateroll.disent.com](https://dateroll.disent.com)
 
 Happy rolling! 
 
