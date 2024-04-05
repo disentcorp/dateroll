@@ -1,23 +1,8 @@
-<style>
-  body{
-    font-family: helvetica, arial;
-  }  
-</style>
-<span style="color:red;">PRE-RELEASE</span>
-
-<div style="padding-left:12%;padding-right:12%;">
-
 <p align="center">
   <img src="logo.png" style="width:250px"/>
 </p>
 
-<center>
-  <span style='color:black;font-size:65pt;font-weight:bold'>date</span>
-  <span style='color:black;font-size:65pt;font-weight:bold;opacity:60%;'>roll</span>
-</center>
-
-<br />
-
+# `dateroll`
 **`dateroll`** makes working with 📅 dates less painful.
 <br />
 
@@ -130,7 +115,7 @@ Duration(start='1/5/24',stop='2/5/24')
 
 ```
 
-Much more in the [docs](docs.html).
+Please visit our interactive documentation! (dateroll.disent.com)[https://dateroll.disent.com]
 
 Happy rolling! 
 
