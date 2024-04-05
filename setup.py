@@ -36,6 +36,11 @@ setup(
         "dateroll.schedule",
         "dateroll.date",
     ],
+    entry_points={
+        'console_scripts': [
+            'droll = dateroll.cli:droll'
+        ]
+    },
     include_package_data=True,
     package_data={"dateroll": ["sampledata/*.csv", "tests/*"]},
     install_requires=["python-dateutil"],

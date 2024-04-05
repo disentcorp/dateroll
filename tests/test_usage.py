@@ -163,12 +163,12 @@ class TestUsageMore(unittest.TestCase):
             _b = time.time()
             ans = f"{str(b==a):<5}"
             res = color(ans, "green") if b == a else color(ans, "red")
-            ms = round((_b - _a) * 1000, 0)
-            if ms > 100:
-                ms = f"{ms:>10} ms"
+            ms = int(round((_b - _a) * 1000 * 1000, 0))
+            if ms > 1000:
+                ms = f"{ms:>10} us"
                 ms = color(ms, "red")
             else:
-                ms = f"{ms:>10} ms"
+                ms = f"{ms:>10} us"
 
             print(f"tesing: {s:>28} = {b} == {a}", res, ms)
             if a == b:
@@ -180,7 +180,6 @@ class TestUsageMore(unittest.TestCase):
 
         # reset
         settings.convention = "MDY"
-
 
 if __name__ == "__main__":
 

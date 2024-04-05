@@ -1,10 +1,10 @@
-DOCS.md
 LICENSE
 MANIFEST.in
 README.md
 setup.py
 dateroll/__init__.py
 dateroll/__main__.py
+dateroll/cli.py
 dateroll/pretty.py
 dateroll/settings.py
 dateroll/tblfmt.py
@@ -12,6 +12,7 @@ dateroll/utils.py
 dateroll.egg-info/PKG-INFO
 dateroll.egg-info/SOURCES.txt
 dateroll.egg-info/dependency_links.txt
+dateroll.egg-info/entry_points.txt
 dateroll.egg-info/not-zip-safe
 dateroll.egg-info/requires.txt
 dateroll.egg-info/top_level.txt

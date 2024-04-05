@@ -1,0 +1,2 @@
+[console_scripts]
+droll = dateroll.cli:droll

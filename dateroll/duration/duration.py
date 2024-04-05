@@ -6,7 +6,6 @@ import warnings
 
 import dateutil
 import dateutil.relativedelta
-import numpy as np
 
 import dateroll
 import dateroll.calendars.calendarmath as calendarmathModule
@@ -427,21 +426,18 @@ class Duration(dateutil.relativedelta.relativedelta):
             """
 
             # non bd adjustments
-            years = a.years + direction * b.years
-            months = a.months + direction * b.months
-            days = a.days + direction * b.days
-
-            if np.sign(years) != np.sign(months):
-                # we adjust it to have same signs, since we dont have anchor date we can not adjust the date
-                rd_adjusted = dateutil.relativedelta.relativedelta(
-                    months=years * 12 + months
-                )
-                years = rd_adjusted.years
-                months = rd_adjusted.months
+            years = a.years + b.years * direction
+            months = a.months + b.months * direction
+            days = a.days + b.days * direction
 
             # bd adjustments w/o MOD
             bd = add_none(a.bd, b.bd, direction)  # none or add
             cals = combine_none(a.cals, b.cals)  # union
+
+            # adjust years and months such that abs(months) < 12 always
+            months = years*12 + months
+            years = int(months/12)
+            months = months - years*12
 
             # modified / if either has, inherit it
             modified = a.modified or b.modified

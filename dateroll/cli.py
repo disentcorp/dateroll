@@ -1,9 +1,7 @@
-#!/usr/bin/env python3
-
 import argparse
 from dateroll import ddh
 
-if __name__ == '__main__':
+def droll():
     parser = argparse.ArgumentParser(
         prog='droll',
         description="Process DateRollString's from the command line.")
@@ -18,4 +16,3 @@ if __name__ == '__main__':
     print(y)
     if args.verbose:
         hasattr(y,'cal')
-    

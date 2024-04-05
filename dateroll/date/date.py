@@ -1,7 +1,6 @@
 import datetime
 
 import dateutil.relativedelta
-import pytz
 
 import dateroll.ddh.ddh as ddhModule
 import dateroll.parser.parsers as parsersModule
