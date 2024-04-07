@@ -1,5 +1,4 @@
 import datetime
-import fcntl
 import glob
 import hashlib
 import os
@@ -81,7 +80,7 @@ class Drawer:
                     self.cals.db = self.data
 
                     return self.cals.db
-            except Exception as e:
+            except Exception:
                 import traceback
 
                 traceback.print_exc()
@@ -208,7 +207,7 @@ class Calendars(dict):
         if len(k) < 2 or len(k) > 3:
             raise Exception(f"Cal name be 2 or 3 charts (got {len(k)})")
         if not k.isupper():
-            raise Exception(f"Cal name must be all uppercase")
+            raise Exception("Cal name must be all uppercase")
 
         if k in self.db.keys():
             raise Exception(f"{k} exists already, delete first.if you want to replace.")

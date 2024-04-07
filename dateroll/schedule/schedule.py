@@ -3,7 +3,6 @@ import dateroll.calendars.calendarmath as calendarmathModule
 import dateroll.parser.parsers as parsersModule
 from dateroll import pretty
 from dateroll.date import date as dateModule
-from dateroll.duration import duration as durationModule
 from dateroll.ddh import ddh as ddhModule
 from dateroll import utils
 

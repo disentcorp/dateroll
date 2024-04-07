@@ -58,11 +58,11 @@ class CalendarMath:
                 try:
                     cached = pickle.load(f)
                     return cached
-                except Exception as e:
+                except Exception:
                     import traceback
 
                     traceback.print_exc()
-                    print(f"[dateroll] Cannot load cache for calmath unions, clearing.")
+                    print("[dateroll] Cannot load cache for calmath unions, clearing.")
                     os.remove(self.home)
         else:
             self.save_cache()
@@ -212,7 +212,6 @@ class CalendarMath:
         B = self.bck[cal_name]
         if len(A) == 0:
             raise ValueError("Please provide holidays")
-        from dateroll.date.date import Date
 
         bd_index = A[d]
         new_bd_index = bd_index + n
@@ -225,7 +224,7 @@ class CalendarMath:
         subtract (opposed of add)
         """
         if n < 0:
-            raise ValueError(f"n needs to be positive number")
+            raise ValueError("n needs to be positive number")
 
         n = -1 * float(n)
         return self.add_bd(d, n, cals)
@@ -360,7 +359,5 @@ class CalendarMath:
 calmath = CalendarMath()
 
 if __name__ == "__main__":  # pragma:no cover
-    from dateroll import ddh
-    from dateroll.settings import settings
-    import code
+    pass
     # code.interact(local=dict(globals(),**locals()))

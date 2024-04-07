@@ -17,7 +17,6 @@ import dateroll.date.date as dateModule
 import dateroll.duration.duration as durationModule
 import dateroll.schedule.schedule as scheduleModule
 import dateroll.calendars.calendarmath as calendarmathModule
-import dateroll.calendars.calendars as calendarModule
 import dateroll.settings as settingsModule
 
 

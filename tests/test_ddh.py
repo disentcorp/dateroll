@@ -1,13 +1,7 @@
 import datetime
-import os
-import pathlib
-import tempfile
 import unittest
-import uuid
-from unittest import expectedFailure
 
 import dateroll
-import dateroll.calendars.calendars as calendars
 import dateroll.date.date as dateModule
 import dateroll.duration.duration as durationModule
 import dateroll.schedule.schedule as scheduleModule

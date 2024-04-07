@@ -4,7 +4,6 @@ import re
 import sys
 import unittest
 
-import numpy as np
 
 from dateroll.date.date import Date
 from dateroll.ddh.ddh import ddh

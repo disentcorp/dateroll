@@ -389,7 +389,7 @@ def parseDateMathString(s, things):
     try:
         total = eval(s, {}, things)
         return total
-    except Exception as e:
+    except Exception:
         raise ParserStringsError("Cannot recognize as date math", s)
 
 

@@ -83,7 +83,7 @@ class TestStringMethods(unittest.TestCase):
         with Drawer(cals) as db:
             try:
                 db.update("Hello")
-            except Exception as e:
+            except Exception:
                 exc_type, exc_value, exc_traceback = sys.exc_info()
         self.assertEqual(exc_type.__name__, "ValueError")
 

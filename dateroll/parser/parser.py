@@ -191,6 +191,5 @@ def parse_to_dateroll(string):
 
 if __name__ == "__main__":  # pragma:no cover
     import dateroll
-    from dateroll import ddh
 
     dateroll.settings.convention = "MDY"

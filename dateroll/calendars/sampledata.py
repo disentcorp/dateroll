@@ -8,7 +8,6 @@ import pathlib
 
 from dateutil.relativedelta import relativedelta as rd
 from workalendar.america.brazil import Brazil
-from workalendar.asia.japan import JapanBank
 from workalendar.europe.european_central_bank import EuropeanCentralBank
 from workalendar.europe.united_kingdom import UnitedKingdom
 from workalendar.usa import FederalReserveSystem
