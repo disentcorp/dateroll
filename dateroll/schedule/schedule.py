@@ -9,7 +9,7 @@ from dateroll import utils
 try:
     import pandas as pd
     have_pandas = True
-except:  # pragma: no cover
+except Exception:  # pragma: no cover
     have_pandas = False
 
 

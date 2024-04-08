@@ -85,7 +85,6 @@ class Settings:
             append default settings not in user settings for a complete set of settings
         """
 
-        reset = False
         for k, v in user_settings.items():
 
             if k not in default_settings:

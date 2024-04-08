@@ -3,6 +3,11 @@ import pathlib
 
 # from dateroll.parser.parser import parse_to_dateroll, parse_to_native
 import dateroll.parser.parser as parserModule
+import dateroll.date.date as dateModule
+import dateroll.duration.duration as durationModule
+import dateroll.schedule.schedule as scheduleModule
+import dateroll.calendars.calendarmath as calendarmathModule
+import dateroll.settings as settingsModule
 
 """
 need daycounters
@@ -13,11 +18,7 @@ ddh('t') +'3m' .... it's relaly close to the base but little extra.
 
 """
 
-import dateroll.date.date as dateModule
-import dateroll.duration.duration as durationModule
-import dateroll.schedule.schedule as scheduleModule
-import dateroll.calendars.calendarmath as calendarmathModule
-import dateroll.settings as settingsModule
+
 
 
 DEBUG = False

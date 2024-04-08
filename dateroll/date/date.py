@@ -59,7 +59,7 @@ class Date(datetime.date):
             if isinstance(o, str):
                 try:
                     o = int(o)
-                except:
+                except Exception:
                     raise TypeError("Must be int/float or int-like string")
             else:
                 raise TypeError("Must be int/float")

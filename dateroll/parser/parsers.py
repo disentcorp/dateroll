@@ -108,7 +108,7 @@ def parseDateString(s: str):
         # process according to convention
         try:
             y, m, d = parseDateString_rearrange(parts)
-        except:
+        except Exception:
             raise ParserStringsError("Check settings.convention!")
     else:
         # no slashes or dashes - more restrictive
@@ -121,7 +121,7 @@ def parseDateString(s: str):
             y = int(s[coords["y"]])
             m = int(s[coords["m"]])
             d = int(s[coords["d"]])
-        except:
+        except Exception:
             raise ParserStringsError(
                 "If no slashes or dashes, must be 2 digit year an dmonth, and 2 or 4 digit year in YMD format ONLY"
             )
@@ -393,9 +393,3 @@ def parseDateMathString(s, things):
         raise ParserStringsError("Cannot recognize as date math", s)
 
 
-if __name__ == "__main__":  # pragma:no cover
-    from dateroll.ddh.ddh import ddh
-    from dateroll.duration.duration import Duration
-    dur3 = Duration(years=0)
-    x = dur3.to_string()
-    print(x)

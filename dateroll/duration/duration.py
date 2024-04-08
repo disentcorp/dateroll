@@ -121,7 +121,7 @@ class Duration(dateutil.relativedelta.relativedelta):
                 else:
                     raise TypeError(f'{k} must be one of {TypeList}, not {type(v)}')
             else:
-                ValueError(f'{k} is an unexpected keyword argument.')
+                raise ValueError(f'{k} is an unexpected keyword argument.')
         # merge y/m/w/d
         self.years = kwargs["years"] + kwargs["year"] + kwargs["y"] + kwargs["Y"]
         self.months = kwargs["months"] + kwargs["month"] + kwargs["m"] + kwargs["M"]
@@ -181,7 +181,7 @@ class Duration(dateutil.relativedelta.relativedelta):
             ydiff = self._anchor_end.year - self._anchor_start.year
             mdiff = self._anchor_end.month - self._anchor_start.month
             diff = mdiff + ydiff * 12
-            self_anchor_years = ydiff
+            # self_anchor_years = ydiff
             self._anchor_months = diff
 
             # put anchor dates as a total days without subtracting month years
@@ -681,11 +681,11 @@ class Duration(dateutil.relativedelta.relativedelta):
         future note: implicity call the simplify() method before sorting, and repr on the simpllifed version, not direct on __dict__
         consider moving ny/nm/nd/nbd to dict on class??
         """
-        d = self.__dict__
-        items = {k: d[k] for k in period_order if k in d}
+        
+        
         constructor = ""
         for k, v in self.__dict__.items():
-            if v != None and k != "debug" and not k.startswith("_"):
+            if v is not None and k != "debug" and not k.startswith("_"):
                 if k == "cals":
                     v = '"' + "u".join(v) + '"'
                 constructor += f"{k}={str(v)}, "

@@ -100,7 +100,6 @@ class CalendarMath:
         d = self.cals.copy()
         for k, v in d.items():
             if k == "WE":
-                dates = v
                 self.fwd[k], self.bck[k], self.ibd[k] = self.gen_dicts(k, v, self.ALL)
 
         self.save_cache()
@@ -169,7 +168,7 @@ class CalendarMath:
                 fwd[dt] = last_idx
                 try:
                     last_cal = cal.pop(0)
-                except:
+                except Exception:
                     break
             else:
                 # not holiday
