@@ -181,7 +181,6 @@ class Duration(dateutil.relativedelta.relativedelta):
             ydiff = self._anchor_end.year - self._anchor_start.year
             mdiff = self._anchor_end.month - self._anchor_start.month
             diff = mdiff + ydiff * 12
-            # self_anchor_years = ydiff
             self._anchor_months = diff
 
             # put anchor dates as a total days without subtracting month years
