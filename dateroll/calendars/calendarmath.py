@@ -4,9 +4,11 @@ import os
 import pathlib
 import pickle
 
-import dateroll.date.date as dateModule
 from dateroll.calendars.calendars import Calendars
+# import dateroll.date.date as dateModule
+from dateroll import Date
 
+print('her------------calendarmath')
 PARENT_LOCATION = pathlib.Path.home() / ".dateroll/"
 PARENT_LOCATION.mkdir(exist_ok=True)
 MODULE_LOCATION = PARENT_LOCATION / "calendars/"
@@ -100,7 +102,6 @@ class CalendarMath:
         d = self.cals.copy()
         for k, v in d.items():
             if k == "WE":
-                dates = v
                 self.fwd[k], self.bck[k], self.ibd[k] = self.gen_dicts(k, v, self.ALL)
 
         self.save_cache()
@@ -169,7 +170,7 @@ class CalendarMath:
                 fwd[dt] = last_idx
                 try:
                     last_cal = cal.pop(0)
-                except:
+                except Exception:
                     break
             else:
                 # not holiday
@@ -191,7 +192,7 @@ class CalendarMath:
         # because of the property of fwd, bck dictionaries
         if isinstance(d, datetime.datetime):
             d = datetime.date(d.year, d.month, d.day)
-        elif isinstance(d, dateModule.Date):
+        elif isinstance(d, Date):
             d = d.date
         elif isinstance(d, datetime.date):
             pass

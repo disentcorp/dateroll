@@ -79,7 +79,7 @@ class TestUsage(unittest.TestCase):
         with self.assertRaises(Exception) as cm2:
             ddh("t+7g")
 
-        self.assertEqual(ddh("6m+3m+1y+1/5/24"), dateModule.Date(2025, 10, 5))
+        self.assertEqual(ddh("6m+3m+1y+1/5/24"), Date(2025, 10, 5))
         self.assertEqual(
             ddh("6m+3m+1y"),
             durationModule.Duration(
@@ -93,23 +93,23 @@ class TestUsage(unittest.TestCase):
             ),
         )
         self.assertEqual(
-            dateModule.Date(2024, 5, 5) - dateModule.Date(2022, 10, 9),
+            Date(2024, 5, 5) - Date(2022, 10, 9),
             durationModule.Duration(
                 years=1,
                 months=6,
                 days=26,
                 modified=False,
-                _anchor_start=dateModule.Date(2022, 10, 9),
-                _anchor_end=dateModule.Date(2024, 5, 5),
+                _anchor_start=Date(2022, 10, 9),
+                _anchor_end=Date(2024, 5, 5),
                 _anchor_months=19,
                 _anchor_days=-4,
                 debug=False,
             ),
         )
         d1 = ddh("10/9/22 - 5/5/24")
-        d2 = dateModule.Date(2022, 10, 9) - dateModule.Date(2024, 5, 5)
+        d2 = Date(2022, 10, 9) - Date(2024, 5, 5)
         self.assertEqual(d1, d2)
-        self.assertEqual(d2 + dateModule.Date(2024, 5, 5), dateModule.Date(2022, 10, 9))
+        self.assertEqual(d2 + Date(2024, 5, 5), Date(2022, 10, 9))
         d3 = ddh("5/5/24 - 10/9/22")
         self.assertEqual(
             d3,
@@ -118,15 +118,15 @@ class TestUsage(unittest.TestCase):
                 months=6,
                 days=26,
                 modified=False,
-                _anchor_start=dateModule.Date(2022, 10, 9),
-                _anchor_end=dateModule.Date(2024, 5, 5),
+                _anchor_start=Date(2022, 10, 9),
+                _anchor_end=Date(2024, 5, 5),
                 _anchor_months=19,
                 _anchor_days=-4,
                 debug=False,
             ),
         )
 
-        self.assertEqual(ddh("1/12/24+11m13d|NYuWE"), dateModule.Date(2024, 12, 26))
+        self.assertEqual(ddh("1/12/24+11m13d|NYuWE"), Date(2024, 12, 26))
 
 
 class TestUsageMore(unittest.TestCase):

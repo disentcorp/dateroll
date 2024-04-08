@@ -7,7 +7,8 @@ import dateutil.relativedelta
 
 import dateroll
 import dateroll.calendars.calendarmath as calendarmathModule
-import dateroll.date.date as dateModule
+# import dateroll.date.date as dateModule
+from dateroll import Date,DateLike
 import dateroll.parser.parsers as parsersModule
 import dateroll.utils as utils
 from dateroll.settings import settings
@@ -17,7 +18,7 @@ from dateroll.utils import add_none, combine_none, xprint
 # older versions of python can use functools lru_cache(maxsize=None)
 # for now, leave this commented out because it is not used
 
-
+print('her------------duration')
 cals = calendarmathModule.calmath.cals
 
 period_order = (*"yhsqmwd", "cals", "modifier")
@@ -113,6 +114,7 @@ class Duration(dateutil.relativedelta.relativedelta):
         """
 
         kwargs = {k:v[0] for k,v in DUR_DFLTS.items()}
+
         for k,v in init_kwargs.items():
             if k in DUR_DFLTS:
                 _, TypeList = DUR_DFLTS[k]
@@ -121,7 +123,7 @@ class Duration(dateutil.relativedelta.relativedelta):
                 else:
                     raise TypeError(f'{k} must be one of {TypeList}, not {type(v)}')
             else:
-                ValueError(f'{k} is an unexpected keyword argument.')
+                raise ValueError(f'{k} is an unexpected keyword argument.')
     
         # merge y/m/w/d
         self.years = kwargs["years"] + kwargs["year"] + kwargs["y"] + kwargs["Y"]
@@ -153,7 +155,7 @@ class Duration(dateutil.relativedelta.relativedelta):
         elif kwargs["BD"] is not None:
             self.bd = float(kwargs["BD"])
         else:
-            if cals is not None:
+            if kwargs["cals"] is not None:
                 # implicity calendar for weekends will be set in validate_cals
                 self.bd = float(0.0)
             else:
@@ -176,12 +178,11 @@ class Duration(dateutil.relativedelta.relativedelta):
 
         if self._anchor_start and self._anchor_end:
             # anchor months -- month diff without days and years collapses into months
-            self._anchor_start = dateModule.Date.from_datetime(self._anchor_start)
-            self._anchor_end = dateModule.Date.from_datetime(self._anchor_end)
+            self._anchor_start = Date.from_datetime(self._anchor_start)
+            self._anchor_end = Date.from_datetime(self._anchor_end)
             ydiff = self._anchor_end.year - self._anchor_start.year
             mdiff = self._anchor_end.month - self._anchor_start.month
             diff = mdiff + ydiff * 12
-            self_anchor_years = ydiff
             self._anchor_months = diff
 
             # put anchor dates as a total days without subtracting month years
@@ -471,7 +472,7 @@ class Duration(dateutil.relativedelta.relativedelta):
 
             return dur
 
-        elif isinstance(b, dateModule.DateLike):
+        elif isinstance(b, DateLike):
             """
             if direction > 0:
                     (Date + Duration)
@@ -483,7 +484,7 @@ class Duration(dateutil.relativedelta.relativedelta):
             """
 
             modifed = self.adjust_from_date(b, direction)
-            dt = dateModule.Date.from_datetime(modifed)
+            dt = Date.from_datetime(modifed)
 
             return dt
 
@@ -528,7 +529,7 @@ class Duration(dateutil.relativedelta.relativedelta):
             xprint("negation: none") if self.debug else None
 
         # 2 non-holiday adjustments, add D,M,Y
-        if isinstance(date_unadj, dateModule.Date):
+        if isinstance(date_unadj, Date):
             date_unadj = date_unadj.date
         date_nonhol_adj = date_unadj + negated_self.relativedelta
         (
@@ -564,7 +565,7 @@ class Duration(dateutil.relativedelta.relativedelta):
 
         # 4 convert back to Date
 
-        Date_modified = dateModule.Date.from_datetime(date_modifed)
+        Date_modified = Date.from_datetime(date_modifed)
         Date_modified.origin_dur_date = date_unadj
         Date_modified.origin_dur_cals = self.cals
         Date_modified.origin_dur_modified = self.modified
@@ -617,11 +618,11 @@ class Duration(dateutil.relativedelta.relativedelta):
                 # get the latest calendar date of before
                 num_days = utils.get_month_days(before.year, before.month)
 
-                after = dateModule.Date(before.year, before.month, num_days)
+                after = Date(before.year, before.month, num_days)
                 after = after - Duration(bd=0, cals=self.cals)
 
             else:
-                after = dateModule.Date(before.year, before.month, 1)
+                after = Date(before.year, before.month, 1)
                 after = after + Duration(bd=0, cals=self.cals)
 
         return after
@@ -642,7 +643,7 @@ class Duration(dateutil.relativedelta.relativedelta):
     def __sub__(self, x):
         xprint(type(x), "sub") if self.debug else None
 
-        if isinstance(x, dateModule.Date):
+        if isinstance(x, Date):
             raise TypeError("Cannot sub Date from Duration")
         return self.math(x, -1)
 
@@ -681,11 +682,10 @@ class Duration(dateutil.relativedelta.relativedelta):
         future note: implicity call the simplify() method before sorting, and repr on the simpllifed version, not direct on __dict__
         consider moving ny/nm/nd/nbd to dict on class??
         """
-        d = self.__dict__
-        items = {k: d[k] for k in period_order if k in d}
+        
         constructor = ""
         for k, v in self.__dict__.items():
-            if v != None and k != "debug" and not k.startswith("_"):
+            if v is not None and k != "debug" and not k.startswith("_"):
                 if k == "cals":
                     v = '"' + "u".join(v) + '"'
                 constructor += f"{k}={str(v)}, "
@@ -694,7 +694,7 @@ class Duration(dateutil.relativedelta.relativedelta):
     def __gt__(a, b):
         if isinstance(b, int):
             if b == 0:
-                tdy = dateModule.Date.from_string("t")
+                tdy = Date.from_string("t")
                 return (tdy + a) > tdy
             else:
                 b = Duration(days=b)

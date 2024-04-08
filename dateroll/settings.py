@@ -2,6 +2,8 @@ import importlib.util
 import pathlib
 import warnings
 
+print('her------------settings')
+
 path = pathlib.Path("~/.dateroll/settings.py").expanduser()
 
 ctx_conv = "_ctx_convention"
@@ -85,7 +87,6 @@ class Settings:
             append default settings not in user settings for a complete set of settings
         """
 
-        reset = False
         for k, v in user_settings.items():
 
             if k not in default_settings:

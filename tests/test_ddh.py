@@ -25,12 +25,12 @@ class TestDDH(unittest.TestCase):
         str + str->Date
         """
 
-        d1 = dateModule.Date(2023, 3, 1)
+        d1 = Date(2023, 3, 1)
         d1 += "1d"
 
         d2 = d1 + "1d"
-        self.assertEqual(d1, dateModule.Date(2023, 3, 2))
-        self.assertEqual(d2, dateModule.Date(2023, 3, 3))
+        self.assertEqual(d1, Date(2023, 3, 2))
+        self.assertEqual(d2, Date(2023, 3, 3))
 
     def testDurationMathWithStr(self):
         """
@@ -63,7 +63,7 @@ class TestDDH(unittest.TestCase):
         str->Duration + str->Duration
         """
 
-        d1 = dateModule.Date(2023, 3, 1)
+        d1 = Date(2023, 3, 1)
         with self.assertRaises(TypeError):
             d2 = d1 + "02012023"
 
@@ -74,7 +74,7 @@ class TestDDH(unittest.TestCase):
         str->Duration - str->Date
         str->Duration - str->Duration
         """
-        d1 = dateModule.Date(2023, 3, 1)
+        d1 = Date(2023, 3, 1)
 
         d2 = d1 - "02012023"
         self.assertEqual(d2.to_string(), "+1m")
@@ -84,8 +84,8 @@ class TestDDH(unittest.TestCase):
         str->Schedule (1bd,1d,1w,1m,1y)
         """
         #
-        start = dateModule.Date(2023, 1, 3)
-        end = dateModule.Date(2023, 6, 3)
+        start = Date(2023, 1, 3)
+        end = Date(2023, 6, 3)
         self.assertEqual(
             ddh("01032023,06032023,1bd").list,
             scheduleModule.Schedule(start, end, durationModule.Duration(bd=1)).list,
@@ -144,19 +144,19 @@ class TestDDH(unittest.TestCase):
 
         # YMD
         with ddh.YMD():
-            self.assertEqual(ddh("20230101"), dateModule.Date(2023, 1, 1))
+            self.assertEqual(ddh("20230101"), Date(2023, 1, 1))
             self.assertEqual(settings.convention, "YMD")
         self.assertEqual(settings.convention, "MDY")
 
         # DMY
         with ddh.DMY():
-            self.assertEqual(ddh("01022023"), dateModule.Date(2023, 2, 1))
+            self.assertEqual(ddh("01022023"), Date(2023, 2, 1))
             self.assertEqual(settings.convention, "DMY")
         self.assertEqual(settings.convention, "MDY")
 
         # MDY
         with ddh.MDY():
-            self.assertEqual(ddh("02012023"), dateModule.Date(2023, 2, 1))
+            self.assertEqual(ddh("02012023"), Date(2023, 2, 1))
             self.assertEqual(settings.convention, "MDY")
         self.assertEqual(settings.convention, "MDY")
 

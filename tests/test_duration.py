@@ -716,6 +716,16 @@ class TestDuration(unittest.TestCase):
         a = Duration(days=-10)
         self.assertFalse(a > b)
 
+    def test_initDflt(self):
+        """
+            test default check and assigning of val
+        """
+
+        with self.assertRaises(TypeError):
+            Duration(days="10")
+        
+        with self.assertRaises(ValueError):
+            Duration(business_days=10)
 
 if __name__ == "__main__":
     unittest.main()

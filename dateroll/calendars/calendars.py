@@ -6,12 +6,12 @@ import pathlib
 import pickle
 from collections import OrderedDict
 
+from dateroll import Date
 from dateroll.calendars import calendarmath as calendarmathModule
-from dateroll.date import date as dateModule
 from dateroll.utils import date_slice, convention_map
 from dateroll import settings
 from dateroll.tblfmt import pretty_table
-
+print('her------------calendars')
 ROOT_DIR = pathlib.Path(__file__).parents[2]
 PARENT_LOCATION = pathlib.Path.home() / ".dateroll/"
 PARENT_LOCATION.mkdir(exist_ok=True)
@@ -50,13 +50,13 @@ def load_sample_data():
         name = pathlib.Path(file).stem
         with open(file) as f:
             ls = f.readlines()
-            l = []
+            list_ = []
             for i in ls:
                 dt = datetime.date(int(i[0:4]), int(i[5:7]), int(i[8:10]))
                 if dt >= INCEPTION:
-                    l.append(dt)
+                    list_.append(dt)
 
-            ds = DateSet(l, name=name)
+            ds = DateSet(list_, name=name)
             data[name] = ds
     return data
 
@@ -130,7 +130,7 @@ class DateSet:
         print(f"[dateroll] {item} added{tothing}.")
 
     def __contains__(self, item):
-        if isinstance(item, dateModule.Date):
+        if isinstance(item, Date):
             item = item.date
         if isinstance(item, datetime.datetime):
             item = datetime.date(item.year, item.month, item.day)
@@ -259,7 +259,7 @@ class Calendars(dict):
         try:
             # case a
             self.__delitem__(k)
-        except:
+        except Exception:
             # case b
             super().__delattr__(k)
 
@@ -285,9 +285,9 @@ class Calendars(dict):
         conv = convention_map[settings.settings.convention]
         with Drawer(self) as db:
             for i in sorted(db.keys()):
-                l = db.get(i)
+                list_ = db.get(i)
                 years = {}
-                for j in l:
+                for j in list_:
                     if j.year > 1950 and j.year < 2050:
                         if j.year in years:
                             years[j.year] += 1
@@ -295,10 +295,10 @@ class Calendars(dict):
                             years[j.year] = 1
 
                 num_this_year = years.get(datetime.date.today().year, 0)
-                if len(l) > 0:
-                    n = len(l)
-                    mn = min(l).strftime(conv)
-                    mx = max(l).strftime(conv)
+                if len(list_) > 0:
+                    n = len(list_)
+                    mn = min(list_).strftime(conv)
+                    mx = max(list_).strftime(conv)
                 else:
                     n, mn, mx = 0, "", ""
                 data.append(

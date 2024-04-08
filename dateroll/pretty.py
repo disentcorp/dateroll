@@ -1,14 +1,17 @@
 import calendar
 import datetime
 
+# from dateroll.utils import color
+import dateroll.utils as utilsModule
+print('her------------pretty')
 calendar.setfirstweekday(calendar.SUNDAY)
 
-from dateroll.utils import color
+
 
 
 def replacer(i, c, txt1, cals):
     bef = str(i).rjust(3)
-    aft = color(bef, c)
+    aft = utilsModule.color(bef, c)
     txt2 = txt1.replace(bef, aft)
     return txt2
 
@@ -47,7 +50,7 @@ def pretty_between_two_dates(dt1, dt2, cals, calmath):
             try:
                 _ = datetime.date(year=y1, month=m1, day=i)
                 ishol = not calmath.is_bd(_, cals)
-            except:
+            except Exception:
                 ishol = False
 
             if i == d1 or i == d2:
@@ -57,7 +60,7 @@ def pretty_between_two_dates(dt1, dt2, cals, calmath):
             elif i > d1 and i < d2:
                 cal1 = replacer(i, "cyan", cal1, cals)
 
-        res = color(f"        {_1.strftime('%b')} {y1}", "yellow")
+        res = utilsModule.color(f"        {_1.strftime('%b')} {y1}", "yellow")
         for idx, (i, j) in enumerate(zip(cal1.splitlines(), cal1.splitlines())):
             if idx > 0:
                 res += "\n" + f"  {i} "
@@ -68,7 +71,7 @@ def pretty_between_two_dates(dt1, dt2, cals, calmath):
             try:
                 _ = datetime.date(year=y1, month=m1, day=i)
                 ishol = not calmath.is_bd(_, cals)
-            except:
+            except Exception:
                 ishol = False
             if i == d1:
                 cal1 = replacer(i, "blue", cal1, cals)
@@ -83,7 +86,7 @@ def pretty_between_two_dates(dt1, dt2, cals, calmath):
             try:
                 _ = datetime.date(year=y2, month=m2, day=i)
                 ishol = not calmath.is_bd(_, cals)
-            except:
+            except Exception:
                 ishol = False
             if i == d2:
                 cal2 = replacer(i, "blue", cal2, cals)
@@ -92,12 +95,11 @@ def pretty_between_two_dates(dt1, dt2, cals, calmath):
             elif ishol:
                 cal2 = replacer(i, "gray", cal2, cals)
 
-        res = color(
+        res = utilsModule.color(
             f"        {_1.strftime('%b')} {y1}                 {_2.strftime('%b')} {y2}                ",
             "yellow",
         )
         for idx, (i, j) in enumerate(zip(cal1.splitlines(), cal2.splitlines())):
             res += "\n" + f"  {i}   {' '+j}"
-            prev = len(i)
 
     return res

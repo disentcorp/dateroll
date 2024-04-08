@@ -2,13 +2,14 @@ import calendar
 import datetime
 import re
 
-import dateroll.date.date as dt
+# import dateroll.date.date as dt
+from dateroll import Date
 import dateroll.duration.duration as dur
 from dateroll import utils
 from dateroll.parser import patterns
 from dateroll.schedule.schedule import Schedule
 from dateroll.settings import settings
-
+print('her------------parsers')
 TODAYSTRINGVALUES = ["today", "t0", "t"]
 
 
@@ -108,7 +109,7 @@ def parseDateString(s: str):
         # process according to convention
         try:
             y, m, d = parseDateString_rearrange(parts)
-        except:
+        except Exception:
             raise ParserStringsError("Check settings.convention!")
     else:
         # no slashes or dashes - more restrictive
@@ -121,7 +122,7 @@ def parseDateString(s: str):
             y = int(s[coords["y"]])
             m = int(s[coords["m"]])
             d = int(s[coords["d"]])
-        except:
+        except Exception:
             raise ParserStringsError(
                 "If no slashes or dashes, must be 2 digit year an dmonth, and 2 or 4 digit year in YMD format ONLY"
             )
@@ -132,7 +133,7 @@ def parseDateString(s: str):
     d = validate_monthday(y, m, d)
 
     # construct
-    dte = dt.Date(year=y, month=m, day=d)
+    dte = Date(year=y, month=m, day=d)
 
     return dte
 
@@ -200,7 +201,7 @@ def parseManyDateStrings(s, gen):
         # match 1,2,3 are the y/m/d's as strings
 
         date = parseDateString(match)
-        date = dt.Date.from_datetime(date)
+        date = Date.from_datetime(date)
         next_letter = next(gen())  # match only 1st time!! or causes letter mismatch
         res = res.replace(match, "+" + next_letter, 1)
         dates[next_letter] = date
@@ -393,8 +394,3 @@ def parseDateMathString(s, things):
         raise ParserStringsError("Cannot recognize as date math", s)
 
 
-if __name__ == "__main__":  # pragma:no cover
-    from dateroll.ddh.ddh import ddh
-
-    x = ddh("111422414")
-    print(x)

@@ -113,7 +113,7 @@ class TestUsage(unittest.TestCase):
         """
 
         mdy = "01102020"
-        rs = dateModule.Date(2020, 1, 10)
+        rs = Date(2020, 1, 10)
         # MDY
         settings.convention = "MDY"
         self.assertEqual(ddh(mdy), rs)
@@ -126,7 +126,7 @@ class TestUsage(unittest.TestCase):
         # DMY
         settings.convention = "DMY"
         dmy = "02102020"
-        rs = dateModule.Date(2020, 10, 2)
+        rs = Date(2020, 10, 2)
 
         self.assertEqual(ddh(dmy), rs)
         settings.convention = "YMD"
@@ -139,7 +139,7 @@ class TestUsage(unittest.TestCase):
         settings.convention = "YMD"
         ymd = "20200220"
 
-        rs = dateModule.Date(2020, 2, 20)
+        rs = Date(2020, 2, 20)
         self.assertEqual(ddh(ymd), rs)
 
         settings.convention = "MDY"
@@ -151,7 +151,7 @@ class TestUsage(unittest.TestCase):
 
         # slashed
         mdy = "01/10/2020"
-        rs = dateModule.Date(2020, 1, 10)
+        rs = Date(2020, 1, 10)
         # MDY
         settings.convention = "MDY"
         self.assertEqual(ddh(mdy), rs)
@@ -165,7 +165,7 @@ class TestUsage(unittest.TestCase):
         # DMY
         settings.convention = "DMY"
         dmy = "2/10/2020"
-        rs = dateModule.Date(2020, 10, 2)
+        rs = Date(2020, 10, 2)
 
         self.assertEqual(ddh(dmy), rs)
         settings.convention = "YMD"
@@ -178,7 +178,7 @@ class TestUsage(unittest.TestCase):
         settings.convention = "YMD"
         ymd = "2020/2/20"
 
-        rs = dateModule.Date(2020, 2, 20)
+        rs = Date(2020, 2, 20)
         self.assertEqual(ddh(ymd), rs)
 
         settings.convention = "MDY"
@@ -190,7 +190,7 @@ class TestUsage(unittest.TestCase):
 
         # dashed
         mdy = "01-10-2020"
-        rs = dateModule.Date(2020, 1, 10)
+        rs = Date(2020, 1, 10)
         # MDY
         settings.convention = "MDY"
         self.assertEqual(ddh(mdy), rs)
@@ -204,7 +204,7 @@ class TestUsage(unittest.TestCase):
         # DMY
         settings.convention = "DMY"
         dmy = "2-10-2020"
-        rs = dateModule.Date(2020, 10, 2)
+        rs = Date(2020, 10, 2)
 
         self.assertEqual(ddh(dmy), rs)
         settings.convention = "YMD"
@@ -217,7 +217,7 @@ class TestUsage(unittest.TestCase):
         settings.convention = "YMD"
         ymd = "2020-2-20"
 
-        rs = dateModule.Date(2020, 2, 20)
+        rs = Date(2020, 2, 20)
         self.assertEqual(ddh(ymd), rs)
 
         settings.convention = "MDY"
@@ -237,7 +237,7 @@ class TestUsage(unittest.TestCase):
             x = ddh("7/7/7")
 
         x = ddh("7/7/70")
-        self.assertEqual(x, dateModule.Date(1970, 7, 7))
+        self.assertEqual(x, Date(1970, 7, 7))
 
         with self.assertRaises(parsers.ParserStringsError):
             ddh("7770")

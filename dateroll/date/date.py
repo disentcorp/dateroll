@@ -2,15 +2,15 @@ import datetime
 
 import dateutil.relativedelta
 
-import dateroll.ddh.ddh as ddhModule
 import dateroll.parser.parsers as parsersModule
 from dateroll import pretty
 from dateroll.calendars.calendarmath import calmath
 from dateroll.duration.duration import Duration
+import dateroll.ddh.ddh as ddhModule
 from dateroll.settings import settings
 from dateroll import utils
 DateLike = (datetime.datetime, datetime.date)
-
+print('her------------date')
 
 class Date(datetime.date):
     """
@@ -59,7 +59,7 @@ class Date(datetime.date):
             if isinstance(o, str):
                 try:
                     o = int(o)
-                except:
+                except Exception:
                     raise TypeError("Must be int/float or int-like string")
             else:
                 raise TypeError("Must be int/float")

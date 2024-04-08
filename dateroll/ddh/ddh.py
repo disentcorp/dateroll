@@ -1,8 +1,18 @@
 import os
 import pathlib
+import importlib
 
-# from dateroll.parser.parser import parse_to_dateroll, parse_to_native
+import dateroll.calendars.calendarmath as calendarmathModule
 import dateroll.parser.parser as parserModule
+# import dateroll.date.date as dateModule
+from dateroll import Date,DateLike
+import dateroll.duration.duration as durationModule
+import dateroll.schedule.schedule as scheduleModule
+
+
+import dateroll.settings as settingsModule
+
+print('her------------ddh')
 
 """
 need daycounters
@@ -13,18 +23,16 @@ ddh('t') +'3m' .... it's relaly close to the base but little extra.
 
 """
 
-import dateroll.date.date as dateModule
-import dateroll.duration.duration as durationModule
-import dateroll.schedule.schedule as scheduleModule
-import dateroll.calendars.calendarmath as calendarmathModule
-import dateroll.settings as settingsModule
+
 
 
 DEBUG = False
 
 
 class ddh:
-    Date = dateModule.Date
+    
+    # Date = Date
+    # DateLike = DateLike
     Duration = durationModule.Duration
     Schedule = scheduleModule.Schedule
     settings = settingsModule.settings
@@ -34,8 +42,8 @@ class ddh:
     def __new__(cls, o):
         if isinstance(o, str):
             obj = parserModule.parse_to_dateroll(o)
-        elif isinstance(o, dateModule.DateLike):
-            return dateModule.Date.from_datetime(o)
+        elif isinstance(o, DateLike):
+            return Date.from_datetime(o)
         elif isinstance(o, durationModule.DurationLike):
             obj = durationModule.Duration.from_relativedelta(o)
         else:

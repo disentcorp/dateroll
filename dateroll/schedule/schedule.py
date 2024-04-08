@@ -1,17 +1,18 @@
 import datetime
-import dateroll.calendars.calendarmath as calendarmathModule
-import dateroll.parser.parsers as parsersModule
-from dateroll import pretty
-from dateroll.date import date as dateModule
-from dateroll.ddh import ddh as ddhModule
-from dateroll import utils
-
 try:
     import pandas as pd
     have_pandas = True
-except:  # pragma: no cover
+except Exception:  # pragma: no cover
     have_pandas = False
 
+import dateroll.calendars.calendarmath as calendarmathModule
+import dateroll.parser.parsers as parsersModule
+from dateroll import pretty
+# from dateroll.date import date as dateModule
+from dateroll import Date
+from dateroll.ddh import ddh as ddhModule
+from dateroll import utils
+print('her------------schedule')
 
 class Schedule:
     """
@@ -41,7 +42,7 @@ class Schedule:
         else:
             raise TypeError(f"Must be string not {type(string).__name__}")
 
-    def __len__(self):
+    def __len__(self): 
         return self.num_dates
 
     @property
@@ -128,13 +129,13 @@ class Schedule:
             yield i
 
     def __contains__(self, x):
-        if isinstance(x, dateModule.Date):
+        if isinstance(x, Date):
             x = x.date
         elif isinstance(x, datetime.datetime):
             # does not do TZ check
             x = datetime.date(x.year, x.month, x.day)
         for i in self._dates:
-            if isinstance(i, dateModule.Date):
+            if isinstance(i, Date):
                 i = i.date
             # elif isinstance(i, datetime.datetime):
             #     # does not do TZ check

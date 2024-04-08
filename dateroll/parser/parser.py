@@ -4,11 +4,12 @@ import dateutil
 import dateutil.relativedelta
 import dateutil.rrule
 
-import dateroll.date.date as dateModule
+# import dateroll.date.date as dateModule
+from dateroll import Date
 import dateroll.duration.duration as durationModule
 import dateroll.parser.parsers as parsersModule
 import dateroll.schedule.schedule as scheduleModule
-
+print('her------------parser')
 
 class ParserError(Exception): ...
 
@@ -155,12 +156,12 @@ class Parser:
             maybe_stop = cls.parse_one_part(_maybe_stop)
             maybe_step = cls.parse_one_part(_maybe_step)
 
-            if isinstance(maybe_start, dateModule.Date):
+            if isinstance(maybe_start, Date):
                 start = maybe_start
             else:
                 raise TypeError("Start of generation must be a valid Date")
 
-            if isinstance(maybe_stop, dateModule.Date):
+            if isinstance(maybe_stop, Date):
                 stop = maybe_stop
             else:
                 raise TypeError("Stop of generation must be a valid Date")
