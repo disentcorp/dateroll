@@ -1,19 +1,17 @@
 
-from dateroll.ddh.ddh import ddh
-from dateroll.date.date import Date
-from dateroll.duration.duration import Duration
-from dateroll.schedule.schedule import Schedule
-from dateroll.calendars.calendarmath import CalendarMath
-from dateroll.calendars.calendarmath import Calendars
-from dateroll.parser.parser import Parser
+from dateroll.ddh.ddh import ddh  # noqa F401
+from dateroll.date.date import Date  # noqa F401
+from dateroll.duration.duration import Duration  # noqa F401
+from dateroll.schedule.schedule import Schedule  # noqa F401
+from dateroll.calendars.calendarmath import CalendarMath  # noqa F401
+from dateroll.calendars.calendarmath import Calendars  # noqa F401
+from dateroll.parser.parser import Parser  # noqa F401
 
-import dateroll.calendars.calendarmath as calendarmathModule
-import dateroll.calendars.calendars as calendarModule
+
 import dateroll.settings as settingsModule
 
 settings = settingsModule.settings
-calmath = calendarmathModule.calmath
-cals = calendarmathModule.calmath.cals
+
 
 # # for backwards compatibility testing
 # import sys

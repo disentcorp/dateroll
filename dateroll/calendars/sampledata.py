@@ -8,7 +8,6 @@ import pathlib
 
 from dateutil.relativedelta import relativedelta as rd
 from workalendar.america.brazil import Brazil
-from workalendar.asia.japan import JapanBank
 from workalendar.europe.european_central_bank import EuropeanCentralBank
 from workalendar.europe.united_kingdom import UnitedKingdom
 from workalendar.usa import FederalReserveSystem
@@ -21,12 +20,12 @@ def generate_Workalendar(cls, n=DEFAULT_YEAR_RANGE):
     use 3rd party library to get set of use federal holidays, return as set
     """
     y = datetime.datetime.today().year
-    l = set()
+    list_ = set()
     inst = cls()
     for year in range(y - n, y + n):
         hols = inst.holidays(year)
-        l |= set(_[0] for _ in hols)
-    return l
+        list_ |= set(_[0] for _ in hols)
+    return list_
 
 
 def generate_ALL_and_WE(n=DEFAULT_YEAR_RANGE):
@@ -68,8 +67,8 @@ def generate_sample_data(cals, n=DEFAULT_YEAR_RANGE):
     for calendar_name, list_of_dates in data.items():
         filename = pathlib.Path(ROOT_DIR / "sampledata/" / f"{calendar_name}.csv")
         with open(filename, "w") as f:
-            l = [i.isoformat() + "\n" for i in list_of_dates]
-            f.writelines(l)
+            list_ = [i.isoformat() + "\n" for i in list_of_dates]
+            f.writelines(list_)
 
 
 if __name__ == "__main__":

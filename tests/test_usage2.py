@@ -1,24 +1,12 @@
-import code
-import datetime
 import itertools
-import os
-import pathlib
 import re
-import tempfile
 import unittest
-import uuid
-from unittest import expectedFailure
 
-import pandas as pd
 
-import dateroll.calendars.calendars as calendars
 import dateroll.date.date as dateModule
-import dateroll.duration.duration as durationModule
 import dateroll.parser.parsers as parsers
-from dateroll import cals, ddh
+from dateroll import ddh
 from dateroll.settings import settings
-from dateroll.utils import color
-from tests.test_data.test_data import next_d, prev_d
 
 
 class TestUsage(unittest.TestCase):

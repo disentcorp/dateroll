@@ -1,11 +1,7 @@
-import datetime
 import os
 import unittest
 
-import dateroll.parser.parsers as parsers
-from dateroll.date.date import Date
-from dateroll.duration.duration import Duration
-from dateroll.settings import Settings, default_settings_validation, path
+from dateroll.settings import Settings, path
 
 
 class TestSettings(unittest.TestCase):

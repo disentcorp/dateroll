@@ -1,8 +1,6 @@
-import code
 import copy
 import datetime
 import math
-import warnings
 
 import dateutil
 import dateutil.relativedelta
@@ -30,6 +28,38 @@ WEEKEND_CALENDAR = "WE"
 APPROX = {
     "1y1d": 14610 / 40,  # exact average length for post 1582AD change
     "1bd1d": 14610 / 40 / 252,  # assuming 252 denominator
+}
+
+DUR_DFLTS = {
+    "years" : (0,(int,float)),
+    "months" : (0,(int,float)),
+    "y" : (0,(int,float)),
+    "Y" : (0,(int,float)),
+    "year" : (0,(int,float)),
+    "q" : (0,(int,float)),
+    "Q" : (0,(int,float)),
+    "quarter" : (0,(int,float)),
+    "quarters" : (0,(int,float)),
+    "m" : (0,(int,float)),
+    "M" : (0,(int,float)),
+    "month" : (0,(int,float)),
+    "weeks" : (0,(int,float)),
+    "w" : (0,(int,float)),
+    "W" : (0,(int,float)),
+    "week" : (0,(int,float)),
+    "d" : (0,(int,float)),
+    "D" : (0,(int,float)),
+    "days" : (0,(int,float)),
+    "day" : (0,(int,float)),
+    "bd" : (None,(int,float,type(None))),
+    "BD" : (None,(int,float,type(None))),
+    "cals" : (None,(type(None),str,list,tuple,set)),
+    "modified" : (False,bool),
+    "_anchor_start" : (None,(datetime.date,type(None))),
+    "_anchor_end" :   (None,(datetime.date,type(None))),
+    "_anchor_months" :(None,(int,float,type(None))),
+    "_anchor_days" : (None,(int,float,type(None))),
+    "debug" :(False,bool),
 }
 
 
@@ -69,43 +99,7 @@ class Duration(dateutil.relativedelta.relativedelta):
 
     def __init__(
         self,
-        # switch mdy to days, months, years to match td and rd
-        # primary initialization properties (match dateutil.relativedelta)
-        years=0,
-        months=0,
-        # auxlillary initializers
-        y=0,
-        Y=0,
-        year=0,
-        q=0,
-        Q=0,
-        quarter=0,
-        quarters=0,
-        m=0,
-        M=0,
-        month=0,
-        weeks=0,
-        days=0,
-        w=0,
-        W=0,
-        week=0,
-        d=0,
-        D=0,
-        day=0,
-        # bd initializer, must be none as 0 and no zero are different
-        bd=None,
-        # axuliliary bd initi
-        BD=None,
-        # bd adjustment initializer
-        cals=None,
-        modified=False,
-        # anchor dates (if duration is the result of math with some date)
-        _anchor_start=None,
-        _anchor_end=None,
-        _anchor_months=None,
-        _anchor_days=None,
-        # debug
-        debug=False,
+        **init_kwargs,
     ):
         """
         y = year
@@ -117,19 +111,30 @@ class Duration(dateutil.relativedelta.relativedelta):
         cals = list of 2-letter codes for calendars
         modified = False or True (True means stay in month with BD adjustment)
         """
+
+        kwargs = {k:v[0] for k,v in DUR_DFLTS.items()}
+        for k,v in init_kwargs.items():
+            if k in DUR_DFLTS:
+                _, TypeList = DUR_DFLTS[k]
+                if isinstance(v,TypeList):
+                    kwargs[k]=v
+                else:
+                    raise TypeError(f'{k} must be one of {TypeList}, not {type(v)}')
+            else:
+                raise ValueError(f'{k} is an unexpected keyword argument.')
         # merge y/m/w/d
-        self.years = years + year + y + Y
-        self.months = months + month + m + M
-        self.days = days + day + d + D
+        self.years = kwargs["years"] + kwargs["year"] + kwargs["y"] + kwargs["Y"]
+        self.months = kwargs["months"] + kwargs["month"] + kwargs["m"] + kwargs["M"]
+        self.days = kwargs["days"] + kwargs["day"] + kwargs["d"] + kwargs["D"]
 
         # collapse quarters into months
-        self.months += 3 * (quarters + quarter + Q + q)
+        self.months += 3 * (kwargs["quarters"] + kwargs["quarter"] + kwargs["Q"] + kwargs["q"])
 
         # collapse weeks into days
-        self.days += 7 * (weeks + week + W + w)
+        self.days += 7 * (kwargs["weeks"] + kwargs["week"] + kwargs["W"] + kwargs["w"])
 
         # assign modified
-        self.modified = modified
+        self.modified = kwargs["modified"]
 
         # roll up months>12 into years
         if abs(self.months) >= 12:
@@ -137,17 +142,17 @@ class Duration(dateutil.relativedelta.relativedelta):
             self.months -= 12 * int(self.months / 12)
 
         # process anchor periods / dates
-        self.process_anchor_dates(_anchor_start, _anchor_end)
+        self.process_anchor_dates(kwargs["_anchor_start"], kwargs["_anchor_end"])
 
         # merge bd - FLOAT(x) ensures sign is copied for direction of BD travel
-        if bd is not None and BD is not None:
-            self.bd = bd + BD
-        elif bd is not None:
-            self.bd = float(bd)
-        elif BD is not None:
-            self.bd = float(BD)
+        if kwargs["bd"] is not None and kwargs["BD"] is not None:
+            self.bd = kwargs["bd"] + kwargs["BD"]
+        elif kwargs["bd"] is not None:
+            self.bd = float(kwargs["bd"])
+        elif kwargs["BD"] is not None:
+            self.bd = float(kwargs["BD"])
         else:
-            if cals is not None:
+            if kwargs["cals"] is not None:
                 # implicity calendar for weekends will be set in validate_cals
                 self.bd = float(0.0)
             else:
@@ -155,10 +160,11 @@ class Duration(dateutil.relativedelta.relativedelta):
                 self.bd = None
 
         # valid cals
-        self._validate_cals(cals)
+        
+        self._validate_cals(kwargs["cals"])
 
         # debug
-        self.debug = debug
+        self.debug = kwargs["debug"]
 
     def process_anchor_dates(self, _anchor_start, _anchor_end):
         """
@@ -175,7 +181,6 @@ class Duration(dateutil.relativedelta.relativedelta):
             ydiff = self._anchor_end.year - self._anchor_start.year
             mdiff = self._anchor_end.month - self._anchor_start.month
             diff = mdiff + ydiff * 12
-            self_anchor_years = ydiff
             self._anchor_months = diff
 
             # put anchor dates as a total days without subtracting month years
@@ -675,11 +680,11 @@ class Duration(dateutil.relativedelta.relativedelta):
         future note: implicity call the simplify() method before sorting, and repr on the simpllifed version, not direct on __dict__
         consider moving ny/nm/nd/nbd to dict on class??
         """
-        d = self.__dict__
-        items = {k: d[k] for k in period_order if k in d}
+        
+        
         constructor = ""
         for k, v in self.__dict__.items():
-            if v != None and k != "debug" and not k.startswith("_"):
+            if v is not None and k != "debug" and not k.startswith("_"):
                 if k == "cals":
                     v = '"' + "u".join(v) + '"'
                 constructor += f"{k}={str(v)}, "
@@ -765,7 +770,7 @@ class Duration(dateutil.relativedelta.relativedelta):
         if self.cals:
             output += f'|{"u".join(self.cals)}'
         if self.modified:
-            output += f"/MOD"
+            output += "/MOD"
         if output == "":
             output = "+0d"
         return output

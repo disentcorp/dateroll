@@ -1,17 +1,12 @@
 import datetime
-import os
-import pathlib
-import tempfile
 import unittest
-import uuid
-from unittest import expectedFailure
 
 import dateroll
-import dateroll.calendars.calendars as calendars
 import dateroll.date.date as dateModule
 import dateroll.duration.duration as durationModule
 import dateroll.schedule.schedule as scheduleModule
-from dateroll import cals, ddh
+
+from dateroll import ddh
 from dateroll.settings import settings
 
 # import dateroll.duration.duration as durationModule
@@ -119,7 +114,7 @@ class TestDDH(unittest.TestCase):
         """
         ddh.purge_all()
         base_cals = sorted(["FED", "ECB", "LN", "WE", "ALL", "BR", "NY"])
-        self.assertEqual(sorted(cals.keys()), base_cals)
+        self.assertEqual(sorted(ddh.hols.keys()), base_cals)
 
     def testConvention(self):
         original = settings.convention

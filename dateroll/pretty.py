@@ -1,9 +1,11 @@
 import calendar
 import datetime
 
+from dateroll.utils import color
+
 calendar.setfirstweekday(calendar.SUNDAY)
 
-from dateroll.utils import color
+
 
 
 def replacer(i, c, txt1, cals):
@@ -47,7 +49,7 @@ def pretty_between_two_dates(dt1, dt2, cals, calmath):
             try:
                 _ = datetime.date(year=y1, month=m1, day=i)
                 ishol = not calmath.is_bd(_, cals)
-            except:
+            except Exception:
                 ishol = False
 
             if i == d1 or i == d2:
@@ -68,7 +70,7 @@ def pretty_between_two_dates(dt1, dt2, cals, calmath):
             try:
                 _ = datetime.date(year=y1, month=m1, day=i)
                 ishol = not calmath.is_bd(_, cals)
-            except:
+            except Exception:
                 ishol = False
             if i == d1:
                 cal1 = replacer(i, "blue", cal1, cals)
@@ -83,7 +85,7 @@ def pretty_between_two_dates(dt1, dt2, cals, calmath):
             try:
                 _ = datetime.date(year=y2, month=m2, day=i)
                 ishol = not calmath.is_bd(_, cals)
-            except:
+            except Exception:
                 ishol = False
             if i == d2:
                 cal2 = replacer(i, "blue", cal2, cals)
@@ -98,6 +100,6 @@ def pretty_between_two_dates(dt1, dt2, cals, calmath):
         )
         for idx, (i, j) in enumerate(zip(cal1.splitlines(), cal2.splitlines())):
             res += "\n" + f"  {i}   {' '+j}"
-            prev = len(i)
+            
 
     return res

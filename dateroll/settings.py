@@ -56,7 +56,7 @@ class Settings:
             mod = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(mod)
             d = mod.__dict__
-        except Exception as e:
+        except Exception:
             d = {}
             msg = f"Unable to read settings file in {path}, will restoring defaults."
             warnings.warn(msg)
@@ -85,7 +85,6 @@ class Settings:
             append default settings not in user settings for a complete set of settings
         """
 
-        reset = False
         for k, v in user_settings.items():
 
             if k not in default_settings:

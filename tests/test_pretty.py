@@ -1,5 +1,4 @@
 import io
-import re
 import unittest
 from contextlib import redirect_stdout
 

@@ -228,7 +228,7 @@ class TestDate(unittest.TestCase):
         rs = repr(a)
         fmt = utils.convention_map[settings.convention]
         dstr = a.strftime(fmt)
-        self.assertEqual(rs, f"Date(2024,12,5)")
+        self.assertEqual(rs, "Date(2024,12,5)")
 
     def test_from_string(self):
         """

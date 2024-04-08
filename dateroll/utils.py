@@ -39,7 +39,6 @@ month_dict = {
     "february": "02",
     "march": "03",
     "april": "04",
-    "may": "05",
     "june": "06",
     "july": "07",
     "august": "08",
@@ -144,7 +143,7 @@ def str_or_date(s):
     return d
 
 
-def date_slice(s: slice, l: list):
+def date_slice(s: slice, list_: list):
     """
     s[t1:]   -- after t1 (inclusive)
     s[:t2]   -- before t2 (inclusive)
@@ -155,19 +154,19 @@ def date_slice(s: slice, l: list):
     if start is not None and stop is None and step is None:
         # after
         start = str_or_date(start)
-        return [i for i in l if i >= start]
+        return [i for i in list_ if i >= start]
     elif start is None and stop is not None and step is None:
         # before
         stop = str_or_date(stop)
-        return [i for i in l if i <= stop]
+        return [i for i in list_ if i <= stop]
     elif start is not None and stop is not None:
         # between
         start = str_or_date(start)
         stop = str_or_date(stop)
-        return [i for i in l if i >= start and i <= stop]
+        return [i for i in list_ if i >= start and i <= stop]
     elif start is None and stop is None and step is None:
         # all
-        return list(l.keys())
+        return list(list_.keys())
     elif step is not None:
         # neither
         raise Exception("Slicing only supports start, stop, and start+stop, not step.")
