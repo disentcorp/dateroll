@@ -566,6 +566,9 @@ class TestDuration(unittest.TestCase):
 
         self.assertEqual(dur.to_string(), "+1y+2m+3d+4bd|NYuWE/MOD")
         self.assertEqual(dur2.to_string(), "+1y-2m+3d+4bd|NYuWE/MOD")
+        print('in test dur')
+        import code
+        code.interact(local=dict(globals(),**locals()))
         self.assertEqual(dur3.to_string(), "+0d")
 
     def test_just_bds(self):

@@ -395,6 +395,7 @@ def parseDateMathString(s, things):
 
 if __name__ == "__main__":  # pragma:no cover
     from dateroll.ddh.ddh import ddh
-
-    x = ddh("111422414")
+    from dateroll.duration.duration import Duration
+    dur3 = Duration(years=0)
+    x = dur3.to_string()
     print(x)

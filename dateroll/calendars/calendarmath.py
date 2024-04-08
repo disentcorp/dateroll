@@ -40,6 +40,8 @@ class CalendarMath:
     def __init__(self, home=DATA_LOCATION_FILE):
         self.home = home
         self.cals = Calendars()
+        print('in cal math')
+        import code;code.interact(local=dict(globals(),**locals()))
         self.cal_names = list(self.cals.keys())
         self.hash = self.cals.hash
         self.ALL = self.cals["ALL"]

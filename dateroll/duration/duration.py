@@ -161,7 +161,11 @@ class Duration(dateutil.relativedelta.relativedelta):
                 self.bd = None
 
         # valid cals
+        print('in dur init')
+        import code;code.interact(local=dict(globals(),**locals()))
         self._validate_cals(kwargs["cals"])
+        print('in dur init2')
+        import code;code.interact(local=dict(globals(),**locals()))
 
         # debug
         self.debug = kwargs["debug"]
@@ -760,6 +764,8 @@ class Duration(dateutil.relativedelta.relativedelta):
 
     def to_string(self):
         output = ""
+        print('in to str')
+        import code;code.interact(local=dict(globals(),**locals()))
         if self.years != 0:
             output += f"{self.years:+}y"
         if self.months != 0:
