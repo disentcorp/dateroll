@@ -122,7 +122,6 @@ class Duration(dateutil.relativedelta.relativedelta):
                     raise TypeError(f'{k} must be one of {TypeList}, not {type(v)}')
             else:
                 ValueError(f'{k} is an unexpected keyword argument.')
-    
         # merge y/m/w/d
         self.years = kwargs["years"] + kwargs["year"] + kwargs["y"] + kwargs["Y"]
         self.months = kwargs["months"] + kwargs["month"] + kwargs["m"] + kwargs["M"]
@@ -153,7 +152,7 @@ class Duration(dateutil.relativedelta.relativedelta):
         elif kwargs["BD"] is not None:
             self.bd = float(kwargs["BD"])
         else:
-            if cals is not None:
+            if kwargs["cals"] is not None:
                 # implicity calendar for weekends will be set in validate_cals
                 self.bd = float(0.0)
             else:
@@ -161,11 +160,8 @@ class Duration(dateutil.relativedelta.relativedelta):
                 self.bd = None
 
         # valid cals
-        print('in dur init')
-        import code;code.interact(local=dict(globals(),**locals()))
+        
         self._validate_cals(kwargs["cals"])
-        print('in dur init2')
-        import code;code.interact(local=dict(globals(),**locals()))
 
         # debug
         self.debug = kwargs["debug"]
@@ -764,8 +760,6 @@ class Duration(dateutil.relativedelta.relativedelta):
 
     def to_string(self):
         output = ""
-        print('in to str')
-        import code;code.interact(local=dict(globals(),**locals()))
         if self.years != 0:
             output += f"{self.years:+}y"
         if self.months != 0:
