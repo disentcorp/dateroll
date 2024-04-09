@@ -1,7 +1,6 @@
 import os
 import pathlib
 
-# from dateroll.parser.parser import parse_to_dateroll, parse_to_native
 import dateroll.parser.parser as parserModule
 import dateroll.date.date as dateModule
 import dateroll.duration.duration as durationModule
