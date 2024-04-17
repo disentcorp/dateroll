@@ -10,12 +10,18 @@ NUMBER = f"{INT_PART}{OPTIONAL_DECIMAL}"
 D = M = r"\d{1,2}"
 Y = r"\d{2,4}"
 _ = r"(?: ?-|/|\A\Z)?"
-YMD = f"(({Y}){_}({M}){_}({D}))"
-MDY = f"(({M}){_}({D}){_}({Y}))"
-DMY = f"(({D}){_}({M}){_}({Y}))"
+
+YMD_ = f"(({Y}){_}({M}){_}({D}))"
+MDY_ = f"(({M}){_}({D}){_}({Y}))"
+DMY_ = f"(({D}){_}({M}){_}({Y}))"
 
 # DurationString patterns
 PERIOD_LETTER = r"(?:bd|BD|[dDwWmMqQsShHyY])"
+SIGN_LETTER = r"[+-]"
+YMD = fr"{YMD_}(?=(?=.*{SIGN_LETTER})|(?:(?!.*{SIGN_LETTER}).*?(?!.*{PERIOD_LETTER})))"
+MDY = fr"{MDY_}(?=(?=.*{SIGN_LETTER})|(?:(?!.*{SIGN_LETTER}).*?(?!.*{PERIOD_LETTER})))"
+DMY = fr"{DMY_}(?=(?=.*{SIGN_LETTER})|(?:(?!.*{SIGN_LETTER}).*?(?!.*{PERIOD_LETTER})))"
+
 DATE_PERIOD = f"(?:({NUMBER})({PERIOD_LETTER}))"
 REPEATING_DATE_PERIODS = f"(?:{DATE_PERIOD}{DATE_PERIOD}?{DATE_PERIOD}?{DATE_PERIOD}?{DATE_PERIOD}?{DATE_PERIOD}?{DATE_PERIOD}?{DATE_PERIOD}?{DATE_PERIOD}?{DATE_PERIOD}?{DATE_PERIOD}?{DATE_PERIOD}?)"
 PIPE = r"(\|)?"

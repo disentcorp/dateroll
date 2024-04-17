@@ -3,6 +3,9 @@
 </p>
 
 # `dateroll`
+
+![Coverage Status](./coverage-badge.svg?dummy=8484744)
+
 **`dateroll`** makes working with 📅 dates less painful.
 <br />
 

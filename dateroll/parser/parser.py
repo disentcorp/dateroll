@@ -118,15 +118,12 @@ class Parser:
 
         def gen():
             yield letters.pop(0)
-
+        
         notoday = parsersModule.parseTodayString(untouched)
-
         dates, nodates = parsersModule.parseManyDateStrings(notoday, gen)
-
         durations, nodatesordurations = parsersModule.parseManyDurationString(
             nodates, gen
         )
-
         dates_durations = {**dates, **durations}
         processed_answer = parsersModule.parseDateMathString(
             nodatesordurations, dates_durations

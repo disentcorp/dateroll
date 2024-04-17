@@ -125,7 +125,7 @@ def parseDateString(s: str):
             raise ParserStringsError(
                 "If no slashes or dashes, must be 2 digit year an dmonth, and 2 or 4 digit year in YMD format ONLY"
             )
-
+        
     # validate
     y = validate_year(y)
     m = validate_month(m)
@@ -193,7 +193,7 @@ def parseManyDateStrings(s, gen):
     dates = {}
     matches = re.findall(pattern, s)
     res = s
-
+    
     for match, _, _, _ in matches:
         # must hav 4 components per match
         # match 0 is 1st capture group = whole thing
@@ -396,5 +396,5 @@ def parseDateMathString(s, things):
 if __name__ == "__main__":  # pragma:no cover
     from dateroll.ddh.ddh import ddh
 
-    x = ddh("111422414")
-    print(x)
+    x = ddh("30000m")
+    
