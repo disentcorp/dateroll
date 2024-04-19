@@ -391,6 +391,17 @@ class TestUsage(unittest.TestCase):
         # reset
         settings.convention = orig
 
+    def test_long_tenor(self):
+        """
+            when duration is higher then 1000
+        """
+
+        dur = ddh("1000d")
+        print('in test long')
+        import code
+        code.interact(local=dict(globals(),**locals()))
+        self.assertEqual(durationModule.Duraton())
+
 
 if __name__ == "__main__":
     unittest.main()
