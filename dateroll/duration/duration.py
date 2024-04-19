@@ -1,8 +1,6 @@
-import code
 import copy
 import datetime
 import math
-import warnings
 
 import dateutil
 import dateutil.relativedelta

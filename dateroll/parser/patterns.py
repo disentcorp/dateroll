@@ -18,9 +18,10 @@ DMY_ = f"(({D}){_}({M}){_}({Y}))"
 # DurationString patterns
 PERIOD_LETTER = r"(?:bd|BD|[dDwWmMqQsShHyY])"
 SIGN_LETTER = r"[+-]"
-YMD = fr"{YMD_}(?=(?=.*{SIGN_LETTER})|(?:(?!.*{SIGN_LETTER}).*?(?!.*{PERIOD_LETTER})))"
-MDY = fr"{MDY_}(?=(?=.*{SIGN_LETTER})|(?:(?!.*{SIGN_LETTER}).*?(?!.*{PERIOD_LETTER})))"
-DMY = fr"{DMY_}(?=(?=.*{SIGN_LETTER})|(?:(?!.*{SIGN_LETTER}).*?(?!.*{PERIOD_LETTER})))"
+ADJUSTER = fr"(?:(?={SIGN_LETTER})|(?!.*{PERIOD_LETTER}))"
+YMD = fr"{YMD_}{ADJUSTER}"
+MDY = fr"{MDY_}{ADJUSTER}"
+DMY = fr"{DMY_}{ADJUSTER}"
 
 DATE_PERIOD = f"(?:({NUMBER})({PERIOD_LETTER}))"
 REPEATING_DATE_PERIODS = f"(?:{DATE_PERIOD}{DATE_PERIOD}?{DATE_PERIOD}?{DATE_PERIOD}?{DATE_PERIOD}?{DATE_PERIOD}?{DATE_PERIOD}?{DATE_PERIOD}?{DATE_PERIOD}?{DATE_PERIOD}?{DATE_PERIOD}?{DATE_PERIOD}?)"

@@ -397,10 +397,13 @@ class TestUsage(unittest.TestCase):
         """
 
         dur = ddh("1000d")
-        print('in test long')
-        import code
-        code.interact(local=dict(globals(),**locals()))
-        self.assertEqual(durationModule.Duraton())
+        dur_m = ddh("10000m")
+        dur_w = ddh("4567w")
+        
+        self.assertEqual(dur,durationModule.Duration(years=0, months=0, days=1000, modified=False))
+        self.assertEqual(dur_m,durationModule.Duration(years=833, months=4, days=0, modified=False))
+        self.assertEqual(dur_w,durationModule.Duration(years=0, months=0, days=31969, modified=False))
+
 
 
 if __name__ == "__main__":

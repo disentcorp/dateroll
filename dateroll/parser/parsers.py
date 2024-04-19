@@ -395,6 +395,6 @@ def parseDateMathString(s, things):
 
 if __name__ == "__main__":  # pragma:no cover
     from dateroll.ddh.ddh import ddh
-
-    x = ddh("30000m")
+    
+    
     
