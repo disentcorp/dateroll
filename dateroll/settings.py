@@ -6,7 +6,12 @@ path = pathlib.Path("~/.dateroll/settings.py").expanduser()
 
 ctx_conv = "_ctx_convention"
 
-default_settings = {"convention": "MDY", "twodigityear_cutoff": 2050}
+default_settings = {
+    "convention": "MDY", 
+    "twodigityear_cutoff": 2050, 
+    "default_daycounter" : "ACT/365",
+    "ie":"(]"
+}
 
 default_settings_validation = {
     "debug": (lambda x: isinstance(x, bool), TypeError("debug must be bool")),
@@ -26,8 +31,14 @@ default_settings_validation = {
             "Cutoff must be either 1900 (all 2-digit are 1900), 2000 (all 2-digit are 2000), or some n >2001 and < 2099 as a cutoff level"
         ),
     ),
-}
+    "default_daycounter": (
+                lambda x: x in ["ACT/365", "ACT/365F", "ACT/360", "30/360", "30E/360"],
+        ValueError(
+            "Must be one of ACT/365, ACT/365F, ACT/360, 30/360, 30E/360"
+        ),
+    )
 
+}
 
 class Settings:
     """

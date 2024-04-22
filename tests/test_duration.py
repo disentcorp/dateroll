@@ -700,6 +700,26 @@ class TestDuration(unittest.TestCase):
         self.assertRaises(ParserStringsError, lambda: ddh("1y1y"))
         self.assertRaises(ParserStringsError, lambda: ddh("1y1y1m1d"))
 
+    def test_yfs(self):
+        d1 = ddh('5/15/2021')
+        d2 = ddh('5/15/2024')
+
+        expected_dcf_ACT360 = 3 # manually computed using QL Python
+        dcf_ACT360 = (d2-d1).yf('ACT/360')
+        self.assertEqual(dcf_ACT360, expected_dcf_ACT360)
+
+        expected_dcf_ACT365 = 3 # manually computed using QL Python
+        dcf_ACT365 = (d2-d1).yf('ACT/365')
+        self.assertEqual(dcf_ACT365, expected_dcf_ACT365)
+
+        expected_dcf_30E360 = 3 # manually computed using QL Python
+        dcf_30E360 = (d2-d1).yf('30E/360')
+        self.assertEqual(dcf_30E360, expected_dcf_30E360)
+
+        expected_dcf_BD252= 3 # manually computed using QL Python
+        dcf_30E360 = (d2-d1).yf('BD/252',cals='BR') 
+        self.assertEqual(dcf_30E360, expected_dcf_BD252)
+
     def test_gt(self):
         """
         test when b = 0 to compare a= Duration(something) and a>b
