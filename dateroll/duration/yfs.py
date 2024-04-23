@@ -7,7 +7,7 @@ def dc_ACT360(a, b, cals):
 
 def dc_ACT365(a, b, cals):
     """ https://en.wikipedia.org/wiki/Day_count_convention """
-    print('!!!!!!!!!!!!!!!!!!!!!!!',b-a,(b-a).days)
+    # print('!!!!!!!!!!!!!!!!!!!!!!!',b-a,(b-a).days)
     return (b - a).just_exact_days / 365.0
 
 def dc_30E360(a, b, cals):
