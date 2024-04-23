@@ -721,6 +721,13 @@ class TestDuration(unittest.TestCase):
             Duration(days="10")
         with self.assertRaises(ValueError):
             Duration(bus_days=10)
+        
+    def test_durationstr_on_second(self):
+        """
+            make duration string work on the end date of schedule, eg, ddh(t,5y,3m)
+        """
+
+        self.assertEqual(ddh("t,t+5y,3m").list,ddh("t,5y,3m").list)
 
 if __name__ == "__main__":
     unittest.main()
