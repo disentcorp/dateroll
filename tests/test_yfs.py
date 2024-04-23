@@ -16,11 +16,11 @@ def unit_tester(x1,x2):
     """
     act360_1 = yfs.dc_ACT360(x1,x2,"")
     expected_360 = dcf(x1.datetime,x2.datetime,"Act360")
-    act365_1 = yfs.dc_ACT365(x1,x2,"")
+    # when passing None will call ACT365
+    act365_1 = (x2-x1).yf(None)
     expected_365 = dcf(x1.datetime,x2.datetime,"Act365f")
-    eur360 = yfs.dc_30E360(x1,x2,"")
+    eur360 = (x2-x1).yf("30E/360")
     expected_e360 = dcf(x1.datetime,x2.datetime,"30E360")
-    
     cal = ql.UnitedStates(ql.UnitedStates.NYSE)
     
     d1 = ql.Date(x1.day,x1.month,x1.year)
@@ -41,9 +41,7 @@ def unit_tester(x1,x2):
     comp5 = abs(bd1_ie-expected_bd_ie)<0.03
     
     rs = all([comp1,comp2,comp3,comp4,comp5])
-    if not rs:
-        print('heree')
-        import code;code.interact(local=dict(globals(),**locals()))
+    
     return rs
 
 class TestYFS(unittest.TestCase):
