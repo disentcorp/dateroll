@@ -2,8 +2,8 @@ import datetime
 import sys
 import unittest
 from io import StringIO
+import json
 
-import QuantLib as ql
 import dateutil.relativedelta
 
 from dateroll import Date, Duration, ddh
@@ -11,25 +11,7 @@ from dateroll.parser import parsers
 from dateroll.parser.parsers import ParserStringsError
 from dateroll.settings import settings
 
-def get_ql_dayCount(x1,x2,count_convention="Act360",cals="NY"):
-    d1 = ql.Date(x1.day,x1.month,x1.year)
-    d2 = ql.Date(x2.day,x2.month,x2.year)
-    if count_convention=="Act360":
-        cnv = ql.Actual360().dayCount(d1,d2)/360
-    elif count_convention=="Act365":
-        cnv = ql.Actual365Fixed().dayCount(d1,d2)/365
-    elif count_convention=="30E360":
-        cnv = ql.Thirty360(ql.Thirty360.BondBasis).dayCount(d1,d2)/360
-    elif count_convention=="bd252":
-        # default ie=(], does not support other ie=[],(),[)
-        if cals=="NY":
-            cal = ql.UnitedStates(ql.UnitedStates.NYSE)
-        elif cals=="BR":
-            cal = ql.Brazil(ql.Brazil.Exchange)
-        else:
-            raise NotImplementedError
-        cnv = cal.businessDaysBetween(d1,d2,False,True)/252
-    return cnv
+EXPECTED_DAY_COUNT_PATH = lambda:"tests/test_data/ql_data.json"
 
 class TestDuration(unittest.TestCase):
     @classmethod
@@ -723,22 +705,25 @@ class TestDuration(unittest.TestCase):
     def test_yfs(self):
         d1 = ddh('5/15/2021')
         d2 = ddh('5/15/2024')
-        
-        expected_dcf_ACT360 = get_ql_dayCount(d1,d2,count_convention="Act360")
+        # get expected answers from json file
+        with open(EXPECTED_DAY_COUNT_PATH(),"r") as f:
+            expected_daycount_dic = json.load(f)
+
+        expected_dcf_ACT360 = expected_daycount_dic[f"{d1}:{d2}:ACT/360:NY"]
         
         dcf_ACT360 = (d2-d1).yf('ACT/360')
         self.assertEqual(dcf_ACT360, expected_dcf_ACT360)
 
-        expected_dcf_ACT365 = get_ql_dayCount(d1,d2,count_convention="Act365")
+        expected_dcf_ACT365 = expected_daycount_dic[f"{d1}:{d2}:ACT/365:NY"]
         dcf_ACT365 = (d2-d1).yf('ACT/365')
         self.assertEqual(dcf_ACT365, expected_dcf_ACT365)
 
-        expected_dcf_30E360 = get_ql_dayCount(d1,d2,count_convention="30E360")
+        expected_dcf_30E360 = expected_daycount_dic[f"{d1}:{d2}:30E360:NY"]
         dcf_30E360 = (d2-d1).yf('30E/360')
         self.assertEqual(dcf_30E360, expected_dcf_30E360)
 
         # if we change to BR the difference is quite big eg, toler=0.083
-        expected_dcf_BD252= get_ql_dayCount(d1,d2,count_convention="bd252",cals="NY")
+        expected_dcf_BD252 = expected_daycount_dic[f"{d1}:{d2}:bd252:NY"]
         dcf_bd252 = (d2-d1).yf('BD/252',cals="NY") 
         toler = abs(expected_dcf_BD252 - dcf_bd252)
         
