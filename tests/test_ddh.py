@@ -5,7 +5,6 @@ import dateroll
 import dateroll.date.date as dateModule
 import dateroll.duration.duration as durationModule
 import dateroll.schedule.schedule as scheduleModule
-
 from dateroll import ddh
 from dateroll.settings import settings
 

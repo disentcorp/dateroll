@@ -6,8 +6,6 @@ from dateroll.utils import color
 calendar.setfirstweekday(calendar.SUNDAY)
 
 
-
-
 def replacer(i, c, txt1, cals):
     bef = str(i).rjust(3)
     aft = color(bef, c)
@@ -100,6 +98,5 @@ def pretty_between_two_dates(dt1, dt2, cals, calmath):
         )
         for idx, (i, j) in enumerate(zip(cal1.splitlines(), cal2.splitlines())):
             res += "\n" + f"  {i}   {' '+j}"
-            
 
     return res

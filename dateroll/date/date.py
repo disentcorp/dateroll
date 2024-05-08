@@ -9,6 +9,7 @@ from dateroll.calendars.calendarmath import calmath
 from dateroll.duration.duration import Duration
 from dateroll.settings import settings
 from dateroll import utils
+
 DateLike = (datetime.datetime, datetime.date)
 
 

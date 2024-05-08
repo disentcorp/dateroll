@@ -53,6 +53,7 @@ class TestParser(unittest.TestCase):
         """
         test parse maybe many parts accepts 1 part or 3 parts (start,stop,step)
         """
+        from dateroll.parser.parsers import ParserStringsError
 
         # 1 part
         original = settings.convention
@@ -71,8 +72,8 @@ class TestParser(unittest.TestCase):
             dt = Parser.parse_maybe_many_parts("3m,t,1m")
 
         # 3 parts 2nd part wrong
-        with self.assertRaises(TypeError):
-            dt = Parser.parse_maybe_many_parts("t,3m,1m")
+        with self.assertRaises(ParserStringsError):
+            dt = Parser.parse_maybe_many_parts("t,3v,1m")
 
         # 3 parts 3rd part wrong
         with self.assertRaises(TypeError):

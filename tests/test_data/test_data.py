@@ -1,4 +1,3 @@
-
 next_d = [
     {
         "Type with Holiday(NYuWE)": "next hol current month",

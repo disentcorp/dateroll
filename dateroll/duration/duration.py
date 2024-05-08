@@ -31,35 +31,35 @@ APPROX = {
 }
 
 DUR_DFLTS = {
-    "years" : (0,(int,float)),
-    "months" : (0,(int,float)),
-    "y" : (0,(int,float)),
-    "Y" : (0,(int,float)),
-    "year" : (0,(int,float)),
-    "q" : (0,(int,float)),
-    "Q" : (0,(int,float)),
-    "quarter" : (0,(int,float)),
-    "quarters" : (0,(int,float)),
-    "m" : (0,(int,float)),
-    "M" : (0,(int,float)),
-    "month" : (0,(int,float)),
-    "weeks" : (0,(int,float)),
-    "w" : (0,(int,float)),
-    "W" : (0,(int,float)),
-    "week" : (0,(int,float)),
-    "d" : (0,(int,float)),
-    "D" : (0,(int,float)),
-    "days" : (0,(int,float)),
-    "day" : (0,(int,float)),
-    "bd" : (None,(int,float,type(None))),
-    "BD" : (None,(int,float,type(None))),
-    "cals" : (None,(type(None),str,list,tuple,set)),
-    "modified" : (False,bool),
-    "_anchor_start" : (None,(datetime.date,type(None))),
-    "_anchor_end" :   (None,(datetime.date,type(None))),
-    "_anchor_months" :(None,(int,float,type(None))),
-    "_anchor_days" : (None,(int,float,type(None))),
-    "debug" :(False,bool),
+    "years": (0, (int, float)),
+    "months": (0, (int, float)),
+    "y": (0, (int, float)),
+    "Y": (0, (int, float)),
+    "year": (0, (int, float)),
+    "q": (0, (int, float)),
+    "Q": (0, (int, float)),
+    "quarter": (0, (int, float)),
+    "quarters": (0, (int, float)),
+    "m": (0, (int, float)),
+    "M": (0, (int, float)),
+    "month": (0, (int, float)),
+    "weeks": (0, (int, float)),
+    "w": (0, (int, float)),
+    "W": (0, (int, float)),
+    "week": (0, (int, float)),
+    "d": (0, (int, float)),
+    "D": (0, (int, float)),
+    "days": (0, (int, float)),
+    "day": (0, (int, float)),
+    "bd": (None, (int, float, type(None))),
+    "BD": (None, (int, float, type(None))),
+    "cals": (None, (type(None), str, list, tuple, set)),
+    "modified": (False, bool),
+    "_anchor_start": (None, (datetime.date, type(None))),
+    "_anchor_end": (None, (datetime.date, type(None))),
+    "_anchor_months": (None, (int, float, type(None))),
+    "_anchor_days": (None, (int, float, type(None))),
+    "debug": (False, bool),
 }
 
 
@@ -112,23 +112,25 @@ class Duration(dateutil.relativedelta.relativedelta):
         modified = False or True (True means stay in month with BD adjustment)
         """
 
-        kwargs = {k:v[0] for k,v in DUR_DFLTS.items()}
-        for k,v in init_kwargs.items():
+        kwargs = {k: v[0] for k, v in DUR_DFLTS.items()}
+        for k, v in init_kwargs.items():
             if k in DUR_DFLTS:
                 _, TypeList = DUR_DFLTS[k]
-                if isinstance(v,TypeList):
-                    kwargs[k]=v
+                if isinstance(v, TypeList):
+                    kwargs[k] = v
                 else:
-                    raise TypeError(f'{k} must be one of {TypeList}, not {type(v)}')
+                    raise TypeError(f"{k} must be one of {TypeList}, not {type(v)}")
             else:
-                raise ValueError(f'{k} is an unexpected keyword argument.')
+                raise ValueError(f"{k} is an unexpected keyword argument.")
         # merge y/m/w/d
         self.years = kwargs["years"] + kwargs["year"] + kwargs["y"] + kwargs["Y"]
         self.months = kwargs["months"] + kwargs["month"] + kwargs["m"] + kwargs["M"]
         self.days = kwargs["days"] + kwargs["day"] + kwargs["d"] + kwargs["D"]
 
         # collapse quarters into months
-        self.months += 3 * (kwargs["quarters"] + kwargs["quarter"] + kwargs["Q"] + kwargs["q"])
+        self.months += 3 * (
+            kwargs["quarters"] + kwargs["quarter"] + kwargs["Q"] + kwargs["q"]
+        )
 
         # collapse weeks into days
         self.days += 7 * (kwargs["weeks"] + kwargs["week"] + kwargs["W"] + kwargs["w"])
@@ -160,7 +162,7 @@ class Duration(dateutil.relativedelta.relativedelta):
                 self.bd = None
 
         # valid cals
-        
+
         self._validate_cals(kwargs["cals"])
 
         # debug
@@ -440,9 +442,9 @@ class Duration(dateutil.relativedelta.relativedelta):
             cals = combine_none(a.cals, b.cals)  # union
 
             # adjust years and months such that abs(months) < 12 always
-            months = years*12 + months
-            years = int(months/12)
-            months = months - years*12
+            months = years * 12 + months
+            years = int(months / 12)
+            months = months - years * 12
 
             # modified / if either has, inherit it
             modified = a.modified or b.modified
@@ -680,8 +682,7 @@ class Duration(dateutil.relativedelta.relativedelta):
         future note: implicity call the simplify() method before sorting, and repr on the simpllifed version, not direct on __dict__
         consider moving ny/nm/nd/nbd to dict on class??
         """
-        
-        
+
         constructor = ""
         for k, v in self.__dict__.items():
             if v is not None and k != "debug" and not k.startswith("_"):

@@ -2,7 +2,6 @@ import itertools
 import re
 import unittest
 
-
 import dateroll.date.date as dateModule
 import dateroll.parser.parsers as parsers
 from dateroll import ddh
