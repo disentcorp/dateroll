@@ -3,6 +3,7 @@ import math
 import os
 import pathlib
 import pickle
+import time
 
 import dateroll.date.date as dateModule
 from dateroll.calendars.calendars import Calendars
@@ -78,6 +79,7 @@ class CalendarMath:
             "hash": self.hash,
         }
         with open(self.home, "wb") as f:
+            print("[dateroll] Writing cache (calmath unions)")
             pickle.dump(cached, f)
 
     def cached_compile_all(self):
@@ -97,6 +99,7 @@ class CalendarMath:
         self.compile_all()
 
     def compile_all(self):
+        print("[dateroll] Optimizing calendars")
         d = self.cals.copy()
         for k, v in d.items():
             if k == "WE":
@@ -119,9 +122,6 @@ class CalendarMath:
     @property
     def cal_list(self):
         if not self.has_mutated:
-            return self.cal_names
-        else:
-            self.compile_all()
             return self.cal_names
 
     @property
@@ -338,6 +338,7 @@ class CalendarMath:
             unioned_dates |= set(self.cals[cal])
 
         # compile into large dict
+        print(f"[dateroll] compiling new union [{cal_union_key}]")
         dict_tuple = self.gen_dicts(cal_union_key, unioned_dates, self.ALL)
         self.fwd[cal_union_key], self.bck[cal_union_key], self.ibd[cal_union_key] = (
             dict_tuple
@@ -357,6 +358,5 @@ class CalendarMath:
 
 calmath = CalendarMath()
 
-if __name__ == "__main__":  # pragma:no cover
-    pass
-    
+if __name__=='__main__':  # pragma:no cover
+    ...

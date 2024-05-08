@@ -42,6 +42,7 @@ def generate_ql_holidays(cls,n=DEFAULT_YEAR_RANGE):
         raise NotImplementedError("Currently only support brazil holidays")
     list_ = ql.Calendar.holidayList(cal,t1,t2)
     list_ = set([d.to_date() for d in list_])
+    list_ = sorted(list_)
     return list_
 
 
@@ -89,8 +90,9 @@ def generate_sample_data(cals, n=DEFAULT_YEAR_RANGE):
     }
 
     for calendar_name, list_of_dates in data.items():
-        p = f"{ROOT_DIR}/dateroll/dateroll/sampledata/{calendar_name}.csv"
+        p = f"{ROOT_DIR}/dateroll/sampledata/{calendar_name}.csv"
         filename = pathlib.Path(p)
+        
         with open(filename, "w") as f:
             list_ = [i.isoformat() + "\n" for i in list_of_dates]
             f.writelines(list_)

@@ -12,7 +12,7 @@ import dateroll.parser.parsers as parsersModule
 import dateroll.utils as utils
 from dateroll.settings import settings
 from dateroll.utils import add_none, combine_none, xprint
-
+import dateroll.duration.yfs as yfs
 # NOTE: functools cache is defined starting from python 3.9
 # older versions of python can use functools lru_cache(maxsize=None)
 # for now, leave this commented out because it is not used
@@ -774,6 +774,23 @@ class Duration(dateutil.relativedelta.relativedelta):
         if output == "":
             output = "+0d"
         return output
-
+        
+    def yf(self,dc,cals=None):
+        if cals is None:
+            cals = self.cals
+        if dc is None:
+            dc = settings.default_daycounter
+        if dc.upper() not in yfs.yf_mapping:
+            raise ValueError(f'Must be one of {yfs.yf_mapping.keys()}')
+        else:
+            f = yfs.yf_mapping[dc]
+            a,b = self._anchor_start, self._anchor_end
+            dcf = f(a,b,cals)
+            return dcf
+        
+    def __setattribute__(self,k,v):
+        
+        if k == 'cals':
+            self._validate_cals(v)
 
 DurationLike = (Duration, datetime.timedelta, dateutil.relativedelta.relativedelta)
