@@ -9,6 +9,7 @@ import dateroll.duration.duration as durationModule
 import dateroll.parser.parsers as parsersModule
 import dateroll.schedule.schedule as scheduleModule
 
+
 class ParserError(Exception): ...
 
 
@@ -125,7 +126,7 @@ class Parser:
         durations, nodatesordurations = parsersModule.parseManyDurationString(
             nodates, gen
         )
-        
+
         dates_durations = {**dates, **durations}
         processed_answer = parsersModule.parseDateMathString(
             nodatesordurations, dates_durations
@@ -153,7 +154,7 @@ class Parser:
             maybe_start = cls.parse_one_part(_maybe_start)
             maybe_stop = cls.parse_one_part(_maybe_stop)
             maybe_step = cls.parse_one_part(_maybe_step)
-            
+
             if isinstance(maybe_start, dateModule.Date):
                 start = maybe_start
             else:
@@ -161,10 +162,8 @@ class Parser:
 
             if isinstance(maybe_stop, dateModule.Date):
                 stop = maybe_stop
-            elif isinstance(maybe_stop,durationModule.Duration):
+            elif isinstance(maybe_stop, durationModule.Duration):
                 stop = dateModule.Date.from_string("t") + maybe_stop
-            else:
-                raise TypeError("Stop of generation must be a valid Date")
 
             if isinstance(maybe_step, durationModule.Duration):
                 step = maybe_step
@@ -195,5 +194,6 @@ if __name__ == "__main__":  # pragma:no cover
 
     dateroll.settings.convention = "MDY"
     from dateroll import ddh
+
     x = ddh("t,5y,3m")
     print(x.list)

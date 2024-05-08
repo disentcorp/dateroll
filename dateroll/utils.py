@@ -1,13 +1,11 @@
 import calendar
 import re
 
+import dateroll.date.date as dateModule
+import dateroll.ddh.ddh as ddhModule
 # from dateroll.date import date as dateModule
 # from dateroll.ddh import ddh as ddhModule
 from dateroll.parser import patterns
-
-import dateroll.date.date as dateModule
-import dateroll.ddh.ddh as ddhModule
-
 
 XPRINT_ON = False
 

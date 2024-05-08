@@ -1,13 +1,14 @@
 import datetime
+
 import dateroll.calendars.calendarmath as calendarmathModule
 import dateroll.parser.parsers as parsersModule
-from dateroll import pretty
+from dateroll import pretty, utils
 from dateroll.date import date as dateModule
 from dateroll.ddh import ddh as ddhModule
-from dateroll import utils
 
 try:
     import pandas as pd
+
     have_pandas = True
 except Exception:  # pragma: no cover
     have_pandas = False
@@ -149,10 +150,10 @@ class Schedule:
         list_of_dates = self._dates
         start = list_of_dates[:-1]
         stop = list_of_dates[1:]
-        
-        if not have_pandas: # pragma: no cover
-            print('requires pandas, not installed')
-            return 
+
+        if not have_pandas:  # pragma: no cover
+            print("requires pandas, not installed")
+            return
 
         df = pd.DataFrame({"start": start, "stop": stop})
         df["step"] = df.stop - df.start
@@ -166,9 +167,9 @@ class Schedule:
         makes a bond schedule assuming T+0BD on weekends
         """
 
-        if not have_pandas: # pragma: no cover
-            print('requires pandas, not installed')
-            return 
+        if not have_pandas:  # pragma: no cover
+            print("requires pandas, not installed")
+            return
 
         df = self.split
         df["type"] = "interest"

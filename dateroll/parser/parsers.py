@@ -391,5 +391,3 @@ def parseDateMathString(s, things):
         return total
     except Exception:
         raise ParserStringsError("Cannot recognize as date math", s)
-
-
