@@ -189,9 +189,11 @@ class CalendarMath:
         # when not bd, we need to handle n; positive direction n=0-->1 and negative direction n=-1--->0
         # because of the property of fwd, bck dictionaries
         if isinstance(d, datetime.datetime):
-            d = datetime.date(d.year, d.month, d.day)
+            # d = datetime.date(d.year, d.month, d.day)
+            pass
         elif isinstance(d, dateModule.Date):
-            d = d.date
+            # d = d.date
+            pass
         elif isinstance(d, datetime.date):
             pass
         else:

@@ -256,7 +256,7 @@ class TestDuration(unittest.TestCase):
         dur = Duration(days=4)
         dt = Date(2024, 1, 1)
         x = dur + dt
-        self.assertEqual(x, datetime.date(2024, 1, 5))
+        self.assertEqual(x, datetime.datetime(2024, 1, 5))
 
     def test___eq__(self):
         """

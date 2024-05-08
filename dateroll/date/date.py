@@ -13,7 +13,7 @@ from dateroll import utils
 DateLike = (datetime.datetime, datetime.date)
 
 
-class Date(datetime.date):
+class Date(datetime.datetime):
     """
     A Date, inherits from datetime.date, represents a specific day (no sub-units of day)
     """
@@ -29,19 +29,20 @@ class Date(datetime.date):
         dt = parsersModule.parseDateString(o)
         return Date.from_datetime(dt)
 
+
     @staticmethod
-    def from_datetime(o, utc=False):
+    def from_date(o,utc=False):
         """
-        Create a Date instance from a datetime.datetime (drops time information), or datetime.date
+            Create a Datetime instance from a datetime.date adding time as 00:00:00
         """
-        if isinstance(o, Date):
-            return o
-        elif isinstance(o, DateLike):
-            y, m, d = o.year, o.month, o.day
-            return Date(y, m, d)
+
+        if isinstance(o,datetime.date):
+            return datetime.datetime.combine(o,datetime.datetime.min.time())
+        elif isinstance(o,datetime.datetime):
+            pass
         else:
             raise TypeError(
-                f"from_datetime requires datetime, cannot use {type(o).__name__}"
+                f"from_date requires datetime.date, cannot use {type(o).__name__}"
             )
 
     @staticmethod
