@@ -188,14 +188,13 @@ class CalendarMath:
 
         # when not bd, we need to handle n; positive direction n=0-->1 and negative direction n=-1--->0
         # because of the property of fwd, bck dictionaries
-        if isinstance(d, datetime.datetime):
-            # d = datetime.date(d.year, d.month, d.day)
+        if isinstance(d, datetime.datetime): 
             pass
         elif isinstance(d, dateModule.Date):
-            # d = d.date
+            d = d.datetime
             pass
         elif isinstance(d, datetime.date):
-            pass
+            d = dateModule.Date.from_date(d)
         else:
             raise TypeError(f"Date must be date (got {type(d).__name__})")
         if not self.is_bd(d, cals):

@@ -27,7 +27,7 @@ class Date(datetime.datetime):
             )
 
         dt = parsersModule.parseDateString(o)
-        return Date.from_datetime(dt)
+        return Date.from_date(dt)
 
 
     @staticmethod
@@ -37,7 +37,7 @@ class Date(datetime.datetime):
         """
 
         if isinstance(o,datetime.date):
-            return datetime.datetime.combine(o,datetime.datetime.min.time())
+            return Date.datetime(o)
         elif isinstance(o,datetime.datetime):
             pass
         else:
@@ -50,7 +50,7 @@ class Date(datetime.datetime):
         if not isinstance(o, (int, float)):
             raise TypeError("Must be int/float")
         dt = datetime.date.fromtimestamp(o)
-        return Date.from_datetime(dt)
+        return Date.from_date(dt)
 
     @staticmethod
     def from_xls(o):
@@ -71,7 +71,7 @@ class Date(datetime.datetime):
         fraction = o - days
         seconds_in_day = int(fraction * 24 * 3600)
         dt = base_date + datetime.timedelta(days=days, seconds=seconds_in_day)
-        return Date.from_datetime(dt)
+        return Date.from_date(dt)
 
     @staticmethod
     def from_timestamp(o):
@@ -80,15 +80,15 @@ class Date(datetime.datetime):
         """
         if isinstance(o, (int, float)):
             dt = datetime.date.fromtimestamp(o)
-            return Date.from_datetime(dt)
+            return Date.from_date(dt)
         else:
             raise TypeError(
-                f"from_datetime requires int/float, cannot use {type(o).__name__}"
+                f"from_date requires int/float, cannot use {type(o).__name__}"
             )
 
     @staticmethod
     def today():
-        return Date.from_datetime(datetime.date.today())
+        return Date.from_date(datetime.date.today())
 
     @property
     def datetime(self):
@@ -159,15 +159,15 @@ class Date(datetime.datetime):
         elif isinstance(o, Duration):
             # date + duration
             # goes to __radd__ of Duration
-            return Date.from_datetime(o.__radd__(self))
+            return Date.from_date(o.__radd__(self))
         elif isinstance(o, int):
             # date + int, int -> duration, -> date + duration -> __radd__ duration
             # goes to __radd__ of Duration
             return Duration(days=o).__radd__(self)
         elif isinstance(o, datetime.timedelta):
-            return Date.from_datetime(self.date + o)
+            return Date.from_date(self.date + o)
         elif isinstance(o, dateutil.relativedelta.relativedelta):
-            return Date.from_datetime(self.date + o)
+            return Date.from_date(self.date + o)
         else:
             raise TypeError(
                 f"unsupported operand type(s) for +: 'Date' and {type(o).__name__}"
@@ -212,9 +212,9 @@ class Date(datetime.datetime):
             # goes to __rsub__ of Duration
             return Duration(days=o).__rsub__(self)
         elif isinstance(o, datetime.timedelta):
-            return Date.from_datetime(self.date - o)
+            return Date.from_date(self.date - o)
         elif isinstance(o, dateutil.relativedelta.relativedelta):
-            return Date.from_datetime(self.date - o)
+            return Date.from_date(self.date - o)
         else:
             raise TypeError(
                 f"unsupported operand type(s) for : 'Date' and {type(o).__name__}"
@@ -222,7 +222,7 @@ class Date(datetime.datetime):
 
     def __rsub__(self, o):
         if isinstance(o, (datetime.date, datetime.datetime)):
-            return Date.from_datetime(o) - self
+            return Date.from_date(o) - self
 
         raise TypeError(
             f"Cannot subtract Date from {type(o).__name__}, what are you trying to do?"

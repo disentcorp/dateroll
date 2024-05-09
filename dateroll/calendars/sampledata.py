@@ -19,7 +19,7 @@ def generate_Workalendar(cls, n=DEFAULT_YEAR_RANGE):
     """
     use 3rd party library to get set of use federal holidays, return as set
     """
-    y = datetime.datetime.today().year
+    y = datetime.date.today().year
     list_ = set()
     inst = cls()
     for year in range(y - n, y + n):
@@ -36,7 +36,8 @@ def generate_ALL_and_WE(n=DEFAULT_YEAR_RANGE):
     """
     t_start = datetime.date.today() - rd(years=n)
     t_end = datetime.date.today() + rd(years=n)
-
+    t_start = datetime.datetime(t_start.year,t_start.month,t_start.day)
+    t_end = datetime.datetime(t_end.year,t_end.month,t_end.day)
     t = t_start
     ALL = set()
     WE = set()
