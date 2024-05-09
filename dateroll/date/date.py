@@ -1,4 +1,5 @@
 import datetime
+from zoneinfo import ZoneInfo
 
 import dateutil.relativedelta
 
@@ -15,8 +16,12 @@ DateLike = (datetime.datetime, datetime.date)
 
 class Date(datetime.datetime):
     """
-    A Date, inherits from datetime.date, represents a specific day (no sub-units of day)
+    A Date, inherits from datetime.datetime, represents a specific day (no sub-units of day)
     """
+
+    def __new__(cls,*args,**kwargs):
+        kwargs.setdefault("tzinfo",settings.tz)
+        return super().__new__(cls,*args,**kwargs)
 
     @staticmethod
     def from_string(o):
@@ -33,24 +38,27 @@ class Date(datetime.datetime):
     @staticmethod
     def from_date(o,utc=False):
         """
-            Create a Datetime instance from a datetime.date adding time as 00:00:00
+            Create a Datetime instance from a datetime.date adding time as 00:00:00 of UTC 
         """
 
         if isinstance(o,datetime.date):
             return Date.datetime(o)
         elif isinstance(o,datetime.datetime):
-            pass
+            return o.astimezone(settings.tz)
         else:
             raise TypeError(
-                f"from_date requires datetime.date, cannot use {type(o).__name__}"
+                f"from_date requires datetime.datetime, cannot use {type(o).__name__}"
             )
 
     @staticmethod
     def from_unix(o):
+        """
+            convert datetime of UTC 
+        """
         if not isinstance(o, (int, float)):
             raise TypeError("Must be int/float")
-        dt = datetime.date.fromtimestamp(o)
-        return Date.from_date(dt)
+        dt = datetime.datetime.fromtimestamp(o,datetime.UTC)
+        return dt
 
     @staticmethod
     def from_xls(o):
@@ -66,12 +74,12 @@ class Date(datetime.datetime):
             else:
                 raise TypeError("Must be int/float")
 
-        base_date = datetime.datetime(1899, 12, 30)
+        base_date = datetime.datetime(1899, 12, 30).astimezone(settings.tz)
         days = int(o)
         fraction = o - days
         seconds_in_day = int(fraction * 24 * 3600)
         dt = base_date + datetime.timedelta(days=days, seconds=seconds_in_day)
-        return Date.from_date(dt)
+        return dt
 
     @staticmethod
     def from_timestamp(o):
@@ -79,8 +87,8 @@ class Date(datetime.datetime):
         Create a Date instance from a unix timestamp
         """
         if isinstance(o, (int, float)):
-            dt = datetime.date.fromtimestamp(o)
-            return Date.from_date(dt)
+            dt = datetime.datetime.fromtimestamp(o,datetime.UTC)
+            return dt
         else:
             raise TypeError(
                 f"from_date requires int/float, cannot use {type(o).__name__}"
@@ -88,11 +96,11 @@ class Date(datetime.datetime):
 
     @staticmethod
     def today():
-        return Date.from_date(datetime.date.today())
+        return datetime.datetime.now(datetime.UTC)
 
     @property
     def datetime(self):
-        return datetime.datetime(self.year, self.month, self.day)
+        return datetime.datetime(self.year, self.month, self.day).astimezone(settings.tz)
 
     @property
     def date(self):
@@ -137,7 +145,7 @@ class Date(datetime.datetime):
 
     @property
     def to_unix(self):
-        return int(self.datetime.timestamp())
+        return int(self.timestamp())
 
     @property
     def iso(self):
@@ -159,7 +167,7 @@ class Date(datetime.datetime):
         elif isinstance(o, Duration):
             # date + duration
             # goes to __radd__ of Duration
-            return Date.from_date(o.__radd__(self))
+            return o.__radd__(self)
         elif isinstance(o, int):
             # date + int, int -> duration, -> date + duration -> __radd__ duration
             # goes to __radd__ of Duration
@@ -167,7 +175,7 @@ class Date(datetime.datetime):
         elif isinstance(o, datetime.timedelta):
             return Date.from_date(self.date + o)
         elif isinstance(o, dateutil.relativedelta.relativedelta):
-            return Date.from_date(self.date + o)
+            return self.date + o
         else:
             raise TypeError(
                 f"unsupported operand type(s) for +: 'Date' and {type(o).__name__}"
@@ -187,17 +195,17 @@ class Date(datetime.datetime):
 
         if isinstance(o, DateLike):
             # date - date
-            # convert all datetimes to datetime.date for sub to be timedelta, then create Duration from timedelta
+            # convert all datetimes to datetime.datetime for sub to be timedelta, then create Duration from timedelta
             if isinstance(o, Date):
-                dt = o.date
+                dt = o.datetime
             elif isinstance(o, datetime.datetime):
                 # truncates time!
-                dt = datetime.date(o.year, o.month, o.day)
+                dt = o.astimezone(settings.tz)
             else:
                 if isinstance(o, datetime.date):
-                    dt = o
+                    dt = datetime.datetime(o.year,o.month,o.day).astimezone(settings.tz)
 
-            relative_delta = dateutil.relativedelta.relativedelta(self.date, dt)
+            relative_delta = dateutil.relativedelta.relativedelta(self, dt)
             return Duration.from_relativedelta(
                 relative_delta, _anchor_start=dt, _anchor_end=self.date
             )
@@ -212,9 +220,9 @@ class Date(datetime.datetime):
             # goes to __rsub__ of Duration
             return Duration(days=o).__rsub__(self)
         elif isinstance(o, datetime.timedelta):
-            return Date.from_date(self.date - o)
+            return self - o
         elif isinstance(o, dateutil.relativedelta.relativedelta):
-            return Date.from_date(self.date - o)
+            return self - o
         else:
             raise TypeError(
                 f"unsupported operand type(s) for : 'Date' and {type(o).__name__}"
@@ -259,7 +267,7 @@ class Date(datetime.datetime):
             print(pretty_calendars)
 
     def __repr__(self):
-        return f"Date({self.year},{self.month},{self.day})"
+        return f"Date({self.year},{self.month},{self.day},{self.hour},{self.minute},{self.second})"
 
     def to_string(self):
         """

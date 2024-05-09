@@ -1,7 +1,9 @@
 import calendar
 import datetime
+from zoneinfo import ZoneInfo
 
 from dateroll.utils import color
+from dateroll.settings import settings
 
 calendar.setfirstweekday(calendar.SUNDAY)
 
@@ -45,7 +47,7 @@ def pretty_between_two_dates(dt1, dt2, cals, calmath):
         # 1 month cal mode
         for i in range(0, 32):
             try:
-                _ = datetime.date(year=y1, month=m1, day=i)
+                _ = datetime.datetime(year=y1, month=m1, day=i).astimezone(settings.tz)
                 ishol = not calmath.is_bd(_, cals)
             except Exception:
                 ishol = False
@@ -66,7 +68,7 @@ def pretty_between_two_dates(dt1, dt2, cals, calmath):
         # 2 month cal mode
         for i in range(0, 32):
             try:
-                _ = datetime.date(year=y1, month=m1, day=i)
+                _ = datetime.date(year=y1, month=m1, day=i).astimezone(settings.tz)
                 ishol = not calmath.is_bd(_, cals)
             except Exception:
                 ishol = False
@@ -81,7 +83,7 @@ def pretty_between_two_dates(dt1, dt2, cals, calmath):
         cal2 = "\n".join([" " + i for i in str(c2).splitlines()][1:])
         for i in range(0, 32):
             try:
-                _ = datetime.date(year=y2, month=m2, day=i)
+                _ = datetime.date(year=y2, month=m2, day=i).astimezone(settings.tz)
                 ishol = not calmath.is_bd(_, cals)
             except Exception:
                 ishol = False

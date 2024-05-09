@@ -4,6 +4,8 @@ import re
 import sys
 import unittest
 
+import numpy as np
+
 from dateroll.date.date import Date
 from dateroll.ddh.ddh import ddh
 from dateroll.duration.duration import Duration
@@ -213,56 +215,61 @@ class TestSchedule(unittest.TestCase):
         self.assertRaises(ParserStringsError, lambda: ddh("t,5v,1m"))
         # bad end
         self.assertRaises(TypeError, lambda: ddh("t,t+5y,t"))
-
+    
     def test_getitem(self):
         """
-        test getitem which gets int, str, or slice
+            test getitem which gets int, str, or slice
         """
-        d1 = ddh("03012022")
-        d2 = ddh("03202022")
+        d1 = ddh('03012022')
+        d2 = ddh('03202022')
         dur = Duration(bd=1)
-        ds = Schedule(d1, d2, dur)
-        self.assertEqual(ds[-1], d2)
-        self.assertEqual(ds["03032022"], ddh("03032022"))
+        ds = Schedule(d1,d2,dur)
+        self.assertEqual(ds[-1],d2)
+        self.assertEqual(ds['03032022'],ddh('03032022'))
         with self.assertRaises(KeyError):
-            ds["01012022"]
-        settings.ie = "[]"
-
-        self.assertEqual(ds["03012022":"03112022"], ddh("03012022,03112022,1bd").list)
+            ds['01012022']
+        settings.ie = '[]'
+        
+        self.assertEqual(ds['03012022':'03112022'],ddh('03012022,03112022,1bd').list)
         with self.assertRaises(TypeError):
-            ds[datetime.datetime(2022, 3, 3)]
-
+            ds[datetime.datetime(2022,3,3)]
+        
         # reset settings
-        settings.ie = "(]"
-
+        settings.ie = '(]'
+    
     def test_iter(self):
         """
-        test getiter
+            test getiter
         """
-        d1 = ddh("03012022")
-        d2 = ddh("03102022")
+        d1 = ddh('03012022')
+        d2 = ddh('03102022')
         dur = Duration(bd=1)
-        ds = Schedule(d1, d2, dur)
+        ds = Schedule(d1,d2,dur)
 
         ls = []
         for d in ds:
             ls.append(d)
-
-        self.assertTrue(ls, ds.list)
-
+        
+        self.assertTrue(ls,ds.list)
+    
     def test_contains(self):
         """
-        test contains which returns boolean value True or False
+            test contains which returns boolean value True or False
         """
 
-        d1 = ddh("03012022")
-        d2 = ddh("03102022")
+        d1 = ddh('03012022')
+        d2 = ddh('03102022')
         dur = Duration(bd=1)
-        ds = Schedule(d1, d2, dur)
+        ds = Schedule(d1,d2,dur)
 
         self.assertTrue(d1 in ds)
         self.assertTrue(d1.datetime in ds)
-        self.assertFalse(ddh("01012022") in ds)
+        self.assertFalse(ddh('01012022') in ds)
+
+        
+
+
+
 
 
 if __name__ == "__main__":

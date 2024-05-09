@@ -1,10 +1,12 @@
 import datetime
+from zoneinfo import ZoneInfo
 
 import dateroll.calendars.calendarmath as calendarmathModule
 import dateroll.parser.parsers as parsersModule
 from dateroll import pretty, utils
 from dateroll.date import date as dateModule
 from dateroll.ddh import ddh as ddhModule
+from dateroll.settings import settings
 
 try:
     import pandas as pd
@@ -130,16 +132,14 @@ class Schedule:
 
     def __contains__(self, x):
         if isinstance(x, dateModule.Date):
-            x = x.date
+            x = x.datetime
         elif isinstance(x, datetime.datetime):
-            # does not do TZ check
-            x = datetime.date(x.year, x.month, x.day)
+            x = x.astimezone(settings.tz)
         for i in self._dates:
             if isinstance(i, dateModule.Date):
-                i = i.date
-            # elif isinstance(i, datetime.datetime):
-            #     # does not do TZ check
-            #     i = datetime.date(i.year, i.month, i.day)
+                i = i.datetime
+            elif isinstance(i, datetime.date):
+                i = datetime.datetime(i.year, i.month, i.day).astimezone(settings.tz)
 
             if x == i:
                 return True

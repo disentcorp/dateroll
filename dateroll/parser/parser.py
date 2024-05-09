@@ -26,7 +26,7 @@ class Parser:
 
         or to python native types (with flag):
 
-        str -> datetime.date
+        str -> datetime.datetime
         str -> datetime.timedelta
         str -> dateutil.relativedelta.relativedelta
         str -> dateutil.rrule.rrule

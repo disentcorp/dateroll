@@ -5,6 +5,7 @@ import os
 import pathlib
 import pickle
 from collections import OrderedDict
+from zoneinfo import ZoneInfo
 
 from dateroll.calendars import calendarmath as calendarmathModule
 from dateroll.date import date as dateModule
@@ -20,7 +21,7 @@ MODULE_LOCATION.mkdir(exist_ok=True)
 DATA_LOCATION_FILE = MODULE_LOCATION / "holiday_lists"
 SAMPLE_DATA_PATH = ROOT_DIR / "dateroll" / "sampledata" / "*.csv"
 
-INCEPTION = datetime.datetime(1824, 2, 29)
+INCEPTION = datetime.date(1824, 2, 29)
 
 
 SetLike = (list, tuple, set)
@@ -28,9 +29,9 @@ SetLike = (list, tuple, set)
 
 def date_check(i):
     if isinstance(i, datetime.datetime):
-        dt = i
+        dt = datetime.date(i.year,i.month,i.day)
     elif isinstance(i, datetime.date):
-        dt = datetime.datetime(i.year,i.month,i.day)
+        dt = i
     else:
         raise TypeError(
             f"All cal dates must be of dateroll.Date or datetime.date{{time}} (got {type(i).__name__})"
@@ -52,7 +53,7 @@ def load_sample_data():
             ls = f.readlines()
             list_ = []
             for i in ls:
-                dt = datetime.datetime(int(i[0:4]), int(i[5:7]), int(i[8:10]))
+                dt = datetime.date(int(i[0:4]), int(i[5:7]), int(i[8:10]))
                 if dt >= INCEPTION:
                     list_.append(dt)
 
@@ -133,7 +134,7 @@ class DateSet:
         if isinstance(item, dateModule.Date):
             item = item.datetime
         if isinstance(item, datetime.date):
-            item = datetime.datetime(item.year, item.month, item.day)
+            item = dateModule.Date.from_date(item)
         return item in self._data
 
     def extend(self, items):
@@ -333,5 +334,4 @@ class Calendars(dict):
 
 
 if __name__ == "__main__":  # pragma: no cover
-
     ...

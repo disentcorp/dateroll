@@ -12,7 +12,7 @@ import dateroll.parser.parsers as parsersModule
 import dateroll.utils as utils
 from dateroll.settings import settings
 from dateroll.utils import add_none, combine_none, xprint
-
+import dateroll.duration.yfs as yfs
 # NOTE: functools cache is defined starting from python 3.9
 # older versions of python can use functools lru_cache(maxsize=None)
 # for now, leave this commented out because it is not used
@@ -53,6 +53,9 @@ DUR_DFLTS = {
     "day": (0, (int, float)),
     "bd": (None, (int, float, type(None))),
     "BD": (None, (int, float, type(None))),
+    "hours":(0,int),
+    "minutes":(0,int),
+    "seconds":(0,int),
     "cals": (None, (type(None), str, list, tuple, set)),
     "modified": (False, bool),
     "_anchor_start": (None, (datetime.date, type(None))),
@@ -122,10 +125,15 @@ class Duration(dateutil.relativedelta.relativedelta):
                     raise TypeError(f"{k} must be one of {TypeList}, not {type(v)}")
             else:
                 raise ValueError(f"{k} is an unexpected keyword argument.")
-        # merge y/m/w/d
+        # merge y/m/w/d H:M:S
         self.years = kwargs["years"] + kwargs["year"] + kwargs["y"] + kwargs["Y"]
         self.months = kwargs["months"] + kwargs["month"] + kwargs["m"] + kwargs["M"]
         self.days = kwargs["days"] + kwargs["day"] + kwargs["d"] + kwargs["D"]
+        
+        # sub day time
+        self.hours = kwargs["hours"]
+        self.minutes = kwargs["minutes"]
+        self.seconds = kwargs["seconds"]
 
         # collapse quarters into months
         self.months += 3 * (
@@ -158,7 +166,7 @@ class Duration(dateutil.relativedelta.relativedelta):
                 # implicity calendar for weekends will be set in validate_cals
                 self.bd = float(0.0)
             else:
-                # definately no bd adjustment
+                # definitely no bd adjustment
                 self.bd = None
 
         # valid cals
@@ -210,6 +218,9 @@ class Duration(dateutil.relativedelta.relativedelta):
                 years=rd.years,
                 months=rd.months,
                 days=rd.days,
+                hours=rd.hours,
+                minutes=rd.minutes,
+                seconds=rd.seconds,
                 _anchor_start=_anchor_start,
                 _anchor_end=_anchor_end,
             )
@@ -228,7 +239,7 @@ class Duration(dateutil.relativedelta.relativedelta):
             return td
         elif isinstance(td, datetime.timedelta):
             return Duration(
-                days=td.days, _anchor_start=_anchor_start, _anchor_end=_anchor_end
+                days=td.days,hours=td.hours,minutes=td.minutes,seconds=td.seconds, _anchor_start=_anchor_start, _anchor_end=_anchor_end
             )
         else:
             raise TypeError(f"Must be timedelta not {type(td).__name__}")
@@ -289,23 +300,24 @@ class Duration(dateutil.relativedelta.relativedelta):
             return self.just_exact_days == o
 
         if isinstance(o, datetime.timedelta):
-            o = dateutil.relativedelta.relativedelta(days=o.days)
+            o = dateutil.relativedelta.relativedelta(days=o.days,hours=o.hours,minutes=o.minutes,seconds=o.seconds)
 
         if isinstance(o, (dateutil.relativedelta.relativedelta, Duration)):
             if self.years == o.years:
                 if self.months == o.months:
                     if self.days == o.days:
-                        if isinstance(o, Duration):
-                            if self.bd == o.bd:
-                                if self.cals == o.cals:
-                                    if self.modified == o.modified:
-                                        if (
-                                            self._anchor_end == o._anchor_end
-                                            and self._anchor_start == o._anchor_start
-                                        ):
-                                            return True
-                        else:
-                            return True
+                        if self.hours==o.hours and self.minutes==o.minutes and self.seconds==o.seconds:
+                            if isinstance(o, Duration):
+                                if self.bd == o.bd:
+                                    if self.cals == o.cals:
+                                        if self.modified == o.modified:
+                                            if (
+                                                self._anchor_end == o._anchor_end
+                                                and self._anchor_start == o._anchor_start
+                                            ):
+                                                return True
+                            else:
+                                return True
 
             if isinstance(o, Duration):
                 """
@@ -503,10 +515,10 @@ class Duration(dateutil.relativedelta.relativedelta):
         """
         4 steps:
             1 - if being subtracted, negate
-            2 - perform non-holiday adjustments first, i.e. y's, m's, d's (returns datetime.date)
+            2 - perform non-holiday adjustments first, i.e. y's, m's, d's (returns datetime.datetime)
             3 - perform holiday adjustments second, i.e. bd's (impliying roll from direction via sign on neg, includes -0.0 as backwards)
             4 - perform modified operation, if supplied
-            5 - cast datetime.date back into Date
+            5 - cast datetime.datetime back into Date
         """
         (
             xprint(f"Adjusting date [[{date_unadj}]] with [[{direction}*{self}]]")
@@ -704,7 +716,7 @@ class Duration(dateutil.relativedelta.relativedelta):
     def __ge__(a, b):
         if isinstance(b, int):
             if b == 0:
-                tdy = datetime.date.today()
+                tdy = datetime.datetime.now(datetime.UTC)
                 return (tdy + a) >= tdy
 
             b = Duration(days=b)
@@ -775,6 +787,23 @@ class Duration(dateutil.relativedelta.relativedelta):
         if output == "":
             output = "+0d"
         return output
-
+        
+    def yf(self,dc,cals=None):
+        if cals is None:
+            cals = self.cals
+        if dc is None:
+            dc = settings.default_daycounter
+        if dc.upper() not in yfs.yf_mapping:
+            raise ValueError(f'Must be one of {yfs.yf_mapping.keys()}')
+        else:
+            f = yfs.yf_mapping[dc]
+            a,b = self._anchor_start, self._anchor_end
+            dcf = f(a,b,cals)
+            return dcf
+        
+    def __setattribute__(self,k,v):
+        
+        if k == 'cals':
+            self._validate_cals(v)
 
 DurationLike = (Duration, datetime.timedelta, dateutil.relativedelta.relativedelta)

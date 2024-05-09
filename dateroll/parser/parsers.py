@@ -65,7 +65,7 @@ def parseTodayString(s):
     """
     this is [the] place where "t" is replaced
     """
-    today = datetime.date.today()
+    today = datetime.datetime.today()
     fmt = utils.convention_map[settings.convention]
     today_string = today.strftime(fmt)
 
