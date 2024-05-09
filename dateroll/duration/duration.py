@@ -321,8 +321,8 @@ class Duration(dateutil.relativedelta.relativedelta):
 
             if isinstance(o, Duration):
                 """
-                for durations from date subtraction there is equivalency to whole units
-                4/15/24-1/15/23 == 91d == 1y3m == 14m, and all combinations thereof, and vice-versa
+                    for durations from date subtraction there is equivalency to whole units
+                    4/15/24-1/15/23 == 91d == 1y3m == 14m, and all combinations thereof, and vice-versa
                 """
 
                 if self.compare_anchors(self, o) or self.compare_anchors(o, self):
