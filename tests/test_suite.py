@@ -14,6 +14,7 @@ from tests.test_schedule import TestSchedule
 from tests.test_settings import TestSettings
 from tests.test_usage import TestUsage, TestUsageMore
 from tests.test_usage2 import TestUsage as TestUsage2
+from tests.test_yfs import TestYFS as TestYFS
 
 
 def test_suite():
@@ -38,6 +39,7 @@ def test_suite():
             unittest.TestLoader().loadTestsFromTestCase(TestUsageMore),
             unittest.TestLoader().loadTestsFromTestCase(TestSettings),
             unittest.TestLoader().loadTestsFromTestCase(TestUsage2),
+            unittest.TestLoader().loadTestsFromTestCase(TestYFS),
         ]
     )
     return suite

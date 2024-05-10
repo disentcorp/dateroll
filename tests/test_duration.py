@@ -2,6 +2,7 @@ import datetime
 import sys
 import unittest
 from io import StringIO
+import json
 
 import dateutil.relativedelta
 
@@ -10,6 +11,7 @@ from dateroll.parser import parsers
 from dateroll.parser.parsers import ParserStringsError
 from dateroll.settings import settings
 
+EXPECTED_DAY_COUNT_PATH = lambda:"tests/test_data/ql_data.json"
 
 class TestDuration(unittest.TestCase):
     @classmethod
@@ -700,6 +702,40 @@ class TestDuration(unittest.TestCase):
         self.assertRaises(ParserStringsError, lambda: ddh("1y1y"))
         self.assertRaises(ParserStringsError, lambda: ddh("1y1y1m1d"))
 
+    def test_yfs(self):
+        d1 = ddh('5/15/2021')
+        d2 = ddh('5/15/2024')
+        # get expected answers from json file
+        with open(EXPECTED_DAY_COUNT_PATH(),"r") as f:
+            expected_daycount_dic = json.load(f)
+
+        expected_dcf_ACT360 = expected_daycount_dic[f"{d1}:{d2}:ACT/360:NY"]
+        
+        dcf_ACT360 = (d2-d1).yf('ACT/360')
+        self.assertEqual(dcf_ACT360, expected_dcf_ACT360)
+
+        expected_dcf_ACT365 = expected_daycount_dic[f"{d1}:{d2}:ACT/365:NY"]
+        dcf_ACT365 = (d2-d1).yf('ACT/365')
+        self.assertEqual(dcf_ACT365, expected_dcf_ACT365)
+
+        expected_dcf_30E360 = expected_daycount_dic[f"{d1}:{d2}:30E360:NY"]
+        dcf_30E360 = (d2-d1).yf('30E/360')
+        self.assertEqual(dcf_30E360, expected_dcf_30E360)
+
+        # if we change to BR the difference is quite big eg, toler=0.083
+        expected_dcf_BD252 = expected_daycount_dic[f"{d1}:{d2}:bd252:NY"]
+        dcf_bd252 = (d2-d1).yf('BD/252',cals="NY") 
+        toler = abs(expected_dcf_BD252 - dcf_bd252)
+        
+        self.assertTrue(toler<0.03)
+
+        with self.assertRaises(ValueError):
+            (d2-d1).yf("none")
+        dur2 = (d2-d1)
+        dur2.__setattribute__("cals","NY") 
+        dcf_bd252 = (d2-d1).yf('BD/252',cals="NY") 
+        toler = abs(expected_dcf_BD252 - dcf_bd252)
+        
     def test_gt(self):
         """
         test when b = 0 to compare a= Duration(something) and a>b
