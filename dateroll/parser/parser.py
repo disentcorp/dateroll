@@ -115,14 +115,14 @@ class Parser:
     @classmethod
     def parse_one_part(cls, untouched):
         letters = [chr(i) for i in range(65, 65 + 26)]
-        untouched,timestr = separate_date_time(untouched)
+        # untouched,timestr = separate_date_time(untouched)
         def gen():
             yield letters.pop(0)
 
         notoday = parsersModule.parseTodayString(untouched)
 
         dates, nodates = parsersModule.parseManyDateStrings(notoday, gen)
-
+        dates = parsersModule.parseTimeString(dates,nodates)
         durations, nodatesordurations = parsersModule.parseManyDurationString(
             nodates, gen
         )

@@ -192,12 +192,13 @@ class CalendarMath:
         # because of the property of fwd, bck dictionaries
         
         if isinstance(d, datetime.datetime): 
-            d = d.astimezone(settings.tz)
+            h,min,s,us = d.hour,d.minute,d.second,d.microsecond
+            d = datetime.date(d.year,d.month,d.day)
         elif isinstance(d, dateModule.Date):
-            d = d.datetime
-            pass
+            h,min,s,us = 0,0,0,0
         elif isinstance(d, datetime.date):
-            d = dateModule.Date.from_date(d)
+            h,min,s,us = 0,0,0,0
+            
         else:
             raise TypeError(f"Date must be date (got {type(d).__name__})")
         if not self.is_bd(d, cals):
@@ -220,7 +221,7 @@ class CalendarMath:
         bd_index = A[d]
         new_bd_index = bd_index + n
         new_dt = B[new_bd_index]
-
+        new_dt = datetime.datetime(new_dt.year,new_dt.month,new_dt.day,h,min,s,us)
         return new_dt
 
     def sub_bd(self, d, n, cals):
@@ -245,8 +246,7 @@ class CalendarMath:
         BD = self.ibd[cal_name]
         if len(BD) == 0:
             return False
-        if isinstance(d,datetime.datetime):
-            d = datetime.date(d.year,d.month,d.day)
+        
         is_bd = self.ibd[cal_name][d]
         return is_bd
 

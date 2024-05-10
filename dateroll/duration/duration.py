@@ -583,7 +583,6 @@ class Duration(dateutil.relativedelta.relativedelta):
             xprint("no modifier") if self.debug else None
 
         # 4 convert back to Date
-
         Date_modified = dateModule.Date.from_datetime(date_modifed)
         Date_modified.origin_dur_date = date_unadj
         Date_modified.origin_dur_cals = self.cals

@@ -128,7 +128,8 @@ def swap_month_names(s):
     return s
 
 
-convention_map = {"YMD": r"%Y-%m-%d %H:%M:%S", "DMY": r"%d/%m/%Y %H:%M:%S", "MDY": r"%m/%d/%Y %H:%M:%S"}
+convention_map_datetime = {"YMD": r"%Y-%m-%d %H:%M:%S", "DMY": r"%d/%m/%Y %H:%M:%S", "MDY": r"%m/%d/%Y %H:%M:%S"}
+convention_map = {"YMD": r"%Y-%m-%d", "DMY": r"%d/%m/%Y", "MDY": r"%m/%d/%Y"}
 
 
 def str_or_date(s):

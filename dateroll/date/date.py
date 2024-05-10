@@ -49,7 +49,15 @@ class Date(datetime.datetime):
             raise TypeError(
                 f"from_date requires datetime.datetime, cannot use {type(o).__name__}"
             )
-
+    @staticmethod
+    def from_datetime(o):
+        if isinstance(o,datetime.datetime):
+            
+            return Date(o.year,o.month,o.day,o.hour,o.minute,o.second,o.microsecond)
+        else:
+            raise TypeError(
+                f"from_date requires datetime.datetime, cannot use {type(o).__name__}"
+            )
     @staticmethod
     def from_unix(o):
         """
@@ -96,7 +104,7 @@ class Date(datetime.datetime):
 
     @staticmethod
     def today():
-        return datetime.datetime.now(datetime.UTC)
+        return datetime.datetime.now(settings.tz)
 
     @property
     def datetime(self):
@@ -273,7 +281,7 @@ class Date(datetime.datetime):
         """
         should print as string according to convention
         """
-        mask = utils.convention_map[settings.convention]
+        mask = utils.convention_map_datetime[settings.convention]
         return self.strftime(mask)
 
     def __str__(self):

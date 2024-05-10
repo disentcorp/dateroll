@@ -1,6 +1,7 @@
 import calendar
 import datetime
 import re
+import dateutil
 
 import dateroll.date.date as dt
 import dateroll.duration.duration as dur
@@ -204,8 +205,6 @@ def parseManyDateStrings(s, gen):
         next_letter = next(gen())  # match only 1st time!! or causes letter mismatch
         res = res.replace(match, "+" + next_letter, 1)
         dates[next_letter] = date
-    print('in parsers date')
-    import code;code.interact(local=dict(globals(),**locals()))
     return dates, res
 
 
@@ -321,8 +320,6 @@ def parseManyDurationString(s, gen):
         next_letter = next(gen())
         s = s.replace(duration_string, "+" + next_letter, 1)
         durations[next_letter] = duration
-    print('in duration')
-    import code;code.interact(local=dict(globals(),**locals()))
     return durations, s
 
 
@@ -387,15 +384,13 @@ def parseDateMathString(s, things):
                 raise ParserStringsError("Cannot recognize as date math", s)
 
     # good case, do the math
-    print('in parsemany stringss--')
-    import code;code.interact(local=dict(globals(),**locals()))
     try:
         total = eval(s, {}, things)
         return total
     except Exception:
         raise ParserStringsError("Cannot recognize as date math", s)
 
-def parseTimeString(string,processed_answer):
+def parseTimeString(dates,string):
     """
         time string needs to have h or H as a hour, 
         min or Min as minute
@@ -403,7 +398,7 @@ def parseTimeString(string,processed_answer):
         us or US as a microseconds
     """
     if string=="":
-        return 
+        return dates
     result = re.findall(patterns.COMPLETE_TIME,string)[0]
     if all(x=="" for x in result) and len(string)!="":
         raise ParserStringsError("Please check your string includes hH|minMin|sS|USus as a time string")
@@ -416,12 +411,24 @@ def parseTimeString(string,processed_answer):
     if us=="":
         us = "0"
     parser_string = f"{h}:{min}:{s}.{us}"
-    if isinstance(processed_answer,dur.Duration):
-        raise ParserStringsError
+    if len(dates)==0:
+        # if date is not given, the date is today
+        date = dt.Date.today()
+    else:
+        date = list(dates.values())[0]
+    mask = utils.convention_map_datetime[settings.convention]
+    date_str = date.date.strftime(mask)
+    d = dateutil.parser.parse(f"{date_str} {parser_string}")
+    new_date = datetime.datetime(d.year,d.month,d.day,d.hour+date.hour,d.minute+date.minute,d.second+date.second,d.microsecond+date.microsecond)
+    key = list(dates.keys())[0]
+    dates[key] = new_date
+    print('in timestr')
+    import code;code.interact(local=dict(globals(),**locals()))
+    return dates
 
 if __name__=="__main__":
     from dateroll.ddh.ddh import ddh
-    x = ddh('01022023+3bd')
+    x = ddh('03042023 12h21min22s+3bd')
     
 
 
