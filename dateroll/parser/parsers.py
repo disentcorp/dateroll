@@ -200,11 +200,12 @@ def parseManyDateStrings(s, gen):
         # match 1,2,3 are the y/m/d's as strings
 
         date = parseDateString(match)
-        date = dt.Date.from_datetime(date)
+        date = dt.Date.from_date(date)
         next_letter = next(gen())  # match only 1st time!! or causes letter mismatch
         res = res.replace(match, "+" + next_letter, 1)
         dates[next_letter] = date
-
+    print('in parsers date')
+    import code;code.interact(local=dict(globals(),**locals()))
     return dates, res
 
 
@@ -320,7 +321,8 @@ def parseManyDurationString(s, gen):
         next_letter = next(gen())
         s = s.replace(duration_string, "+" + next_letter, 1)
         durations[next_letter] = duration
-
+    print('in duration')
+    import code;code.interact(local=dict(globals(),**locals()))
     return durations, s
 
 
@@ -385,9 +387,42 @@ def parseDateMathString(s, things):
                 raise ParserStringsError("Cannot recognize as date math", s)
 
     # good case, do the math
-
+    print('in parsemany stringss--')
+    import code;code.interact(local=dict(globals(),**locals()))
     try:
         total = eval(s, {}, things)
         return total
     except Exception:
         raise ParserStringsError("Cannot recognize as date math", s)
+
+def parseTimeString(string,processed_answer):
+    """
+        time string needs to have h or H as a hour, 
+        min or Min as minute
+        s or S as a seconds
+        us or US as a microseconds
+    """
+    if string=="":
+        return 
+    result = re.findall(patterns.COMPLETE_TIME,string)[0]
+    if all(x=="" for x in result) and len(string)!="":
+        raise ParserStringsError("Please check your string includes hH|minMin|sS|USus as a time string")
+    if h=="":
+        h = "00"
+    if min=="":
+        min = "00"
+    if s=="":
+        s = "00"
+    if us=="":
+        us = "0"
+    parser_string = f"{h}:{min}:{s}.{us}"
+    if isinstance(processed_answer,dur.Duration):
+        raise ParserStringsError
+
+if __name__=="__main__":
+    from dateroll.ddh.ddh import ddh
+    x = ddh('01022023+3bd')
+    
+
+
+

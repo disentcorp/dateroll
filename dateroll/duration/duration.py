@@ -53,9 +53,14 @@ DUR_DFLTS = {
     "day": (0, (int, float)),
     "bd": (None, (int, float, type(None))),
     "BD": (None, (int, float, type(None))),
-    "hours":(0,int),
-    "minutes":(0,int),
-    "seconds":(0,int),
+    "H":(0,int),
+    "h":(0,int),
+    "MIN":(0,int),
+    "min":(0,int),
+    "S":(0,int),
+    "s":(0,int),
+    "US":(0,int),
+    "us":(0,int),
     "cals": (None, (type(None), str, list, tuple, set)),
     "modified": (False, bool),
     "_anchor_start": (None, (datetime.date, type(None))),
@@ -131,9 +136,10 @@ class Duration(dateutil.relativedelta.relativedelta):
         self.days = kwargs["days"] + kwargs["day"] + kwargs["d"] + kwargs["D"]
         
         # sub day time
-        self.hours = kwargs["hours"]
-        self.minutes = kwargs["minutes"]
-        self.seconds = kwargs["seconds"]
+        self.h = kwargs["h"] + kwargs["H"]
+        self.min = kwargs["min"] + kwargs["MIN"]
+        self.s = kwargs["s"] + kwargs["S"]
+        self.us = kwargs["US"] + kwargs["us"]
 
         # collapse quarters into months
         self.months += 3 * (
@@ -218,9 +224,10 @@ class Duration(dateutil.relativedelta.relativedelta):
                 years=rd.years,
                 months=rd.months,
                 days=rd.days,
-                hours=rd.hours,
-                minutes=rd.minutes,
-                seconds=rd.seconds,
+                h=rd.hours,
+                min=rd.minutes,
+                s=rd.seconds,
+                us=rd.microseconds,
                 _anchor_start=_anchor_start,
                 _anchor_end=_anchor_end,
             )
@@ -239,7 +246,7 @@ class Duration(dateutil.relativedelta.relativedelta):
             return td
         elif isinstance(td, datetime.timedelta):
             return Duration(
-                days=td.days,hours=td.hours,minutes=td.minutes,seconds=td.seconds, _anchor_start=_anchor_start, _anchor_end=_anchor_end
+                days=td.days,h=td.hours,min=td.minutes,s=td.seconds, us=td.microseconds,_anchor_start=_anchor_start, _anchor_end=_anchor_end
             )
         else:
             raise TypeError(f"Must be timedelta not {type(td).__name__}")
@@ -300,13 +307,13 @@ class Duration(dateutil.relativedelta.relativedelta):
             return self.just_exact_days == o
 
         if isinstance(o, datetime.timedelta):
-            o = dateutil.relativedelta.relativedelta(days=o.days,hours=o.hours,minutes=o.minutes,seconds=o.seconds)
+            o = dateutil.relativedelta.relativedelta(days=o.days,hours=o.hours,minutes=o.minutes,seconds=o.seconds,microseconds=o.microseconds)
 
         if isinstance(o, (dateutil.relativedelta.relativedelta, Duration)):
             if self.years == o.years:
                 if self.months == o.months:
                     if self.days == o.days:
-                        if self.hours==o.hours and self.minutes==o.minutes and self.seconds==o.seconds:
+                        if self.hours==o.hours and self.minutes==o.minutes and self.seconds==o.seconds and self.microseconds==o.microseconds:
                             if isinstance(o, Duration):
                                 if self.bd == o.bd:
                                     if self.cals == o.cals:

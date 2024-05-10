@@ -115,7 +115,7 @@ class Parser:
     @classmethod
     def parse_one_part(cls, untouched):
         letters = [chr(i) for i in range(65, 65 + 26)]
-
+        untouched,timestr = separate_date_time(untouched)
         def gen():
             yield letters.pop(0)
 
@@ -131,7 +131,8 @@ class Parser:
         processed_answer = parsersModule.parseDateMathString(
             nodatesordurations, dates_durations
         )
-
+        print('in parser prcoesss')
+        import code;code.interact(local=dict(globals(),**locals()))
         return processed_answer
 
     @classmethod
@@ -187,6 +188,25 @@ def parse_to_native(string):
 
 def parse_to_dateroll(string):
     return Parser(string)
+
+def separate_date_time(string):
+    """
+        separate string as a date and time, 
+        day and time should be separated by an empty space
+        there must be a max of 1 space
+        eg mmddyy H:min:S
+        if there is not time in the string it returns emptry string as a time string
+    """
+
+    dt_str = string.split(' ')
+    if len(dt_str)>2:
+        raise ParserError("Please check there is more than one space in the string")
+    if len(dt_str)==2:
+        datestr,timestr = dt_str
+    else:
+        datestr,timestr = dt_str[0],""
+    
+    return datestr,timestr
 
 
 if __name__ == "__main__":  # pragma:no cover

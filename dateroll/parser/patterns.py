@@ -33,3 +33,22 @@ COMPLETE_DURATION = (
 MONTHNAMES = re.compile(
     r"(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec|January|February|March|April|June|July|August|September|October|November|December)"
 )
+
+# patterns regarding the time string
+HOUR_LETTER = r"(?:[Hh])"
+MINUTE_LETTER = r"(?:MIN|min)"
+SECONDS_LETTER = r"(?:[Ss])"
+
+MICROSECONDS_LETTER = r"(?:US|us)"
+HOUR_NUMBER = fr"(?:({INT_PART})({HOUR_LETTER}))"
+MINUTE_NUMBER = fr"(?:({INT_PART})({MINUTE_LETTER}))"
+SECONDS_NUMBER = fr"(?:({INT_PART})({SECONDS_LETTER}))"
+MICROSECONDS_NUMBER = fr"(?:({INT_PART})({MICROSECONDS_LETTER}))"
+
+COMPLETE_TIME = f"(?:{HOUR_NUMBER}?{MINUTE_NUMBER}?{SECONDS_NUMBER}?{MICROSECONDS_NUMBER}?)"
+
+if __name__=="__main__":
+    import re
+    s = "1h23min23s"
+    x = re.findall(COMPLETE_TIME,s)
+    import code;code.interact(local=dict(globals(),**locals()))

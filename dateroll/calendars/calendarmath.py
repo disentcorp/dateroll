@@ -190,6 +190,7 @@ class CalendarMath:
 
         # when not bd, we need to handle n; positive direction n=0-->1 and negative direction n=-1--->0
         # because of the property of fwd, bck dictionaries
+        
         if isinstance(d, datetime.datetime): 
             d = d.astimezone(settings.tz)
         elif isinstance(d, dateModule.Date):
@@ -244,7 +245,8 @@ class CalendarMath:
         BD = self.ibd[cal_name]
         if len(BD) == 0:
             return False
-
+        if isinstance(d,datetime.datetime):
+            d = datetime.date(d.year,d.month,d.day)
         is_bd = self.ibd[cal_name][d]
         return is_bd
 
@@ -363,4 +365,5 @@ class CalendarMath:
 calmath = CalendarMath()
 
 if __name__ == "__main__":  # pragma:no cover
-    pass
+    ...
+

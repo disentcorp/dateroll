@@ -41,10 +41,10 @@ class Date(datetime.datetime):
             Create a Datetime instance from a datetime.date adding time as 00:00:00 of UTC 
         """
 
-        if isinstance(o,datetime.date):
-            return Date.datetime(o)
-        elif isinstance(o,datetime.datetime):
+        if isinstance(o,datetime.datetime):
             return o.astimezone(settings.tz)
+        elif isinstance(o,datetime.date):
+            return datetime.datetime(o.year,o.month,o.day,0,0).astimezone(settings.tz)
         else:
             raise TypeError(
                 f"from_date requires datetime.datetime, cannot use {type(o).__name__}"
@@ -100,7 +100,7 @@ class Date(datetime.datetime):
 
     @property
     def datetime(self):
-        return datetime.datetime(self.year, self.month, self.day).astimezone(settings.tz)
+        return datetime.datetime(self.year, self.month, self.day,0,0).astimezone(settings.tz)
 
     @property
     def date(self):
@@ -203,7 +203,7 @@ class Date(datetime.datetime):
                 dt = o.astimezone(settings.tz)
             else:
                 if isinstance(o, datetime.date):
-                    dt = datetime.datetime(o.year,o.month,o.day).astimezone(settings.tz)
+                    dt = datetime.datetime(o.year,o.month,o.day,0,0).astimezone(settings.tz)
 
             relative_delta = dateutil.relativedelta.relativedelta(self, dt)
             return Duration.from_relativedelta(
