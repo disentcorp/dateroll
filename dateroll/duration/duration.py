@@ -313,7 +313,12 @@ class Duration(dateutil.relativedelta.relativedelta):
             if self.years == o.years:
                 if self.months == o.months:
                     if self.days == o.days:
-                        if self.hours==o.hours and self.minutes==o.minutes and self.seconds==o.seconds and self.microseconds==o.microseconds:
+                        if isinstance(o,Duration):
+                            cond = self.h==o.h and self.min==o.min and self.s==o.s and self.us==o.us
+                        elif isinstance(o,dateutil.relativedelta.relativedelta):
+                            cond = self.h==o.hours and self.min==o.minutes and self.s==o.seconds and self.us==o.microseconds
+                        
+                        if cond:
                             if isinstance(o, Duration):
                                 if self.bd == o.bd:
                                     if self.cals == o.cals:
@@ -806,7 +811,7 @@ class Duration(dateutil.relativedelta.relativedelta):
         if self.s:
             output += f"{int(self.s):+}s"
         if self.us:
-            output += f"{int(self.bd):+}us"
+            output += f"{int(self.us):+}us"
         if self.cals:
             output += f'|{"u".join(self.cals)}'
         if self.modified:

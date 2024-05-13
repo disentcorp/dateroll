@@ -15,7 +15,7 @@ MDY = f"(({M}){_}({D}){_}({Y}))"
 DMY = f"(({D}){_}({M}){_}({Y}))"
 
 # DurationString patterns
-PERIOD_LETTER = r"(?:bd|BD|[dDwWmMqQsShHyY])"
+PERIOD_LETTER = r"(?:bd|BD|[dDwWmMqQyY])"
 DATE_PERIOD = f"(?:({NUMBER})({PERIOD_LETTER}))"
 REPEATING_DATE_PERIODS = f"(?:{DATE_PERIOD}{DATE_PERIOD}?{DATE_PERIOD}?{DATE_PERIOD}?{DATE_PERIOD}?{DATE_PERIOD}?{DATE_PERIOD}?{DATE_PERIOD}?{DATE_PERIOD}?{DATE_PERIOD}?{DATE_PERIOD}?{DATE_PERIOD}?)"
 PIPE = r"(\|)?"
@@ -35,9 +35,11 @@ MONTHNAMES = re.compile(
 )
 
 # patterns regarding the time string
-# OPTIONAL_PART = r"(?:[+-]?[A-Z]? ?)"
-OPTIONAL_PART = r"(?:[+-]?\d?[a-zA-Z]? ?)"
-
+# if addition is more than 3, it might cause an error, because of D as day
+PERIOD_LETTER_TIME = r"(?:bd|BD|[ABCdDwWmMqQyY])"
+OPTIONAL_PART = fr"(?:[+-]?\d*?{PERIOD_LETTER_TIME} ?)"
+# OPTIONAL_PART = fr"(?:{OPERATOR}{NUMBER}{PERIOD_LETTER_TIME} ?)"
+REPEATING_OPTIONAL_PART = f"(?:{OPTIONAL_PART}?{OPTIONAL_PART}?{OPTIONAL_PART}?{OPTIONAL_PART}?{OPTIONAL_PART}?)"
 HOUR_LETTER = r"(?:[Hh])"
 MINUTE_LETTER = r"(?:MIN|min)"
 SECONDS_LETTER = r"(?:[Ss])"
@@ -48,7 +50,7 @@ MINUTE_NUMBER = fr"(?:({INT_PART})({MINUTE_LETTER}))"
 SECONDS_NUMBER = fr"(?:({INT_PART})({SECONDS_LETTER}))"
 MICROSECONDS_NUMBER = fr"(?:({INT_PART})({MICROSECONDS_LETTER}))"
 
-COMPLETE_TIME = f"(?:{OPTIONAL_PART}?{HOUR_NUMBER}?{MINUTE_NUMBER}?{SECONDS_NUMBER}?{MICROSECONDS_NUMBER}?)"
+COMPLETE_TIME = f"(?:{REPEATING_OPTIONAL_PART}?{HOUR_NUMBER}?{MINUTE_NUMBER}?{SECONDS_NUMBER}?{MICROSECONDS_NUMBER}?)"
 
 if __name__=="__main__":
     ...

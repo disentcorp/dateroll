@@ -205,7 +205,7 @@ def parseManyDateStrings(s, gen):
         date = parseDateString(match)
         date = dt.Date.from_date(date)
         next_letter = next(gen())  # match only 1st time!! or causes letter mismatch
-        res = res.replace(match, "+" + next_letter, 1)
+        res = res.replace(match, next_letter, 1)
         dates[next_letter] = date
     return dates, res
 
@@ -320,10 +320,8 @@ def parseManyDurationString(s, gen):
         duration_string = match[0]
         duration = parseDurationString(duration_string)
         next_letter = next(gen())
-        s = s.replace(duration_string, "+" + next_letter, 1)
-        if next_letter!="A":
-            # if not first character it always + to make parseDateMathString work
-            next_letter = f"+{next_letter}"
+        
+        s = s.replace(duration_string, next_letter, 1)
         durations[next_letter] = duration
     return durations, s
 
@@ -371,15 +369,16 @@ def parseDateMathString(s, things):
     Looks for any linear formula with plus or minus
     Uses substitution and evaluation. Safe because wouldn't get here if *things were not validated, and regex didn't match.
     """
-
+    # to make eval work, add + sign here in the alphabetical order
+    s = "+".join(sorted(s))
     letters_used = re.findall(r"[A-Z]", s)
 
     if s == "":
         raise ParserStringsError("Nothing to parse")
-
     # bad case, letter mismatch
     if len(things) == 0:
         raise ParserStringsError("No valid date/durations strings found.")
+    
     for i in letters_used:
         if i not in things:
             raise ParserStringsError("Cannot recognize as date math", s)
@@ -389,8 +388,6 @@ def parseDateMathString(s, things):
                 raise ParserStringsError("Cannot recognize as date math", s)
 
     # good case, do the math
-    print('before math calc')
-    import code;code.interact(local=dict(globals(),**locals()))
     try:
         total = eval(s, {}, things)
         return total
@@ -410,8 +407,7 @@ def parseTimeString(dates,string,gen):
     result = re.findall(patterns.COMPLETE_TIME,string)[0]
     replace_string = ''.join(result)
     if all(x=="" for x in result) and len(string)!="":
-        
-        raise ParserStringsError("Please check your string includes hH|minMin|sS|USus as a time string")
+        return dates,string
     h,min,s,us = result[0],result[2],result[4],result[6]
     if h=="":
         h = "00"
@@ -421,6 +417,7 @@ def parseTimeString(dates,string,gen):
         s = "00"
     if us=="":
         us = "0"
+    
     parser_string = f"{h}:{min}:{s}.{us}"
     # use mask to convert date into string
     mask = utils.convention_map[settings.convention]
@@ -452,19 +449,24 @@ def parseTimeString(dates,string,gen):
         # when there is not date, eg ddh(3h+3bd) we should replace time string by 
         # the key letter to make it work with parseDateMathString function
         new_string = string.replace(replace_string,key)
-    # print('pars timstr')
-    # import code;code.interact(local=dict(globals(),**locals()))
+    
     return dates,new_string
 
 if __name__=="__main__":
     from dateroll.ddh.ddh import ddh
     # x = ddh('0304202312h21min22s+3bd')
-    # x2 = ddh('12h21min22s+3bd')
-    x3 = ddh('3d12h21min22s')
-    
-    print(x3)
-    print('finito')
-    import code;code.interact(local=dict(globals(),**locals()))
+    x = ddh('1y2m10d2bd12h21min22s+3bd')
+    x = ddh('1h')
+    x = ddh('1m')
+    x = ddh('1h10m')
+    x = ddh('3bd1h10min2s20us')
+    x = ddh('010120231h10min')
+
+    # x = ddh("12h21min22s")
+    # x3 = ddh('3d12h21min22s')
+    print(x)
+    # print("finito")
+    # import code;code.interact(local=dict(globals(),**locals()))
 
 
     
