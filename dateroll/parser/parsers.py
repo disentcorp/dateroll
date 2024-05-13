@@ -321,6 +321,9 @@ def parseManyDurationString(s, gen):
         duration = parseDurationString(duration_string)
         next_letter = next(gen())
         s = s.replace(duration_string, "+" + next_letter, 1)
+        if next_letter!="A":
+            # if not first character it always + to make parseDateMathString work
+            next_letter = f"+{next_letter}"
         durations[next_letter] = duration
     return durations, s
 
@@ -386,13 +389,15 @@ def parseDateMathString(s, things):
                 raise ParserStringsError("Cannot recognize as date math", s)
 
     # good case, do the math
+    print('before math calc')
+    import code;code.interact(local=dict(globals(),**locals()))
     try:
         total = eval(s, {}, things)
         return total
     except Exception:
         raise ParserStringsError("Cannot recognize as date math", s)
 
-def parseTimeString(dates,string):
+def parseTimeString(dates,string,gen):
     """
         time string needs to have h or H as a hour, 
         min or Min as minute
@@ -403,8 +408,9 @@ def parseTimeString(dates,string):
         return dates
     
     result = re.findall(patterns.COMPLETE_TIME,string)[0]
-    
+    replace_string = ''.join(result)
     if all(x=="" for x in result) and len(string)!="":
+        
         raise ParserStringsError("Please check your string includes hH|minMin|sS|USus as a time string")
     h,min,s,us = result[0],result[2],result[4],result[6]
     if h=="":
@@ -416,27 +422,51 @@ def parseTimeString(dates,string):
     if us=="":
         us = "0"
     parser_string = f"{h}:{min}:{s}.{us}"
-    if len(dates)==0:
-        # if date is not given, the date is today
-        date = dt.Date.today()
-    else:
-        date = list(dates.values())[0]
+    # use mask to convert date into string
     mask = utils.convention_map[settings.convention]
-    date_str = date.date.strftime(mask)
-    print('in timestr')
-    import code;code.interact(local=dict(globals(),**locals()))
-    d = dateutil.parser.parse(f"{date_str} {parser_string}")
-    new_date = datetime.datetime(d.year,d.month,d.day,d.hour+date.hour,d.minute+date.minute,d.second+date.second,d.microsecond+date.microsecond)
-    key = list(dates.keys())[0]
-    dates[key] = new_date
-    print('in timestr')
-    import code;code.interact(local=dict(globals(),**locals()))
-    return dates
+    if len(dates)==0:
+        # if date is not given, eg 12h21min it should return duration
+        t = datetime.date.today()
+        # date is temporariry used in dateutil parse to get date duration of time
+        date = dt.Date(t.year,t.month,t.day)
+        date_str = date.date.strftime(mask)
+        d = dateutil.parser.parse(f"{date_str} {parser_string}")
+        duration = dur.Duration(h=d.hour,min=d.minute,s=d.second,us=d.microsecond)
+        key = next(gen())
+        if key!='A':
+            key = f'+{key}'
+        dates[key] = duration
+        
+    else:
+        # when there is date in the string eg 03032023 12h21min
+        date = list(dates.values())[0]
+        date_str = date.date.strftime(mask)
+        d = dateutil.parser.parse(f"{date_str} {parser_string}")
+        new_date = dt.Date(d.year,d.month,d.day,d.hour,d.minute,d.second,d.microsecond)
+        key = list(dates.keys())[0]
+        dates[key] = new_date
+    if key in string:
+        
+        new_string = string.replace(replace_string,"")
+    else:
+        # when there is not date, eg ddh(3h+3bd) we should replace time string by 
+        # the key letter to make it work with parseDateMathString function
+        new_string = string.replace(replace_string,key)
+    # print('pars timstr')
+    # import code;code.interact(local=dict(globals(),**locals()))
+    return dates,new_string
 
 if __name__=="__main__":
     from dateroll.ddh.ddh import ddh
-    x = ddh('0304202312h21min22s+3bd')
-    # x = ddh('12h21min22s+3bd')
+    # x = ddh('0304202312h21min22s+3bd')
+    # x2 = ddh('12h21min22s+3bd')
+    x3 = ddh('3d12h21min22s')
+    
+    print(x3)
+    print('finito')
+    import code;code.interact(local=dict(globals(),**locals()))
+
+
     
 
 

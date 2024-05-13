@@ -35,7 +35,8 @@ MONTHNAMES = re.compile(
 )
 
 # patterns regarding the time string
-OPTIONAL_PART = r"([+-]?[A-Z]? ?)"
+# OPTIONAL_PART = r"(?:[+-]?[A-Z]? ?)"
+OPTIONAL_PART = r"(?:[+-]?\d?[a-zA-Z]? ?)"
 
 HOUR_LETTER = r"(?:[Hh])"
 MINUTE_LETTER = r"(?:MIN|min)"
@@ -50,7 +51,4 @@ MICROSECONDS_NUMBER = fr"(?:({INT_PART})({MICROSECONDS_LETTER}))"
 COMPLETE_TIME = f"(?:{OPTIONAL_PART}?{HOUR_NUMBER}?{MINUTE_NUMBER}?{SECONDS_NUMBER}?{MICROSECONDS_NUMBER}?)"
 
 if __name__=="__main__":
-    import re
-    s = "1h23min23s"
-    x = re.findall(COMPLETE_TIME,s)
-    import code;code.interact(local=dict(globals(),**locals()))
+    ...

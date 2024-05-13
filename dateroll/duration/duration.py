@@ -355,7 +355,8 @@ class Duration(dateutil.relativedelta.relativedelta):
         create relativedelta
         """
         rd = dateutil.relativedelta.relativedelta(
-            years=self.years, months=self.months, days=self.days
+            years=self.years, months=self.months, days=self.days,
+            hours=self.h,minutes=self.min,seconds=self.s,microseconds=self.us
         )
 
         return rd
@@ -450,11 +451,17 @@ class Duration(dateutil.relativedelta.relativedelta):
             if b has direciton use as multiple
             if subtraction use incoming direction as multipler
             """
-
+            
             # non bd adjustments
             years = a.years + b.years * direction
             months = a.months + b.months * direction
             days = a.days + b.days * direction
+
+            # subday
+            h = a.h + b.h * direction
+            min = a.min + b.min * direction
+            s = a.s + b.s * direction
+            us = a.us + b.us * direction
 
             # bd adjustments w/o MOD
             bd = add_none(a.bd, b.bd, direction)  # none or add
@@ -474,6 +481,10 @@ class Duration(dateutil.relativedelta.relativedelta):
                 months=months,
                 days=days,
                 bd=bd,
+                h = h,
+                min = min,
+                s = s,
+                us = us,
                 cals=cals,
                 modified=modified,
             )
@@ -488,6 +499,10 @@ class Duration(dateutil.relativedelta.relativedelta):
             dur.years += b.years
             dur.months += b.months
             dur.days += b.days
+            dur.h += b.hours
+            dur.min += b.minutes
+            dur.s += b.seconds
+            dur.us += b.us
 
             return dur
 
@@ -501,7 +516,7 @@ class Duration(dateutil.relativedelta.relativedelta):
             NOT (Duration - Date)
                 Date.__rsub__ throws TypeError before it gets here (non-sensical situation)
             """
-
+        
             modifed = self.adjust_from_date(b, direction)
             dt = dateModule.Date.from_datetime(modifed)
 
@@ -548,15 +563,14 @@ class Duration(dateutil.relativedelta.relativedelta):
             xprint("negation: none") if self.debug else None
 
         # 2 non-holiday adjustments, add D,M,Y
-        if isinstance(date_unadj, dateModule.Date):
-            date_unadj = date_unadj.date
+        
         date_nonhol_adj = date_unadj + negated_self.relativedelta
         (
             xprint(lbl="cal adj", before=date_unadj, after=date_nonhol_adj)
             if self.debug
             else None
         )
-
+        
         # 3 holiday adjustment, add BD and if modified check, if BD results in diff month, bounce
         if negated_self.bd is not None:
             bd_sign, date_hol_adj = negated_self.adjust_bds(date_nonhol_adj)
@@ -587,7 +601,6 @@ class Duration(dateutil.relativedelta.relativedelta):
         Date_modified.origin_dur_date = date_unadj
         Date_modified.origin_dur_cals = self.cals
         Date_modified.origin_dur_modified = self.modified
-
         return Date_modified
 
     def adjust_bds(self, from_date):
@@ -786,6 +799,14 @@ class Duration(dateutil.relativedelta.relativedelta):
             output += f"{self.days:+}d"
         if self.bd:
             output += f"{int(self.bd):+}bd"
+        if self.h:
+            output += f"{int(self.h):+}h"
+        if self.min:
+            output += f"{int(self.min):+}min"
+        if self.s:
+            output += f"{int(self.s):+}s"
+        if self.us:
+            output += f"{int(self.bd):+}us"
         if self.cals:
             output += f'|{"u".join(self.cals)}'
         if self.modified:

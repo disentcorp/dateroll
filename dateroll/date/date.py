@@ -183,7 +183,8 @@ class Date(datetime.datetime):
         elif isinstance(o, datetime.timedelta):
             return Date.from_date(self.date + o)
         elif isinstance(o, dateutil.relativedelta.relativedelta):
-            return self.date + o
+            result = Date(self.year+o.years,self.month+o.months,self.day+o.days,self.hour+o.hours,self.minute+o.minutes,self.second+o.seconds,self.microsecond+o.microseconds)
+            return result
         else:
             raise TypeError(
                 f"unsupported operand type(s) for +: 'Date' and {type(o).__name__}"
@@ -289,21 +290,6 @@ class Date(datetime.datetime):
 
     # Backwards compatibility with datetime.datetime, some 3rd party libraries assume subclasses have <1d properties, we assume 00:00:00
 
-    @property
-    def hour(self):
-        return 0
-
-    @property
-    def minute(self):
-        return 0
-
-    @property
-    def second(self):
-        return 0
-
-    @property
-    def microsecond(self):
-        return 0
 
 
 DateLike = DateLike + (Date,)

@@ -122,7 +122,8 @@ class Parser:
         notoday = parsersModule.parseTodayString(untouched)
 
         dates, nodates = parsersModule.parseManyDateStrings(notoday, gen)
-        dates = parsersModule.parseTimeString(dates,nodates)
+        
+        dates,nodates = parsersModule.parseTimeString(dates,nodates,gen)
         durations, nodatesordurations = parsersModule.parseManyDurationString(
             nodates, gen
         )
@@ -131,8 +132,7 @@ class Parser:
         processed_answer = parsersModule.parseDateMathString(
             nodatesordurations, dates_durations
         )
-        print('in parser prcoesss')
-        import code;code.interact(local=dict(globals(),**locals()))
+        
         return processed_answer
 
     @classmethod
