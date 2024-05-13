@@ -35,6 +35,8 @@ MONTHNAMES = re.compile(
 )
 
 # patterns regarding the time string
+OPTIONAL_PART = r"([+-]?[A-Z]? ?)"
+
 HOUR_LETTER = r"(?:[Hh])"
 MINUTE_LETTER = r"(?:MIN|min)"
 SECONDS_LETTER = r"(?:[Ss])"
@@ -45,7 +47,7 @@ MINUTE_NUMBER = fr"(?:({INT_PART})({MINUTE_LETTER}))"
 SECONDS_NUMBER = fr"(?:({INT_PART})({SECONDS_LETTER}))"
 MICROSECONDS_NUMBER = fr"(?:({INT_PART})({MICROSECONDS_LETTER}))"
 
-COMPLETE_TIME = f"(?:{HOUR_NUMBER}?{MINUTE_NUMBER}?{SECONDS_NUMBER}?{MICROSECONDS_NUMBER}?)"
+COMPLETE_TIME = f"(?:{OPTIONAL_PART}?{HOUR_NUMBER}?{MINUTE_NUMBER}?{SECONDS_NUMBER}?{MICROSECONDS_NUMBER}?)"
 
 if __name__=="__main__":
     import re

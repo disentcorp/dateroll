@@ -2,6 +2,7 @@ import calendar
 import datetime
 import re
 import dateutil
+import code
 
 import dateroll.date.date as dt
 import dateroll.duration.duration as dur
@@ -9,6 +10,7 @@ from dateroll import utils
 from dateroll.parser import patterns
 from dateroll.schedule.schedule import Schedule
 from dateroll.settings import settings
+
 
 TODAYSTRINGVALUES = ["today", "t0", "t"]
 
@@ -399,9 +401,12 @@ def parseTimeString(dates,string):
     """
     if string=="":
         return dates
+    
     result = re.findall(patterns.COMPLETE_TIME,string)[0]
+    
     if all(x=="" for x in result) and len(string)!="":
         raise ParserStringsError("Please check your string includes hH|minMin|sS|USus as a time string")
+    h,min,s,us = result[0],result[2],result[4],result[6]
     if h=="":
         h = "00"
     if min=="":
@@ -416,8 +421,10 @@ def parseTimeString(dates,string):
         date = dt.Date.today()
     else:
         date = list(dates.values())[0]
-    mask = utils.convention_map_datetime[settings.convention]
+    mask = utils.convention_map[settings.convention]
     date_str = date.date.strftime(mask)
+    print('in timestr')
+    import code;code.interact(local=dict(globals(),**locals()))
     d = dateutil.parser.parse(f"{date_str} {parser_string}")
     new_date = datetime.datetime(d.year,d.month,d.day,d.hour+date.hour,d.minute+date.minute,d.second+date.second,d.microsecond+date.microsecond)
     key = list(dates.keys())[0]
@@ -428,7 +435,8 @@ def parseTimeString(dates,string):
 
 if __name__=="__main__":
     from dateroll.ddh.ddh import ddh
-    x = ddh('03042023 12h21min22s+3bd')
+    x = ddh('0304202312h21min22s+3bd')
+    # x = ddh('12h21min22s+3bd')
     
 
 
