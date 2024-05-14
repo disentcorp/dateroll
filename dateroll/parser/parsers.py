@@ -83,18 +83,18 @@ def parseTodayString(s):
     this is [the] place where "t" is replaced
     """
     today = datetime.datetime.today()
-    # fmt = utils.convention_map_datetime[settings.convention]
-    # today_string = today.strftime(fmt)
 
     # convert today into iso format
-    today_string = today.isoformat()
+    today_iso = today.isoformat()
 
     for t in TODAYSTRINGVALUES:
         # search order matters in TODAYSTRINGVALUES
         if t in s:
-            return s.replace(t, today_string)
+            is_today_string = ensure_today_string(s,t)
+            if is_today_string:
+                return s.replace(t, today_iso)
     return s
-
+    
 
 
 def parseDateString(s: str):
@@ -178,10 +178,10 @@ def parseISOformatStrings(s,gen):
     """
         if there is a isoformat eg "2024-05-14T06:59:11.071620", convert into datetime
     """
-
+    dates = {}
     if not "T" in s:
         # not iso format
-        return s
+        return dates, s
     y,other = s.split('T')
     # remove unneccassary strings from other
     other = other.split('-')[0]
@@ -189,11 +189,19 @@ def parseISOformatStrings(s,gen):
     other = other.split(' ')[0]
 
     iso = 'T'.join([y,other])
-    date = datetime.datetime.isoformat(iso)
-    dates = {}
+    # print('in iso')
+    # import code;code.interact(local=dict(globals(),**locals()))
+    try:
+        date = datetime.datetime.fromisoformat(iso)
+    except Exception:
+        raise ValueError(f"iso format is not correct {y}")
     next_letter = next(gen())
+    dates[next_letter] = date
+    s = s.replace(iso,next_letter)
+    return dates,s
 
-def parseManyDateStrings(s, gen):
+
+def parseManyDateStrings(dates,s, gen):
     """
     for a given convention, see if string contains 1 or more dates, extract them out for "letters" for parseDateMath
 
@@ -229,7 +237,6 @@ def parseManyDateStrings(s, gen):
     elif settings.convention == "YMD":
         pattern = patterns.YMD
 
-    dates = {}
     matches = re.findall(pattern, s)
     res = s
 
@@ -243,8 +250,7 @@ def parseManyDateStrings(s, gen):
         next_letter = next(gen())  # match only 1st time!! or causes letter mismatch
         res = res.replace(match, next_letter, 1)
         dates[next_letter] = date
-    print('in prs date')
-    import code;code.interact(local=dict(globals(),**locals()))
+    
     return dates, res
 
 
@@ -484,11 +490,23 @@ def parseTimeString(dates,string,gen):
         
         new_string = string.replace(replace_string,"")
     else:
-        # when there is not date, eg ddh(3h+3bd) we should replace time string by 
+        # when there is no date, eg ddh(3h+3bd) we should replace time string by 
         # the key letter to make it work with parseDateMathString function
         new_string = string.replace(replace_string,key)
     
     return dates,new_string
+
+def ensure_today_string(parse_string,today_string):
+    """
+        two scenarios of parsing: ddh(T) and iso format of ddh(2023-01-01T23h:12m:23s)
+        Since both parsing string has T, we need to ensure the string is not iso format
+    """
+
+    is_today_string = True
+    t_idx = parse_string.find(today_string)
+    if t_idx>0 and today_string[t_idx-1] not in ["+","-"," "]:
+        is_today_string = False
+    return is_today_string
 
 if __name__=="__main__":
     from dateroll.ddh.ddh import ddh
@@ -502,8 +520,8 @@ if __name__=="__main__":
 
     # x = ddh("12h21min22s")
     # x3 = ddh('3d12h21min22s')
-    ddh("t")
-    # print(x)
+    x = ddh("t")
+    print(x)
     # print("finito")
     # import code;code.interact(local=dict(globals(),**locals()))
 

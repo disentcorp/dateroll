@@ -115,10 +115,13 @@ def swap_month_names(s):
     """
     swap month names into number string eg, Aug-->08
     """
+
     month_str = re.match("[a-zA-Z]+", s)
     if month_str:
         # aug or AUG --> Aug
-
+        if month_str[0] in ["A","B","C"]:
+            # here string is coming from the next(gen()) function
+            return s
         month_str = month_str[0].lower()
         month_str_numb = month_dict.get(month_str, None)
         if month_str_numb is None:

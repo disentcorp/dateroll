@@ -13,7 +13,7 @@ default_settings = {
     "twodigityear_cutoff": 2050, 
     "default_daycounter" : "ACT/365",
     "ie":"(]",
-    "tz":ZoneInfo("UTC"),
+    "tz_store":"UTC",
     "tz_display":"System",
     "tz_parser":"System",
 }

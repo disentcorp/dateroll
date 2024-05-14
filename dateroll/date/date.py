@@ -2,6 +2,7 @@ import datetime
 from zoneinfo import ZoneInfo
 
 import dateutil.relativedelta
+from tzlocal import get_localzone
 
 import dateroll.ddh.ddh as ddhModule
 import dateroll.parser.parsers as parsersModule
@@ -11,8 +12,10 @@ from dateroll.duration.duration import Duration
 from dateroll.settings import settings
 from dateroll import utils
 
-DateLike = (datetime.datetime, datetime.date)
 
+DateLike = (datetime.datetime, datetime.date)
+TZ_DISPLAY = get_localzone() if settings.tz_display=="System" else ZoneInfo(settings.tz_display)
+TZ_PARSER = get_localzone() if settings.tz_parser=="System" else ZoneInfo(settings.tz_parser)
 
 class Date(datetime.datetime):
     """
@@ -20,7 +23,7 @@ class Date(datetime.datetime):
     """
 
     def __new__(cls,*args,**kwargs):
-        kwargs.setdefault("tzinfo",settings.tz)
+        kwargs.setdefault("tzinfo",TZ_PARSER)
         return super().__new__(cls,*args,**kwargs)
 
     @staticmethod
@@ -42,9 +45,9 @@ class Date(datetime.datetime):
         """
 
         if isinstance(o,datetime.datetime):
-            return o.astimezone(settings.tz)
+            return o.astimezone(TZ_PARSER)
         elif isinstance(o,datetime.date):
-            return datetime.datetime(o.year,o.month,o.day,0,0).astimezone(settings.tz)
+            return datetime.datetime(o.year,o.month,o.day,0,0).astimezone(TZ_PARSER)
         else:
             raise TypeError(
                 f"from_date requires datetime.datetime, cannot use {type(o).__name__}"
@@ -82,7 +85,7 @@ class Date(datetime.datetime):
             else:
                 raise TypeError("Must be int/float")
 
-        base_date = datetime.datetime(1899, 12, 30).astimezone(settings.tz)
+        base_date = datetime.datetime(1899, 12, 30).astimezone(TZ_PARSER)
         days = int(o)
         fraction = o - days
         seconds_in_day = int(fraction * 24 * 3600)
@@ -108,7 +111,7 @@ class Date(datetime.datetime):
 
     @property
     def datetime(self):
-        return datetime.datetime(self.year, self.month, self.day,0,0).astimezone(settings.tz)
+        return datetime.datetime(self.year, self.month, self.day,0,0).astimezone(TZ_PARSER)
 
     @property
     def date(self):
@@ -209,10 +212,10 @@ class Date(datetime.datetime):
                 dt = o.datetime
             elif isinstance(o, datetime.datetime):
                 # truncates time!
-                dt = o.astimezone(settings.tz)
+                dt = o.astimezone(TZ_PARSER)
             else:
                 if isinstance(o, datetime.date):
-                    dt = datetime.datetime(o.year,o.month,o.day,0,0).astimezone(settings.tz)
+                    dt = datetime.datetime(o.year,o.month,o.day,0,0).astimezone(TZ_PARSER)
 
             relative_delta = dateutil.relativedelta.relativedelta(self, dt)
             return Duration.from_relativedelta(
@@ -282,6 +285,7 @@ class Date(datetime.datetime):
         """
         should print as string according to convention
         """
+        self.astimezone(TZ_DISPLAY)
         mask = utils.convention_map_datetime[settings.convention]
         return self.strftime(mask)
 
