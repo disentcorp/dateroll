@@ -2,7 +2,8 @@ import calendar
 import datetime
 import re
 import dateutil
-import code
+from zoneinfo import ZoneInfo
+from tzlocal import get_localzone
 
 import dateroll.date.date as dt
 import dateroll.duration.duration as dur
@@ -11,6 +12,7 @@ from dateroll.parser import patterns
 from dateroll.schedule.schedule import Schedule
 from dateroll.settings import settings
 
+TZ_DISPLAY = get_localzone() if settings.tz_display=="System" else ZoneInfo(settings.tz_display)
 
 TODAYSTRINGVALUES = ["today", "t0", "t"]
 
@@ -83,8 +85,10 @@ def parseTodayString(s):
     this is [the] place where "t" is replaced
     """
     today = datetime.datetime.today()
+    # today = dt.Date.today()
 
     # convert today into iso format
+    
     today_iso = today.isoformat()
 
     for t in TODAYSTRINGVALUES:
@@ -93,6 +97,7 @@ def parseTodayString(s):
             is_today_string = ensure_today_string(s,t)
             if is_today_string:
                 return s.replace(t, today_iso)
+    
     return s
     
 
@@ -170,7 +175,7 @@ def parseDateString_rearrange(tup):
         d, m, y = tup
     elif settings.convention == "YMD":
         y, m, d = tup
-
+    
     y, m, d = int(y), int(m), int(d)
     return y, m, d
 
@@ -189,15 +194,15 @@ def parseISOformatStrings(s,gen):
     other = other.split(' ')[0]
 
     iso = 'T'.join([y,other])
-    # print('in iso')
-    # import code;code.interact(local=dict(globals(),**locals()))
     try:
         date = datetime.datetime.fromisoformat(iso)
     except Exception:
         raise ValueError(f"iso format is not correct {y}")
+    date = utils.datetime_to_date(date)
     next_letter = next(gen())
     dates[next_letter] = date
     s = s.replace(iso,next_letter)
+    
     return dates,s
 
 
@@ -359,7 +364,7 @@ def parseManyDurationString(s, gen):
     """
     durations = {}
     matches = re.findall(patterns.COMPLETE_DURATION, s)
-
+    
     for idx, match in enumerate(matches):
         duration_string = match[0]
         duration = parseDurationString(duration_string)
@@ -367,6 +372,8 @@ def parseManyDurationString(s, gen):
         
         s = s.replace(duration_string, next_letter, 1)
         durations[next_letter] = duration
+    # print('many dur')
+    # import code;code.interact(local=dict(globals(),**locals()))
     return durations, s
 
 
@@ -414,7 +421,10 @@ def parseDateMathString(s, things):
     Uses substitution and evaluation. Safe because wouldn't get here if *things were not validated, and regex didn't match.
     """
     # to make eval work, add + sign here in the alphabetical order
-    s = "+".join(sorted(s))
+    
+    # s = "+".join(sorted(s))
+    s = utils.sort_string(s,things)
+    
     letters_used = re.findall(r"[A-Z]", s)
 
     if s == "":
@@ -520,8 +530,10 @@ if __name__=="__main__":
 
     # x = ddh("12h21min22s")
     # x3 = ddh('3d12h21min22s')
-    x = ddh("t")
-    print(x)
+    dur1 = dur.Duration(years=1)
+    dur1 += "1bd"
+   
+    dur2 = dur1 + "1bd"
     # print("finito")
     # import code;code.interact(local=dict(globals(),**locals()))
 

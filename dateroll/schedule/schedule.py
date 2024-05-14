@@ -1,5 +1,6 @@
 import datetime
 from zoneinfo import ZoneInfo
+from tzlocal import get_localzone
 
 import dateroll.calendars.calendarmath as calendarmathModule
 import dateroll.parser.parsers as parsersModule
@@ -15,6 +16,8 @@ try:
 except Exception:  # pragma: no cover
     have_pandas = False
 
+TZ_DISPLAY = get_localzone() if settings.tz_display=="System" else ZoneInfo(settings.tz_display)
+TZ_PARSER = get_localzone() if settings.tz_parser=="System" else ZoneInfo(settings.tz_parser)
 
 class Schedule:
     """
@@ -134,12 +137,12 @@ class Schedule:
         if isinstance(x, dateModule.Date):
             x = x.datetime
         elif isinstance(x, datetime.datetime):
-            x = x.astimezone(settings.tz)
+            x = x.astimezone(ZoneInfo(TZ_PARSER))
         for i in self._dates:
             if isinstance(i, dateModule.Date):
                 i = i.datetime
             elif isinstance(i, datetime.date):
-                i = datetime.datetime(i.year, i.month, i.day).astimezone(settings.tz)
+                i = datetime.datetime(i.year, i.month, i.day).astimezone(ZoneInfo(TZ_PARSER))
 
             if x == i:
                 return True

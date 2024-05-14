@@ -7,6 +7,8 @@ import dateroll.ddh.ddh as ddhModule
 # from dateroll.ddh import ddh as ddhModule
 from dateroll.parser import patterns
 
+class ParserStringsError(Exception):...
+
 XPRINT_ON = False
 
 DEBUG_COLORS = {
@@ -130,7 +132,6 @@ def swap_month_names(s):
         s = patterns.MONTHNAMES.sub(month_str_numb, s.capitalize())
     return s
 
-
 convention_map_datetime = {"YMD": r"%Y-%m-%d %H:%M:%S.%f", "DMY": r"%d/%m/%Y %H:%M:%S.%f", "MDY": r"%m/%d/%Y %H:%M:%S.%f"}
 convention_map = {"YMD": r"%Y-%m-%d", "DMY": r"%d/%m/%Y", "MDY": r"%m/%d/%Y"}
 
@@ -143,6 +144,46 @@ def str_or_date(s):
     else:
         raise Exception("Slicing only supports dateroll datestrings")
     return d
+
+def datetime_to_date(date):
+    """
+        convert datetime into disent date
+    """
+    if isinstance(date,dateModule.Date):
+        return date
+    disent_date = dateModule.Date(date.year,date.month,date.day,date.hour,date.minute,date.second,date.microsecond)
+    return disent_date
+
+def date_to_date(date):
+    """
+        convert datetime.date into disent date
+    """
+    if isinstance(date,dateModule.Date):
+        return date
+    disent_date = dateModule.Date(date.year,date.month,date.day)
+    return disent_date
+
+def sort_string(string,dates):
+    """
+        the key of dates={A:datetime,B:datetime2} is in an alphabetical order
+        here but string in an alphabetical order when it is not
+    """
+    ordered_string = ""
+    for letter in dates.keys():
+        ltr_idx = string.find(letter)
+        if ltr_idx==-1:
+            raise ParserStringsError("Cannot recognize as date math", string)
+        if ltr_idx==0:
+            # first alphabet
+            ordered_string += string[ltr_idx]
+        else:
+           
+            sign = string[ltr_idx-1]
+            if not sign in ["+","-"]:
+                ordered_string+=f"+{letter}"
+            else:
+                ordered_string+=f"{sign}{letter}"
+    return ordered_string
 
 
 def date_slice(s: slice, list_: list):

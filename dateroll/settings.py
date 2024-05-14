@@ -42,8 +42,16 @@ default_settings_validation = {
             "Must be one of ACT/365, ACT/365F, ACT/360, 30/360, 30E/360"
         ),
     ),
-    "tz":(
-        lambda x:x in pytz.all_timezones,
+    "tz_store":(
+        lambda x:isinstance(x,str),
+        ValueError("Must be one of pytz timezones")
+    ),
+    "tz_display":(
+        lambda x:isinstance(x,str),
+        ValueError("Must be one of pytz timezones")
+    ),
+    "tz_parser":(
+        lambda x:isinstance(x,str),
         ValueError("Must be one of pytz timezones")
     ),
 

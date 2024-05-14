@@ -1,5 +1,7 @@
 import datetime
 import unittest
+from zoneinfo import ZoneInfo
+from tzlocal import get_localzone
 
 import dateroll
 import dateroll.date.date as dateModule
@@ -10,6 +12,7 @@ from dateroll.settings import settings
 
 # import dateroll.duration.duration as durationModule
 
+LOCAL_ZONE = get_localzone()
 
 class TestDDH(unittest.TestCase):
     @classmethod
@@ -173,8 +176,8 @@ class TestsPracticalExamples(unittest.TestCase):
         """
         test for date strings
         """
-        assert ddh("t") == datetime.datetime.today()
-        assert ddh("5/5/05") == datetime.datetime(2005, 5, 5,0,0)
+
+        assert ddh("5/5/05").datetime == datetime.datetime(2005, 5, 5,0,0).astimezone(LOCAL_ZONE)
 
     def testDuration(self):
         """
@@ -185,19 +188,21 @@ class TestsPracticalExamples(unittest.TestCase):
         """
         test for schedule strings
         """
-        print('err sch')
-        import code;code.interact(local=dict(globals(),**locals()))
-        assert ddh("t") == datetime.datetime.today()
+        result = ddh("t").datetime
+        expected = datetime.datetime.now(LOCAL_ZONE)
+        
+        assert result.date() == expected.date()
+        assert result.hour == expected.hour and result.minute == expected.minute and result.tzinfo==expected.tzinfo
 
     def test_durationLike(self):
         """
         pass durationlike into ddh
         """
+
         x = ddh(datetime.timedelta(days=10))
-        import code;code.interact(local=dict(globals(),**locals()))
         self.assertEqual(
             x,
-            dateroll.Duration(years=0, months=0, days=10, modified=False, debug=False),
+            dateroll.Duration(years=0, months=0, days=10, h=0, min=0, s=0, us=0, modified=False),
         )
 
     def test_badObj(self):

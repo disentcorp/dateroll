@@ -156,6 +156,7 @@ class TestDuration(unittest.TestCase):
         expected_d = Date(2024, 3, 7)
         dur = Duration(bd=1)
         sign, newd = dur.adjust_bds(d)
+        
         self.assertEqual(newd, expected_d)
 
         dur = Duration()
@@ -258,7 +259,7 @@ class TestDuration(unittest.TestCase):
         dur = Duration(days=4)
         dt = Date(2024, 1, 1)
         x = dur + dt
-        self.assertEqual(x, datetime.datetime(2024, 1, 5))
+        self.assertEqual(x.date, datetime.date(2024, 1, 5))
 
     def test___eq__(self):
         """
@@ -383,7 +384,7 @@ class TestDuration(unittest.TestCase):
         dur = Duration(bd=5)
         dt = Date(2024, 1, 1)
         dur += dt
-        self.assertEqual(dur, datetime.date(2024, 1, 8))
+        self.assertEqual(dur.date, datetime.date(2024, 1, 8))
 
     def test___init__(self):
         pass
@@ -392,7 +393,7 @@ class TestDuration(unittest.TestCase):
         dur = Duration(days=4)
         dt = Date(2024, 1, 1)
         dur -= dt
-        self.assertEqual(dur, datetime.date(2023, 12, 28))
+        self.assertEqual(dur.date, datetime.date(2023, 12, 28))
 
     def test___neg__(self):
         """
@@ -708,22 +709,25 @@ class TestDuration(unittest.TestCase):
         # get expected answers from json file
         with open(EXPECTED_DAY_COUNT_PATH(),"r") as f:
             expected_daycount_dic = json.load(f)
-
-        expected_dcf_ACT360 = expected_daycount_dic[f"{d1}:{d2}:ACT/360:NY"]
+        d1_rs = d1.to_string().split(" ")[0]
+        d2_rs = d2.to_string().split(" ")[0]
+        expected_dcf_ACT360 = expected_daycount_dic[f"{d1_rs}:{d2_rs}:ACT/360:NY"]
         
         dcf_ACT360 = (d2-d1).yf('ACT/360')
+        # print('here')
+        # import code;code.interact(local=dict(globals(),**locals()))
         self.assertEqual(dcf_ACT360, expected_dcf_ACT360)
 
-        expected_dcf_ACT365 = expected_daycount_dic[f"{d1}:{d2}:ACT/365:NY"]
+        expected_dcf_ACT365 = expected_daycount_dic[f"{d1_rs}:{d2_rs}:ACT/365:NY"]
         dcf_ACT365 = (d2-d1).yf('ACT/365')
         self.assertEqual(dcf_ACT365, expected_dcf_ACT365)
 
-        expected_dcf_30E360 = expected_daycount_dic[f"{d1}:{d2}:30E360:NY"]
+        expected_dcf_30E360 = expected_daycount_dic[f"{d1_rs}:{d2_rs}:30E360:NY"]
         dcf_30E360 = (d2-d1).yf('30E/360')
         self.assertEqual(dcf_30E360, expected_dcf_30E360)
 
         # if we change to BR the difference is quite big eg, toler=0.083
-        expected_dcf_BD252 = expected_daycount_dic[f"{d1}:{d2}:bd252:NY"]
+        expected_dcf_BD252 = expected_daycount_dic[f"{d1_rs}:{d2_rs}:bd252:NY"]
         dcf_bd252 = (d2-d1).yf('BD/252',cals="NY") 
         toler = abs(expected_dcf_BD252 - dcf_bd252)
         
@@ -751,7 +755,8 @@ class TestDuration(unittest.TestCase):
         # a is negative
         a = Duration(days=-10)
         self.assertFalse(a > b)
-
+        
+            
     def test_init(self):
         with self.assertRaises(TypeError):
             Duration(days="10")

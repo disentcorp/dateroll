@@ -9,7 +9,6 @@ import dateroll.duration.duration as durationModule
 import dateroll.parser.parsers as parsersModule
 import dateroll.schedule.schedule as scheduleModule
 
-
 class ParserError(Exception): ...
 
 
@@ -118,11 +117,10 @@ class Parser:
         # untouched,timestr = separate_date_time(untouched)
         def gen():
             yield letters.pop(0)
-
+        
         notoday = parsersModule.parseTodayString(untouched)
         dates,nodates = parsersModule.parseISOformatStrings(notoday,gen)
-        print('in parser')
-        import code;code.interact(local=dict(globals(),**locals()))
+        
         dates, nodates = parsersModule.parseManyDateStrings(dates,nodates, gen)
         
         dates,nodates = parsersModule.parseTimeString(dates,nodates,gen)
@@ -157,7 +155,7 @@ class Parser:
             maybe_start = cls.parse_one_part(_maybe_start)
             maybe_stop = cls.parse_one_part(_maybe_stop)
             maybe_step = cls.parse_one_part(_maybe_step)
-
+            
             if isinstance(maybe_start, dateModule.Date):
                 start = maybe_start
             else:

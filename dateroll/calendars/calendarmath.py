@@ -3,11 +3,11 @@ import math
 import os
 import pathlib
 import pickle
-from zoneinfo import ZoneInfo
 
 import dateroll.date.date as dateModule
 from dateroll.calendars.calendars import Calendars
 from dateroll.settings import settings
+import dateroll.utils as utils
 
 PARENT_LOCATION = pathlib.Path.home() / ".dateroll/"
 PARENT_LOCATION.mkdir(exist_ok=True)
@@ -216,12 +216,11 @@ class CalendarMath:
         B = self.bck[cal_name]
         if len(A) == 0:
             raise ValueError("Please provide holidays")
-        from dateroll.date.date import Date
 
         bd_index = A[d]
         new_bd_index = bd_index + n
         new_dt = B[new_bd_index]
-        new_dt = datetime.datetime(new_dt.year,new_dt.month,new_dt.day,h,min,s,us)
+        new_dt = dateModule.Date(new_dt.year,new_dt.month,new_dt.day,h,min,s,us)
         return new_dt
 
     def sub_bd(self, d, n, cals):
@@ -264,6 +263,8 @@ class CalendarMath:
         fwd = self.fwd[cal_name]
         mult = 1 if t1 < t2 else -1
         a, b = (t1, t2) if t1 < t2 else (t2, t1)
+        t1,t2 = t1.date,t2.date
+        
         n = fwd[t2] - fwd[t1] + 1 * mult
         if ie[0] == "[" and not a.is_bd(cals=cals):
             # because of the fwd property e.g friday:1,sat:1,sun:1,mon(hol):1,tue:2 we subtract 1 more on the left side

@@ -17,7 +17,6 @@ import dateroll.duration.yfs as yfs
 # older versions of python can use functools lru_cache(maxsize=None)
 # for now, leave this commented out because it is not used
 
-
 cals = calendarmathModule.calmath.cals
 
 period_order = (*"yhsqmwd", "cals", "modifier")
@@ -245,8 +244,9 @@ class Duration(dateutil.relativedelta.relativedelta):
         if isinstance(td, Duration):
             return td
         elif isinstance(td, datetime.timedelta):
+            
             return Duration(
-                days=td.days,h=td.hours,min=td.minutes,s=td.seconds, us=td.microseconds,_anchor_start=_anchor_start, _anchor_end=_anchor_end
+                days=td.days,_anchor_start=_anchor_start, _anchor_end=_anchor_end
             )
         else:
             raise TypeError(f"Must be timedelta not {type(td).__name__}")
@@ -507,7 +507,7 @@ class Duration(dateutil.relativedelta.relativedelta):
             dur.h += b.hours
             dur.min += b.minutes
             dur.s += b.seconds
-            dur.us += b.us
+            dur.us += b.microseconds
 
             return dur
 

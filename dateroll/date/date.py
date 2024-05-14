@@ -54,7 +54,9 @@ class Date(datetime.datetime):
             )
     @staticmethod
     def from_datetime(o):
-        if isinstance(o,datetime.datetime):
+        if isinstance(o,datetime.date):
+            return utils.date_to_date(o)
+        elif isinstance(o,datetime.datetime):
             
             return Date(o.year,o.month,o.day,o.hour,o.minute,o.second,o.microsecond)
         else:
@@ -107,11 +109,11 @@ class Date(datetime.datetime):
 
     @staticmethod
     def today():
-        return datetime.datetime.now(settings.tz)
+        return datetime.datetime.now(TZ_PARSER)
 
     @property
     def datetime(self):
-        return datetime.datetime(self.year, self.month, self.day,0,0).astimezone(TZ_PARSER)
+        return datetime.datetime(self.year, self.month, self.day,self.hour,self.minute,self.second,self.microsecond).astimezone(self.tzinfo)
 
     @property
     def date(self):
@@ -186,7 +188,8 @@ class Date(datetime.datetime):
         elif isinstance(o, datetime.timedelta):
             return Date.from_date(self.date + o)
         elif isinstance(o, dateutil.relativedelta.relativedelta):
-            result = Date(self.year+o.years,self.month+o.months,self.day+o.days,self.hour+o.hours,self.minute+o.minutes,self.second+o.seconds,self.microsecond+o.microseconds)
+            result = self.datetime + o
+            result = utils.datetime_to_date(result)
             return result
         else:
             raise TypeError(
@@ -216,10 +219,11 @@ class Date(datetime.datetime):
             else:
                 if isinstance(o, datetime.date):
                     dt = datetime.datetime(o.year,o.month,o.day,0,0).astimezone(TZ_PARSER)
-
-            relative_delta = dateutil.relativedelta.relativedelta(self, dt)
+            
+            relative_delta = dateutil.relativedelta.relativedelta(self.datetime, dt)
+           
             return Duration.from_relativedelta(
-                relative_delta, _anchor_start=dt, _anchor_end=self.date
+                relative_delta, _anchor_start=dt.date(), _anchor_end=self.date
             )
 
         elif isinstance(o, Duration) or "Duration" in o.__class__.__name__:
@@ -279,7 +283,7 @@ class Date(datetime.datetime):
             print(pretty_calendars)
 
     def __repr__(self):
-        return f"Date({self.year},{self.month},{self.day},{self.hour},{self.minute},{self.second})"
+        return f"Date({self.year},{self.month},{self.day},{self.hour},{self.minute},{self.second},{self.microsecond},{self.tzinfo})"
 
     def to_string(self):
         """
@@ -287,7 +291,8 @@ class Date(datetime.datetime):
         """
         self.astimezone(TZ_DISPLAY)
         mask = utils.convention_map_datetime[settings.convention]
-        return self.strftime(mask)
+        result = f"{self.strftime(mask)} {self.tzinfo}"
+        return result
 
     def __str__(self):
         return self.to_string()
