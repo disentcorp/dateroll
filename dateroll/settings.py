@@ -14,6 +14,8 @@ default_settings = {
     "default_daycounter" : "ACT/365",
     "ie":"(]",
     "tz":ZoneInfo("UTC"),
+    "tz_display":"System",
+    "tz_parser":"System",
 }
 
 default_settings_validation = {

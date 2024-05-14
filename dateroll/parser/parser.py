@@ -120,7 +120,8 @@ class Parser:
             yield letters.pop(0)
 
         notoday = parsersModule.parseTodayString(untouched)
-
+        print("in parser")
+        import code;code.interact(local=dict(globals(),**locals()))
         dates, nodates = parsersModule.parseManyDateStrings(notoday, gen)
         
         dates,nodates = parsersModule.parseTimeString(dates,nodates,gen)

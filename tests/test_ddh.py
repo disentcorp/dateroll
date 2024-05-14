@@ -112,7 +112,7 @@ class TestDDH(unittest.TestCase):
         purge all
         """
         ddh.purge_all()
-        base_cals = sorted(["FED", "ECB", "LN", "WE", "ALL", "BR", "NY"])
+        base_cals = sorted(["FED", "ECB","EU", "LN", "WE", "ALL", "BR", "NY"])
         self.assertEqual(sorted(ddh.hols.keys()), base_cals)
 
     def testConvention(self):
@@ -173,8 +173,8 @@ class TestsPracticalExamples(unittest.TestCase):
         """
         test for date strings
         """
-        assert ddh("t") == datetime.date.today()
-        assert ddh("5/5/05") == datetime.date(2005, 5, 5)
+        assert ddh("t") == datetime.datetime.today()
+        assert ddh("5/5/05") == datetime.datetime(2005, 5, 5,0,0)
 
     def testDuration(self):
         """
@@ -185,13 +185,16 @@ class TestsPracticalExamples(unittest.TestCase):
         """
         test for schedule strings
         """
-        assert ddh("t") == datetime.date.today()
+        print('err sch')
+        import code;code.interact(local=dict(globals(),**locals()))
+        assert ddh("t") == datetime.datetime.today()
 
     def test_durationLike(self):
         """
         pass durationlike into ddh
         """
         x = ddh(datetime.timedelta(days=10))
+        import code;code.interact(local=dict(globals(),**locals()))
         self.assertEqual(
             x,
             dateroll.Duration(years=0, months=0, days=10, modified=False, debug=False),

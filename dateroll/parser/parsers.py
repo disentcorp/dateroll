@@ -64,12 +64,12 @@ def validate_monthday(y, m, d):
 class ParserStringsError(Exception): ...
 
 
-def parseTodayString(s):
+def parseTodayString0(s):
     """
     this is [the] place where "t" is replaced
     """
     today = datetime.datetime.today()
-    fmt = utils.convention_map[settings.convention]
+    fmt = utils.convention_map_datetime[settings.convention]
     today_string = today.strftime(fmt)
 
     for t in TODAYSTRINGVALUES:
@@ -77,6 +77,24 @@ def parseTodayString(s):
         if t in s:
             return s.replace(t, today_string)
     return s
+
+def parseTodayString(s):
+    """
+    this is [the] place where "t" is replaced
+    """
+    today = datetime.datetime.today()
+    # fmt = utils.convention_map_datetime[settings.convention]
+    # today_string = today.strftime(fmt)
+
+    # convert today into iso format
+    today_string = today.isoformat()
+
+    for t in TODAYSTRINGVALUES:
+        # search order matters in TODAYSTRINGVALUES
+        if t in s:
+            return s.replace(t, today_string)
+    return s
+
 
 
 def parseDateString(s: str):
@@ -156,6 +174,24 @@ def parseDateString_rearrange(tup):
     y, m, d = int(y), int(m), int(d)
     return y, m, d
 
+def parseISOformatStrings(s,gen):
+    """
+        if there is a isoformat eg "2024-05-14T06:59:11.071620", convert into datetime
+    """
+
+    if not "T" in s:
+        # not iso format
+        return s
+    y,other = s.split('T')
+    # remove unneccassary strings from other
+    other = other.split('-')[0]
+    other = other.split('+')[0]
+    other = other.split(' ')[0]
+
+    iso = 'T'.join([y,other])
+    date = datetime.datetime.isoformat(iso)
+    dates = {}
+    next_letter = next(gen())
 
 def parseManyDateStrings(s, gen):
     """
@@ -207,6 +243,8 @@ def parseManyDateStrings(s, gen):
         next_letter = next(gen())  # match only 1st time!! or causes letter mismatch
         res = res.replace(match, next_letter, 1)
         dates[next_letter] = date
+    print('in prs date')
+    import code;code.interact(local=dict(globals(),**locals()))
     return dates, res
 
 
@@ -402,7 +440,7 @@ def parseTimeString(dates,string,gen):
         us or US as a microseconds
     """
     if string=="":
-        return dates
+        return dates,string
     
     result = re.findall(patterns.COMPLETE_TIME,string)[0]
     replace_string = ''.join(result)
@@ -455,16 +493,17 @@ def parseTimeString(dates,string,gen):
 if __name__=="__main__":
     from dateroll.ddh.ddh import ddh
     # x = ddh('0304202312h21min22s+3bd')
-    x = ddh('1y2m10d2bd12h21min22s+3bd')
-    x = ddh('1h')
-    x = ddh('1m')
-    x = ddh('1h10m')
-    x = ddh('3bd1h10min2s20us')
-    x = ddh('010120231h10min')
+    # x = ddh('1y2m10d2bd12h21min22s+3bd')
+    # x = ddh('1h')
+    # x = ddh('1m')
+    # x = ddh('1h10m')
+    # x = ddh('3bd1h10min2s20us')
+    # x = ddh('010120231h10min')
 
     # x = ddh("12h21min22s")
     # x3 = ddh('3d12h21min22s')
-    print(x)
+    ddh("t")
+    # print(x)
     # print("finito")
     # import code;code.interact(local=dict(globals(),**locals()))
 
