@@ -138,9 +138,9 @@ convention_map = {"YMD": r"%Y-%m-%d", "DMY": r"%d/%m/%Y", "MDY": r"%m/%d/%Y"}
 
 def str_or_date(s):
     if isinstance(s, str):
-        d = ddhModule.ddh(s)
+        d = ddhModule.ddh(s).date
     elif isinstance(s, dateModule.DateLike):
-        d = dateModule.Date.from_datetime(s)
+        d = dateModule.Date.from_datetime(s).date
     else:
         raise Exception("Slicing only supports dateroll datestrings")
     return d
@@ -175,7 +175,10 @@ def sort_string(string,dates):
             raise ParserStringsError("Cannot recognize as date math", string)
         if ltr_idx==0:
             # first alphabet
-            ordered_string += string[ltr_idx]
+            if letter=='A':
+                ordered_string += letter
+            else:
+                ordered_string+=f"+{letter}"
         else:
            
             sign = string[ltr_idx-1]
@@ -197,6 +200,11 @@ def date_slice(s: slice, list_: list):
     if start is not None and stop is None and step is None:
         # after
         start = str_or_date(start)
+        try:
+            [i for i in list_ if i >= start]
+        except:
+            print('err date slice')
+            import code;code.interact(local=dict(globals(),**locals()))
         return [i for i in list_ if i >= start]
     elif start is None and stop is not None and step is None:
         # before

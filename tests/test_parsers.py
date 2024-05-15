@@ -14,7 +14,8 @@ class TestParsers(unittest.TestCase):
     def setUpClass(cls): ...
 
     @classmethod
-    def tearDownClass(self): ...
+    def tearDownClass(self): 
+        settings.convention = "MDY"
 
     def test_parseTodayString(self):
         """
@@ -297,7 +298,6 @@ class TestParsers(unittest.TestCase):
         test validate month and dates and other validation
         """
         original = settings.convention
-
         with self.assertRaises(parsersModule.ParserStringsError):
             Date.from_string("13/1/2023")
         with self.assertRaises(Exception):

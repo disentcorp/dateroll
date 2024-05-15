@@ -135,8 +135,6 @@ def parseDateString(s: str):
         try:
             y, m, d = parseDateString_rearrange(parts)
         except Exception:
-            print('err see conv')
-            import code;code.interact(local=dict(globals(),**locals()))
             raise ParserStringsError("Check settings.convention!")
     else:
         # no slashes or dashes - more restrictive
@@ -246,7 +244,8 @@ def parseManyDateStrings(dates,s, gen):
 
     matches = re.findall(pattern, s)
     res = s
-
+    print('parse dt')
+    import code;code.interact(local=dict(globals(),**locals()))
     for match, _, _, _ in matches:
         # must hav 4 components per match
         # match 0 is 1st capture group = whole thing
@@ -374,8 +373,7 @@ def parseManyDurationString(s, gen):
         
         s = s.replace(duration_string, next_letter, 1)
         durations[next_letter] = duration
-    # print('many dur')
-    # import code;code.interact(local=dict(globals(),**locals()))
+    
     return durations, s
 
 
@@ -473,7 +471,8 @@ def parseTimeString(dates,string,gen):
         s = "00"
     if us=="":
         us = "0"
-    
+    print('in parse time st')
+    import code;code.interact(local=dict(globals(),**locals()))
     parser_string = f"{h}:{min}:{s}.{us}"
     # use mask to convert date into string
     mask = utils.convention_map[settings.convention]
@@ -532,12 +531,11 @@ if __name__=="__main__":
 
     # x = ddh("12h21min22s")
     # x3 = ddh('3d12h21min22s')
-    dur1 = dur.Duration(years=1)
-    dur1 += "1bd"
-
-    dur2 = dur1 + "1bd"
-    # print("finito")
-    # import code;code.interact(local=dict(globals(),**locals()))
+    settings.convention = "YMD"
+    dt.Date.from_string("13/1/20231h10min")
+    settings.convention = "MDY"
+    # ddh('010120231h10min')
+    
 
 
     

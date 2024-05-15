@@ -123,9 +123,7 @@ class TestStringMethods(unittest.TestCase):
         """
         del self.cals["AA"]
         self.cals["AA"] = [datetime.date(2023, 1, 1)]
-        print('in test cal')
-        import code;code.interact(local=dict(globals(),**locals()))
-        self.assertTrue(dateroll.Date(2023, 1, 1).date in self.cals["AA"])
+        self.assertTrue(dateroll.Date(2023, 1, 1) in self.cals["AA"])
         del self.cals["AA"]
         with self.assertRaises(ValueError):
             # when date is before 2/29/1824 will raise error
@@ -335,10 +333,11 @@ class TestStringMethods(unittest.TestCase):
         ds = ddh("02012023,12312023,1bd").list
 
         dset = DateSet(ds)
+        
         self.assertEqual(dset["05012023":], ddh("05012023,12312023,1bd").list)
         self.assertEqual(dset[:"03012023"], ddh("02012023,03012023,1bd").list)
 
-        ds_compare = [l for l in ds if l >= ddh("04012023") and l <= ddh("06012023")]
+        ds_compare = [l for l in ds if l >= ddh("04012023").date and l <= ddh("06012023").date]
         self.assertEqual(dset["04012023":"06012023"], ds_compare)
         self.assertEqual(dset[:], ds)
         self.assertRaises(Exception, dset["05012023":"06012023":"2bd"])

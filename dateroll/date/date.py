@@ -34,6 +34,7 @@ class Date(datetime.datetime):
             raise TypeError(
                 f"from_string requires string, cannot use {type(o).__name__}"
             )
+    
         # dt = parsersModule.parseDateString(o)
         dt = parserModule.parse_to_dateroll(o)
         return Date.from_date(dt) 
@@ -46,9 +47,9 @@ class Date(datetime.datetime):
         """
 
         if isinstance(o,datetime.datetime):
-            return o.astimezone(TZ_PARSER)
+            return Date(o.year,o.month,o.day,o.hour,o.minute,o.second,o.microsecond)
         elif isinstance(o,datetime.date):
-            return datetime.datetime(o.year,o.month,o.day,0,0).astimezone(TZ_PARSER)
+            return Date(o.year,o.month,o.day,0,0)
         else:
             raise TypeError(
                 f"from_date requires datetime.datetime, cannot use {type(o).__name__}"
@@ -71,7 +72,7 @@ class Date(datetime.datetime):
         """
         if not isinstance(o, (int, float)):
             raise TypeError("Must be int/float")
-        dt = datetime.datetime.fromtimestamp(o,datetime.UTC)
+        dt = datetime.datetime.fromtimestamp(o,TZ_PARSER)
         return dt
 
     @staticmethod
@@ -101,7 +102,7 @@ class Date(datetime.datetime):
         Create a Date instance from a unix timestamp
         """
         if isinstance(o, (int, float)):
-            dt = datetime.datetime.fromtimestamp(o,datetime.UTC)
+            dt = datetime.datetime.fromtimestamp(o,TZ_PARSER)
             return dt
         else:
             raise TypeError(
@@ -237,9 +238,9 @@ class Date(datetime.datetime):
             # goes to __rsub__ of Duration
             return Duration(days=o).__rsub__(self)
         elif isinstance(o, datetime.timedelta):
-            return self - o
+            return Date.from_datetime(self.date - o)
         elif isinstance(o, dateutil.relativedelta.relativedelta):
-            return self - o
+            return Date.from_datetime(self.date - o)
         else:
             raise TypeError(
                 f"unsupported operand type(s) for : 'Date' and {type(o).__name__}"

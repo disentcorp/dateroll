@@ -89,7 +89,7 @@ class Schedule:
             dates.append(self.start)
 
         self._dates = sorted(dates)
-
+        self._dates = [d.date for d in self._dates]
     @property
     def cal(self):
         _ = pretty.pretty_between_two_dates(

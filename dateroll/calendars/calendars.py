@@ -29,7 +29,7 @@ SetLike = (list, tuple, set)
 
 def date_check(i):
     if isinstance(i, datetime.datetime):
-        dt = datetime.date(i.year,i.month,i.day)
+        dt = datetime.date(i.year, i.month, i.day)
     elif isinstance(i, datetime.date):
         dt = i
     else:
@@ -132,9 +132,9 @@ class DateSet:
 
     def __contains__(self, item):
         if isinstance(item, dateModule.Date):
-            item = item.datetime
-        if isinstance(item, datetime.date):
-            item = dateModule.Date.from_date(item)
+            item = item.date
+        if isinstance(item, datetime.datetime):
+            item = datetime.date(item.year, item.month, item.day)
         return item in self._data
 
     def extend(self, items):

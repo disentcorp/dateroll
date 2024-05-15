@@ -24,6 +24,7 @@ period_order = (*"yhsqmwd", "cals", "modifier")
 DurationLike = (dateutil.relativedelta, datetime.timedelta)
 WEEKEND_CALENDAR = "WE"
 
+
 APPROX = {
     "1y1d": 14610 / 40,  # exact average length for post 1582AD change
     "1bd1d": 14610 / 40 / 252,  # assuming 252 denominator
@@ -740,7 +741,7 @@ class Duration(dateutil.relativedelta.relativedelta):
     def __ge__(a, b):
         if isinstance(b, int):
             if b == 0:
-                tdy = datetime.datetime.now(datetime.UTC)
+                tdy = dateModule.Date.today()
                 return (tdy + a) >= tdy
 
             b = Duration(days=b)

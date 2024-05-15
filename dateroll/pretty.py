@@ -44,7 +44,7 @@ def pretty_between_two_dates(dt1, dt2, cals, calmath):
         # 1 month cal mode
         for i in range(0, 32):
             try:
-                _ = datetime.datetime(year=y1, month=m1, day=i)
+                _ = datetime.date(year=y1, month=m1, day=i)
                 ishol = not calmath.is_bd(_, cals)
             except Exception:
                 ishol = False

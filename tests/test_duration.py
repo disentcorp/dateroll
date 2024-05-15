@@ -769,9 +769,7 @@ class TestDuration(unittest.TestCase):
         """
         result = ddh("t,t+5y,3m").list
         expected = ddh("t,5y,3m").list
-        result_date = [d.date for d in result]
-        expected_date = [d.date for d in expected]
-        self.assertEqual(result_date, expected_date)
+        self.assertEqual(result, expected)
 
 
 if __name__ == "__main__":
