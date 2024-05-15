@@ -191,7 +191,11 @@ class TestsPracticalExamples(unittest.TestCase):
         """
         test for schedule strings
         """
-        result = ddh("t").datetime
+        try:
+            settings.convention = "YMD"
+            result = ddh("t").datetime
+        finally:
+            settings.convention = "MDY"
         expected = datetime.datetime.now(LOCAL_ZONE)
         
         assert result.date() == expected.date()

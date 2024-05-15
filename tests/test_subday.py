@@ -24,7 +24,7 @@ class TestSubDay(unittest.TestCase):
         x3 = ddh('1m')
         x4 = ddh('1h10m')
         x5 = ddh('3bd1h10min2s20us')
-        x6 = ddh('010120231h10min')
+        x6 = ddh('01012023T1h10min')
         #
         expected1 = durationModule.Duration(years=1, months=2, days=10, h=12, min=21, s=22, us=0, modified=False, bd=5.0, cals="WE")
         expected2 = durationModule.Duration(years=0, months=0, days=0, h=1, min=0, s=0, us=0, modified=False)

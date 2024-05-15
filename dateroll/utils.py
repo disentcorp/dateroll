@@ -168,6 +168,8 @@ def sort_string(string,dates):
         the key of dates={A:datetime,B:datetime2} is in an alphabetical order
         here but string in an alphabetical order when it is not
     """
+
+    string_compare = string
     ordered_string = ""
     for letter in dates.keys():
         ltr_idx = string.find(letter)
@@ -179,13 +181,18 @@ def sort_string(string,dates):
                 ordered_string += letter
             else:
                 ordered_string+=f"+{letter}"
+                string_compare += "+"
         else:
            
             sign = string[ltr_idx-1]
             if not sign in ["+","-"]:
                 ordered_string+=f"+{letter}"
+                string_compare += "+"
             else:
                 ordered_string+=f"{sign}{letter}"
+    
+    if len(ordered_string)!=len(string_compare):
+        raise ParserStringsError("Cannot recognize as date math", string)
     return ordered_string
 
 

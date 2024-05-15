@@ -182,26 +182,42 @@ def parseDateString_rearrange(tup):
 def parseISOformatStrings(s,gen):
     """
         if there is a isoformat eg "2024-05-14T06:59:11.071620", convert into datetime
+        please note "2024-5-14T6h59min11s" is not iso format, so the parsing will ignore
     """
+
+    # to parse iso format yyyy-mm-dd
+    
     dates = {}
     if not "T" in s:
         # not iso format
-        return dates, s
-    y,other = s.split('T')
-    # remove unneccassary strings from other
-    other = other.split('-')[0]
-    other = other.split('+')[0]
-    other = other.split(' ')[0]
+        return dates,s
+    pattern = patterns.ISO_YMD
+    matches = re.findall(pattern, s)
+    time_str = ['h','H','min','MIN','s','S','us','US']
+    for match in matches:
+        # match is a tuple --> (1/1/2023,1,1,2023)
+        matched_str = match[0]
+        # to avoid .split('-') minus problem which might split date, eg 2023-1-1-3bd
+        date_ = matched_str.replace("-","")
+        s = s.replace(matched_str,date_)
 
-    iso = 'T'.join([y,other])
-    try:
-        date = datetime.datetime.fromisoformat(iso)
-    except Exception:
-        raise ValueError(f"iso format is not correct {y}")
-    date = utils.datetime_to_date(date)
-    next_letter = next(gen())
-    dates[next_letter] = date
-    s = s.replace(iso,next_letter)
+    
+    # eg 2024-05-14T06:59:11.071620-03032023+3bd --> [2024-05-14T06:59:11.071620,03032023,3bd]
+    string_splitted = re.split(r"[-+]",s)
+    for iso in string_splitted:
+        if not "T" in iso:
+            continue
+        if any(ts in iso for ts in time_str):
+            continue
+        try:
+            date = datetime.datetime.fromisoformat(iso)
+        except Exception:
+            
+            raise ValueError(f"iso format is not correct {iso}")
+        date = utils.datetime_to_date(date)
+        next_letter = next(gen())
+        dates[next_letter] = date
+        s = s.replace(iso,next_letter)
     
     return dates,s
 
@@ -243,9 +259,10 @@ def parseManyDateStrings(dates,s, gen):
         pattern = patterns.YMD
 
     matches = re.findall(pattern, s)
+    validate_dateMatch(matches,s)
+    # now we can remove T after validation to make parseTimeString work
+    s = s.replace("T","")
     res = s
-    print('parse dt')
-    import code;code.interact(local=dict(globals(),**locals()))
     for match, _, _, _ in matches:
         # must hav 4 components per match
         # match 0 is 1st capture group = whole thing
@@ -374,6 +391,7 @@ def parseManyDurationString(s, gen):
         s = s.replace(duration_string, next_letter, 1)
         durations[next_letter] = duration
     
+    check_operators(durations,s)
     return durations, s
 
 
@@ -400,8 +418,8 @@ def parseScheduleString(s):
         yield letters.pop(0)
 
     # part each part separately
-    dstart, _ = parseManyDateStrings(start, gen)
-    dstop, _ = parseManyDateStrings(stop, gen)
+    dstart, _ = parseManyDateStrings({},start, gen)
+    dstop, _ = parseManyDateStrings({},stop, gen)
     dstep, _ = parseManyDurationString(step, gen)
 
     if any([len(dstart) != 1, len(dstop) != 1, len(dstep) != 1]):
@@ -422,7 +440,7 @@ def parseDateMathString(s, things):
     """
     # to make eval work, add + sign here in the alphabetical order
     
-    # s = "+".join(sorted(s))
+    
     s = utils.sort_string(s,things)
     
     letters_used = re.findall(r"[A-Z]", s)
@@ -442,6 +460,7 @@ def parseDateMathString(s, things):
                 raise ParserStringsError("Cannot recognize as date math", s)
 
     # good case, do the math
+    
     try:
         total = eval(s, {}, things)
         return total
@@ -471,8 +490,7 @@ def parseTimeString(dates,string,gen):
         s = "00"
     if us=="":
         us = "0"
-    print('in parse time st')
-    import code;code.interact(local=dict(globals(),**locals()))
+    
     parser_string = f"{h}:{min}:{s}.{us}"
     # use mask to convert date into string
     mask = utils.convention_map[settings.convention]
@@ -519,6 +537,28 @@ def ensure_today_string(parse_string,today_string):
         is_today_string = False
     return is_today_string
 
+def validate_dateMatch(matches,string):
+    """
+        if string has both date and time eg, 11/1/23T13h it has to have a T
+        to avoid confusion. For instance, 11/1/2313h hard to find the year and hour
+    """
+    string_split = re.split(r"[+-]",string)
+    for match in matches:
+        matched_str = match[0]
+        for str in string_split:
+            str_without_time = str.split('T')[0]
+            # the length of match and str_without_time should be same otherwise
+            # it should raise error
+            if matched_str in str and len(matched_str)!=len(str_without_time):
+                raise ParserStringsError(f"Please check the convention [{settings.convention}] is correct")
+
+def check_operators(dic,s):
+    for key in dic:
+        idx = s.find(key)
+        thing = s[idx-1]
+        if idx>0 and thing not in ['+','-'] and not thing.isalpha():
+            raise TypeError(f"Unknown operator in string {thing}")
+
 if __name__=="__main__":
     from dateroll.ddh.ddh import ddh
     # x = ddh('0304202312h21min22s+3bd')
@@ -531,9 +571,12 @@ if __name__=="__main__":
 
     # x = ddh("12h21min22s")
     # x3 = ddh('3d12h21min22s')
-    settings.convention = "YMD"
-    dt.Date.from_string("13/1/20231h10min")
-    settings.convention = "MDY"
+    import dateroll.parser.parser as parserMod
+    
+    # x = parseDateMathString("A+B", {"A": 4})
+    x = parserMod.Parser.parse_one_part("20240101+3m")
+    # x = ddh('03032023+1bd')
+    print(x)
     # ddh('010120231h10min')
     
 

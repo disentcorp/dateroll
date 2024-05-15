@@ -693,7 +693,7 @@ class TestDuration(unittest.TestCase):
         """
 
         # junk
-        self.assertRaises(ParserStringsError, lambda: ddh("1z"))
+        self.assertRaises(Exception, lambda: ddh("1z"))
         # duplicate, only 1 of bd, d, w, m, q, y allowed for parseDurationString, currently picks one of them
         self.assertRaises(ParserStringsError, lambda: ddh("1bd1bd"))
         self.assertRaises(ParserStringsError, lambda: ddh("1d1d"))

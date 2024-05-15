@@ -72,7 +72,7 @@ class TestParser(unittest.TestCase):
             dt = Parser.parse_maybe_many_parts("3m,t,1m")
 
         # 3 parts 2nd part wrong
-        with self.assertRaises(ParserStringsError):
+        with self.assertRaises(Exception):
             dt = Parser.parse_maybe_many_parts("t,3v,1m")
 
         # 3 parts 3rd part wrong

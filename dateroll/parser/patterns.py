@@ -52,5 +52,9 @@ MICROSECONDS_NUMBER = fr"(?:({INT_PART})({MICROSECONDS_LETTER}))"
 
 COMPLETE_TIME = f"(?:{REPEATING_OPTIONAL_PART}?{HOUR_NUMBER}?{MINUTE_NUMBER}?{SECONDS_NUMBER}?{MICROSECONDS_NUMBER}?)"
 
+# iso date patter before T
+ISO_D = r"\d{1,2}T"
+ISO_YMD = f"(({Y}){_}({M}){_}({ISO_D}))"
+
 if __name__=="__main__":
     ...
