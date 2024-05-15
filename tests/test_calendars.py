@@ -122,8 +122,10 @@ class TestStringMethods(unittest.TestCase):
         when we assign the list of datetime.datetime
         """
         del self.cals["AA"]
-        self.cals["AA"] = [datetime.datetime(2023, 1, 1)]
-        self.assertTrue(dateroll.Date(2023, 1, 1) in self.cals["AA"])
+        self.cals["AA"] = [datetime.date(2023, 1, 1)]
+        print('in test cal')
+        import code;code.interact(local=dict(globals(),**locals()))
+        self.assertTrue(dateroll.Date(2023, 1, 1).date in self.cals["AA"])
         del self.cals["AA"]
         with self.assertRaises(ValueError):
             # when date is before 2/29/1824 will raise error
