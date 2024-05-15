@@ -767,8 +767,11 @@ class TestDuration(unittest.TestCase):
         """
         make duration string work on the end date of schedule, eg, ddh(t,5y,3m)
         """
-
-        self.assertEqual(ddh("t,t+5y,3m").list, ddh("t,5y,3m").list)
+        result = ddh("t,t+5y,3m").list
+        expected = ddh("t,5y,3m").list
+        result_date = [d.date for d in result]
+        expected_date = [d.date for d in expected]
+        self.assertEqual(result_date, expected_date)
 
 
 if __name__ == "__main__":

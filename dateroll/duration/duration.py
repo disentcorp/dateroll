@@ -307,7 +307,7 @@ class Duration(dateutil.relativedelta.relativedelta):
             return self.just_exact_days == o
 
         if isinstance(o, datetime.timedelta):
-            o = dateutil.relativedelta.relativedelta(days=o.days,hours=o.hours,minutes=o.minutes,seconds=o.seconds,microseconds=o.microseconds)
+            o = dateutil.relativedelta.relativedelta(days=o.days)
 
         if isinstance(o, (dateutil.relativedelta.relativedelta, Duration)):
             if self.years == o.years:

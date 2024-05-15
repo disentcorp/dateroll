@@ -85,6 +85,7 @@ class Schedule:
             while cursor > self.start:
                 dates.append(cursor)
                 cursor -= -self.step
+                
             dates.append(self.start)
 
         self._dates = sorted(dates)

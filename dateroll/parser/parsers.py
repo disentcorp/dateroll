@@ -135,6 +135,8 @@ def parseDateString(s: str):
         try:
             y, m, d = parseDateString_rearrange(parts)
         except Exception:
+            print('err see conv')
+            import code;code.interact(local=dict(globals(),**locals()))
             raise ParserStringsError("Check settings.convention!")
     else:
         # no slashes or dashes - more restrictive
@@ -532,7 +534,7 @@ if __name__=="__main__":
     # x3 = ddh('3d12h21min22s')
     dur1 = dur.Duration(years=1)
     dur1 += "1bd"
-   
+
     dur2 = dur1 + "1bd"
     # print("finito")
     # import code;code.interact(local=dict(globals(),**locals()))

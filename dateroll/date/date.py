@@ -6,6 +6,7 @@ from tzlocal import get_localzone
 
 import dateroll.ddh.ddh as ddhModule
 import dateroll.parser.parsers as parsersModule
+import dateroll.parser.parser as parserModule
 from dateroll import pretty
 from dateroll.calendars.calendarmath import calmath
 from dateroll.duration.duration import Duration
@@ -33,9 +34,9 @@ class Date(datetime.datetime):
             raise TypeError(
                 f"from_string requires string, cannot use {type(o).__name__}"
             )
-
-        dt = parsersModule.parseDateString(o)
-        return Date.from_date(dt)
+        # dt = parsersModule.parseDateString(o)
+        dt = parserModule.parse_to_dateroll(o)
+        return Date.from_date(dt) 
 
 
     @staticmethod
@@ -162,7 +163,7 @@ class Date(datetime.datetime):
 
     @property
     def iso(self):
-        return self.isoformat().split("T")[0]
+        return self.isoformat()
 
     def __add__(self, o):
         """
