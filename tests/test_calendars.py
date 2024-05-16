@@ -333,18 +333,20 @@ class TestStringMethods(unittest.TestCase):
         ds = ddh("02012023,12312023,1bd").list
 
         dset = DateSet(ds)
-        
-        self.assertEqual(dset["05012023":], ddh("05012023,12312023,1bd").list)
-        self.assertEqual(dset[:"03012023"], ddh("02012023,03012023,1bd").list)
+        rs1 = [d.date for d in ddh("05012023,12312023,1bd").list]
+        rs2 = [d.date for d in ddh("02012023,03012023,1bd").list]
+        self.assertEqual(dset["05012023":], rs1)
+        self.assertEqual(dset[:"03012023"], rs2)
 
-        ds_compare = [l for l in ds if l >= ddh("04012023").date and l <= ddh("06012023").date]
+        ds_compare = [l.date for l in ds if l >= ddh("04012023") and l <= ddh("06012023")]
         self.assertEqual(dset["04012023":"06012023"], ds_compare)
+        ds = [d.date for d in ds]
         self.assertEqual(dset[:], ds)
         self.assertRaises(Exception, dset["05012023":"06012023":"2bd"])
         with self.assertRaises(TypeError):
             dset[10]
-
-        self.assertEqual(dset[ddh("05012023") :], ddh("05012023,12312023,1bd").list)
+        rs3 = [d.date for d in ddh("05012023,12312023,1bd").list]
+        self.assertEqual(dset[ddh("05012023").date :], rs3)
         with self.assertRaises(Exception):
             dset[10:]
         # when step is not None

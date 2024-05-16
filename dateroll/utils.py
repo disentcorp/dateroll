@@ -1,5 +1,6 @@
 import calendar
 import re
+import datetime
 
 import dateroll.date.date as dateModule
 import dateroll.ddh.ddh as ddhModule
@@ -138,9 +139,9 @@ convention_map = {"YMD": r"%Y-%m-%d", "DMY": r"%d/%m/%Y", "MDY": r"%m/%d/%Y"}
 
 def str_or_date(s):
     if isinstance(s, str):
-        d = ddhModule.ddh(s).date
+        d = ddhModule.ddh(s)
     elif isinstance(s, dateModule.DateLike):
-        d = dateModule.Date.from_datetime(s).date
+        d = dateModule.Date.from_datetime(s)
     else:
         raise Exception("Slicing only supports dateroll datestrings")
     return d
@@ -168,12 +169,13 @@ def sort_string(string,dates):
         the key of dates={A:datetime,B:datetime2} is in an alphabetical order
         here but string in an alphabetical order when it is not
     """
-
+    string = string.replace(" ","")
     string_compare = string
     ordered_string = ""
     for letter in dates.keys():
         ltr_idx = string.find(letter)
         if ltr_idx==-1:
+            
             raise ParserStringsError("Cannot recognize as date math", string)
         if ltr_idx==0:
             # first alphabet
@@ -192,6 +194,7 @@ def sort_string(string,dates):
                 ordered_string+=f"{sign}{letter}"
     
     if len(ordered_string)!=len(string_compare):
+        
         raise ParserStringsError("Cannot recognize as date math", string)
     return ordered_string
 
@@ -207,20 +210,24 @@ def date_slice(s: slice, list_: list):
     if start is not None and stop is None and step is None:
         # after
         start = str_or_date(start)
-        try:
-            [i for i in list_ if i >= start]
-        except:
-            print('err date slice')
-            import code;code.interact(local=dict(globals(),**locals()))
+        
+        if all(not isinstance(d,dateModule.Date) for d in list_):
+            start = start.date
         return [i for i in list_ if i >= start]
     elif start is None and stop is not None and step is None:
         # before
         stop = str_or_date(stop)
+        if all(not isinstance(d,dateModule.Date) for d in list_):
+            stop = stop.date
         return [i for i in list_ if i <= stop]
     elif start is not None and stop is not None:
         # between
         start = str_or_date(start)
         stop = str_or_date(stop)
+        if all(not isinstance(d,dateModule.Date) for d in list_):
+            start = start.date
+            stop = stop.date
+       
         return [i for i in list_ if i >= start and i <= stop]
     elif start is None and stop is None and step is None:
         # all

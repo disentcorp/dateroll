@@ -24,6 +24,7 @@ def pretty_between_two_dates(dt1, dt2, cals, calmath):
         color start/end days as blue
         color holidays/weekends as grey
     """
+    
     if dt2 > dt1:
         _1, _2 = dt1, dt2
     else:

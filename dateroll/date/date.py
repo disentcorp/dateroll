@@ -273,9 +273,11 @@ class Date(datetime.datetime):
 
     @property
     def cal(self):
+        
         if hasattr(self, "origin_dur_date"):
+            
             pretty_calendars = pretty.pretty_between_two_dates(
-                self.date, self.origin_dur_date, self.origin_dur_cals, calmath
+                self.date, self.origin_dur_date.date, self.origin_dur_cals, calmath
             )
             print(pretty_calendars)
         else:

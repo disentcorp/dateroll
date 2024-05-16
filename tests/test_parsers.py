@@ -1,6 +1,7 @@
 import datetime
 import unittest
 
+import dateroll
 import dateroll.parser.parsers as parsersModule
 from dateroll.date.date import Date
 from dateroll.ddh.ddh import ddh
@@ -314,7 +315,7 @@ class TestParsers(unittest.TestCase):
         mdy = "01/10/2020"
         # MDY
         settings.convention = "YMD"
-        with self.assertRaises(parsersModule.ParserStringsError):
+        with self.assertRaises(dateroll.utils.ParserStringsError):
             Date.from_string(mdy)
         settings.convention = original
 

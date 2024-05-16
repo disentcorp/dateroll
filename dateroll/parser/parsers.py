@@ -12,6 +12,8 @@ from dateroll.parser import patterns
 from dateroll.schedule.schedule import Schedule
 from dateroll.settings import settings
 
+import code
+
 TZ_DISPLAY = get_localzone() if settings.tz_display=="System" else ZoneInfo(settings.tz_display)
 
 TODAYSTRINGVALUES = ["today", "t0", "t"]
@@ -94,6 +96,7 @@ def parseTodayString(s):
     for t in TODAYSTRINGVALUES:
         # search order matters in TODAYSTRINGVALUES
         if t in s:
+            
             is_today_string = ensure_today_string(s,t)
             if is_today_string:
                 return s.replace(t, today_iso)
@@ -259,6 +262,7 @@ def parseManyDateStrings(dates,s, gen):
         pattern = patterns.YMD
 
     matches = re.findall(pattern, s)
+    
     validate_dateMatch(matches,s)
     # now we can remove T after validation to make parseTimeString work
     s = s.replace("T","")
@@ -474,56 +478,50 @@ def parseTimeString(dates,string,gen):
         s or S as a seconds
         us or US as a microseconds
     """
-    if string=="":
-        return dates,string
     
-    result = re.findall(patterns.COMPLETE_TIME,string)[0]
-    replace_string = ''.join(result)
-    if all(x=="" for x in result) and len(string)!="":
-        return dates,string
-    h,min,s,us = result[0],result[2],result[4],result[6]
-    if h=="":
-        h = "00"
-    if min=="":
-        min = "00"
-    if s=="":
-        s = "00"
-    if us=="":
-        us = "0"
-    
-    parser_string = f"{h}:{min}:{s}.{us}"
-    # use mask to convert date into string
+    matches = re.findall(patterns.COMPLETE_TIME,string)
     mask = utils.convention_map[settings.convention]
-    if len(dates)==0:
-        # if date is not given, eg 12h21min it should return duration
-        t = datetime.date.today()
-        # date is temporariry used in dateutil parse to get date duration of time
-        date = dt.Date(t.year,t.month,t.day)
-        date_str = date.date.strftime(mask)
-        d = dateutil.parser.parse(f"{date_str} {parser_string}")
+    # date is temporariry used in dateutil parse to get date duration of time
+    t = datetime.date.today()
+    date = dt.Date(t.year,t.month,t.day)
+    date_str = date.date.strftime(mask)
+    
+    
+    for match in matches:
+        match = [e.lower() for e in match]
+        if 'h' not in match:
+            h = "00"
+        if 'min' not in match:
+            min = "00"
+        if "s" not in match:
+            s = "00"
+        if "us" not in match:
+            us = "0"
+        
+        for i in range(3,len(match),2):
+            v = match[i-1]
+            if match[i]=='h':
+                h = v
+            elif match[i]=='min':
+                min = v
+            elif match[i]=='s':
+                s = v
+            elif match[i]=='us':
+                us = v
+        parser_string = f"{h}:{min}:{s}.{us}"
+        try:
+            # use dateutil to validate time string
+            d = dateutil.parser.parse(f"{date_str} {parser_string}")
+        except Exception as e:
+            raise ParserStringsError(f"{e}")
+        replace_string = ''.join(match[2:])
         duration = dur.Duration(h=d.hour,min=d.minute,s=d.second,us=d.microsecond)
         key = next(gen())
-        if key!='A':
-            key = f'+{key}'
         dates[key] = duration
-        
-    else:
-        # when there is date in the string eg 03032023 12h21min
-        date = list(dates.values())[0]
-        date_str = date.date.strftime(mask)
-        d = dateutil.parser.parse(f"{date_str} {parser_string}")
-        new_date = dt.Date(d.year,d.month,d.day,d.hour,d.minute,d.second,d.microsecond)
-        key = list(dates.keys())[0]
-        dates[key] = new_date
-    if key in string:
-        
-        new_string = string.replace(replace_string,"")
-    else:
-        # when there is no date, eg ddh(3h+3bd) we should replace time string by 
-        # the key letter to make it work with parseDateMathString function
-        new_string = string.replace(replace_string,key)
+        string = string.replace(replace_string,key,1)
+   
     
-    return dates,new_string
+    return dates,string
 
 def ensure_today_string(parse_string,today_string):
     """
@@ -533,7 +531,8 @@ def ensure_today_string(parse_string,today_string):
 
     is_today_string = True
     t_idx = parse_string.find(today_string)
-    if t_idx>0 and today_string[t_idx-1] not in ["+","-"," "]:
+    
+    if t_idx>0 and parse_string[t_idx-1] not in ["+","-"," "]:
         is_today_string = False
     return is_today_string
 
@@ -542,15 +541,11 @@ def validate_dateMatch(matches,string):
         if string has both date and time eg, 11/1/23T13h it has to have a T
         to avoid confusion. For instance, 11/1/2313h hard to find the year and hour
     """
-    string_split = re.split(r"[+-]",string)
-    for match in matches:
-        matched_str = match[0]
-        for str in string_split:
-            str_without_time = str.split('T')[0]
-            # the length of match and str_without_time should be same otherwise
-            # it should raise error
-            if matched_str in str and len(matched_str)!=len(str_without_time):
-                raise ParserStringsError(f"Please check the convention [{settings.convention}] is correct")
+    if matches:
+        time_match = re.findall(r"min|MIN|us|US|[hHsS]",string)
+        if time_match:
+            raise ValueError(f"parsing string format is wrong {string}, date and time format should be ISO 8601")
+    
 
 def check_operators(dic,s):
     for key in dic:
@@ -574,8 +569,10 @@ if __name__=="__main__":
     import dateroll.parser.parser as parserMod
     
     # x = parseDateMathString("A+B", {"A": 4})
-    x = parserMod.Parser.parse_one_part("20240101+3m")
-    # x = ddh('03032023+1bd')
+    # x = parserMod.Parser.parse_one_part("20240101+3m")
+    # x = ddh('1bd+1d+1h+3min-4s')
+    # x = ddh('1US')
+    x = ddh("10/9/22 - 5/5/24")
     print(x)
     # ddh('010120231h10min')
     

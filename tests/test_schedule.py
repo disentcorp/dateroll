@@ -11,7 +11,8 @@ from dateroll.ddh.ddh import ddh
 from dateroll.duration.duration import Duration
 from dateroll.schedule.schedule import Schedule
 from dateroll.settings import settings
-
+import dateroll
+import code
 
 class TestSchedule(unittest.TestCase):
     @classmethod
@@ -31,33 +32,35 @@ class TestSchedule(unittest.TestCase):
         sch = Schedule(start, stop, step)
         dts = sch.dates
         # convert into datetime
-        dts = [d.datetime for d in dts]
+        dts = [d.date for d in dts]
         expected = [
-            datetime.datetime(2023, 1, 1, 0, 0),
-            datetime.datetime(2023, 1, 2, 0, 0),
-            datetime.datetime(2023, 1, 3, 0, 0),
-            datetime.datetime(2023, 1, 4, 0, 0),
-            datetime.datetime(2023, 1, 5, 0, 0),
-            datetime.datetime(2023, 1, 6, 0, 0),
-            datetime.datetime(2023, 1, 9, 0, 0),
-            datetime.datetime(2023, 1, 10, 0, 0),
-            datetime.datetime(2023, 1, 11, 0, 0),
-            datetime.datetime(2023, 1, 12, 0, 0),
-            datetime.datetime(2023, 1, 13, 0, 0),
-            datetime.datetime(2023, 1, 16, 0, 0),
-            datetime.datetime(2023, 1, 17, 0, 0),
-            datetime.datetime(2023, 1, 18, 0, 0),
-            datetime.datetime(2023, 1, 19, 0, 0),
-            datetime.datetime(2023, 1, 20, 0, 0),
-            datetime.datetime(2023, 1, 23, 0, 0),
-            datetime.datetime(2023, 1, 24, 0, 0),
-            datetime.datetime(2023, 1, 25, 0, 0),
-            datetime.datetime(2023, 1, 26, 0, 0),
-            datetime.datetime(2023, 1, 27, 0, 0),
-            datetime.datetime(2023, 1, 30, 0, 0),
-            datetime.datetime(2023, 1, 31, 0, 0),
-            datetime.datetime(2023, 2, 1, 0, 0),
+            datetime.date(2023, 1, 1),
+            datetime.date(2023, 1, 2),
+            datetime.date(2023, 1, 3),
+            datetime.date(2023, 1, 4),
+            datetime.date(2023, 1, 5),
+            datetime.date(2023, 1, 6),
+            datetime.date(2023, 1, 9),
+            datetime.date(2023, 1, 10),
+            datetime.date(2023, 1, 11),
+            datetime.date(2023, 1, 12),
+            datetime.date(2023, 1, 13),
+            datetime.date(2023, 1, 16),
+            datetime.date(2023, 1, 17),
+            datetime.date(2023, 1, 18),
+            datetime.date(2023, 1, 19),
+            datetime.date(2023, 1, 20),
+            datetime.date(2023, 1, 23),
+            datetime.date(2023, 1, 24),
+            datetime.date(2023, 1, 25),
+            datetime.date(2023, 1, 26),
+            datetime.date(2023, 1, 27),
+            datetime.date(2023, 1, 30),
+            datetime.date(2023, 1, 31),
+            datetime.date(2023, 2, 1),
         ]
+        
+        
         self.assertEqual(dts, expected)
         settings.convention = "MDY"
         Ssch = Schedule.from_string("01012023,02012023,1bd")
@@ -73,32 +76,32 @@ class TestSchedule(unittest.TestCase):
         sch = Schedule(start, stop, step)
         dts = sch.dates
         # convert into datetime
-        dts = [d.datetime for d in dts]
+        dts = [d.date for d in dts]
         expected = [
-            datetime.datetime(2023, 1, 1, 0, 0),
-            datetime.datetime(2023, 1, 2, 0, 0),
-            datetime.datetime(2023, 1, 3, 0, 0),
-            datetime.datetime(2023, 1, 4, 0, 0),
-            datetime.datetime(2023, 1, 5, 0, 0),
-            datetime.datetime(2023, 1, 6, 0, 0),
-            datetime.datetime(2023, 1, 9, 0, 0),
-            datetime.datetime(2023, 1, 10, 0, 0),
-            datetime.datetime(2023, 1, 11, 0, 0),
-            datetime.datetime(2023, 1, 12, 0, 0),
-            datetime.datetime(2023, 1, 13, 0, 0),
-            datetime.datetime(2023, 1, 16, 0, 0),
-            datetime.datetime(2023, 1, 17, 0, 0),
-            datetime.datetime(2023, 1, 18, 0, 0),
-            datetime.datetime(2023, 1, 19, 0, 0),
-            datetime.datetime(2023, 1, 20, 0, 0),
-            datetime.datetime(2023, 1, 23, 0, 0),
-            datetime.datetime(2023, 1, 24, 0, 0),
-            datetime.datetime(2023, 1, 25, 0, 0),
-            datetime.datetime(2023, 1, 26, 0, 0),
-            datetime.datetime(2023, 1, 27, 0, 0),
-            datetime.datetime(2023, 1, 30, 0, 0),
-            datetime.datetime(2023, 1, 31, 0, 0),
-            datetime.datetime(2023, 2, 1, 0, 0),
+            datetime.date(2023, 1, 1),
+            datetime.date(2023, 1, 2),
+            datetime.date(2023, 1, 3),
+            datetime.date(2023, 1, 4),
+            datetime.date(2023, 1, 5),
+            datetime.date(2023, 1, 6),
+            datetime.date(2023, 1, 9),
+            datetime.date(2023, 1, 10),
+            datetime.date(2023, 1, 11),
+            datetime.date(2023, 1, 12),
+            datetime.date(2023, 1, 13),
+            datetime.date(2023, 1, 16),
+            datetime.date(2023, 1, 17),
+            datetime.date(2023, 1, 18),
+            datetime.date(2023, 1, 19),
+            datetime.date(2023, 1, 20),
+            datetime.date(2023, 1, 23),
+            datetime.date(2023, 1, 24),
+            datetime.date(2023, 1, 25),
+            datetime.date(2023, 1, 26),
+            datetime.date(2023, 1, 27),
+            datetime.date(2023, 1, 30),
+            datetime.date(2023, 1, 31),
+            datetime.date(2023, 2, 1),
         ]
 
         self.assertEqual(dts, expected)
@@ -106,7 +109,7 @@ class TestSchedule(unittest.TestCase):
         settings.convention = "MDY"
         ssch = Schedule.from_string("01012023,02012023,-1bd")
         sdts = ssch.dates
-        sdts = [d.datetime for d in sdts]
+        sdts = [d.date for d in sdts]
         self.assertEqual(sdts, expected)
 
     def test_cal(self):
@@ -168,7 +171,7 @@ class TestSchedule(unittest.TestCase):
         start = df.loc[0, "start"]
         stop = df.loc[0, "stop"]
         step = df.loc[0, "step"]
-        self.assertEqual(stop, start + ddh(step))
+        self.assertEqual(stop, (start + ddh(step)).date)
         settings.convention = "MDY"
         Ssch = Schedule.from_string("01012023,02012023,3bd")
         self.assertTrue(df.equals(Ssch.split))
@@ -183,7 +186,7 @@ class TestSchedule(unittest.TestCase):
         starts = [i for i in df["starts"] if i is not None]
         ends = [i for i in df["ends"] if i is not None]
         days = [i for i in df["days"] if i is not None]
-        ends_expected = [start + Duration(days=day) for start, day in zip(starts, days)]
+        ends_expected = [(start + Duration(days=day)).date for start, day in zip(starts, days)]
         self.assertEqual(ends, ends_expected)
         settings.convention = "MDY"
         Ssch = Schedule.from_string("01012023,02012023,3bd")
@@ -212,7 +215,7 @@ class TestSchedule(unittest.TestCase):
         # bad start
         self.assertRaises(TypeError, lambda: ddh("3m,t+5y,1m"))
         # bad stop
-        self.assertRaises(ParserStringsError, lambda: ddh("t,5v,1m"))
+        self.assertRaises(dateroll.utils.ParserStringsError, lambda: ddh("t,5v,1m"))
         # bad end
         self.assertRaises(TypeError, lambda: ddh("t,t+5y,t"))
     

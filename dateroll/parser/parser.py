@@ -128,6 +128,13 @@ class Parser:
         )
 
         dates_durations = {**dates, **durations}
+        # try:
+        #     parsersModule.parseDateMathString(
+        #     nodatesordurations, dates_durations
+        # )
+        # except:
+        #     print('err')
+        #     import code; code.interact(local=dict(globals(),**locals()))
         processed_answer = parsersModule.parseDateMathString(
             nodatesordurations, dates_durations
         )

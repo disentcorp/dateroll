@@ -63,8 +63,8 @@ class TestParser(unittest.TestCase):
 
         # 3 parts - valid schedule generation
         dts = Parser.parse_maybe_many_parts("20240101,20240201,1bd")
-        self.assertEqual(dts.dates[0], Date(2024, 1, 1).date)
-        self.assertEqual(dts.dates[-1], Date(2024, 2, 1).date)
+        self.assertEqual(dts.dates[0], Date(2024, 1, 1))
+        self.assertEqual(dts.dates[-1], Date(2024, 2, 1))
         self.assertEqual(len(dts), 24)
 
         # 3 parts 1st part wrong

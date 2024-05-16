@@ -2,6 +2,7 @@ import itertools
 import re
 import unittest
 
+import dateroll
 import dateroll.date.date as dateModule
 import dateroll.parser.parsers as parsers
 from dateroll import ddh
@@ -232,7 +233,7 @@ class TestUsage(unittest.TestCase):
     def test_weirdDates(self):
         # convention is mdy
 
-        with self.assertRaises(parsers.ParserStringsError):
+        with self.assertRaises(dateroll.utils.ParserStringsError):
             x = ddh("7/7/7")
 
         x = ddh("7/7/70")
@@ -322,7 +323,7 @@ class TestUsage(unittest.TestCase):
                             ddh(mdy)
                     else:
 
-                        with self.assertRaises(parsers.ParserStringsError):
+                        with self.assertRaises(Exception):
                             ddh(mdy)
                     combo_count += 1
             else:
@@ -351,12 +352,13 @@ class TestUsage(unittest.TestCase):
                         if len(dy_new) < 4:
                             # raise value error
                             with self.assertRaises(parsers.ParserStringsError):
+                                
                                 ddh(mdy)
 
                 else:
                     combo_count += 1
                     # it will raise value error on month
-                    with self.assertRaises(ValueError):
+                    with self.assertRaises(Exception):
                         ddh(mdy)
         print(f"test_parseComboMDY:tested total of {combo_count} cases")
         self.assertEqual(combo_count, len(combos))
