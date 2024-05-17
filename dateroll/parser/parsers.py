@@ -331,7 +331,7 @@ def parseDurationString_convert_capture_groups(capture_groups: tuple):
     if "bd" not in duration_constructor_args and "BD" not in duration_constructor_args:
         if modified or len(cals) > 0:
             duration_constructor_args["bd"] = float(0.0) * mult
-
+    
     duration = dur.Duration(**duration_constructor_args)
     return duration
 
@@ -389,15 +389,22 @@ def parseManyDurationString(s, gen):
     """
     durations = {}
     matches = re.findall(patterns.COMPLETE_DURATION, s)
-    
+    print('in dur0')
+    import code;code.interact(local=dict(globals(),**locals()))
     for idx, match in enumerate(matches):
+        # duration_string = ''.join(match[2:])
         duration_string = match[0]
+        # print('in dur1')
+        # import code;code.interact(local=dict(globals(),**locals()))
         duration = parseDurationString(duration_string)
+        # print('in dur2')
+        # import code;code.interact(local=dict(globals(),**locals()))
         next_letter = next(gen())
-        
-        s = s.replace(duration_string, next_letter, 1)
+        replace_string = re.sub(r"[+-]","",duration_string)
+        s = s.replace(replace_string, next_letter, 1)
         durations[next_letter] = duration
-    
+    print('in dur')
+    import code;code.interact(local=dict(globals(),**locals()))
     check_operators(durations,s)
     return durations, s
 
@@ -474,65 +481,61 @@ def parseDateMathString(s, things):
     except Exception:
         raise ParserStringsError("Cannot recognize as date math", s)
 
-def parseTimeString0(dates,string,gen):
-    """
-        time string needs to have h or H as a hour, 
-        min or Min as minute
-        s or S as a seconds
-        us or US as a microseconds
-    """
+# def parseTimeString0(dates,string,gen):
+#     """
+#         time string needs to have h or H as a hour, 
+#         min or Min as minute
+#         s or S as a seconds
+#         us or US as a microseconds
+#     """
     
-    matches = re.findall(patterns.COMPLETE_TIME,string)
+#     matches = re.findall(patterns.COMPLETE_TIME,string)
     
-    mask = utils.convention_map[settings.convention]
-    # date is temporariry used in dateutil parse to get date duration of time
-    t = datetime.date.today()
-    date = dt.Date(t.year,t.month,t.day)
-    date_str = date.date.strftime(mask)
+#     mask = utils.convention_map[settings.convention]
+#     # date is temporariry used in dateutil parse to get date duration of time
+#     t = datetime.date.today()
+#     date = dt.Date(t.year,t.month,t.day)
+#     date_str = date.date.strftime(mask)
     
     
-    for match in matches:
-        match = [e.lower() for e in match]
-        if 'h' not in match:
-            h = "00"
-        if 'min' not in match:
-            min = "00"
-        if "s" not in match:
-            s = "00"
-        if "us" not in match:
-            us = "0"
+#     for match in matches:
+#         match = [e.lower() for e in match]
+#         if 'h' not in match:
+#             h = "00"
+#         if 'min' not in match:
+#             min = "00"
+#         if "s" not in match:
+#             s = "00"
+#         if "us" not in match:
+#             us = "0"
         
-        for i in range(3,len(match),2):
-            v = match[i-1]
-            if match[i]=='h':
-                h = v
-            elif match[i]=='min':
-                min = v
-            elif match[i]=='s':
-                s = v
-            elif match[i]=='us':
-                us = v
-        # parser_string = f"{h}:{min}:{s}.{us}"
-        # try:
-        #     # use dateutil to validate time string
-        #     d = dateutil.parser.parse(f"{date_str} {parser_string}")
-        # except Exception as e:
-        #     raise ParserStringsError(f"{e}")
-        replace_string = ''.join(match[2:])
-        key = next(gen())
+#         for i in range(3,len(match),2):
+#             v = match[i-1]
+#             if match[i]=='h':
+#                 h = v
+#             elif match[i]=='min':
+#                 min = v
+#             elif match[i]=='s':
+#                 s = v
+#             elif match[i]=='us':
+#                 us = v
+#         # parser_string = f"{h}:{min}:{s}.{us}"
+#         # try:
+#         #     # use dateutil to validate time string
+#         #     d = dateutil.parser.parse(f"{date_str} {parser_string}")
+#         # except Exception as e:
+#         #     raise ParserStringsError(f"{e}")
+#         replace_string = ''.join(match[2:])
+#         key = next(gen())
         
-        # duration = dur.Duration(h=d.hour,min=d.minute,s=d.second,us=d.microsecond)
-        try:
-            dur.Duration(h=h,min=min,s=s,us=us)
-        except:
-            print('err')
-            import code;code.interact(local=dict(globals(),**locals()))
-        duration = dur.Duration(h=h,min=min,s=s,us=us)
-        dates[key] = duration
-        string = string.replace(replace_string,key,1)
-    print('herr')
-    import code;code.interact(local=dict(globals(),**locals()))
-    return dates,string
+#         # duration = dur.Duration(h=d.hour,min=d.minute,s=d.second,us=d.microsecond)
+        
+#         duration = dur.Duration(h=h,min=min,s=s,us=us)
+#         dates[key] = duration
+#         string = string.replace(replace_string,key,1)
+#     print('herr')
+#     import code;code.interact(local=dict(globals(),**locals()))
+#     return dates,string
 
 def parseTimeString(dates,string,gen):
     """
@@ -541,15 +544,10 @@ def parseTimeString(dates,string,gen):
         s or S as a seconds
         us or US as a microseconds
     """
-    
+    string = re.sub(r"\s+", "",string)
     matches = re.findall(patterns.COMPLETE_TIME,string)
     
-    mask = utils.convention_map[settings.convention]
-    # date is temporariry used in dateutil parse to get date duration of time
-    t = datetime.date.today()
-    date = dt.Date(t.year,t.month,t.day)
-    date_str = date.date.strftime(mask)
-    
+    orig_s = string
     
     for match in matches:
         match = [e.lower() for e in match]
@@ -574,19 +572,21 @@ def parseTimeString(dates,string,gen):
                 us = int(v)
         
         replace_string = ''.join(match[2:])
+        sign_ = match[1]
+        
         key = next(gen())
         
         # duration = dur.Duration(h=d.hour,min=d.minute,s=d.second,us=d.microsecond)
-        try:
-            dur.Duration(h=h,min=min,s=s,us=us)
-        except:
-            print('err')
-            import code;code.interact(local=dict(globals(),**locals()))
+        
         duration = dur.Duration(h=h,min=min,s=s,us=us)
         dates[key] = duration
+        first_idx_of_the_replace_string = orig_s.find(replace_string)
+        if first_idx_of_the_replace_string>0 and sign_=='-' and orig_s[first_idx_of_the_replace_string-1]!=sign_:
+            # ddh(3bd-1y23s) needs to assign - sign on the time part eg second in this case
+            key = f"{sign_}{key}"
         string = string.replace(replace_string,key,1)
-    # print('herr')
-    # import code;code.interact(local=dict(globals(),**locals()))
+    print('herr')
+    import code;code.interact(local=dict(globals(),**locals()))
     return dates,string
 
 def ensure_today_string(parse_string,today_string):
@@ -640,9 +640,11 @@ if __name__=="__main__":
     # x = ddh('1US')
     # x = ddh("10/9/22 - 5/5/24")
     # x = ddh("6bd-3min+4min+1h")
-    x = ddh('3d+10d-19d+3min-6min+7min-9s+20000s-1h')
+    # x = ddh('3d+10d-19d+3min-6min+7min-9s+20000s-1h')
+    x = ddh('3y15s-10y3bd5s23min|WEuNY/MOD')
+    # x = ddh('t+2bd|WEuNY')
     print(x)
-    import code;code.interact(local=dict(globals(),**locals()))
+    # import code;code.interact(local=dict(globals(),**locals()))
     # ddh('010120231h10min')
     
 

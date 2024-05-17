@@ -213,6 +213,7 @@ def sort_string(string,dates):
     if len(ordered_string)!=len(string_compare):
         
         raise ParserStringsError("Cannot recognize as date math", string)
+    
     if ordered_string[0]=="-":
         # we need to change the sign of the duration which was not applied 
         first_letter = ordered_string[1]
@@ -229,6 +230,7 @@ def sort_string(string,dates):
             us = -1 * dur.us
         )
         dates[first_letter] = dur_new
+    
     return ordered_string,dates
 
 
