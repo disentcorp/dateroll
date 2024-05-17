@@ -3,6 +3,7 @@ import re
 import datetime
 
 import dateroll.date.date as dateModule
+import dateroll.duration.duration as durationModule
 import dateroll.ddh.ddh as ddhModule
 # from dateroll.date import date as dateModule
 # from dateroll.ddh import ddh as ddhModule
@@ -164,6 +165,22 @@ def date_to_date(date):
     disent_date = dateModule.Date(date.year,date.month,date.day)
     return disent_date
 
+# def sort_string(string,dates,gen):
+#     """
+#         assign the correct signing eg + - to the letter
+#         and put the correct alphabet to the order eg c-a+b should be a-b+c
+#         while changing the letter, we also change the key of dictionaries
+#     """
+
+#     string = string.replace(" ","")
+#     letters = re.findall(r"[a-zA-Z]",string)
+#     for letter in letters:
+#         ltr_idx = string.find(letter)
+#         if ltr_idx==-1:
+#             raise ParserStringsError("Cannot recognize as date math", string)
+        
+
+
 def sort_string(string,dates):
     """
         the key of dates={A:datetime,B:datetime2} is in an alphabetical order
@@ -196,7 +213,23 @@ def sort_string(string,dates):
     if len(ordered_string)!=len(string_compare):
         
         raise ParserStringsError("Cannot recognize as date math", string)
-    return ordered_string
+    if ordered_string[0]=="-":
+        # we need to change the sign of the duration which was not applied 
+        first_letter = ordered_string[1]
+        dur = dates[first_letter]
+        bd = -1 * dur.bd if dur.bd is not None else None
+        dur_new = durationModule.Duration(
+            y = -1 * dur.y,
+            m = -1 * dur.m,
+            d = -1 * dur.d,
+            bd = bd,
+            h = -1 * dur.h,
+            min = -1 * dur.min,
+            s = -1 * dur.s,
+            us = -1 * dur.us
+        )
+        dates[first_letter] = dur_new
+    return ordered_string,dates
 
 
 def date_slice(s: slice, list_: list):

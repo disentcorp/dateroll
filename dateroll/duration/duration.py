@@ -468,7 +468,7 @@ class Duration(dateutil.relativedelta.relativedelta):
             min = a.min + b.min * direction
             s = a.s + b.s * direction
             us = a.us + b.us * direction
-
+            
             # bd adjustments w/o MOD
             bd = add_none(a.bd, b.bd, direction)  # none or add
             cals = combine_none(a.cals, b.cals)  # union
@@ -509,7 +509,7 @@ class Duration(dateutil.relativedelta.relativedelta):
             dur.min += b.minutes
             dur.s += b.seconds
             dur.us += b.microseconds
-
+            
             return dur
 
         elif isinstance(b, dateModule.DateLike):
@@ -666,6 +666,7 @@ class Duration(dateutil.relativedelta.relativedelta):
 
     def __radd__(self, x):
         xprint(type(x), "radd") if self.debug else None
+        
         return self.math(x, 1)
 
     def __rsub__(self, x):
@@ -675,6 +676,7 @@ class Duration(dateutil.relativedelta.relativedelta):
 
     def __add__(self, x):
         xprint(type(x), "add") if self.debug else None
+        
         return self.math(x, 1)
 
     def __sub__(self, x):

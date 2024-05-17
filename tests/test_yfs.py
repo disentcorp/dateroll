@@ -18,24 +18,24 @@ def unit_tester(x1,x2,dic):
     """
     act360_1 = yfs.dc_ACT360(x1,x2,"")
     
-    expected_360 = dic[f"{x1.to_string().split(" ")[0]}:{x2.to_string().split(" ")[0]}:ACT/360"]
+    expected_360 = dic[f"{x1.to_string().split(' ')[0]}:{x2.to_string().split(' ')[0]}:ACT/360"]
     # when passing None will call ACT365
     act365_1 = (x2-x1).yf(None)
     
-    expected_365 = dic[f"{x1.to_string().split(" ")[0]}:{x2.to_string().split(" ")[0]}:ACT/365"]
+    expected_365 = dic[f"{x1.to_string().split(' ')[0]}:{x2.to_string().split(' ')[0]}:ACT/365"]
     
     eur360 = (x2-x1).yf("30E/360")
     
-    expected_e360 = dic[f"{x1.to_string().split(" ")[0]}:{x2.to_string().split(" ")[0]}:30E360"]
+    expected_e360 = dic[f"{x1.to_string().split(' ')[0]}:{x2.to_string().split(' ')[0]}:30E360"]
     
     # ie=(]
     ddh.settings.ie = "(]"
     bd_1 = yfs.dc_BD252(x1,x2,cals="BRuWE")
-    expected_bd = dic[f"{x1.to_string().split(" ")[0]}:{x2.to_string().split(" ")[0]}:bd252:BRuWE:(]"]
+    expected_bd = dic[f"{x1.to_string().split(' ')[0]}:{x2.to_string().split(' ')[0]}:bd252:BRuWE:(]"]
     # ie=[]
     ddh.settings.ie = "[]"
     bd1_ie = yfs.dc_BD252(x1,x2,cals="BRuWE")
-    expected_bd_ie = dic[f"{x1.to_string().split(" ")[0]}:{x2.to_string().split(" ")[0]}:bd252:BRuWE:[]"]
+    expected_bd_ie = dic[f"{x1.to_string().split(' ')[0]}:{x2.to_string().split(' ')[0]}:bd252:BRuWE:[]"]
 
     comp1 = round(act360_1,4)==round(expected_360,4)
     comp2 = round(act365_1,4)==round(expected_365,4)

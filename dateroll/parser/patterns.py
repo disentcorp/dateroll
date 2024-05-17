@@ -10,9 +10,10 @@ NUMBER = f"{INT_PART}{OPTIONAL_DECIMAL}"
 D = M = r"\d{1,2}"
 Y = r"\d{2,4}"
 _ = r"(?: ?-|/|\A\Z)?"
-YMD = f"(({Y}){_}({M}){_}({D}))"
-MDY = f"(({M}){_}({D}){_}({Y}))"
-DMY = f"(({D}){_}({M}){_}({Y}))"
+no_letters = r"(?![a-zA-Z])"
+YMD = f"(({Y}){_}({M}){_}({D}\b))"
+MDY = f"(({M}){_}({D}){_}({Y}\b))"
+DMY = f"(({D}){_}({M}){_}({Y}\b))"
 
 # DurationString patterns
 PERIOD_LETTER = r"(?:bd|BD|[dDwWmMqQyY])"
@@ -53,18 +54,20 @@ MONTHNAMES = re.compile(
 # # COMPLETE_TIME = f"(?:{OPTIONAL_PART}{HOUR_NUMBER}?{MINUTE_NUMBER}?{SECONDS_NUMBER}?{MICROSECONDS_NUMBER}?)"
 # COMPLETE_TIME = f"({OPTIONAL_OPERATOR}{HOUR_NUMBER}?{OPTIONAL_OPERATOR}{MINUTE_NUMBER}?{OPTIONAL_OPERATOR}{SECONDS_NUMBER}?{OPTIONAL_OPERATOR}{MICROSECONDS_NUMBER}?)"
 
-# OPERATOR = r" ?(\+|-)? ?"
-# TIME_LETTER = r"us|US|MIN|min|[HhsS]"
-# TIME_PERIOD = f"(?:({INT_PART})({TIME_LETTER}))"
-# REPEATING_TIME_PERIOD = f"(?:{TIME_PERIOD}{TIME_PERIOD}?{TIME_PERIOD}?{TIME_PERIOD}?)"
-# COMPLETE_TIME = f"({OPERATOR}{REPEATING_TIME_PERIOD})"
-
-# testing one
 OPERATOR = r" ?(\+|-)? ?"
 TIME_LETTER = r"us|US|MIN|min|[HhsS]"
 TIME_PERIOD = f"(?:({INT_PART})({TIME_LETTER}))"
-REPEATING_TIME_PERIOD = f"(?:{TIME_PERIOD}+)"
+REPEATING_TIME_PERIOD = f"(?:{TIME_PERIOD}{TIME_PERIOD}?{TIME_PERIOD}?{TIME_PERIOD}?)"
 COMPLETE_TIME = f"({OPERATOR}{REPEATING_TIME_PERIOD})"
+
+# testing one
+# OPERATOR = r" ?(\+|-)? ?"
+# TIME_LETTER = r"us|US|MIN|min|[HhsS]"
+# TIME_PERIOD = f"({INT_PART})({TIME_LETTER})"
+# TIME_PERIOD_CATCH = f"(?:({TIME_PERIOD}))"
+# TIME_PERIOD_NO_CATCH = f"(?:{TIME_PERIOD})"
+# REPEATING_TIME_PERIOD = f"(?:{TIME_PERIOD_CATCH}{TIME_PERIOD_NO_CATCH}*)"
+# COMPLETE_TIME = f"({OPERATOR}{REPEATING_TIME_PERIOD})"
 
 # iso date patter before T
 ISO_D = r"\d{1,2}T"
