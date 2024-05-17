@@ -16,7 +16,8 @@ MDY = f"(({M}){_}({D}){_}({Y}\b))"
 DMY = f"(({D}){_}({M}){_}({Y}\b))"
 
 # DurationString patterns
-PERIOD_LETTER = r"(?:bd|BD|[dDwWmMqQyY])"
+# PERIOD_LETTER = r"(?:bd|BD|[dDwWmMqQyY])"
+PERIOD_LETTER = r"(?:us|US|MIN|min|bd|BD|[dDwWmMqQyYhHsS])"
 DATE_PERIOD = f"(?:({NUMBER})({PERIOD_LETTER}))"
 REPEATING_DATE_PERIODS = f"(?:{DATE_PERIOD}{DATE_PERIOD}?{DATE_PERIOD}?{DATE_PERIOD}?{DATE_PERIOD}?{DATE_PERIOD}?{DATE_PERIOD}?{DATE_PERIOD}?{DATE_PERIOD}?{DATE_PERIOD}?{DATE_PERIOD}?{DATE_PERIOD}?)"
 PIPE = r"(\|)?"

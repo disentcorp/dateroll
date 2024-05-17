@@ -805,6 +805,7 @@ class Duration(dateutil.relativedelta.relativedelta):
             output += f"{self.months:+}m"
         if self.days != 0:
             output += f"{self.days:+}d"
+        
         if self.bd:
             output += f"{int(self.bd):+}bd"
         if self.h:

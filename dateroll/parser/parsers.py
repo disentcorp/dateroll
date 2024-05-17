@@ -296,7 +296,7 @@ def parseDurationString_convert_capture_groups(capture_groups: tuple):
     # get initial multplier (if any)
     op = capture_groups[1]
     mult = -1 if op == "-" else 1
-
+    
     # get all the pairs
     for i in range(2, 26, 2):
         number = capture_groups[i]
@@ -389,22 +389,18 @@ def parseManyDurationString(s, gen):
     """
     durations = {}
     matches = re.findall(patterns.COMPLETE_DURATION, s)
-    print('in dur0')
-    import code;code.interact(local=dict(globals(),**locals()))
+    
     for idx, match in enumerate(matches):
         # duration_string = ''.join(match[2:])
         duration_string = match[0]
-        # print('in dur1')
-        # import code;code.interact(local=dict(globals(),**locals()))
+        
         duration = parseDurationString(duration_string)
-        # print('in dur2')
-        # import code;code.interact(local=dict(globals(),**locals()))
+        
         next_letter = next(gen())
-        replace_string = re.sub(r"[+-]","",duration_string)
-        s = s.replace(replace_string, next_letter, 1)
+        # replace_string = re.sub(r"[+-]","",duration_string)
+        s = s.replace(duration_string, next_letter, 1)
         durations[next_letter] = duration
-    print('in dur')
-    import code;code.interact(local=dict(globals(),**locals()))
+    
     check_operators(durations,s)
     return durations, s
 
@@ -537,57 +533,57 @@ def parseDateMathString(s, things):
 #     import code;code.interact(local=dict(globals(),**locals()))
 #     return dates,string
 
-def parseTimeString(dates,string,gen):
-    """
-        time string needs to have h or H as a hour, 
-        min or Min as minute
-        s or S as a seconds
-        us or US as a microseconds
-    """
-    string = re.sub(r"\s+", "",string)
-    matches = re.findall(patterns.COMPLETE_TIME,string)
+# def parseTimeString(dates,string,gen):
+#     """
+#         time string needs to have h or H as a hour, 
+#         min or Min as minute
+#         s or S as a seconds
+#         us or US as a microseconds
+#     """
+#     string = re.sub(r"\s+", "",string)
+#     matches = re.findall(patterns.COMPLETE_TIME,string)
     
-    orig_s = string
+#     orig_s = string
     
-    for match in matches:
-        match = [e.lower() for e in match]
-        if 'h' not in match:
-            h = 0
-        if 'min' not in match:
-            min = 0
-        if "s" not in match:
-            s = 0
-        if "us" not in match:
-            us = 0
+#     for match in matches:
+#         match = [e.lower() for e in match]
+#         if 'h' not in match:
+#             h = 0
+#         if 'min' not in match:
+#             min = 0
+#         if "s" not in match:
+#             s = 0
+#         if "us" not in match:
+#             us = 0
         
-        for i in range(3,len(match),2):
-            v = match[i-1]
-            if match[i]=='h':
-                h = int(v)
-            elif match[i]=='min':
-                min = int(v)
-            elif match[i]=='s':
-                s = int(v)
-            elif match[i]=='us':
-                us = int(v)
+#         for i in range(3,len(match),2):
+#             v = match[i-1]
+#             if match[i]=='h':
+#                 h = int(v)
+#             elif match[i]=='min':
+#                 min = int(v)
+#             elif match[i]=='s':
+#                 s = int(v)
+#             elif match[i]=='us':
+#                 us = int(v)
         
-        replace_string = ''.join(match[2:])
-        sign_ = match[1]
+#         replace_string = ''.join(match[2:])
+#         sign_ = match[1]
         
-        key = next(gen())
+#         key = next(gen())
         
-        # duration = dur.Duration(h=d.hour,min=d.minute,s=d.second,us=d.microsecond)
+#         # duration = dur.Duration(h=d.hour,min=d.minute,s=d.second,us=d.microsecond)
         
-        duration = dur.Duration(h=h,min=min,s=s,us=us)
-        dates[key] = duration
-        first_idx_of_the_replace_string = orig_s.find(replace_string)
-        if first_idx_of_the_replace_string>0 and sign_=='-' and orig_s[first_idx_of_the_replace_string-1]!=sign_:
-            # ddh(3bd-1y23s) needs to assign - sign on the time part eg second in this case
-            key = f"{sign_}{key}"
-        string = string.replace(replace_string,key,1)
-    print('herr')
-    import code;code.interact(local=dict(globals(),**locals()))
-    return dates,string
+#         duration = dur.Duration(h=h,min=min,s=s,us=us)
+#         dates[key] = duration
+#         first_idx_of_the_replace_string = orig_s.find(replace_string)
+#         if first_idx_of_the_replace_string>0 and sign_=='-' and orig_s[first_idx_of_the_replace_string-1]!=sign_:
+#             # ddh(3bd-1y23s) needs to assign - sign on the time part eg second in this case
+#             key = f"{sign_}{key}"
+#         string = string.replace(replace_string,key,1)
+#     print('herr')
+#     import code;code.interact(local=dict(globals(),**locals()))
+#     return dates,string
 
 def ensure_today_string(parse_string,today_string):
     """
@@ -641,7 +637,8 @@ if __name__=="__main__":
     # x = ddh("10/9/22 - 5/5/24")
     # x = ddh("6bd-3min+4min+1h")
     # x = ddh('3d+10d-19d+3min-6min+7min-9s+20000s-1h')
-    x = ddh('3y15s-10y3bd5s23min|WEuNY/MOD')
+    x = ddh('3y15s-10y5s23min')
+    # x = ddh('3y15s-10y3bd5s23min|WEuNY/MOD')
     # x = ddh('t+2bd|WEuNY')
     print(x)
     # import code;code.interact(local=dict(globals(),**locals()))

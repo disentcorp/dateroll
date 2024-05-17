@@ -122,7 +122,7 @@ class Parser:
         dates,nodates = parsersModule.parseISOformatStrings(notoday,gen)
         dates, nodates = parsersModule.parseManyDateStrings(dates,nodates, gen)
         
-        dates,nodates = parsersModule.parseTimeString(dates,nodates,gen)
+        # dates,nodates = parsersModule.parseTimeString(dates,nodates,gen)
         durations, nodatesordurations = parsersModule.parseManyDurationString(
             nodates, gen
         )
