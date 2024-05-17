@@ -480,6 +480,8 @@ def parseTimeString(dates,string,gen):
     """
     
     matches = re.findall(patterns.COMPLETE_TIME,string)
+    print('in parse time str')
+    import code;code.interact(local=dict(globals(),**locals()))
     mask = utils.convention_map[settings.convention]
     # date is temporariry used in dateutil parse to get date duration of time
     t = datetime.date.today()
@@ -572,7 +574,8 @@ if __name__=="__main__":
     # x = parserMod.Parser.parse_one_part("20240101+3m")
     # x = ddh('1bd+1d+1h+3min-4s')
     # x = ddh('1US')
-    x = ddh("10/9/22 - 5/5/24")
+    # x = ddh("10/9/22 - 5/5/24")
+    x = ddh('1bd+1h10min')
     print(x)
     # ddh('010120231h10min')
     
