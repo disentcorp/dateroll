@@ -56,11 +56,13 @@ class Date(datetime.datetime):
             )
     @staticmethod
     def from_datetime(o):
-        if isinstance(o,datetime.date):
-            return utils.date_to_date(o)
-        elif isinstance(o,datetime.datetime):
+        if isinstance(o,Date):
+            return o
+        if isinstance(o,datetime.datetime):
             
             return Date(o.year,o.month,o.day,o.hour,o.minute,o.second,o.microsecond)
+        elif isinstance(o,datetime.date):
+            return utils.date_to_date(o)
         else:
             raise TypeError(
                 f"from_date requires datetime.datetime, cannot use {type(o).__name__}"
@@ -190,6 +192,7 @@ class Date(datetime.datetime):
         elif isinstance(o, datetime.timedelta):
             return Date.from_date(self.date + o)
         elif isinstance(o, dateutil.relativedelta.relativedelta):
+            
             result = self.datetime + o
             result = utils.datetime_to_date(result)
             return result

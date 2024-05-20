@@ -142,6 +142,7 @@ class Schedule:
         elif isinstance(x, datetime.datetime):
             x = x.astimezone(TZ_PARSER)
         for i in self._dates:
+            
             if isinstance(i, dateModule.Date):
                 i = i.datetime
             elif isinstance(i, datetime.date):

@@ -24,7 +24,7 @@ class TestParsers(unittest.TestCase):
         """
         # store convention
         orig = settings.convention
-        try:
+        try: 
 
             # american
             settings.convention = "MDY"

@@ -570,6 +570,8 @@ class TestDuration(unittest.TestCase):
         self.assertEqual(dur.to_string(), "+1y+2m+3d+4bd|NYuWE/MOD")
         self.assertEqual(dur2.to_string(), "+1y-2m+3d+4bd|NYuWE/MOD")
         self.assertEqual(dur3.to_string(), "+0d")
+        dur4 = Duration(year=1,h=23,min=12,s=11,us=20)
+        self.assertEqual(dur4.to_string(),"+1y+23h+12min+11s+20us")
 
     def test_just_bds(self):
         """

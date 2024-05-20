@@ -60,6 +60,9 @@ class TestSubDay(unittest.TestCase):
         x6 = ddh('10y+31bd-23bd+2bd-10m+10min-8min+2min')
         with self.assertRaises(TypeError):
             ddh('10y+31bd-23bd+2bd-10m+10min-(8min+2min)')
+        x7 = ddh('3y15s-10y3bd5s23min|WEuNY/MOD')
+        x8 = ddh("-5s10y+1m15s")
+        
 
         rs1 = durationModule.Duration(bd=6,min=1,h=1)
         rs2 = durationModule.Duration(years=0, months=0, days=-6, h=-1, min=4, s=19991, us=0, modified=False)
@@ -67,13 +70,17 @@ class TestSubDay(unittest.TestCase):
         rs4 = durationModule.Duration(years=0, months=0, days=0, h=23, min=100000, s=3000000, us=10, modified=False)
         rs5 = durationModule.Duration(y=-8,m=-4,bd=3,min=300,us=20)
         rs6 = durationModule.Duration(y=9,bd=10,m=2,min=4)
-        
+        rs7 = durationModule.Duration(years=-7, months=0, days=0, h=0, min=-23, s=10, us=0, modified=True, bd=-3.0, cals="NYuWE")
+        rs8 = durationModule.Duration(years=-9, months=-11, days=0, h=0, min=0, s=10, us=0, modified=False)
+
         self.assertEqual(x1,rs1)
         self.assertEqual(x2,rs2)
         self.assertEqual(x3,rs3)
         self.assertEqual(x4,rs4)
         self.assertEqual(x5,rs5)
         self.assertEqual(x6,rs6)
+        self.assertEqual(x7,rs7)
+        self.assertEqual(x8,rs8)
     
     def test_dur_date_calc(self):
         """
@@ -84,19 +91,30 @@ class TestSubDay(unittest.TestCase):
         x2 = ddh('02032011-10bd+20000s-8bd+10y')
         x3 = ddh('2023-01-02T23:12:00-23h-12min')
         x4 = ddh('2023-01-02T23:12:00-23h-13min')
+        x5= ddh('2023-10-11T11:23:22+3d')
+        x6 = ddh('03022022-5s3min3y2m')
+        
 
         rs1 = dateModule.Date(2023,2,1,0,0,22,999990)
         rs2 = dateModule.Date(2021,1,10,5,33,20,0)
         rs3 = dateModule.Date(2023,1,2)
         rs4 = dateModule.Date(2023,1,1,23,59)
+        rs5 = dateModule.Date(2023,10,14,11,23,22)
+        rs6 = dateModule.Date(2019,1,1,23,56,55,0)
+        
 
         with self.assertRaises(utils.ParserStringsError):
             ddh('2023-01-13T:25:11:22')
+
+        with self.assertRaises(utils.ParserStringsError):
+            ddh('03022021+04012022+3h23us22s')
 
         self.assertEqual(x1,rs1)
         self.assertEqual(x2,rs2)
         self.assertEqual(x3,rs3)
         self.assertEqual(x4,rs4)
+        self.assertEqual(x5,rs5)
+        self.assertEqual(x6,rs6)
     
     def testSchedule(self):
         """

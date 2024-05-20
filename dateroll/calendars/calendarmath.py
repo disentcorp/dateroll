@@ -194,8 +194,7 @@ class CalendarMath:
         if isinstance(d, datetime.datetime): 
             h,min,s,us = d.hour,d.minute,d.second,d.microsecond
             d = datetime.date(d.year,d.month,d.day)
-        elif isinstance(d, dateModule.Date):
-            h,min,s,us = 0,0,0,0
+        
         elif isinstance(d, datetime.date):
             h,min,s,us = 0,0,0,0
             

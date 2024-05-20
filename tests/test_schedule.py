@@ -4,6 +4,7 @@ import re
 import sys
 import unittest
 
+from tzlocal import get_localzone
 import numpy as np
 
 from dateroll.date.date import Date
@@ -267,6 +268,14 @@ class TestSchedule(unittest.TestCase):
         self.assertTrue(d1 in ds)
         self.assertTrue(d1.datetime in ds)
         self.assertFalse(ddh('01012022') in ds)
+
+        sh = ddh('03022023,03042023,1bd')
+        sh._dates = [d.date for d in sh.list]
+        t = datetime.date(2023,3,2)
+        self.assertFalse(t in sh)
+        t = datetime.datetime(2023,3,2).astimezone(get_localzone())
+        self.assertTrue(t in sh)
+
 
         
 

@@ -69,6 +69,11 @@ class TestDate(unittest.TestCase):
         d3 = Date.from_string("1/1/1900")
         self.assertEqual(ref, d3)
 
+        with self.assertRaises(TypeError):
+            Date.from_date(20230101)
+        
+        self.assertEqual(Date.from_datetime(datetime.datetime(2023,2,3,0,23)),Date(2023,2,3,0,23))
+
     def test_is_bd(self):
         """
         check if day is a business day given a specific calendar

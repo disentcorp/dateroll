@@ -196,24 +196,24 @@ def parse_to_native(string):
 def parse_to_dateroll(string):
     return Parser(string)
 
-def separate_date_time(string):
-    """
-        separate string as a date and time, 
-        day and time should be separated by an empty space
-        there must be a max of 1 space
-        eg mmddyy H:min:S
-        if there is not time in the string it returns emptry string as a time string
-    """
+# def separate_date_time(string):
+#     """
+#         separate string as a date and time, 
+#         day and time should be separated by an empty space
+#         there must be a max of 1 space
+#         eg mmddyy H:min:S
+#         if there is not time in the string it returns emptry string as a time string
+#     """
 
-    dt_str = string.split(' ')
-    if len(dt_str)>2:
-        raise ParserError("Please check there is more than one space in the string")
-    if len(dt_str)==2:
-        datestr,timestr = dt_str
-    else:
-        datestr,timestr = dt_str[0],""
+#     dt_str = string.split(' ')
+#     if len(dt_str)>2:
+#         raise ParserError("Please check there is more than one space in the string")
+#     if len(dt_str)==2:
+#         datestr,timestr = dt_str
+#     else:
+#         datestr,timestr = dt_str[0],""
     
-    return datestr,timestr
+#     return datestr,timestr
 
 
 if __name__ == "__main__":  # pragma:no cover

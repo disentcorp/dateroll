@@ -437,8 +437,7 @@ class Duration(dateutil.relativedelta.relativedelta):
             if not _force_exact:
                 print(message)
             else:
-                # print('val error')
-                # import code;code.interact(local=dict(globals(),**locals()))
+                
                 raise ValueError(message)
 
         return just_days
@@ -450,6 +449,7 @@ class Duration(dateutil.relativedelta.relativedelta):
 
         a = self
         # duration + duration
+        
         if isinstance(b, Duration):
             """
             combine both
@@ -609,6 +609,7 @@ class Duration(dateutil.relativedelta.relativedelta):
         Date_modified.origin_dur_date = date_unadj
         Date_modified.origin_dur_cals = self.cals
         Date_modified.origin_dur_modified = self.modified
+        
         return Date_modified
 
     def adjust_bds(self, from_date):

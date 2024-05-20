@@ -66,23 +66,6 @@ def validate_monthday(y, m, d):
     return d
 
 
-# class ParserStringsError(Exception): ...
-
-
-def parseTodayString0(s):
-    """
-    this is [the] place where "t" is replaced
-    """
-    today = datetime.datetime.today()
-    fmt = utils.convention_map_datetime[settings.convention]
-    today_string = today.strftime(fmt)
-
-    for t in TODAYSTRINGVALUES:
-        # search order matters in TODAYSTRINGVALUES
-        if t in s:
-            return s.replace(t, today_string)
-    return s
-
 def parseTodayString(s):
     """
     this is [the] place where "t" is replaced
@@ -197,7 +180,7 @@ def parseISOformatStrings(s,gen):
         return dates,s
     pattern = patterns.ISO_YMD
     matches = re.findall(pattern, s)
-    time_str = ['h','H','min','MIN','s','S','us','US']
+
     for match in matches:
         # match is a tuple --> (1/1/2023,1,1,2023)
         matched_str = match[0]
@@ -212,11 +195,10 @@ def parseISOformatStrings(s,gen):
         if not "T" in iso:
             continue
         
-        if "-" not in iso:
-            pattern = r'(\d{4})(\d{2})(\d{2}T\d{2}:\d{2}:\d{2})'
-            iso_ = re.sub(pattern, r'\1-\2-\3', iso)
-        else:
-            iso_ = iso
+        # we removed - sign from string, put back into date
+        pattern = r'(\d{4})(\d{2})(\d{2}T\d{2}:\d{2}:\d{2})'
+        iso_ = re.sub(pattern, r'\1-\2-\3', iso)
+        
         try:
             date = datetime.datetime.fromisoformat(iso_)
         except Exception:
@@ -351,8 +333,7 @@ def parseCalendarUnionString(s):
 def parseDurationString(s: str):
 
     matches = re.findall(patterns.COMPLETE_DURATION, s)
-    # print('in duration string')
-    # import code;code.interact(local=dict(globals(),**locals()))
+    
     if len(matches) == 0:
         raise utils.ParserStringsError("No duration found")
     elif len(matches) > 1:
@@ -453,23 +434,9 @@ def parseDateMathString(s, things):
     # to make eval work, add + sign here in the alphabetical order
     
     s,things = utils.sort_string(s,things) 
-    
-    letters_used = re.findall(r"[A-Z]", s)
 
     if s == "":
         raise utils.ParserStringsError("Nothing to parse")
-    # bad case, letter mismatch
-    if len(things) == 0:
-        raise utils.ParserStringsError("No valid date/durations strings found.")
-    
-    for i in letters_used:
-        if i not in things:
-            raise utils.ParserStringsError("Cannot recognize as date math", s)
-    for j in things:
-        if j.isalpha():
-            if j not in letters_used:
-                raise utils.ParserStringsError("Cannot recognize as date math", s)
-
     # good case, do the math
     
     try:
@@ -478,113 +445,6 @@ def parseDateMathString(s, things):
     except Exception:
         raise utils.ParserStringsError("Cannot recognize as date math", s)
 
-# def parseTimeString0(dates,string,gen):
-#     """
-#         time string needs to have h or H as a hour, 
-#         min or Min as minute
-#         s or S as a seconds
-#         us or US as a microseconds
-#     """
-    
-#     matches = re.findall(patterns.COMPLETE_TIME,string)
-    
-#     mask = utils.convention_map[settings.convention]
-#     # date is temporariry used in dateutil parse to get date duration of time
-#     t = datetime.date.today()
-#     date = dt.Date(t.year,t.month,t.day)
-#     date_str = date.date.strftime(mask)
-    
-    
-#     for match in matches:
-#         match = [e.lower() for e in match]
-#         if 'h' not in match:
-#             h = "00"
-#         if 'min' not in match:
-#             min = "00"
-#         if "s" not in match:
-#             s = "00"
-#         if "us" not in match:
-#             us = "0"
-        
-#         for i in range(3,len(match),2):
-#             v = match[i-1]
-#             if match[i]=='h':
-#                 h = v
-#             elif match[i]=='min':
-#                 min = v
-#             elif match[i]=='s':
-#                 s = v
-#             elif match[i]=='us':
-#                 us = v
-#         # parser_string = f"{h}:{min}:{s}.{us}"
-#         # try:
-#         #     # use dateutil to validate time string
-#         #     d = dateutil.parser.parse(f"{date_str} {parser_string}")
-#         # except Exception as e:
-#         #     raise ParserStringsError(f"{e}")
-#         replace_string = ''.join(match[2:])
-#         key = next(gen())
-        
-#         # duration = dur.Duration(h=d.hour,min=d.minute,s=d.second,us=d.microsecond)
-        
-#         duration = dur.Duration(h=h,min=min,s=s,us=us)
-#         dates[key] = duration
-#         string = string.replace(replace_string,key,1)
-#     print('herr')
-#     import code;code.interact(local=dict(globals(),**locals()))
-#     return dates,string
-
-# def parseTimeString(dates,string,gen):
-#     """
-#         time string needs to have h or H as a hour, 
-#         min or Min as minute
-#         s or S as a seconds
-#         us or US as a microseconds
-#     """
-#     string = re.sub(r"\s+", "",string)
-#     matches = re.findall(patterns.COMPLETE_TIME,string)
-
-#     orig_s = string
-
-#     for match in matches:
-#         match = [e.lower() for e in match]
-#         if 'h' not in match:
-#             h = 0
-#         if 'min' not in match:
-#             min = 0
-#         if "s" not in match:
-#             s = 0
-#         if "us" not in match:
-#             us = 0
-        
-#         for i in range(3,len(match),2):
-#             v = match[i-1]
-#             if match[i]=='h':
-#                 h = int(v)
-#             elif match[i]=='min':
-#                 min = int(v)
-#             elif match[i]=='s':
-#                 s = int(v)
-#             elif match[i]=='us':
-#                  us = int(v)
-        
-#         replace_string = ''.join(match[2:])
-#         sign_ = match[1]
-        
-#         key = next(gen())
-        
-#         # duration = dur.Duration(h=d.hour,min=d.minute,s=d.second,us=d.microsecond)
-        
-#         duration = dur.Duration(h=h,min=min,s=s,us=us)
-#         dates[key] = duration
-#         first_idx_of_the_replace_string = orig_s.find(replace_string)
-#         if first_idx_of_the_replace_string>0 and sign_=='-' and orig_s[first_idx_of_the_replace_string-1]!=sign_:
-#             # ddh(3bd-1y23s) needs to assign - sign on the time part eg second in this case
-#             key = f"{sign_}{key}"
-#         string = string.replace(replace_string,key,1)
-#     print('herr')
-#     import code;code.interact(local=dict(globals(),**locals()))
-#     return dates,string
 
 def ensure_today_string(parse_string,today_string):
     """
@@ -598,18 +458,6 @@ def ensure_today_string(parse_string,today_string):
     if t_idx>0 and parse_string[t_idx-1] not in ["+","-"," "]:
         is_today_string = False
     return is_today_string
-
-# def validate_dateMatch(matches,string):
-#     """
-#         if string has both date and time eg, 11/1/23T13h it has to have a T
-#         to avoid confusion. For instance, 11/1/2313h hard to find the year and hour
-#     """
-#     print('herr val date')
-#     code.interact(local=dict(globals(),**locals())) 
-#     if matches:
-#         time_match = re.findall(r"min|MIN|us|US|[hHsS]",string)
-#         if time_match:
-#             raise ValueError(f"parsing string format is wrong {string}, date and time format should be ISO 8601")
     
 
 def check_operators(dic,s):
@@ -619,7 +467,7 @@ def check_operators(dic,s):
         if idx>0 and thing not in ['+','-'] and not thing.isalpha():
             raise TypeError(f"Unknown operator in string {thing}")
 
-if __name__=="__main__":
+if __name__=="__main__":  # pragma:no cover
     from dateroll.ddh.ddh import ddh
     # x = ddh('0304202312h21min22s+3bd')
     # x = ddh('1y2m10d2bd12h21min22s+3bd')
@@ -632,7 +480,7 @@ if __name__=="__main__":
     # x = ddh("12h21min22s")
     # x3 = ddh('3d12h21min22s')
     import dateroll.parser.parser as parserMod
-    
+    # from dateroll.date import Date
     # x = parseDateMathString("A+B", {"A": 4})
     # x = parserMod.Parser.parse_one_part("20240101+3m")
     # x = ddh('1bd+1d+1h+3min-4s')
@@ -641,7 +489,12 @@ if __name__=="__main__":
     # x = ddh("6bd-3min+4min+1h")
     # x = ddh('3d+10d-19d+3min-6min+7min-9s+20000s-1h')
     # x = ddh('3y15s-10y5s23min')
-    x = ddh('01012023T1h10min')
+    # x = ddh('03022022-5s3min3y2m')
+    x = ddh("03012023-1y3bd").cal
+    from dateroll import Date
+    # x = ddh('01012023T1h10min')
+    x = Date.from_datetime(datetime.datetime(2023,2,3,0,23))
+    # x = ddh('2023-10-11T11:23:22+3d')
     # x = ddh('3y15s-10y3bd5s23min|WEuNY/MOD')
     # x = ddh('t+2bd|WEuNY')
     print(x)
