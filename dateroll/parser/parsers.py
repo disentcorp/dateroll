@@ -451,7 +451,7 @@ def parseDateMathString(s, things):
     # to make eval work, add + sign here in the alphabetical order
     
     
-    s,things = utils.sort_string(s,things)
+    s,things = utils.sort_string(s,things) 
     
     letters_used = re.findall(r"[A-Z]", s)
 
@@ -542,9 +542,9 @@ def parseDateMathString(s, things):
 #     """
 #     string = re.sub(r"\s+", "",string)
 #     matches = re.findall(patterns.COMPLETE_TIME,string)
-    
+
 #     orig_s = string
-    
+
 #     for match in matches:
 #         match = [e.lower() for e in match]
 #         if 'h' not in match:
@@ -565,7 +565,7 @@ def parseDateMathString(s, things):
 #             elif match[i]=='s':
 #                 s = int(v)
 #             elif match[i]=='us':
-#                 us = int(v)
+#                  us = int(v)
         
 #         replace_string = ''.join(match[2:])
 #         sign_ = match[1]
@@ -637,7 +637,8 @@ if __name__=="__main__":
     # x = ddh("10/9/22 - 5/5/24")
     # x = ddh("6bd-3min+4min+1h")
     # x = ddh('3d+10d-19d+3min-6min+7min-9s+20000s-1h')
-    x = ddh('3y15s-10y5s23min')
+    # x = ddh('3y15s-10y5s23min')
+    x = ddh("01012000")
     # x = ddh('3y15s-10y3bd5s23min|WEuNY/MOD')
     # x = ddh('t+2bd|WEuNY')
     print(x)

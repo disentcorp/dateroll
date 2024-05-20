@@ -59,8 +59,8 @@ class TestSubDay(unittest.TestCase):
         rs2 = durationModule.Duration(years=0, months=0, days=-6, h=-1, min=4, s=19991, us=0, modified=False)
         rs3 = durationModule.Duration(years=2, months=11, days=0, h=10, min=0, s=-3, us=0, modified=False, bd=1.0, cals="WE")
         rs4 = durationModule.Duration(years=0, months=0, days=0, h=23, min=100000, s=3000000, us=10, modified=False)
-        print('in test sub')
-        import code;code.interact(local=dict(globals(),**locals()))
+        # print('in test sub')
+        # import code;code.interact(local=dict(globals(),**locals()))
 
 if __name__=="__main__":
     unittest.main()
