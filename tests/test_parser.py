@@ -1,5 +1,6 @@
 import unittest
 
+import dateroll
 from dateroll.date.date import Date
 from dateroll.duration.duration import Duration
 from dateroll.parser.parser import Parser, parse_to_native
@@ -53,7 +54,6 @@ class TestParser(unittest.TestCase):
         """
         test parse maybe many parts accepts 1 part or 3 parts (start,stop,step)
         """
-        from dateroll.parser.parsers import ParserStringsError
 
         # 1 part
         original = settings.convention
@@ -72,7 +72,7 @@ class TestParser(unittest.TestCase):
             dt = Parser.parse_maybe_many_parts("3m,t,1m")
 
         # 3 parts 2nd part wrong
-        with self.assertRaises(Exception):
+        with self.assertRaises(dateroll.utils.ParserStringsError):
             dt = Parser.parse_maybe_many_parts("t,3v,1m")
 
         # 3 parts 3rd part wrong

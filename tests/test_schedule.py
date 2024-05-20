@@ -210,7 +210,6 @@ class TestSchedule(unittest.TestCase):
             Schedule.from_string(10)
 
     def test_badparts(self):
-        from dateroll.parser.parsers import ParserStringsError
 
         # bad start
         self.assertRaises(TypeError, lambda: ddh("3m,t+5y,1m"))

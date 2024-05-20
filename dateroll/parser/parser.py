@@ -120,6 +120,7 @@ class Parser:
         
         notoday = parsersModule.parseTodayString(untouched)
         dates,nodates = parsersModule.parseISOformatStrings(notoday,gen)
+        
         dates, nodates = parsersModule.parseManyDateStrings(dates,nodates, gen)
         
         # dates,nodates = parsersModule.parseTimeString(dates,nodates,gen)

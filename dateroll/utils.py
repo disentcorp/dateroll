@@ -215,22 +215,24 @@ def sort_string(string,dates):
         
         raise ParserStringsError("Cannot recognize as date math", string)
     
-    if ordered_string[0]=="-":
+    if len(ordered_string)>0 and ordered_string[0]=="-":
         # we need to change the sign of the duration which was not applied 
         first_letter = ordered_string[1]
-        dur = dates[first_letter]
-        bd = -1 * dur.bd if dur.bd is not None else None
-        dur_new = durationModule.Duration(
-            y = -1 * dur.y,
-            m = -1 * dur.m,
-            d = -1 * dur.d,
-            bd = bd,
-            h = -1 * dur.h,
-            min = -1 * dur.min,
-            s = -1 * dur.s,
-            us = -1 * dur.us
-        )
-        dates[first_letter] = dur_new
+        maybe_dur = dates[first_letter]
+        if isinstance(maybe_dur,durationModule.Duration):
+            bd = -1 * maybe_dur.bd if maybe_dur.bd is not None else None
+            dur_new = durationModule.Duration(
+                y = -1 * maybe_dur.y,
+                m = -1 * maybe_dur.m,
+                d = -1 * maybe_dur.d,
+                bd = bd,
+                h = -1 * maybe_dur.h,
+                min = -1 * maybe_dur.min,
+                s = -1 * maybe_dur.s,
+                us = -1 * maybe_dur.us
+            )
+            dates[first_letter] = dur_new
+        
     
     return ordered_string,dates
 

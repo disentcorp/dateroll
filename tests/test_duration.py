@@ -8,7 +8,7 @@ import dateutil.relativedelta
 
 from dateroll import Date, Duration, ddh
 from dateroll.parser import parsers
-from dateroll.parser.parsers import ParserStringsError
+from dateroll.utils import ParserStringsError
 from dateroll.settings import settings
 
 EXPECTED_DAY_COUNT_PATH = lambda:"tests/test_data/ql_data.json"
@@ -27,7 +27,7 @@ class TestDuration(unittest.TestCase):
         x = Duration.from_string("+3m|NY")
         self.assertIsInstance(x, Duration)
         self.assertRaises(
-            parsers.ParserStringsError, lambda: Duration.from_string("garbage")
+            ParserStringsError, lambda: Duration.from_string("garbage")
         )
         self.assertRaises(TypeError, lambda: Duration.from_string(3))
 

@@ -437,6 +437,8 @@ class Duration(dateutil.relativedelta.relativedelta):
             if not _force_exact:
                 print(message)
             else:
+                # print('val error')
+                # import code;code.interact(local=dict(globals(),**locals()))
                 raise ValueError(message)
 
         return just_days
