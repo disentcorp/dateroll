@@ -330,8 +330,3 @@ class Calendars(dict):
     @property
     def info(self):
         print(self.__str__)
-
-
-if __name__ == "__main__":  # pragma: no cover
-
-    ...

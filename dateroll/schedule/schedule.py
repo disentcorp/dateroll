@@ -1,16 +1,29 @@
 import datetime
+from zoneinfo import ZoneInfo
+from tzlocal import get_localzone
+
 import dateroll.calendars.calendarmath as calendarmathModule
 import dateroll.parser.parsers as parsersModule
-from dateroll import pretty
+from dateroll import pretty, utils
 from dateroll.date import date as dateModule
 from dateroll.ddh import ddh as ddhModule
-from dateroll import utils
+from dateroll.settings import settings
 
 try:
     import pandas as pd
+
     have_pandas = True
 except Exception:  # pragma: no cover
     have_pandas = False
+
+TZ_DISPLAY = (
+    get_localzone()
+    if settings.tz_display == "System"
+    else ZoneInfo(settings.tz_display)
+)
+TZ_PARSER = (
+    get_localzone() if settings.tz_parser == "System" else ZoneInfo(settings.tz_parser)
+)
 
 
 class Schedule:
@@ -79,6 +92,7 @@ class Schedule:
             while cursor > self.start:
                 dates.append(cursor)
                 cursor -= -self.step
+
             dates.append(self.start)
 
         self._dates = sorted(dates)
@@ -129,16 +143,15 @@ class Schedule:
 
     def __contains__(self, x):
         if isinstance(x, dateModule.Date):
-            x = x.date
+            x = x.datetime
         elif isinstance(x, datetime.datetime):
-            # does not do TZ check
-            x = datetime.date(x.year, x.month, x.day)
+            x = x.astimezone(TZ_PARSER)
         for i in self._dates:
+
             if isinstance(i, dateModule.Date):
-                i = i.date
-            # elif isinstance(i, datetime.datetime):
-            #     # does not do TZ check
-            #     i = datetime.date(i.year, i.month, i.day)
+                i = i.datetime
+            elif isinstance(i, datetime.date):
+                i = datetime.datetime(i.year, i.month, i.day).astimezone(TZ_PARSER)
 
             if x == i:
                 return True
@@ -149,10 +162,13 @@ class Schedule:
         list_of_dates = self._dates
         start = list_of_dates[:-1]
         stop = list_of_dates[1:]
-        
-        if not have_pandas: # pragma: no cover
-            print('requires pandas, not installed')
-            return 
+        # convert disent date into datetime.date to avoid disent date converts into Timestamp
+        # in dataframe which is pandas thing
+        start = [d.date for d in start]
+        stop = [d.date for d in stop]
+        if not have_pandas:  # pragma: no cover
+            print("requires pandas, not installed")
+            return
 
         df = pd.DataFrame({"start": start, "stop": stop})
         df["step"] = df.stop - df.start
@@ -166,25 +182,36 @@ class Schedule:
         makes a bond schedule assuming T+0BD on weekends
         """
 
-        if not have_pandas: # pragma: no cover
-            print('requires pandas, not installed')
-            return 
+        if not have_pandas:  # pragma: no cover
+            print("requires pandas, not installed")
+            return
 
         df = self.split
         df["type"] = "interest"
         df.columns = ["starts", "ends", "days", "type"]
-        df["pays"] = df["ends"] + "0bd"
+        f_adjust_bd = lambda x: (dateModule.Date.from_date(x) + "0bd").date
+        f_exact_days = lambda x: (
+            (
+                dateModule.Date.from_date(x["ends"])
+                - dateModule.Date.from_date(x["starts"])
+            ).just_exact_days
+            if x["starts"]
+            else None
+        )
+
+        df["pays"] = df["ends"].apply(f_adjust_bd)
         st, ed = min(self._dates), max(self._dates)
 
         df.loc[-1] = [None, None, None, "principal", st + "0bd"]
         df.loc[len(df) - 1] = [None, None, None, "repayment", ed + "0bd"]
         df.index += 1
-        df["days"] = df.apply(
-            lambda row: (
-                (row["ends"] - row["starts"]).just_exact_days if row["starts"] else None
-            ),
-            axis=1,
+
+        df["days"] = df.apply(lambda row: f_exact_days(row), axis=1)
+
+        df["pays"] = df["pays"].apply(
+            lambda x: x.date() if isinstance(x, pd.Timestamp) else x
         )
+
         return df.sort_values(by="pays")
 
     def to_string(self):

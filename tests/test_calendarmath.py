@@ -93,13 +93,13 @@ class TestStringMathMethods(unittest.TestCase):
 
         measure perf, put a threshold
         """
-        hol = Date(2024, 1, 1)
+        hol = Date(2024, 1, 1).date
         is_bd = self.cals.is_bd(hol, "WE")
         self.assertTrue(is_bd is True)
         is_bd = self.cals.is_bd(hol, ["NY", "WE"])
         self.assertFalse(is_bd is True)
 
-        nonhol = Date(2024, 1, 4)
+        nonhol = Date(2024, 1, 4).date
         is_bd = self.cals.is_bd(nonhol, "WE")
         self.assertTrue(is_bd is True)
         is_bd = self.cals.is_bd(nonhol, "WEuNY")

@@ -125,7 +125,6 @@ class TestUsage(unittest.TestCase):
                 debug=False,
             ),
         )
-
         self.assertEqual(ddh("1/12/24+11m13d|NYuWE"), dateModule.Date(2024, 12, 26))
 
 
@@ -155,23 +154,23 @@ class TestUsageMore(unittest.TestCase):
             _b = time.time()
             ans = f"{str(b==a):<5}"
             res = color(ans, "green") if b == a else color(ans, "red")
-            ms = int(round((_b - _a) * 1000 * 1000, 0))
-            if ms > 1000:
-                ms = f"{ms:>10} us"
+            ms = round((_b - _a) * 1000, 0)
+            if ms > 100:
+                ms = f"{ms:>10} ms"
                 ms = color(ms, "red")
             else:
-                ms = f"{ms:>10} us"
+                ms = f"{ms:>10} ms"
 
             print(f"tesing: {s:>28} = {b} == {a}", res, ms)
             if a == b:
                 c += 1
         print(f"{c}/{len(df)} passed")
         # assert True if an only if all 32 pass
-
         self.assertTrue(c == len(df))
 
         # reset
         settings.convention = "MDY"
+
 
 if __name__ == "__main__":
 

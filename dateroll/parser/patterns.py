@@ -10,12 +10,14 @@ NUMBER = f"{INT_PART}{OPTIONAL_DECIMAL}"
 D = M = r"\d{1,2}"
 Y = r"\d{2,4}"
 _ = r"(?: ?-|/|\A\Z)?"
-YMD = f"(({Y}){_}({M}){_}({D}))"
-MDY = f"(({M}){_}({D}){_}({Y}))"
-DMY = f"(({D}){_}({M}){_}({Y}))"
+no_letters_digit = r"(?![\d\w])"
+YMD = f"(({Y}){_}({M}){_}({D})){no_letters_digit}"
+MDY = f"(({M}){_}({D}){_}({Y})){no_letters_digit}"
+DMY = f"(({D}){_}({M}){_}({Y})){no_letters_digit}"
 
 # DurationString patterns
-PERIOD_LETTER = r"(?:bd|BD|[dDwWmMqQsShHyY])"
+# PERIOD_LETTER = r"(?:bd|BD|[dDwWmMqQyY])"
+PERIOD_LETTER = r"(?:us|US|MIN|min|bd|BD|[dDwWmMqQyYhHsS])"
 DATE_PERIOD = f"(?:({NUMBER})({PERIOD_LETTER}))"
 REPEATING_DATE_PERIODS = f"(?:{DATE_PERIOD}{DATE_PERIOD}?{DATE_PERIOD}?{DATE_PERIOD}?{DATE_PERIOD}?{DATE_PERIOD}?{DATE_PERIOD}?{DATE_PERIOD}?{DATE_PERIOD}?{DATE_PERIOD}?{DATE_PERIOD}?{DATE_PERIOD}?)"
 PIPE = r"(\|)?"
@@ -33,3 +35,7 @@ COMPLETE_DURATION = (
 MONTHNAMES = re.compile(
     r"(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec|January|February|March|April|June|July|August|September|October|November|December)"
 )
+
+# iso date patter before T
+ISO_D = r"\d{1,2}T"
+ISO_YMD = f"(({Y}){_}({M}){_}({ISO_D}))"

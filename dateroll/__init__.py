@@ -1,4 +1,3 @@
-
 from dateroll.ddh.ddh import ddh  # noqa F401
 from dateroll.date.date import Date  # noqa F401
 from dateroll.duration.duration import Duration  # noqa F401

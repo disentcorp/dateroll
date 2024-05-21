@@ -1,15 +1,18 @@
 import datetime
 import unittest
+from zoneinfo import ZoneInfo
+from tzlocal import get_localzone
 
 import dateroll
 import dateroll.date.date as dateModule
 import dateroll.duration.duration as durationModule
 import dateroll.schedule.schedule as scheduleModule
-
 from dateroll import ddh
 from dateroll.settings import settings
 
 # import dateroll.duration.duration as durationModule
+
+LOCAL_ZONE = get_localzone()
 
 
 class TestDDH(unittest.TestCase):
@@ -84,9 +87,11 @@ class TestDDH(unittest.TestCase):
         """
         str->Schedule (1bd,1d,1w,1m,1y)
         """
+
         #
         start = dateModule.Date(2023, 1, 3)
         end = dateModule.Date(2023, 6, 3)
+
         self.assertEqual(
             ddh("01032023,06032023,1bd").list,
             scheduleModule.Schedule(start, end, durationModule.Duration(bd=1)).list,
@@ -113,7 +118,7 @@ class TestDDH(unittest.TestCase):
         purge all
         """
         ddh.purge_all()
-        base_cals = sorted(["FED", "ECB", "LN", "WE", "ALL", "BR", "NY"])
+        base_cals = sorted(["FED", "ECB", "EU", "LN", "WE", "ALL", "BR", "NY"])
         self.assertEqual(sorted(ddh.hols.keys()), base_cals)
 
     def testConvention(self):
@@ -167,15 +172,17 @@ class TestsPracticalExamples(unittest.TestCase):
         """
         empty string
         """
-        with self.assertRaises(dateroll.parser.parsers.ParserStringsError):
+        with self.assertRaises(dateroll.utils.ParserStringsError):
             ddh("")
 
     def testDate(self):
         """
         test for date strings
         """
-        assert ddh("t") == datetime.date.today()
-        assert ddh("5/5/05") == datetime.date(2005, 5, 5)
+
+        assert ddh("5/5/05").datetime == datetime.datetime(2005, 5, 5, 0, 0).astimezone(
+            LOCAL_ZONE
+        )
 
     def testDuration(self):
         """
@@ -186,16 +193,31 @@ class TestsPracticalExamples(unittest.TestCase):
         """
         test for schedule strings
         """
-        assert ddh("t") == datetime.date.today()
+        try:
+            settings.convention = "YMD"
+            result = ddh("t").datetime
+        finally:
+            settings.convention = "MDY"
+        expected = datetime.datetime.now(LOCAL_ZONE)
+
+        assert result.date() == expected.date()
+        assert (
+            result.hour == expected.hour
+            and result.minute == expected.minute
+            and result.tzinfo == expected.tzinfo
+        )
 
     def test_durationLike(self):
         """
         pass durationlike into ddh
         """
+
         x = ddh(datetime.timedelta(days=10))
         self.assertEqual(
             x,
-            dateroll.Duration(years=0, months=0, days=10, modified=False, debug=False),
+            dateroll.Duration(
+                years=0, months=0, days=10, h=0, min=0, s=0, us=0, modified=False
+            ),
         )
 
     def test_badObj(self):

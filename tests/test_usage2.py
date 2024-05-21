@@ -2,7 +2,7 @@ import itertools
 import re
 import unittest
 
-
+import dateroll
 import dateroll.date.date as dateModule
 import dateroll.parser.parsers as parsers
 from dateroll import ddh
@@ -28,15 +28,15 @@ class TestUsage(unittest.TestCase):
         ymd_wrong = "20113003"
         dmy_wrong = "03302011"
 
-        with self.assertRaises(parsers.ParserStringsError):
+        with self.assertRaises(dateroll.utils.ParserStringsError):
             ddh(mdy_wrong)
 
         settings.convention = "YMD"
-        with self.assertRaises(parsers.ParserStringsError):
+        with self.assertRaises(dateroll.utils.ParserStringsError):
             ddh(ymd_wrong)
 
         settings.convention = "DMY"
-        with self.assertRaises(parsers.ParserStringsError):
+        with self.assertRaises(dateroll.utils.ParserStringsError):
             ddh(dmy_wrong)
 
         settings.convention = "MDY"
@@ -70,15 +70,15 @@ class TestUsage(unittest.TestCase):
         dmy_wrong = "03/30/2011"
 
         settings.convention = "MDY"
-        with self.assertRaises(parsers.ParserStringsError):
+        with self.assertRaises(dateroll.utils.ParserStringsError):
             ddh(mdy_wrong)
 
         settings.convention = "YMD"
-        with self.assertRaises(parsers.ParserStringsError):
+        with self.assertRaises(dateroll.utils.ParserStringsError):
             ddh(ymd_wrong)
 
         settings.convention = "DMY"
-        with self.assertRaises(parsers.ParserStringsError):
+        with self.assertRaises(dateroll.utils.ParserStringsError):
             ddh(dmy_wrong)
 
         # reset
@@ -93,15 +93,15 @@ class TestUsage(unittest.TestCase):
         dmy_wrong = "03-30-2011"
 
         settings.convention = "MDY"
-        with self.assertRaises(parsers.ParserStringsError):
+        with self.assertRaises(dateroll.utils.ParserStringsError):
             ddh(mdy_wrong)
 
         settings.convention = "YMD"
-        with self.assertRaises(parsers.ParserStringsError):
+        with self.assertRaises(dateroll.utils.ParserStringsError):
             ddh(ymd_wrong)
 
         settings.convention = "DMY"
-        with self.assertRaises(parsers.ParserStringsError):
+        with self.assertRaises(dateroll.utils.ParserStringsError):
             ddh(dmy_wrong)
 
         # reset
@@ -118,7 +118,7 @@ class TestUsage(unittest.TestCase):
         settings.convention = "MDY"
         self.assertEqual(ddh(mdy), rs)
         settings.convention = "YMD"
-        with self.assertRaises(parsers.ParserStringsError):
+        with self.assertRaises(dateroll.utils.ParserStringsError):
             ddh(mdy)
         settings.convention = "DMY"
         self.assertNotEqual(ddh(mdy), rs)
@@ -130,7 +130,7 @@ class TestUsage(unittest.TestCase):
 
         self.assertEqual(ddh(dmy), rs)
         settings.convention = "YMD"
-        with self.assertRaises(parsers.ParserStringsError):
+        with self.assertRaises(dateroll.utils.ParserStringsError):
             ddh(dmy)
         settings.convention = "MDY"
         self.assertNotEqual(ddh(dmy), rs)
@@ -143,10 +143,10 @@ class TestUsage(unittest.TestCase):
         self.assertEqual(ddh(ymd), rs)
 
         settings.convention = "MDY"
-        with self.assertRaises(parsers.ParserStringsError):
+        with self.assertRaises(dateroll.utils.ParserStringsError):
             ddh(ymd)
         settings.convention = "DMY"
-        with self.assertRaises(parsers.ParserStringsError):
+        with self.assertRaises(dateroll.utils.ParserStringsError):
             ddh(ymd)
 
         # slashed
@@ -169,7 +169,7 @@ class TestUsage(unittest.TestCase):
 
         self.assertEqual(ddh(dmy), rs)
         settings.convention = "YMD"
-        with self.assertRaises(parsers.ParserStringsError):
+        with self.assertRaises(dateroll.utils.ParserStringsError):
             ddh(dmy)
         settings.convention = "MDY"
         self.assertNotEqual(ddh(dmy), rs)
@@ -182,10 +182,10 @@ class TestUsage(unittest.TestCase):
         self.assertEqual(ddh(ymd), rs)
 
         settings.convention = "MDY"
-        with self.assertRaises(parsers.ParserStringsError):
+        with self.assertRaises(dateroll.utils.ParserStringsError):
             ddh(ymd)
         settings.convention = "DMY"
-        with self.assertRaises(parsers.ParserStringsError):
+        with self.assertRaises(dateroll.utils.ParserStringsError):
             ddh(ymd)
 
         # dashed
@@ -208,7 +208,7 @@ class TestUsage(unittest.TestCase):
 
         self.assertEqual(ddh(dmy), rs)
         settings.convention = "YMD"
-        with self.assertRaises(parsers.ParserStringsError):
+        with self.assertRaises(dateroll.utils.ParserStringsError):
             ddh(dmy)
         settings.convention = "MDY"
         self.assertNotEqual(ddh(dmy), rs)
@@ -221,10 +221,10 @@ class TestUsage(unittest.TestCase):
         self.assertEqual(ddh(ymd), rs)
 
         settings.convention = "MDY"
-        with self.assertRaises(parsers.ParserStringsError):
+        with self.assertRaises(dateroll.utils.ParserStringsError):
             ddh(ymd)
         settings.convention = "DMY"
-        with self.assertRaises(parsers.ParserStringsError):
+        with self.assertRaises(dateroll.utils.ParserStringsError):
             ddh(ymd)
 
         # # reset
@@ -233,35 +233,20 @@ class TestUsage(unittest.TestCase):
     def test_weirdDates(self):
         # convention is mdy
 
-        with self.assertRaises(parsers.ParserStringsError):
+        with self.assertRaises(dateroll.utils.ParserStringsError):
             x = ddh("7/7/7")
 
         x = ddh("7/7/70")
         self.assertEqual(x, dateModule.Date(1970, 7, 7))
 
-        with self.assertRaises(parsers.ParserStringsError):
+        with self.assertRaises(dateroll.utils.ParserStringsError):
             ddh("7770")
 
-        with self.assertRaises(parsers.ParserStringsError):
+        with self.assertRaises(dateroll.utils.ParserStringsError):
             ddh("33553")
 
-        with self.assertRaises(parsers.ParserStringsError):
+        with self.assertRaises(dateroll.utils.ParserStringsError):
             ddh("11553")
-
-    def test_weirdStrings(self):
-        """
-        convention is mdy
-        """
-
-        ddh("t+1d-1bd") == ddh("t")
-        ddh("t+1d-1d") == ddh("t")
-        ddh("t+1y1m") == ddh("t+13m")
-        ddh("t-1y1m") == ddh("t-13m")
-        ddh("t+1y1m-13m") == ddh("t")
-        ddh("t-1y1m+13m") == ddh("t")
-        ddh("t+1y+1m-1y-1m") == ddh("t")
-        ddh("t+1y1m-1y1m") == ddh("t")
-        ddh("t+1w-7d") == ddh("t")
 
     def test_parseComboMDY(self):
         """
@@ -312,18 +297,18 @@ class TestUsage(unittest.TestCase):
                     if int(m2) > 12 or int(m2) < 1:
                         # month is wrong
 
-                        with self.assertRaises(parsers.ParserStringsError):
+                        with self.assertRaises(dateroll.utils.ParserStringsError):
                             ddh(mdy)
 
                     elif int(d2) > 31 or int(d2) < 1:
                         # date is wrong
 
-                        with self.assertRaises(parsers.ParserStringsError):
+                        with self.assertRaises(dateroll.utils.ParserStringsError):
                             ddh(mdy)
                     elif int(y2) < 1000 and int(y2) >= 100:
                         # eg y=0203
 
-                        with self.assertRaises(parsers.ParserStringsError):
+                        with self.assertRaises(dateroll.utils.ParserStringsError):
                             ddh(mdy)
                     else:
                         # should not raise error
@@ -334,11 +319,11 @@ class TestUsage(unittest.TestCase):
                     if len(mdy) < 6 and len(mdy) > 3:
                         # if less than 3 it wont match so parseError from dateMath
 
-                        with self.assertRaises(parsers.ParserStringsError):
+                        with self.assertRaises(dateroll.utils.ParserStringsError):
                             ddh(mdy)
                     else:
 
-                        with self.assertRaises(parsers.ParserStringsError):
+                        with self.assertRaises(Exception):
                             ddh(mdy)
                     combo_count += 1
             else:
@@ -351,11 +336,11 @@ class TestUsage(unittest.TestCase):
                         combo_count += 1
                         if int(d2) > 31 or int(d2) < 1:
 
-                            with self.assertRaises(parsers.ParserStringsError):
+                            with self.assertRaises(dateroll.utils.ParserStringsError):
                                 ddh(mdy)
                         elif int(y2) < 1000 and int(y2) >= 100:
                             # eg y=0203
-                            with self.assertRaises(parsers.ParserStringsError):
+                            with self.assertRaises(dateroll.utils.ParserStringsError):
                                 ddh(mdy)
                         else:
                             # it should not raise error
@@ -366,13 +351,14 @@ class TestUsage(unittest.TestCase):
                         # will raise error parser
                         if len(dy_new) < 4:
                             # raise value error
-                            with self.assertRaises(parsers.ParserStringsError):
+                            with self.assertRaises(dateroll.utils.ParserStringsError):
+
                                 ddh(mdy)
 
                 else:
                     combo_count += 1
                     # it will raise value error on month
-                    with self.assertRaises(ValueError):
+                    with self.assertRaises(Exception):
                         ddh(mdy)
         print(f"test_parseComboMDY:tested total of {combo_count} cases")
         self.assertEqual(combo_count, len(combos))

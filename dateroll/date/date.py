@@ -1,21 +1,37 @@
 import datetime
+from zoneinfo import ZoneInfo
 
 import dateutil.relativedelta
+from tzlocal import get_localzone
 
 import dateroll.ddh.ddh as ddhModule
-import dateroll.parser.parsers as parsersModule
+import dateroll.parser.parser as parserModule
 from dateroll import pretty
 from dateroll.calendars.calendarmath import calmath
 from dateroll.duration.duration import Duration
 from dateroll.settings import settings
 from dateroll import utils
+
+
 DateLike = (datetime.datetime, datetime.date)
+TZ_DISPLAY = (
+    get_localzone()
+    if settings.tz_display == "System"
+    else ZoneInfo(settings.tz_display)
+)
+TZ_PARSER = (
+    get_localzone() if settings.tz_parser == "System" else ZoneInfo(settings.tz_parser)
+)
 
 
-class Date(datetime.date):
+class Date(datetime.datetime):
     """
-    A Date, inherits from datetime.date, represents a specific day (no sub-units of day)
+    A Date, inherits from datetime.datetime, represents a specific day (no sub-units of day)
     """
+
+    def __new__(cls, *args, **kwargs):
+        kwargs.setdefault("tzinfo", TZ_PARSER)
+        return super().__new__(cls, *args, **kwargs)
 
     @staticmethod
     def from_string(o):
@@ -25,30 +41,51 @@ class Date(datetime.date):
                 f"from_string requires string, cannot use {type(o).__name__}"
             )
 
-        dt = parsersModule.parseDateString(o)
-        return Date.from_datetime(dt)
+        dt = parserModule.parse_to_dateroll(o)
+        return Date.from_date(dt)
 
     @staticmethod
-    def from_datetime(o, utc=False):
+    def from_date(o, utc=False):
         """
-        Create a Date instance from a datetime.datetime (drops time information), or datetime.date
+        Create a Datetime instance from a datetime.date with intraday time hh:mm:ss.us
         """
-        if isinstance(o, Date):
-            return o
-        elif isinstance(o, DateLike):
-            y, m, d = o.year, o.month, o.day
-            return Date(y, m, d)
+
+        if isinstance(o, datetime.datetime):
+            return Date(
+                o.year, o.month, o.day, o.hour, o.minute, o.second, o.microsecond
+            )
+        elif isinstance(o, datetime.date):
+            return Date(o.year, o.month, o.day, 0, 0)
         else:
             raise TypeError(
-                f"from_datetime requires datetime, cannot use {type(o).__name__}"
+                f"from_date requires datetime.datetime, cannot use {type(o).__name__}"
+            )
+
+    @staticmethod
+    def from_datetime(o):
+        if isinstance(o, Date):
+            return o
+        if isinstance(o, datetime.datetime):
+
+            return Date(
+                o.year, o.month, o.day, o.hour, o.minute, o.second, o.microsecond
+            )
+        elif isinstance(o, datetime.date):
+            return utils.date_to_date(o)
+        else:
+            raise TypeError(
+                f"from_date requires datetime.datetime, cannot use {type(o).__name__}"
             )
 
     @staticmethod
     def from_unix(o):
+        """
+        convert datetime of UTC
+        """
         if not isinstance(o, (int, float)):
             raise TypeError("Must be int/float")
-        dt = datetime.date.fromtimestamp(o)
-        return Date.from_datetime(dt)
+        dt = datetime.datetime.fromtimestamp(o, TZ_PARSER)
+        return dt
 
     @staticmethod
     def from_xls(o):
@@ -64,12 +101,12 @@ class Date(datetime.date):
             else:
                 raise TypeError("Must be int/float")
 
-        base_date = datetime.datetime(1899, 12, 30)
+        base_date = datetime.datetime(1899, 12, 30).astimezone(TZ_PARSER)
         days = int(o)
         fraction = o - days
         seconds_in_day = int(fraction * 24 * 3600)
         dt = base_date + datetime.timedelta(days=days, seconds=seconds_in_day)
-        return Date.from_datetime(dt)
+        return dt
 
     @staticmethod
     def from_timestamp(o):
@@ -77,20 +114,45 @@ class Date(datetime.date):
         Create a Date instance from a unix timestamp
         """
         if isinstance(o, (int, float)):
-            dt = datetime.date.fromtimestamp(o)
-            return Date.from_datetime(dt)
+            dt = datetime.datetime.fromtimestamp(o, TZ_PARSER)
+            return dt
         else:
             raise TypeError(
-                f"from_datetime requires int/float, cannot use {type(o).__name__}"
+                f"from_date requires int/float, cannot use {type(o).__name__}"
+            )
+
+    @staticmethod
+    def to_naive(o):
+        """
+        convert time into a naive timezone
+        """
+
+        if isinstance(o, DateLike):
+            if o.tzinfo is not None:
+                dt = o.replace(tzinfo=None)
+                return dt
+            else:
+                return o
+        else:
+            raise TypeError(
+                f"from_date requires int/float, cannot use {type(o).__name__}"
             )
 
     @staticmethod
     def today():
-        return Date.from_datetime(datetime.date.today())
+        return datetime.datetime.now(TZ_PARSER)
 
     @property
     def datetime(self):
-        return datetime.datetime(self.year, self.month, self.day)
+        return datetime.datetime(
+            self.year,
+            self.month,
+            self.day,
+            self.hour,
+            self.minute,
+            self.second,
+            self.microsecond,
+        ).astimezone(self.tzinfo)
 
     @property
     def date(self):
@@ -135,11 +197,15 @@ class Date(datetime.date):
 
     @property
     def to_unix(self):
-        return int(self.datetime.timestamp())
+        return int(self.timestamp())
 
     @property
     def iso(self):
-        return self.isoformat().split("T")[0]
+
+        if self.tzinfo is not None:
+            self = self.replace(tzinfo=None)
+
+        return self.isoformat()
 
     def __add__(self, o):
         """
@@ -157,15 +223,18 @@ class Date(datetime.date):
         elif isinstance(o, Duration):
             # date + duration
             # goes to __radd__ of Duration
-            return Date.from_datetime(o.__radd__(self))
+            return o.__radd__(self)
         elif isinstance(o, int):
             # date + int, int -> duration, -> date + duration -> __radd__ duration
             # goes to __radd__ of Duration
             return Duration(days=o).__radd__(self)
         elif isinstance(o, datetime.timedelta):
-            return Date.from_datetime(self.date + o)
+            return Date.from_date(self.date + o)
         elif isinstance(o, dateutil.relativedelta.relativedelta):
-            return Date.from_datetime(self.date + o)
+
+            result = self.datetime + o
+            result = utils.datetime_to_date(result)
+            return result
         else:
             raise TypeError(
                 f"unsupported operand type(s) for +: 'Date' and {type(o).__name__}"
@@ -185,19 +254,22 @@ class Date(datetime.date):
 
         if isinstance(o, DateLike):
             # date - date
-            # convert all datetimes to datetime.date for sub to be timedelta, then create Duration from timedelta
+            # convert all datetimes to datetime.datetime for sub to be timedelta, then create Duration from timedelta
             if isinstance(o, Date):
-                dt = o.date
+                dt = o.datetime
             elif isinstance(o, datetime.datetime):
                 # truncates time!
-                dt = datetime.date(o.year, o.month, o.day)
+                dt = o.astimezone(TZ_PARSER)
             else:
                 if isinstance(o, datetime.date):
-                    dt = o
+                    dt = datetime.datetime(o.year, o.month, o.day, 0, 0).astimezone(
+                        TZ_PARSER
+                    )
 
-            relative_delta = dateutil.relativedelta.relativedelta(self.date, dt)
+            relative_delta = dateutil.relativedelta.relativedelta(self.datetime, dt)
+
             return Duration.from_relativedelta(
-                relative_delta, _anchor_start=dt, _anchor_end=self.date
+                relative_delta, _anchor_start=dt.date(), _anchor_end=self.date
             )
 
         elif isinstance(o, Duration) or "Duration" in o.__class__.__name__:
@@ -220,7 +292,7 @@ class Date(datetime.date):
 
     def __rsub__(self, o):
         if isinstance(o, (datetime.date, datetime.datetime)):
-            return Date.from_datetime(o) - self
+            return Date.from_date(o) - self
 
         raise TypeError(
             f"Cannot subtract Date from {type(o).__name__}, what are you trying to do?"
@@ -245,9 +317,11 @@ class Date(datetime.date):
 
     @property
     def cal(self):
+
         if hasattr(self, "origin_dur_date"):
+
             pretty_calendars = pretty.pretty_between_two_dates(
-                self.date, self.origin_dur_date, self.origin_dur_cals, calmath
+                self.date, self.origin_dur_date.date, self.origin_dur_cals, calmath
             )
             print(pretty_calendars)
         else:
@@ -257,35 +331,19 @@ class Date(datetime.date):
             print(pretty_calendars)
 
     def __repr__(self):
-        return f"Date({self.year},{self.month},{self.day})"
+        return f"Date({self.year},{self.month},{self.day},{self.hour},{self.minute},{self.second},{self.microsecond},{self.tzinfo})"
 
     def to_string(self):
         """
         should print as string according to convention
         """
-        mask = utils.convention_map[settings.convention]
-        return self.strftime(mask)
+        self.astimezone(TZ_DISPLAY)
+        mask = utils.convention_map_datetime[settings.convention]
+        result = f"{self.strftime(mask)} {self.tzinfo}"
+        return result
 
     def __str__(self):
         return self.to_string()
-
-    # Backwards compatibility with datetime.datetime, some 3rd party libraries assume subclasses have <1d properties, we assume 00:00:00
-
-    @property
-    def hour(self):
-        return 0
-
-    @property
-    def minute(self):
-        return 0
-
-    @property
-    def second(self):
-        return 0
-
-    @property
-    def microsecond(self):
-        return 0
 
 
 DateLike = DateLike + (Date,)

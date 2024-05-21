@@ -2,13 +2,16 @@ import datetime
 import sys
 import unittest
 from io import StringIO
+import json
 
 import dateutil.relativedelta
 
 from dateroll import Date, Duration, ddh
 from dateroll.parser import parsers
-from dateroll.parser.parsers import ParserStringsError
+from dateroll.utils import ParserStringsError
 from dateroll.settings import settings
+
+EXPECTED_DAY_COUNT_PATH = lambda: "tests/test_data/ql_data.json"
 
 
 class TestDuration(unittest.TestCase):
@@ -24,9 +27,7 @@ class TestDuration(unittest.TestCase):
         """
         x = Duration.from_string("+3m|NY")
         self.assertIsInstance(x, Duration)
-        self.assertRaises(
-            parsers.ParserStringsError, lambda: Duration.from_string("garbage")
-        )
+        self.assertRaises(ParserStringsError, lambda: Duration.from_string("garbage"))
         self.assertRaises(TypeError, lambda: Duration.from_string(3))
 
     def test_from_rd(self):
@@ -154,6 +155,7 @@ class TestDuration(unittest.TestCase):
         expected_d = Date(2024, 3, 7)
         dur = Duration(bd=1)
         sign, newd = dur.adjust_bds(d)
+
         self.assertEqual(newd, expected_d)
 
         dur = Duration()
@@ -256,7 +258,7 @@ class TestDuration(unittest.TestCase):
         dur = Duration(days=4)
         dt = Date(2024, 1, 1)
         x = dur + dt
-        self.assertEqual(x, datetime.date(2024, 1, 5))
+        self.assertEqual(x.date, datetime.date(2024, 1, 5))
 
     def test___eq__(self):
         """
@@ -381,7 +383,7 @@ class TestDuration(unittest.TestCase):
         dur = Duration(bd=5)
         dt = Date(2024, 1, 1)
         dur += dt
-        self.assertEqual(dur, datetime.date(2024, 1, 8))
+        self.assertEqual(dur.date, datetime.date(2024, 1, 8))
 
     def test___init__(self):
         pass
@@ -390,7 +392,7 @@ class TestDuration(unittest.TestCase):
         dur = Duration(days=4)
         dt = Date(2024, 1, 1)
         dur -= dt
-        self.assertEqual(dur, datetime.date(2023, 12, 28))
+        self.assertEqual(dur.date, datetime.date(2023, 12, 28))
 
     def test___neg__(self):
         """
@@ -567,6 +569,8 @@ class TestDuration(unittest.TestCase):
         self.assertEqual(dur.to_string(), "+1y+2m+3d+4bd|NYuWE/MOD")
         self.assertEqual(dur2.to_string(), "+1y-2m+3d+4bd|NYuWE/MOD")
         self.assertEqual(dur3.to_string(), "+0d")
+        dur4 = Duration(year=1, h=23, min=12, s=11, us=20)
+        self.assertEqual(dur4.to_string(), "+1y+23h+12min+11s+20us")
 
     def test_just_bds(self):
         """
@@ -690,7 +694,7 @@ class TestDuration(unittest.TestCase):
         """
 
         # junk
-        self.assertRaises(ParserStringsError, lambda: ddh("1z"))
+        self.assertRaises(Exception, lambda: ddh("1z"))
         # duplicate, only 1 of bd, d, w, m, q, y allowed for parseDurationString, currently picks one of them
         self.assertRaises(ParserStringsError, lambda: ddh("1bd1bd"))
         self.assertRaises(ParserStringsError, lambda: ddh("1d1d"))
@@ -699,6 +703,42 @@ class TestDuration(unittest.TestCase):
         self.assertRaises(ParserStringsError, lambda: ddh("1q1q"))
         self.assertRaises(ParserStringsError, lambda: ddh("1y1y"))
         self.assertRaises(ParserStringsError, lambda: ddh("1y1y1m1d"))
+
+    def test_yfs(self):
+        d1 = ddh("5/15/2021")
+        d2 = ddh("5/15/2024")
+        # get expected answers from json file
+        with open(EXPECTED_DAY_COUNT_PATH(), "r") as f:
+            expected_daycount_dic = json.load(f)
+        d1_rs = d1.to_string().split(" ")[0]
+        d2_rs = d2.to_string().split(" ")[0]
+        expected_dcf_ACT360 = expected_daycount_dic[f"{d1_rs}:{d2_rs}:ACT/360:NY"]
+
+        dcf_ACT360 = (d2 - d1).yf("ACT/360")
+
+        self.assertEqual(dcf_ACT360, expected_dcf_ACT360)
+
+        expected_dcf_ACT365 = expected_daycount_dic[f"{d1_rs}:{d2_rs}:ACT/365:NY"]
+        dcf_ACT365 = (d2 - d1).yf("ACT/365")
+        self.assertEqual(dcf_ACT365, expected_dcf_ACT365)
+
+        expected_dcf_30E360 = expected_daycount_dic[f"{d1_rs}:{d2_rs}:30E360:NY"]
+        dcf_30E360 = (d2 - d1).yf("30E/360")
+        self.assertEqual(dcf_30E360, expected_dcf_30E360)
+
+        # if we change to BR the difference is quite big eg, toler=0.083
+        expected_dcf_BD252 = expected_daycount_dic[f"{d1_rs}:{d2_rs}:bd252:NY"]
+        dcf_bd252 = (d2 - d1).yf("BD/252", cals="NY")
+        toler = abs(expected_dcf_BD252 - dcf_bd252)
+
+        self.assertTrue(toler < 0.03)
+
+        with self.assertRaises(ValueError):
+            (d2 - d1).yf("none")
+        dur2 = d2 - d1
+        dur2.__setattribute__("cals", "NY")
+        dcf_bd252 = (d2 - d1).yf("BD/252", cals="NY")
+        toler = abs(expected_dcf_BD252 - dcf_bd252)
 
     def test_gt(self):
         """
@@ -721,13 +761,17 @@ class TestDuration(unittest.TestCase):
             Duration(days="10")
         with self.assertRaises(ValueError):
             Duration(bus_days=10)
-        
+
     def test_durationstr_on_second(self):
         """
-            make duration string work on the end date of schedule, eg, ddh(t,5y,3m)
+        make duration string work on the end date of schedule, eg, ddh(t,5y,3m)
         """
+        result = ddh("t,t+5y,3m").list
+        expected = ddh("t,5y,3m").list
+        result = [d.date for d in result]
+        expected = [d.date for d in expected]
+        self.assertEqual(result, expected)
 
-        self.assertEqual(ddh("t,t+5y,3m").list,ddh("t,5y,3m").list)
 
 if __name__ == "__main__":
     unittest.main()

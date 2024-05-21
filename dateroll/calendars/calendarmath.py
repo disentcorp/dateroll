@@ -21,7 +21,8 @@ class CalendarMath:
     """
     CalendarMath is a singleton that holds "compiled" version of your Calendars
     Calendar is a dict-on-disk object that stores vectors of all holidays.
-    CalendarMath stores calendar unions (cached), bd-counter dictionaries for your calendars, and more, and has a cached-on-disk backend as well.
+    CalendarMath stores calendar unions (cached), bd-counter dictionaries for your calendars, and more,
+    and has a cached-on-disk backend as well.
     If a mutation of a calendar is detected, cached is purged and CalendarMath triggers a rebuild.
 
     CalendarMath operationsa are used by Duration and Date:
@@ -33,7 +34,8 @@ class CalendarMath:
     next_bd(d1,cals)    - next business day (mod=True triggers modified following)
     prev_bd(d1,cals)    - previous business day (mod=True triggered modified previous)
 
-    calenedar unions are handled automatically and cached, if a list of calendars is provided a new set of compiled calendars is created (doesn't impact Calendar's dict-on-disk representation
+    calendar unions are handled automatically and cached, if a list of calendars is provided a new set of compiled calendars
+    is created (doesn't impact Calendar's dict-on-disk representation
 
     """
 
@@ -58,11 +60,11 @@ class CalendarMath:
                 try:
                     cached = pickle.load(f)
                     return cached
-                except Exception:
+                except Exception as e:
                     import traceback
 
                     traceback.print_exc()
-                    print("[dateroll] Cannot load cache for calmath unions, clearing.")
+                    print(f"[dateroll] Cannot load cache for calmath unions, clearing.")
                     os.remove(self.home)
         else:
             self.save_cache()
@@ -78,6 +80,7 @@ class CalendarMath:
             "hash": self.hash,
         }
         with open(self.home, "wb") as f:
+            print("[dateroll] Writing cache (calmath unions)")
             pickle.dump(cached, f)
 
     def cached_compile_all(self):
@@ -97,6 +100,7 @@ class CalendarMath:
         self.compile_all()
 
     def compile_all(self):
+        print("[dateroll] Optimizing calendars")
         d = self.cals.copy()
         for k, v in d.items():
             if k == "WE":
@@ -120,9 +124,6 @@ class CalendarMath:
     def cal_list(self):
         if not self.has_mutated:
             return self.cal_names
-        else:
-            self.compile_all()
-            return self.cal_names
 
     @property
     def recompile_if_mutated(self):
@@ -132,7 +133,7 @@ class CalendarMath:
     @property
     def data_backend_present(self):
         """
-        if any calendars are mutated the datemath backend is automatically removed by the Calendar class for saftey
+        if any calendars are mutated the datemath backend is automatically removed by the Calendar class for safety
         originally i checked "recompile_if_mutated" before calendar ops, but adds 89ms to do the unix checksome.
         This is a faster check for the existence of the data.
         """
@@ -168,7 +169,7 @@ class CalendarMath:
                 fwd[dt] = last_idx
                 try:
                     last_cal = cal.pop(0)
-                except Exception:
+                except:
                     break
             else:
                 # not holiday
@@ -188,12 +189,14 @@ class CalendarMath:
 
         # when not bd, we need to handle n; positive direction n=0-->1 and negative direction n=-1--->0
         # because of the property of fwd, bck dictionaries
+
         if isinstance(d, datetime.datetime):
+            h, min, s, us = d.hour, d.minute, d.second, d.microsecond
             d = datetime.date(d.year, d.month, d.day)
-        elif isinstance(d, dateModule.Date):
-            d = d.date
+
         elif isinstance(d, datetime.date):
-            pass
+            h, min, s, us = 0, 0, 0, 0
+
         else:
             raise TypeError(f"Date must be date (got {type(d).__name__})")
         if not self.is_bd(d, cals):
@@ -215,7 +218,7 @@ class CalendarMath:
         bd_index = A[d]
         new_bd_index = bd_index + n
         new_dt = B[new_bd_index]
-
+        new_dt = dateModule.Date(new_dt.year, new_dt.month, new_dt.day, h, min, s, us)
         return new_dt
 
     def sub_bd(self, d, n, cals):
@@ -223,7 +226,7 @@ class CalendarMath:
         subtract (opposed of add)
         """
         if n < 0:
-            raise ValueError("n needs to be positive number")
+            raise ValueError(f"n needs to be positive number")
 
         n = -1 * float(n)
         return self.add_bd(d, n, cals)
@@ -258,6 +261,8 @@ class CalendarMath:
         fwd = self.fwd[cal_name]
         mult = 1 if t1 < t2 else -1
         a, b = (t1, t2) if t1 < t2 else (t2, t1)
+        t1, t2 = t1.date, t2.date
+
         n = fwd[t2] - fwd[t1] + 1 * mult
         if ie[0] == "[" and not a.is_bd(cals=cals):
             # because of the fwd property e.g friday:1,sat:1,sun:1,mon(hol):1,tue:2 we subtract 1 more on the left side
@@ -310,7 +315,7 @@ class CalendarMath:
 
     def union_key(self, cals):
         """
-        takes a cals as either  str of 1 cal or a list of str cals and return a sorted tuple, if empty list assume weekends
+        takes a cals as either str of 1 cal or a list of str cals and return a sorted tuple, if empty list assumes weekends
 
         """
         # cals always come as a tuple,list,set, no need to raise error here
@@ -329,7 +334,7 @@ class CalendarMath:
         unioned_dates = set()
         cals = CalendarMath.reverse_calstring(cal_union_key)
         for cal in cals:
-            # saftey checks
+            # safety checks
             if cal not in self.cals:
 
                 raise KeyError(f"There is no calendar {cal}")
@@ -338,6 +343,7 @@ class CalendarMath:
             unioned_dates |= set(self.cals[cal])
 
         # compile into large dict
+        print(f"[dateroll] compiling new union [{cal_union_key}]")
         dict_tuple = self.gen_dicts(cal_union_key, unioned_dates, self.ALL)
         self.fwd[cal_union_key], self.bck[cal_union_key], self.ibd[cal_union_key] = (
             dict_tuple
@@ -358,5 +364,4 @@ class CalendarMath:
 calmath = CalendarMath()
 
 if __name__ == "__main__":  # pragma:no cover
-    pass
-    
+    ...

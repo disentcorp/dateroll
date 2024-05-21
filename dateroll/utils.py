@@ -1,12 +1,12 @@
 import calendar
 import re
 
-# from dateroll.date import date as dateModule
-# from dateroll.ddh import ddh as ddhModule
-from dateroll.parser import patterns
-
 import dateroll.date.date as dateModule
 import dateroll.ddh.ddh as ddhModule
+from dateroll.parser import patterns
+
+
+class ParserStringsError(Exception): ...
 
 
 XPRINT_ON = False
@@ -117,10 +117,13 @@ def swap_month_names(s):
     """
     swap month names into number string eg, Aug-->08
     """
+
     month_str = re.match("[a-zA-Z]+", s)
     if month_str:
         # aug or AUG --> Aug
-
+        if month_str[0] in ["A", "B", "C"]:
+            # here string is coming from the next(gen()) function
+            return s
         month_str = month_str[0].lower()
         month_str_numb = month_dict.get(month_str, None)
         if month_str_numb is None:
@@ -130,6 +133,11 @@ def swap_month_names(s):
     return s
 
 
+convention_map_datetime = {
+    "YMD": r"%Y-%m-%d %H:%M:%S.%f",
+    "DMY": r"%d/%m/%Y %H:%M:%S.%f",
+    "MDY": r"%m/%d/%Y %H:%M:%S.%f",
+}
 convention_map = {"YMD": r"%Y-%m-%d", "DMY": r"%d/%m/%Y", "MDY": r"%m/%d/%Y"}
 
 
@@ -143,6 +151,70 @@ def str_or_date(s):
     return d
 
 
+def datetime_to_date(date):
+    """
+    convert datetime into disent date
+    """
+
+    disent_date = dateModule.Date(
+        date.year,
+        date.month,
+        date.day,
+        date.hour,
+        date.minute,
+        date.second,
+        date.microsecond,
+    )
+    return disent_date
+
+
+def date_to_date(date):
+    """
+    convert datetime.date into disent date
+    """
+
+    disent_date = dateModule.Date(date.year, date.month, date.day)
+    return disent_date
+
+
+def sort_string(string, dates):
+    """
+    the key of dates={A:datetime,B:datetime2} is in an alphabetical order
+    here but string in an alphabetical order when it is not
+    """
+    string = string.replace(" ", "")
+    string_compare = string
+    ordered_string = ""
+    for letter in dates.keys():
+        ltr_idx = string.find(letter)
+        if ltr_idx == -1:
+
+            raise ParserStringsError(
+                "Failed to sort strings. Cannot recognize as date math", string
+            )
+        if ltr_idx == 0:
+            # first alphabet
+            if letter == "A":
+                ordered_string += letter
+            else:
+                ordered_string += f"+{letter}"
+                string_compare += "+"
+        else:
+
+            sign = string[ltr_idx - 1]
+            if not sign in ["+", "-"]:
+                ordered_string += f"+{letter}"
+                string_compare += "+"
+            else:
+                ordered_string += f"{sign}{letter}"
+
+    if len(ordered_string) != len(string_compare):
+
+        raise ParserStringsError("Cannot recognize as date math", string)
+
+    return ordered_string, dates
+
+
 def date_slice(s: slice, list_: list):
     """
     s[t1:]   -- after t1 (inclusive)
@@ -154,15 +226,24 @@ def date_slice(s: slice, list_: list):
     if start is not None and stop is None and step is None:
         # after
         start = str_or_date(start)
+
+        if all(not isinstance(d, dateModule.Date) for d in list_):
+            start = start.date
         return [i for i in list_ if i >= start]
     elif start is None and stop is not None and step is None:
         # before
         stop = str_or_date(stop)
+        if all(not isinstance(d, dateModule.Date) for d in list_):
+            stop = stop.date
         return [i for i in list_ if i <= stop]
     elif start is not None and stop is not None:
         # between
         start = str_or_date(start)
         stop = str_or_date(stop)
+        if all(not isinstance(d, dateModule.Date) for d in list_):
+            start = start.date
+            stop = stop.date
+
         return [i for i in list_ if i >= start and i <= stop]
     elif start is None and stop is None and step is None:
         # all

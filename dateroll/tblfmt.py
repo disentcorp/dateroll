@@ -42,11 +42,3 @@ def pretty_table(ld, col_widths=None):
         x += "─" * (width + 2) + end
 
     return x
-
-
-if __name__ == "__main__":  # pragma:no cover
-    from dateroll import cals
-
-    data = cals._calsdata
-    s = pretty_table(data)
-    print(s)
