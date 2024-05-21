@@ -9,13 +9,13 @@ path = pathlib.Path("~/.dateroll/settings.py").expanduser()
 ctx_conv = "_ctx_convention"
 
 default_settings = {
-    "convention": "MDY", 
-    "twodigityear_cutoff": 2050, 
-    "default_daycounter" : "ACT/365",
-    "ie":"(]",
-    "tz_store":"UTC",
-    "tz_display":"System",
-    "tz_parser":"System",
+    "convention": "MDY",
+    "twodigityear_cutoff": 2050,
+    "default_daycounter": "ACT/365",
+    "ie": "(]",
+    "tz_store": "UTC",
+    "tz_display": "System",
+    "tz_parser": "System",
 }
 
 default_settings_validation = {
@@ -37,25 +37,23 @@ default_settings_validation = {
         ),
     ),
     "default_daycounter": (
-                lambda x: x in ["ACT/365", "ACT/365F", "ACT/360", "30/360", "30E/360"],
-        ValueError(
-            "Must be one of ACT/365, ACT/365F, ACT/360, 30/360, 30E/360"
-        ),
+        lambda x: x in ["ACT/365", "ACT/365F", "ACT/360", "30/360", "30E/360"],
+        ValueError("Must be one of ACT/365, ACT/365F, ACT/360, 30/360, 30E/360"),
     ),
-    "tz_store":(
-        lambda x:isinstance(x,str),
-        ValueError("Must be one of pytz timezones")
+    "tz_store": (
+        lambda x: isinstance(x, str),
+        ValueError("Must be one of pytz timezones"),
     ),
-    "tz_display":(
-        lambda x:isinstance(x,str),
-        ValueError("Must be one of pytz timezones")
+    "tz_display": (
+        lambda x: isinstance(x, str),
+        ValueError("Must be one of pytz timezones"),
     ),
-    "tz_parser":(
-        lambda x:isinstance(x,str),
-        ValueError("Must be one of pytz timezones")
+    "tz_parser": (
+        lambda x: isinstance(x, str),
+        ValueError("Must be one of pytz timezones"),
     ),
-
 }
+
 
 class Settings:
     """
@@ -162,7 +160,3 @@ class Settings:
 
 
 settings = Settings()
-
-if __name__ == "__main__":  # pragma: no cover
-    # settings = Settings()
-    ...

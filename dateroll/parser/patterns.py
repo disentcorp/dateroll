@@ -36,44 +36,6 @@ MONTHNAMES = re.compile(
     r"(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec|January|February|March|April|June|July|August|September|October|November|December)"
 )
 
-# patterns regarding the time string
-# if addition is more than 3, it might cause an error, because of D as day
-# PERIOD_LETTER_TIME = r"(?:bd|BD|[ABCdDwWmMqQyY])"
-# OPTIONAL_PART = fr"(?:[+-]?\d*?{PERIOD_LETTER_TIME} ?)"
-# OPTIONAL_PART = fr"(?:{OPERATOR}{NUMBER}{PERIOD_LETTER_TIME} ?)"
-# OPTIONAL_OPERATOR = r"[-+]?"
-# HOUR_LETTER = r"(?:[Hh])"
-# MINUTE_LETTER = r"(?:MIN|min)"
-# SECONDS_LETTER = r"(?:[Ss])"
-
-# MICROSECONDS_LETTER = r"(?:US|us)"
-# HOUR_NUMBER = fr"(?:({INT_PART})({HOUR_LETTER}))"
-# MINUTE_NUMBER = fr"(?:({INT_PART})({MINUTE_LETTER}))"
-# SECONDS_NUMBER = fr"(?:({INT_PART})({SECONDS_LETTER}))"
-# MICROSECONDS_NUMBER = fr"(?:({INT_PART})({MICROSECONDS_LETTER}))"
-
-# # COMPLETE_TIME = f"(?:{OPTIONAL_PART}{HOUR_NUMBER}?{MINUTE_NUMBER}?{SECONDS_NUMBER}?{MICROSECONDS_NUMBER}?)"
-# COMPLETE_TIME = f"({OPTIONAL_OPERATOR}{HOUR_NUMBER}?{OPTIONAL_OPERATOR}{MINUTE_NUMBER}?{OPTIONAL_OPERATOR}{SECONDS_NUMBER}?{OPTIONAL_OPERATOR}{MICROSECONDS_NUMBER}?)"
-
-# OPERATOR = r" ?(\+|-)? ?"
-
-
-# TIME_LETTER = r"us|US|MIN|min|[HhsS]"
-# TIME_PERIOD = f"(?:({INT_PART})({TIME_LETTER}))"
-# REPEATING_TIME_PERIOD = f"(?:{TIME_PERIOD}{TIME_PERIOD}?{TIME_PERIOD}?{TIME_PERIOD}?)"
-# COMPLETE_TIME = f"({OPERATOR}\d*[bd|BD|[dDwWmMqQyY]]*{REPEATING_TIME_PERIOD})"
-
-# testing one
-# OPERATOR = r" ?(\+|-)? ?"
-# TIME_LETTER = r"us|US|MIN|min|[HhsS]"
-# TIME_PERIOD = f"({INT_PART})({TIME_LETTER})"
-# TIME_PERIOD_CATCH = f"(?:({TIME_PERIOD}))"
-# TIME_PERIOD_NO_CATCH = f"(?:{TIME_PERIOD})"
-# REPEATING_TIME_PERIOD = f"(?:{TIME_PERIOD_CATCH}{TIME_PERIOD_NO_CATCH}*)"
-# COMPLETE_TIME = f"({OPERATOR}{REPEATING_TIME_PERIOD})"
-
 # iso date patter before T
 ISO_D = r"\d{1,2}T"
 ISO_YMD = f"(({Y}){_}({M}){_}({ISO_D}))"
-
-

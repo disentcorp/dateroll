@@ -47,8 +47,6 @@ used to generate dateroll/sampledata/*.csv before packaging wheel
 #     return list_
 
 
-
-
 # def generate_ALL_and_WE(n=DEFAULT_YEAR_RANGE):
 #     """
 #     generate set of all days in some "big range"
@@ -75,11 +73,11 @@ used to generate dateroll/sampledata/*.csv before packaging wheel
 
 # def generate_sample_data(cals, n=DEFAULT_YEAR_RANGE):
 #     """
-#         brazil holidays are not complete in workalender so we used 
+#         brazil holidays are not complete in workalender so we used
 #         brazil holidays of quantlibe
 #     """
 #     ALL, WE = generate_ALL_and_WE(n)
-    
+
 #     data = {
 #         "ALL": ALL,
 #         "WE": WE,
@@ -92,14 +90,12 @@ used to generate dateroll/sampledata/*.csv before packaging wheel
 #     for calendar_name, list_of_dates in data.items():
 #         p = f"{ROOT_DIR}/dateroll/sampledata/{calendar_name}.csv"
 #         filename = pathlib.Path(p)
-        
+
 #         with open(filename, "w") as f:
 #             list_ = [i.isoformat() + "\n" for i in list_of_dates]
 #             f.writelines(list_)
 
 
-
 # if __name__ == "__main__":
 #     ROOT_DIR = pathlib.Path(__file__).parents[2]
 #     data = generate_sample_data("Na")
-    

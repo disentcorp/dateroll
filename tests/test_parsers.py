@@ -15,7 +15,7 @@ class TestParsers(unittest.TestCase):
     def setUpClass(cls): ...
 
     @classmethod
-    def tearDownClass(self): 
+    def tearDownClass(self):
         settings.convention = "MDY"
 
     def test_parseTodayString(self):
@@ -24,29 +24,31 @@ class TestParsers(unittest.TestCase):
         """
         # store convention
         orig = settings.convention
-        try: 
+        try:
 
             # american
             settings.convention = "MDY"
             expected_mdy = datetime.date.today().strftime("%m/%d/%Y")
             t = parsersModule.parseTodayString("t")
             t = ddh(t)
-            
-            self.assertEqual(t.to_string().split(' ')[0], expected_mdy)
+
+            self.assertEqual(t.to_string().split(" ")[0], expected_mdy)
 
             # european
             settings.convention = "DMY"
             expected_dmy = datetime.date.today().strftime("%d/%m/%Y")
             t = parsersModule.parseTodayString("t")
             t = ddh(t)
-            self.assertEqual(t.to_string().split(' ')[0], expected_dmy)
+            self.assertEqual(t.to_string().split(" ")[0], expected_dmy)
 
             # international
             settings.convention = "YMD"
             expected_ymd = datetime.date.today().strftime("%Y/%m/%d")
             t = parsersModule.parseTodayString("t")
             t = ddh(t)
-            self.assertEqual(t.to_string().split(' ')[0].replace("-","/"), expected_ymd)
+            self.assertEqual(
+                t.to_string().split(" ")[0].replace("-", "/"), expected_ymd
+            )
 
             # negative testing
             self.assertTrue(
@@ -73,21 +75,21 @@ class TestParsers(unittest.TestCase):
             # american
             settings.convention = "MDY"
             a = "03/08/2024"
-            l, s = parsersModule.parseManyDateStrings({},a, gen)
+            l, s = parsersModule.parseManyDateStrings({}, a, gen)
             b = list(l.values())[0].strftime("%m/%d/%Y")
             self.assertEqual(a, b)
 
             # european
             settings.convention = "DMY"
             a = "08/03/2024"
-            l, s = parsersModule.parseManyDateStrings({},a, gen)
+            l, s = parsersModule.parseManyDateStrings({}, a, gen)
             b = list(l.values())[0].strftime("%d/%m/%Y")
             self.assertEqual(a, b)
 
             # international
             settings.convention = "YMD"
             a = "2024/03/08"
-            l, s = parsersModule.parseManyDateStrings({},a, gen)
+            l, s = parsersModule.parseManyDateStrings({}, a, gen)
             b = list(l.values())[0].strftime("%Y/%m/%d")
             self.assertEqual(a, b)
 
@@ -262,7 +264,11 @@ class TestParsers(unittest.TestCase):
         self.assertEqual(
             s2,
             (
-                {"A": Duration(years=1, months=3, days=4, h=0, min=0, s=0, us=0, modified=False)},
+                {
+                    "A": Duration(
+                        years=1, months=3, days=4, h=0, min=0, s=0, us=0, modified=False
+                    )
+                },
                 "A",
             ),
         )

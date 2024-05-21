@@ -5,7 +5,6 @@ import os
 import pathlib
 import pickle
 from collections import OrderedDict
-from zoneinfo import ZoneInfo
 
 from dateroll.calendars import calendarmath as calendarmathModule
 from dateroll.date import date as dateModule
@@ -331,8 +330,3 @@ class Calendars(dict):
     @property
     def info(self):
         print(self.__str__)
-
-
-if __name__ == "__main__":  # pragma: no cover
-    ...
-    

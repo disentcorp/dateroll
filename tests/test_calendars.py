@@ -338,7 +338,9 @@ class TestStringMethods(unittest.TestCase):
         self.assertEqual(dset["05012023":], rs1)
         self.assertEqual(dset[:"03012023"], rs2)
 
-        ds_compare = [l.date for l in ds if l >= ddh("04012023") and l <= ddh("06012023")]
+        ds_compare = [
+            l.date for l in ds if l >= ddh("04012023") and l <= ddh("06012023")
+        ]
         self.assertEqual(dset["04012023":"06012023"], ds_compare)
         ds = [d.date for d in ds]
         self.assertEqual(dset[:], ds)

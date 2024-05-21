@@ -14,6 +14,7 @@ from dateroll.settings import settings
 
 LOCAL_ZONE = get_localzone()
 
+
 class TestDDH(unittest.TestCase):
     @classmethod
     def setUpClass(cls): ...
@@ -87,11 +88,10 @@ class TestDDH(unittest.TestCase):
         str->Schedule (1bd,1d,1w,1m,1y)
         """
 
-        
         #
         start = dateModule.Date(2023, 1, 3)
         end = dateModule.Date(2023, 6, 3)
-        
+
         self.assertEqual(
             ddh("01032023,06032023,1bd").list,
             scheduleModule.Schedule(start, end, durationModule.Duration(bd=1)).list,
@@ -118,7 +118,7 @@ class TestDDH(unittest.TestCase):
         purge all
         """
         ddh.purge_all()
-        base_cals = sorted(["FED", "ECB","EU", "LN", "WE", "ALL", "BR", "NY"])
+        base_cals = sorted(["FED", "ECB", "EU", "LN", "WE", "ALL", "BR", "NY"])
         self.assertEqual(sorted(ddh.hols.keys()), base_cals)
 
     def testConvention(self):
@@ -180,7 +180,9 @@ class TestsPracticalExamples(unittest.TestCase):
         test for date strings
         """
 
-        assert ddh("5/5/05").datetime == datetime.datetime(2005, 5, 5,0,0).astimezone(LOCAL_ZONE)
+        assert ddh("5/5/05").datetime == datetime.datetime(2005, 5, 5, 0, 0).astimezone(
+            LOCAL_ZONE
+        )
 
     def testDuration(self):
         """
@@ -197,9 +199,13 @@ class TestsPracticalExamples(unittest.TestCase):
         finally:
             settings.convention = "MDY"
         expected = datetime.datetime.now(LOCAL_ZONE)
-        
+
         assert result.date() == expected.date()
-        assert result.hour == expected.hour and result.minute == expected.minute and result.tzinfo==expected.tzinfo
+        assert (
+            result.hour == expected.hour
+            and result.minute == expected.minute
+            and result.tzinfo == expected.tzinfo
+        )
 
     def test_durationLike(self):
         """
@@ -209,7 +215,9 @@ class TestsPracticalExamples(unittest.TestCase):
         x = ddh(datetime.timedelta(days=10))
         self.assertEqual(
             x,
-            dateroll.Duration(years=0, months=0, days=10, h=0, min=0, s=0, us=0, modified=False),
+            dateroll.Duration(
+                years=0, months=0, days=10, h=0, min=0, s=0, us=0, modified=False
+            ),
         )
 
     def test_badObj(self):

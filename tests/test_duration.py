@@ -11,7 +11,8 @@ from dateroll.parser import parsers
 from dateroll.utils import ParserStringsError
 from dateroll.settings import settings
 
-EXPECTED_DAY_COUNT_PATH = lambda:"tests/test_data/ql_data.json"
+EXPECTED_DAY_COUNT_PATH = lambda: "tests/test_data/ql_data.json"
+
 
 class TestDuration(unittest.TestCase):
     @classmethod
@@ -26,9 +27,7 @@ class TestDuration(unittest.TestCase):
         """
         x = Duration.from_string("+3m|NY")
         self.assertIsInstance(x, Duration)
-        self.assertRaises(
-            ParserStringsError, lambda: Duration.from_string("garbage")
-        )
+        self.assertRaises(ParserStringsError, lambda: Duration.from_string("garbage"))
         self.assertRaises(TypeError, lambda: Duration.from_string(3))
 
     def test_from_rd(self):
@@ -156,7 +155,7 @@ class TestDuration(unittest.TestCase):
         expected_d = Date(2024, 3, 7)
         dur = Duration(bd=1)
         sign, newd = dur.adjust_bds(d)
-        
+
         self.assertEqual(newd, expected_d)
 
         dur = Duration()
@@ -570,8 +569,8 @@ class TestDuration(unittest.TestCase):
         self.assertEqual(dur.to_string(), "+1y+2m+3d+4bd|NYuWE/MOD")
         self.assertEqual(dur2.to_string(), "+1y-2m+3d+4bd|NYuWE/MOD")
         self.assertEqual(dur3.to_string(), "+0d")
-        dur4 = Duration(year=1,h=23,min=12,s=11,us=20)
-        self.assertEqual(dur4.to_string(),"+1y+23h+12min+11s+20us")
+        dur4 = Duration(year=1, h=23, min=12, s=11, us=20)
+        self.assertEqual(dur4.to_string(), "+1y+23h+12min+11s+20us")
 
     def test_just_bds(self):
         """
@@ -706,42 +705,41 @@ class TestDuration(unittest.TestCase):
         self.assertRaises(ParserStringsError, lambda: ddh("1y1y1m1d"))
 
     def test_yfs(self):
-        d1 = ddh('5/15/2021')
-        d2 = ddh('5/15/2024')
+        d1 = ddh("5/15/2021")
+        d2 = ddh("5/15/2024")
         # get expected answers from json file
-        with open(EXPECTED_DAY_COUNT_PATH(),"r") as f:
+        with open(EXPECTED_DAY_COUNT_PATH(), "r") as f:
             expected_daycount_dic = json.load(f)
         d1_rs = d1.to_string().split(" ")[0]
         d2_rs = d2.to_string().split(" ")[0]
         expected_dcf_ACT360 = expected_daycount_dic[f"{d1_rs}:{d2_rs}:ACT/360:NY"]
-        
-        dcf_ACT360 = (d2-d1).yf('ACT/360')
-        # print('here')
-        # import code;code.interact(local=dict(globals(),**locals()))
+
+        dcf_ACT360 = (d2 - d1).yf("ACT/360")
+
         self.assertEqual(dcf_ACT360, expected_dcf_ACT360)
 
         expected_dcf_ACT365 = expected_daycount_dic[f"{d1_rs}:{d2_rs}:ACT/365:NY"]
-        dcf_ACT365 = (d2-d1).yf('ACT/365')
+        dcf_ACT365 = (d2 - d1).yf("ACT/365")
         self.assertEqual(dcf_ACT365, expected_dcf_ACT365)
 
         expected_dcf_30E360 = expected_daycount_dic[f"{d1_rs}:{d2_rs}:30E360:NY"]
-        dcf_30E360 = (d2-d1).yf('30E/360')
+        dcf_30E360 = (d2 - d1).yf("30E/360")
         self.assertEqual(dcf_30E360, expected_dcf_30E360)
 
         # if we change to BR the difference is quite big eg, toler=0.083
         expected_dcf_BD252 = expected_daycount_dic[f"{d1_rs}:{d2_rs}:bd252:NY"]
-        dcf_bd252 = (d2-d1).yf('BD/252',cals="NY") 
+        dcf_bd252 = (d2 - d1).yf("BD/252", cals="NY")
         toler = abs(expected_dcf_BD252 - dcf_bd252)
-        
-        self.assertTrue(toler<0.03)
+
+        self.assertTrue(toler < 0.03)
 
         with self.assertRaises(ValueError):
-            (d2-d1).yf("none")
-        dur2 = (d2-d1)
-        dur2.__setattribute__("cals","NY") 
-        dcf_bd252 = (d2-d1).yf('BD/252',cals="NY") 
+            (d2 - d1).yf("none")
+        dur2 = d2 - d1
+        dur2.__setattribute__("cals", "NY")
+        dcf_bd252 = (d2 - d1).yf("BD/252", cals="NY")
         toler = abs(expected_dcf_BD252 - dcf_bd252)
-        
+
     def test_gt(self):
         """
         test when b = 0 to compare a= Duration(something) and a>b
@@ -757,8 +755,7 @@ class TestDuration(unittest.TestCase):
         # a is negative
         a = Duration(days=-10)
         self.assertFalse(a > b)
-        
-            
+
     def test_init(self):
         with self.assertRaises(TypeError):
             Duration(days="10")

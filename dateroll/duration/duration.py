@@ -101,7 +101,9 @@ class Duration(dateutil.relativedelta.relativedelta):
 
 
     We define the "reasonable business period" (naiively) as the interval of (t-100y,t+100y)
-        this could be extended: from 1582 AD to future if we have historical vectors for holiday calendar changes (i.e. juneteenth 1st occured on X, to map backwards math, and assume last forward for futuree math (e.g. last jubilee was 5cd, and happens every 50years..))
+        this could be extended: from 1582 AD to future if we have historical vectors for holiday 
+        calendar changes (i.e. juneteenth 1st occured on X, to map backwards math, and assume last forward 
+        for future math (e.g. last jubilee was 5cd, and happens every 50years..))
         realistically 5-7 year perfect lookup would be more than substantial for more use cases.
     """
 
@@ -546,10 +548,11 @@ class Duration(dateutil.relativedelta.relativedelta):
         4 steps:
             1 - if being subtracted, negate
             2 - perform non-holiday adjustments first, i.e. y's, m's, d's (returns datetime.datetime)
-            3 - perform holiday adjustments second, i.e. bd's (impliying roll from direction via sign on neg, includes -0.0 as backwards)
+            3 - perform holiday adjustments second, i.e. bd's (impliying roll from direction via sign on neg,
+            includes -0.0 as backwards)
             4 - perform modified operation, if supplied
             5 - cast datetime.datetime back into Date
-        """
+        """ 
         (
             xprint(f"Adjusting date [[{date_unadj}]] with [[{direction}*{self}]]")
             if self.debug
@@ -721,7 +724,8 @@ class Duration(dateutil.relativedelta.relativedelta):
         """
         repr sorts units by seniority specificed in global
 
-        future note: implicity call the simplify() method before sorting, and repr on the simpllifed version, not direct on __dict__
+        future note: implicity call the simplify() method before sorting, and repr on the simpllifed version, 
+        not direct on __dict__
         consider moving ny/nm/nd/nbd to dict on class??
         """
 

@@ -312,7 +312,7 @@ class TestUsage(unittest.TestCase):
                             ddh(mdy)
                     else:
                         # should not raise error
-                        
+
                         ddh(mdy_new)
                 else:
                     # should raise error
@@ -344,7 +344,7 @@ class TestUsage(unittest.TestCase):
                                 ddh(mdy)
                         else:
                             # it should not raise error
-                            
+
                             ddh(mdy)
                     else:
                         combo_count += 1
@@ -352,7 +352,7 @@ class TestUsage(unittest.TestCase):
                         if len(dy_new) < 4:
                             # raise value error
                             with self.assertRaises(dateroll.utils.ParserStringsError):
-                                
+
                                 ddh(mdy)
 
                 else:

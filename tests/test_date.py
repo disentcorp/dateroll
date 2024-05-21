@@ -71,8 +71,11 @@ class TestDate(unittest.TestCase):
 
         with self.assertRaises(TypeError):
             Date.from_date(20230101)
-        
-        self.assertEqual(Date.from_datetime(datetime.datetime(2023,2,3,0,23)),Date(2023,2,3,0,23))
+
+        self.assertEqual(
+            Date.from_datetime(datetime.datetime(2023, 2, 3, 0, 23)),
+            Date(2023, 2, 3, 0, 23),
+        )
 
     def test_is_bd(self):
         """

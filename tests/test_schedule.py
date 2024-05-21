@@ -5,7 +5,6 @@ import sys
 import unittest
 
 from tzlocal import get_localzone
-import numpy as np
 
 from dateroll.date.date import Date
 from dateroll.ddh.ddh import ddh
@@ -13,7 +12,7 @@ from dateroll.duration.duration import Duration
 from dateroll.schedule.schedule import Schedule
 from dateroll.settings import settings
 import dateroll
-import code
+
 
 class TestSchedule(unittest.TestCase):
     @classmethod
@@ -60,8 +59,7 @@ class TestSchedule(unittest.TestCase):
             datetime.date(2023, 1, 31),
             datetime.date(2023, 2, 1),
         ]
-        
-        
+
         self.assertEqual(dts, expected)
         settings.convention = "MDY"
         Ssch = Schedule.from_string("01012023,02012023,1bd")
@@ -187,7 +185,9 @@ class TestSchedule(unittest.TestCase):
         starts = [i for i in df["starts"] if i is not None]
         ends = [i for i in df["ends"] if i is not None]
         days = [i for i in df["days"] if i is not None]
-        ends_expected = [(start + Duration(days=day)).date for start, day in zip(starts, days)]
+        ends_expected = [
+            (start + Duration(days=day)).date for start, day in zip(starts, days)
+        ]
         self.assertEqual(ends, ends_expected)
         settings.convention = "MDY"
         Ssch = Schedule.from_string("01012023,02012023,3bd")
@@ -218,69 +218,63 @@ class TestSchedule(unittest.TestCase):
         self.assertRaises(dateroll.utils.ParserStringsError, lambda: ddh("t,5v,1m"))
         # bad end
         self.assertRaises(TypeError, lambda: ddh("t,t+5y,t"))
-    
+
     def test_getitem(self):
         """
-            test getitem which gets int, str, or slice
+        test getitem which gets int, str, or slice
         """
-        d1 = ddh('03012022')
-        d2 = ddh('03202022')
+        d1 = ddh("03012022")
+        d2 = ddh("03202022")
         dur = Duration(bd=1)
-        ds = Schedule(d1,d2,dur)
-        self.assertEqual(ds[-1],d2)
-        self.assertEqual(ds['03032022'],ddh('03032022'))
+        ds = Schedule(d1, d2, dur)
+        self.assertEqual(ds[-1], d2)
+        self.assertEqual(ds["03032022"], ddh("03032022"))
         with self.assertRaises(KeyError):
-            ds['01012022']
-        settings.ie = '[]'
-        
-        self.assertEqual(ds['03012022':'03112022'],ddh('03012022,03112022,1bd').list)
+            ds["01012022"]
+        settings.ie = "[]"
+
+        self.assertEqual(ds["03012022":"03112022"], ddh("03012022,03112022,1bd").list)
         with self.assertRaises(TypeError):
-            ds[datetime.datetime(2022,3,3)]
-        
+            ds[datetime.datetime(2022, 3, 3)]
+
         # reset settings
-        settings.ie = '(]'
-    
+        settings.ie = "(]"
+
     def test_iter(self):
         """
-            test getiter
+        test getiter
         """
-        d1 = ddh('03012022')
-        d2 = ddh('03102022')
+        d1 = ddh("03012022")
+        d2 = ddh("03102022")
         dur = Duration(bd=1)
-        ds = Schedule(d1,d2,dur)
+        ds = Schedule(d1, d2, dur)
 
         ls = []
         for d in ds:
             ls.append(d)
-        
-        self.assertTrue(ls,ds.list)
-    
+
+        self.assertTrue(ls, ds.list)
+
     def test_contains(self):
         """
-            test contains which returns boolean value True or False
+        test contains which returns boolean value True or False
         """
 
-        d1 = ddh('03012022')
-        d2 = ddh('03102022')
+        d1 = ddh("03012022")
+        d2 = ddh("03102022")
         dur = Duration(bd=1)
-        ds = Schedule(d1,d2,dur)
+        ds = Schedule(d1, d2, dur)
 
         self.assertTrue(d1 in ds)
         self.assertTrue(d1.datetime in ds)
-        self.assertFalse(ddh('01012022') in ds)
+        self.assertFalse(ddh("01012022") in ds)
 
-        sh = ddh('03022023,03042023,1bd')
+        sh = ddh("03022023,03042023,1bd")
         sh._dates = [d.date for d in sh.list]
-        t = datetime.date(2023,3,2)
+        t = datetime.date(2023, 3, 2)
         self.assertFalse(t in sh)
-        t = datetime.datetime(2023,3,2).astimezone(get_localzone())
+        t = datetime.datetime(2023, 3, 2).astimezone(get_localzone())
         self.assertTrue(t in sh)
-
-
-        
-
-
-
 
 
 if __name__ == "__main__":

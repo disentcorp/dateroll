@@ -9,6 +9,7 @@ import dateroll.duration.duration as durationModule
 import dateroll.parser.parsers as parsersModule
 import dateroll.schedule.schedule as scheduleModule
 
+
 class ParserError(Exception): ...
 
 
@@ -114,32 +115,24 @@ class Parser:
     @classmethod
     def parse_one_part(cls, untouched):
         letters = [chr(i) for i in range(65, 65 + 26)]
-        # untouched,timestr = separate_date_time(untouched)
+
         def gen():
             yield letters.pop(0)
-        
+
         notoday = parsersModule.parseTodayString(untouched)
-        dates,nodates = parsersModule.parseISOformatStrings(notoday,gen)
-        
-        dates, nodates = parsersModule.parseManyDateStrings(dates,nodates, gen)
-        
-        # dates,nodates = parsersModule.parseTimeString(dates,nodates,gen)
+        dates, nodates = parsersModule.parseISOformatStrings(notoday, gen)
+
+        dates, nodates = parsersModule.parseManyDateStrings(dates, nodates, gen)
+
         durations, nodatesordurations = parsersModule.parseManyDurationString(
             nodates, gen
         )
 
         dates_durations = {**dates, **durations}
-        # try:
-        #     parsersModule.parseDateMathString(
-        #     nodatesordurations, dates_durations
-        # )
-        # except:
-        #     print('err')
-        #     import code; code.interact(local=dict(globals(),**locals()))
         processed_answer = parsersModule.parseDateMathString(
             nodatesordurations, dates_durations
         )
-        
+
         return processed_answer
 
     @classmethod
@@ -162,7 +155,7 @@ class Parser:
             maybe_start = cls.parse_one_part(_maybe_start)
             maybe_stop = cls.parse_one_part(_maybe_stop)
             maybe_step = cls.parse_one_part(_maybe_step)
-            
+
             if isinstance(maybe_start, dateModule.Date):
                 start = maybe_start
             else:
@@ -195,32 +188,3 @@ def parse_to_native(string):
 
 def parse_to_dateroll(string):
     return Parser(string)
-
-# def separate_date_time(string):
-#     """
-#         separate string as a date and time, 
-#         day and time should be separated by an empty space
-#         there must be a max of 1 space
-#         eg mmddyy H:min:S
-#         if there is not time in the string it returns emptry string as a time string
-#     """
-
-#     dt_str = string.split(' ')
-#     if len(dt_str)>2:
-#         raise ParserError("Please check there is more than one space in the string")
-#     if len(dt_str)==2:
-#         datestr,timestr = dt_str
-#     else:
-#         datestr,timestr = dt_str[0],""
-    
-#     return datestr,timestr
-
-
-if __name__ == "__main__":  # pragma:no cover
-    import dateroll
-
-    dateroll.settings.convention = "MDY"
-    from dateroll import ddh
-
-    x = ddh("t,5y,3m")
-    print(x.list)

@@ -1,11 +1,10 @@
 import calendar
 import datetime
 import re
-import dateutil
+
 from zoneinfo import ZoneInfo
 from tzlocal import get_localzone
 
-import dateroll
 import dateroll.date.date as dt
 import dateroll.duration.duration as dur
 from dateroll import utils
@@ -13,9 +12,11 @@ from dateroll.parser import patterns
 from dateroll.schedule.schedule import Schedule
 from dateroll.settings import settings
 
-import code
-
-TZ_DISPLAY = get_localzone() if settings.tz_display=="System" else ZoneInfo(settings.tz_display)
+TZ_DISPLAY = (
+    get_localzone()
+    if settings.tz_display == "System"
+    else ZoneInfo(settings.tz_display)
+)
 
 TODAYSTRINGVALUES = ["today", "t0", "t"]
 
@@ -74,19 +75,18 @@ def parseTodayString(s):
     # today = dt.Date.today()
 
     # convert today into iso format
-    
+
     today_iso = today.isoformat()
 
     for t in TODAYSTRINGVALUES:
         # search order matters in TODAYSTRINGVALUES
         if t in s:
-            
-            is_today_string = ensure_today_string(s,t)
+
+            is_today_string = ensure_today_string(s, t)
             if is_today_string:
                 return s.replace(t, today_iso)
-    
+
     return s
-    
 
 
 def parseDateString(s: str):
@@ -162,22 +162,23 @@ def parseDateString_rearrange(tup):
         d, m, y = tup
     elif settings.convention == "YMD":
         y, m, d = tup
-    
+
     y, m, d = int(y), int(m), int(d)
     return y, m, d
 
-def parseISOformatStrings(s,gen):
+
+def parseISOformatStrings(s, gen):
     """
-        if there is a isoformat eg "2024-05-14T06:59:11.071620", convert into datetime
-        please note "2024-5-14T6h59min11s" is not iso format, so the parsing will ignore
+    if there is a isoformat eg "2024-05-14T06:59:11.071620", convert into datetime
+    please note "2024-5-14T6h59min11s" is not iso format, so the parsing will ignore
     """
 
     # to parse iso format yyyy-mm-dd
-    
+
     dates = {}
     if not "T" in s:
         # not iso format
-        return dates,s
+        return dates, s
     pattern = patterns.ISO_YMD
     matches = re.findall(pattern, s)
 
@@ -185,20 +186,19 @@ def parseISOformatStrings(s,gen):
         # match is a tuple --> (1/1/2023,1,1,2023)
         matched_str = match[0]
         # to avoid .split('-') minus problem which might split date, eg 2023-1-1-3bd
-        date_ = matched_str.replace("-","")
-        s = s.replace(matched_str,date_)
+        date_ = matched_str.replace("-", "")
+        s = s.replace(matched_str, date_)
 
-    
     # eg 2024-05-14T06:59:11.071620-03032023+3bd --> [2024-05-14T06:59:11.071620,03032023,3bd]
-    string_splitted = re.split(r"[-+]",s)
+    string_splitted = re.split(r"[-+]", s)
     for iso in string_splitted:
         if not "T" in iso:
             continue
-        
+
         # we removed - sign from string, put back into date
-        pattern = r'(\d{4})(\d{2})(\d{2}T\d{2}:\d{2}:\d{2})'
-        iso_ = re.sub(pattern, r'\1-\2-\3', iso)
-        
+        pattern = r"(\d{4})(\d{2})(\d{2}T\d{2}:\d{2}:\d{2})"
+        iso_ = re.sub(pattern, r"\1-\2-\3", iso)
+
         try:
             date = datetime.datetime.fromisoformat(iso_)
         except Exception:
@@ -206,12 +206,12 @@ def parseISOformatStrings(s,gen):
         date = utils.datetime_to_date(date)
         next_letter = next(gen())
         dates[next_letter] = date
-        s = s.replace(iso,next_letter)
-    
-    return dates,s
+        s = s.replace(iso, next_letter)
+
+    return dates, s
 
 
-def parseManyDateStrings(dates,s, gen):
+def parseManyDateStrings(dates, s, gen):
     """
     for a given convention, see if string contains 1 or more dates, extract them out for "letters" for parseDateMath
 
@@ -248,9 +248,9 @@ def parseManyDateStrings(dates,s, gen):
         pattern = patterns.YMD
 
     matches = re.findall(pattern, s)
-    
+
     # now we can remove T after validation to make parseTimeString work
-    s = s.replace("T","")
+    s = s.replace("T", "")
     res = s
     for match, _, _, _ in matches:
         # must hav 4 components per match
@@ -262,7 +262,7 @@ def parseManyDateStrings(dates,s, gen):
         next_letter = next(gen())  # match only 1st time!! or causes letter mismatch
         res = res.replace(match, next_letter, 1)
         dates[next_letter] = date
-    
+
     return dates, res
 
 
@@ -278,7 +278,7 @@ def parseDurationString_convert_capture_groups(capture_groups: tuple):
     # get initial multplier (if any)
     op = capture_groups[1]
     mult = -1 if op == "-" else 1
-    
+
     # get all the pairs
     for i in range(2, 26, 2):
         number = capture_groups[i]
@@ -313,7 +313,7 @@ def parseDurationString_convert_capture_groups(capture_groups: tuple):
     if "bd" not in duration_constructor_args and "BD" not in duration_constructor_args:
         if modified or len(cals) > 0:
             duration_constructor_args["bd"] = float(0.0) * mult
-    
+
     duration = dur.Duration(**duration_constructor_args)
     return duration
 
@@ -333,7 +333,7 @@ def parseCalendarUnionString(s):
 def parseDurationString(s: str):
 
     matches = re.findall(patterns.COMPLETE_DURATION, s)
-    
+
     if len(matches) == 0:
         raise utils.ParserStringsError("No duration found")
     elif len(matches) > 1:
@@ -372,19 +372,19 @@ def parseManyDurationString(s, gen):
     """
     durations = {}
     matches = re.findall(patterns.COMPLETE_DURATION, s)
-    
+
     for idx, match in enumerate(matches):
         # duration_string = ''.join(match[2:])
         duration_string = match[0]
-        
+
         duration = parseDurationString(duration_string)
-        
+
         next_letter = next(gen())
         # replace_string = re.sub(r"[+-]","",duration_string)
         s = s.replace(duration_string, next_letter, 1)
         durations[next_letter] = duration
-    
-    check_operators(durations,s)
+
+    check_operators(durations, s)
     return durations, s
 
 
@@ -411,8 +411,8 @@ def parseScheduleString(s):
         yield letters.pop(0)
 
     # part each part separately
-    dstart, _ = parseManyDateStrings({},start, gen)
-    dstop, _ = parseManyDateStrings({},stop, gen)
+    dstart, _ = parseManyDateStrings({}, start, gen)
+    dstop, _ = parseManyDateStrings({}, stop, gen)
     dstep, _ = parseManyDurationString(step, gen)
 
     if any([len(dstart) != 1, len(dstop) != 1, len(dstep) != 1]):
@@ -431,14 +431,13 @@ def parseDateMathString(s, things):
     Looks for any linear formula with plus or minus
     Uses substitution and evaluation. Safe because wouldn't get here if *things were not validated, and regex didn't match.
     """
-    # to make eval work, add + sign here in the alphabetical order
-    
-    s,things = utils.sort_string(s,things) 
+    # eg s=ABC-->A+B+C; handle string based on things or raise error
+    s, things = utils.sort_string(s, things)
 
     if s == "":
         raise utils.ParserStringsError("Nothing to parse")
     # good case, do the math
-    
+
     try:
         total = eval(s, {}, things)
         return total
@@ -446,64 +445,23 @@ def parseDateMathString(s, things):
         raise utils.ParserStringsError("Cannot recognize as date math", s)
 
 
-def ensure_today_string(parse_string,today_string):
+def ensure_today_string(parse_string, today_string):
     """
-        two scenarios of parsing: ddh(T) and iso format of ddh(2023-01-01T23h:12m:23s)
-        Since both parsing string has T, we need to ensure the string is not iso format
+    two scenarios of parsing: ddh(T) and iso format of ddh(2023-01-01T23h:12m:23s)
+    Since both parsing string has T, we need to ensure the string is not iso format
     """
 
     is_today_string = True
     t_idx = parse_string.find(today_string)
-    
-    if t_idx>0 and parse_string[t_idx-1] not in ["+","-"," "]:
+
+    if t_idx > 0 and parse_string[t_idx - 1] not in ["+", "-", " "]:
         is_today_string = False
     return is_today_string
-    
 
-def check_operators(dic,s):
+
+def check_operators(dic, s):
     for key in dic:
         idx = s.find(key)
-        thing = s[idx-1]
-        if idx>0 and thing not in ['+','-'] and not thing.isalpha():
+        thing = s[idx - 1]
+        if idx > 0 and thing not in ["+", "-"] and not thing.isalpha():
             raise TypeError(f"Unknown operator in string {thing}")
-
-if __name__=="__main__":  # pragma:no cover
-    from dateroll.ddh.ddh import ddh
-    # x = ddh('0304202312h21min22s+3bd')
-    # x = ddh('1y2m10d2bd12h21min22s+3bd')
-    # x = ddh('1h')
-    # x = ddh('1m')
-    # x = ddh('1h10m')
-    # x = ddh('3bd1h10min2s20us')
-    # x = ddh('010120231h10min')
-
-    # x = ddh("12h21min22s")
-    # x3 = ddh('3d12h21min22s')
-    import dateroll.parser.parser as parserMod
-    # from dateroll.date import Date
-    # x = parseDateMathString("A+B", {"A": 4})
-    # x = parserMod.Parser.parse_one_part("20240101+3m")
-    # x = ddh('1bd+1d+1h+3min-4s')
-    # x = ddh('1US')
-    # x = ddh("10/9/22 - 5/5/24")
-    # x = ddh("6bd-3min+4min+1h")
-    # x = ddh('3d+10d-19d+3min-6min+7min-9s+20000s-1h')
-    # x = ddh('3y15s-10y5s23min')
-    # x = ddh('03022022-5s3min3y2m')
-    x = ddh("03012023-1y3bd").cal
-    from dateroll import Date
-    # x = ddh('01012023T1h10min')
-    x = Date.from_datetime(datetime.datetime(2023,2,3,0,23))
-    # x = ddh('2023-10-11T11:23:22+3d')
-    # x = ddh('3y15s-10y3bd5s23min|WEuNY/MOD')
-    # x = ddh('t+2bd|WEuNY')
-    print(x)
-    # import code;code.interact(local=dict(globals(),**locals()))
-    # ddh('010120231h10min')
-    
-
-
-    
-
-
-

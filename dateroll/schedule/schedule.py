@@ -16,10 +16,15 @@ try:
 except Exception:  # pragma: no cover
     have_pandas = False
 
-import code
+TZ_DISPLAY = (
+    get_localzone()
+    if settings.tz_display == "System"
+    else ZoneInfo(settings.tz_display)
+)
+TZ_PARSER = (
+    get_localzone() if settings.tz_parser == "System" else ZoneInfo(settings.tz_parser)
+)
 
-TZ_DISPLAY = get_localzone() if settings.tz_display=="System" else ZoneInfo(settings.tz_display)
-TZ_PARSER = get_localzone() if settings.tz_parser=="System" else ZoneInfo(settings.tz_parser)
 
 class Schedule:
     """
@@ -87,7 +92,7 @@ class Schedule:
             while cursor > self.start:
                 dates.append(cursor)
                 cursor -= -self.step
-                
+
             dates.append(self.start)
 
         self._dates = sorted(dates)
@@ -142,7 +147,7 @@ class Schedule:
         elif isinstance(x, datetime.datetime):
             x = x.astimezone(TZ_PARSER)
         for i in self._dates:
-            
+
             if isinstance(i, dateModule.Date):
                 i = i.datetime
             elif isinstance(i, datetime.date):
@@ -157,8 +162,8 @@ class Schedule:
         list_of_dates = self._dates
         start = list_of_dates[:-1]
         stop = list_of_dates[1:]
-        # convert disent date into date to avoid disent date converts into Timestamp
-        # when it is assigned to dataframe which is pandas thing
+        # convert disent date into datetime.date to avoid disent date converts into Timestamp
+        # in dataframe which is pandas thing
         start = [d.date for d in start]
         stop = [d.date for d in stop]
         if not have_pandas:  # pragma: no cover
@@ -185,21 +190,28 @@ class Schedule:
         df["type"] = "interest"
         df.columns = ["starts", "ends", "days", "type"]
         f_adjust_bd = lambda x: (dateModule.Date.from_date(x) + "0bd").date
-        f_exact_days = lambda x: ((dateModule.Date.from_date(x['ends']) - dateModule.Date.from_date(x["starts"])).just_exact_days 
-                                  if x['starts'] else None)
-        
+        f_exact_days = lambda x: (
+            (
+                dateModule.Date.from_date(x["ends"])
+                - dateModule.Date.from_date(x["starts"])
+            ).just_exact_days
+            if x["starts"]
+            else None
+        )
+
         df["pays"] = df["ends"].apply(f_adjust_bd)
         st, ed = min(self._dates), max(self._dates)
 
         df.loc[-1] = [None, None, None, "principal", st + "0bd"]
         df.loc[len(df) - 1] = [None, None, None, "repayment", ed + "0bd"]
         df.index += 1
-        
-        df["days"] = df.apply(lambda row:f_exact_days(row),axis=1)
-        
-        df["pays"] = df["pays"].apply(lambda x:x.date() if isinstance(x,pd.Timestamp) else x)
-        
-        #     
+
+        df["days"] = df.apply(lambda row: f_exact_days(row), axis=1)
+
+        df["pays"] = df["pays"].apply(
+            lambda x: x.date() if isinstance(x, pd.Timestamp) else x
+        )
+
         return df.sort_values(by="pays")
 
     def to_string(self):

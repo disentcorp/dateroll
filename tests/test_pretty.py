@@ -23,7 +23,7 @@ class TestPretty(unittest.TestCase):
             s = ddh("03012023-1y3bd").cal
             output = buf.getvalue()
 
-            self.assertGreater(len(output),600)
+            self.assertGreater(len(output), 600)
         with io.StringIO() as buf, redirect_stdout(buf):
             s = ddh("5/5/95+10y1bd").cal
             output = buf.getvalue()
