@@ -220,9 +220,19 @@ class TestSubDay(unittest.TestCase):
         f = lambda x: D.from_datetime(D.from_timestamp(x / 1000)).iso
 
         df["t"] = df["t"].apply(f)
+
         cut = ddh("08032022").iso
         df2 = df[df["t"] >= cut]
         df2.set_index(df2["t"], inplace=True)
+
+        #### debug to DELETE
+        df = df2.copy()
+        df.index = pd.to_datetime(df.index)
+        x = df.index[0]
+        
+        #####
+        print('in df')
+        import code;code.interact(local=dict(globals(),**locals()))
         self.assertEqual(df2.index[0], cut)
 
         # dates only divisible by 3

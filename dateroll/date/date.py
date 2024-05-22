@@ -143,8 +143,30 @@ class Date(datetime.datetime):
         return datetime.datetime.now(TZ_PARSER)
 
     @property
+    def time(self):
+        return datetime.time(self.hour, self.minute, self.second, self.microsecond)
+
+    @property
+    def naive(self):
+        """
+            convert time into a naive timezone which is a property
+        """
+        return Date.to_naive(self)
+
+    @property
     def datetime(self):
-        return datetime.datetime(
+        if self.tzinfo is not None:
+            dt = datetime.datetime(
+                self.year,
+                self.month,
+                self.day,
+                self.hour,
+                self.minute,
+                self.second,
+                self.microsecond,
+            ).astimezone(self.tzinfo)
+        else:
+            dt = datetime.datetime(
             self.year,
             self.month,
             self.day,
@@ -152,7 +174,9 @@ class Date(datetime.datetime):
             self.minute,
             self.second,
             self.microsecond,
-        ).astimezone(self.tzinfo)
+            )
+        
+        return dt
 
     @property
     def date(self):

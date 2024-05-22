@@ -769,6 +769,10 @@ class Duration(dateutil.relativedelta.relativedelta):
         return a.just_days <= b.just_days
 
     @property
+    def time(self):
+        return datetime.time(self.h, self.min, self.s, self.us)
+
+    @property
     def y(self):
         return self.years
 
