@@ -147,6 +147,27 @@ class Date(datetime.datetime):
         return datetime.time(self.hour, self.minute, self.second, self.microsecond)
 
     @property
+    def utc(self):
+        """
+            return timezone datetime as a naive datetime
+        """
+        if self.tzinfo is None:
+            dt = self.datetime.replace(tzinfo=ZoneInfo("UTC"))
+        else:
+            dt = self.datetime.astimezone(ZoneInfo("UTC"))
+        dt = utils.datetime_to_date(dt).naive
+
+        return dt
+    
+    @property
+    def est(self):
+        dt = self.datetime.astimezone(ZoneInfo("America/New_York"))
+        dt = utils.datetime_to_date(dt).naive
+        return dt
+    
+
+
+    @property
     def naive(self):
         """
             convert time into a naive timezone which is a property

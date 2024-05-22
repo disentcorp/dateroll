@@ -229,7 +229,7 @@ class TestSubDay(unittest.TestCase):
         df = df2.copy()
         df.index = pd.to_datetime(df.index)
         x = df.index[0]
-        
+        t = df['t'][0]
         #####
         print('in df')
         import code;code.interact(local=dict(globals(),**locals()))
