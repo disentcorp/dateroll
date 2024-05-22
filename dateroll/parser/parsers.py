@@ -207,7 +207,7 @@ def parseISOformatStrings(s, gen):
         next_letter = next(gen())
         dates[next_letter] = date
         s = s.replace(iso, next_letter)
-
+        
     return dates, s
 
 
@@ -465,3 +465,10 @@ def check_operators(dic, s):
         thing = s[idx - 1]
         if idx > 0 and thing not in ["+", "-"] and not thing.isalpha():
             raise TypeError(f"Unknown operator in string {thing}")
+        
+if __name__=="__main__":
+    from dateroll import ddh
+    
+    x = ddh('2022-09-09T04:00:00')
+    print('here parsers')
+    import code;code.interact(local=dict(globals(),**locals()))

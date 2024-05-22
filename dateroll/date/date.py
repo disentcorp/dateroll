@@ -114,7 +114,9 @@ class Date(datetime.datetime):
         Create a Date instance from a unix timestamp
         """
         if isinstance(o, (int, float)):
-            dt = datetime.datetime.fromtimestamp(o, TZ_PARSER)
+            # dt = datetime.datetime.fromtimestamp(o, TZ_PARSER)
+            dt = datetime.datetime.fromtimestamp(o)
+            dt = Date.from_datetime(dt)
             return dt
         else:
             raise TypeError(
@@ -151,21 +153,17 @@ class Date(datetime.datetime):
         """
             return timezone datetime as a naive datetime
         """
-        if self.tzinfo is None:
-            dt = self.datetime.replace(tzinfo=ZoneInfo("UTC"))
-        else:
-            dt = self.datetime.astimezone(ZoneInfo("UTC"))
-        dt = utils.datetime_to_date(dt).naive
-
-        return dt
+        
+        dt = self.datetime.astimezone(ZoneInfo("UTC"))
+        dd = utils.datetime_to_date(dt)
+        
+        return dd
     
     @property
     def est(self):
         dt = self.datetime.astimezone(ZoneInfo("America/New_York"))
-        dt = utils.datetime_to_date(dt).naive
+        dt = utils.datetime_to_date(dt)
         return dt
-    
-
 
     @property
     def naive(self):
@@ -185,7 +183,8 @@ class Date(datetime.datetime):
                 self.minute,
                 self.second,
                 self.microsecond,
-            ).astimezone(self.tzinfo)
+                tzinfo=self.tzinfo
+            )
         else:
             dt = datetime.datetime(
             self.year,
@@ -251,6 +250,15 @@ class Date(datetime.datetime):
             self = self.replace(tzinfo=None)
 
         return self.isoformat()
+
+    def replace_tz(self,tz):
+        """
+            When parse string into date the timezone is None, 
+            we need to replace the tzinfo while keeping the datetime same
+        """
+
+        self = self.replace(tzinfo=ZoneInfo(tz))
+        return self
 
     def __add__(self, o):
         """
@@ -382,7 +390,8 @@ class Date(datetime.datetime):
         """
         should print as string according to convention
         """
-        self.astimezone(TZ_DISPLAY)
+
+        self.tzinfo = TZ_DISPLAY
         mask = utils.convention_map_datetime[settings.convention]
         result = f"{self.strftime(mask)} {self.tzinfo}"
         return result

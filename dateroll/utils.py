@@ -155,7 +155,7 @@ def datetime_to_date(date):
     """
     convert datetime into disent date
     """
-
+    
     disent_date = dateModule.Date(
         date.year,
         date.month,
@@ -164,7 +164,9 @@ def datetime_to_date(date):
         date.minute,
         date.second,
         date.microsecond,
+        tzinfo=date.tzinfo,
     )
+   
     return disent_date
 
 
