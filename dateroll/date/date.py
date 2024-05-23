@@ -52,7 +52,7 @@ class Date(datetime.datetime):
 
         if isinstance(o, datetime.datetime):
             return Date(
-                o.year, o.month, o.day, o.hour, o.minute, o.second, o.microsecond
+                o.year, o.month, o.day, o.hour, o.minute, o.second, o.microsecond, tzinfo=o.tzinfo
             )
         elif isinstance(o, datetime.date):
             return Date(o.year, o.month, o.day, 0, 0)
@@ -68,7 +68,7 @@ class Date(datetime.datetime):
         if isinstance(o, datetime.datetime):
 
             return Date(
-                o.year, o.month, o.day, o.hour, o.minute, o.second, o.microsecond
+                o.year, o.month, o.day, o.hour, o.minute, o.second, o.microsecond, tzinfo=o.tzinfo
             )
         elif isinstance(o, datetime.date):
             return utils.date_to_date(o)
@@ -114,8 +114,7 @@ class Date(datetime.datetime):
         Create a Date instance from a unix timestamp
         """
         if isinstance(o, (int, float)):
-            # dt = datetime.datetime.fromtimestamp(o, TZ_PARSER)
-            dt = datetime.datetime.fromtimestamp(o)
+            dt = datetime.datetime.fromtimestamp(o, TZ_PARSER)
             dt = Date.from_datetime(dt)
             return dt
         else:
@@ -161,6 +160,9 @@ class Date(datetime.datetime):
     
     @property
     def est(self):
+        """
+            when tzinfo is None it assumes the date is system local time
+        """
         dt = self.datetime.astimezone(ZoneInfo("America/New_York"))
         dt = utils.datetime_to_date(dt)
         return dt
@@ -245,19 +247,37 @@ class Date(datetime.datetime):
 
     @property
     def iso(self):
-
-        if self.tzinfo is not None:
-            self = self.replace(tzinfo=None)
-
+        """
+            convert datetime into system local timezone 
+        """
+        # if self.tzinfo is not None:
+            # if self.tzinfo.__str__()!=TZ_DISPLAY.__str__():
+                
+            #     self = self.astimezone(TZ_DISPLAY)
+            # self = self.replace(tzinfo=None)
+        
         return self.isoformat()
 
-    def replace_tz(self,tz):
+    def astimezone(self,tzinfo=None):
+        """
+            overriding the astimezone method of the parent class, 
+            the only difference here is that tzinfo can be string
+        """
+
+        if isinstance(tzinfo,str):
+            tzinfo = ZoneInfo(tzinfo)
+        dt = self.datetime.astimezone(tzinfo)
+        self= utils.datetime_to_date(dt)
+        return self
+
+    def replace(self,tzinfo=None):
         """
             When parse string into date the timezone is None, 
             we need to replace the tzinfo while keeping the datetime same
         """
-
-        self = self.replace(tzinfo=ZoneInfo(tz))
+        if isinstance(tzinfo,str):
+            tzinfo = ZoneInfo(tzinfo)
+        self = super().replace(tzinfo=tzinfo)
         return self
 
     def __add__(self, o):
@@ -320,7 +340,6 @@ class Date(datetime.datetime):
                     )
 
             relative_delta = dateutil.relativedelta.relativedelta(self.datetime, dt)
-
             return Duration.from_relativedelta(
                 relative_delta, _anchor_start=dt.date(), _anchor_end=self.date
             )
@@ -384,14 +403,17 @@ class Date(datetime.datetime):
             print(pretty_calendars)
 
     def __repr__(self):
-        return f"Date({self.year},{self.month},{self.day},{self.hour},{self.minute},{self.second},{self.microsecond},{self.tzinfo})"
+        tzinfo = self.tzinfo if self.tzinfo is not None else ""
+        comma = "," if self.tzinfo is not None else ""
+        return f"Date({self.year},{self.month},{self.day},{self.hour},{self.minute},{self.second},{self.microsecond}{comma}{tzinfo})"
 
     def to_string(self):
         """
         should print as string according to convention
         """
-
-        self.tzinfo = TZ_DISPLAY
+        
+        if self.tzinfo is None:
+            self.tzinfo = TZ_DISPLAY
         mask = utils.convention_map_datetime[settings.convention]
         result = f"{self.strftime(mask)} {self.tzinfo}"
         return result

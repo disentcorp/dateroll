@@ -155,17 +155,27 @@ def datetime_to_date(date):
     """
     convert datetime into disent date
     """
-    
-    disent_date = dateModule.Date(
-        date.year,
-        date.month,
-        date.day,
-        date.hour,
-        date.minute,
-        date.second,
-        date.microsecond,
-        tzinfo=date.tzinfo,
-    )
+    if date.tzinfo is not None:
+        disent_date = dateModule.Date(
+            date.year,
+            date.month,
+            date.day,
+            date.hour,
+            date.minute,
+            date.second,
+            date.microsecond,
+            tzinfo=date.tzinfo,
+        )
+    else:
+        disent_date = dateModule.Date(
+            date.year,
+            date.month,
+            date.day,
+            date.hour,
+            date.minute,
+            date.second,
+            date.microsecond,
+        )
    
     return disent_date
 
@@ -253,3 +263,36 @@ def date_slice(s: slice, list_: list):
     elif step is not None:
         # neither
         raise Exception("Slicing only supports start, stop, and start+stop, not step.")
+
+def create_offset_map():
+    """
+        create offset map eg -04:00 is a American/New_York
+    """
+
+    import pytz
+    import datetime
+    from zoneinfo import ZoneInfo
+
+    ptn = r'.*([+-]\d{2}:\d{2})'
+    zones = pytz.all_timezones
+    d = datetime.datetime(2023,1,1,0,0)
+    offset_map = {}
+    for zone in zones:
+        nd = d.astimezone(ZoneInfo(zone))
+        iso = nd.isoformat()
+        offset = re.findall(ptn,iso)
+        if len(offset)==0:
+            print(f'continue of zone {zone}')
+            continue
+        if 'Etc' in zone:
+            print(f'continue of zone {zone}')
+            continue
+        offset_map[offset[0]] = zone
+    # manually adding the offset
+    offset_map['-04:00 '] = 'America/New_York'
+    offset_map['+08:00'] = 'Asia/Ulaanbaatar'
+    return offset_map
+
+if __name__=="__main__":
+    create_offset_map()
+

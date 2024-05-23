@@ -183,12 +183,40 @@ def parseISOformatStrings(s, gen):
     matches = re.findall(pattern, s)
 
     for match in matches:
+        iso_ = '-'.join(match[2:])
+        try:
+            date = datetime.datetime.fromisoformat(iso_)
+        except Exception:
+            raise utils.ParserStringsError(f"ISO format {iso_} is wrong")
+        date = utils.datetime_to_date(date)
+        next_letter = next(gen())
+        dates[next_letter] = date
+        s = s.replace(iso_, next_letter)
+    
+    return dates, s
+
+def parseISOformatStrings0(s, gen):
+    """
+    if there is a isoformat eg "2024-05-14T06:59:11.071620", convert into datetime
+    please note "2024-5-14T6h59min11s" is not iso format, so the parsing will ignore
+    """
+
+    # to parse iso format yyyy-mm-dd
+
+    dates = {}
+    if not "T" in s:
+        # not iso format
+        return dates, s
+    pattern = patterns.ISO_YMD
+    matches = re.findall(pattern, s)
+
+    for match in matches:
         # match is a tuple --> (1/1/2023,1,1,2023)
         matched_str = match[0]
         # to avoid .split('-') minus problem which might split date, eg 2023-1-1-3bd
         date_ = matched_str.replace("-", "")
         s = s.replace(matched_str, date_)
-
+    
     # eg 2024-05-14T06:59:11.071620-03032023+3bd --> [2024-05-14T06:59:11.071620,03032023,3bd]
     string_splitted = re.split(r"[-+]", s)
     for iso in string_splitted:
@@ -469,6 +497,8 @@ def check_operators(dic, s):
 if __name__=="__main__":
     from dateroll import ddh
     
-    x = ddh('2022-09-09T04:00:00')
+    # x = ddh('2022-09-09T04:00:00-04:00-2022-09-08T04:00:00+04:00')
+    # x = ddh('03082022,03092022,1min')
+    x = ddh('2022-10-10T09:30:00,2022-10-10T16:00:00,3min')
     print('here parsers')
     import code;code.interact(local=dict(globals(),**locals()))

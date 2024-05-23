@@ -63,7 +63,30 @@ class Schedule:
         returns list of dates
         """
         return self._dates
+    @property
+    def est(self):
+        """
+            return list of dates with timezone EST
+        """
 
+        self._dates = [d.replace('America/New_York') for d in self._dates]
+        return self
+    
+    @property
+    def naive(self):
+        """
+            make datetime of a list naive
+        """
+
+        self._dates = [d.naive for d in self._dates]
+        return self
+    @property
+    def iso(self):
+        """
+            make datetime of a list iso
+        """
+        self._dates = [d.iso for d in self._dates]
+        return self
     @property
     def dates(self):
         """
@@ -133,6 +156,11 @@ class Schedule:
         constructor = ""
         for k, v in self.__dict__.items():
             if k not in ["run", "spit", "dates", "debug"] and v is not None:
+                # try:
+                #     constructor += f"{k}={str(v)}, "
+                # except:
+                #     print('error in sch')
+                #     import code;code.interact(local=dict(globals(),**locals()))
                 constructor += f"{k}={str(v)}, "
 
         return f'{self.__class__.__name__}({constructor.rstrip(", ")})'

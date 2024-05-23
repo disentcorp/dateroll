@@ -37,5 +37,6 @@ MONTHNAMES = re.compile(
 )
 
 # iso date patter before T
-ISO_D = r"\d{1,2}T"
-ISO_YMD = f"(({Y}){_}({M}){_}({ISO_D}))"
+ISO_D = r"\d{1,2}T\d{2}:\d{2}:\d{2}(?:[+-]\d{2}:\d{2})?"
+# ISO_D = r"\d{1,2}T\d{2}:\d{2}:\d{2}"
+ISO_YMD = f"({OPERATOR}({Y}){_}({M}){_}({ISO_D}))"

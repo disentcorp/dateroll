@@ -3,6 +3,7 @@ import unittest
 import pandas as pd
 
 from tzlocal import get_localzone
+from dateutil.relativedelta import relativedelta as rd
 
 import dateroll
 from dateroll import utils
@@ -215,26 +216,55 @@ class TestSubDay(unittest.TestCase):
 
         P = "tests/test_data/spy.csv"
         df = pd.read_csv(P,header=[0],index_col=[0])
-
-        D = dateModule.Date
         
-        df["t"] = df["t"].apply(lambda x:D.from_timestamp(x / 1000).est.iso)
-        cut = ddh("08032022").iso
+        df["t"] = df["t"].apply(lambda x:ddh.Date.from_timestamp(x / 1000).est.naive.iso)
+        cut = ddh("10102022").iso
         df = df[df["t"] >= cut]
         # here t is utc time, convert into EST time
-        x = df.copy()
-        x.index = pd.to_datetime(x['t'])
-        df['t2'] = df['t'].apply(lambda x: ddh(x).utc.est.iso)
         # df.set_index(df["t"], inplace=True)
         st = ddh('9h30min').time
         ed = ddh('16h').time
-        see_d = ddh('09102022').date.strftime('%Y-%m-%d')
+        
         #### debug to DELETE
         df.index = pd.to_datetime(df['t'])
+        # mkt = df.between_time(st,ed)
+        # start one line no code
+        ##### 
+        # 1 choose date
+        # 2 premarket high
+        # 3 mkt high
+        # old way
+        od = datetime.date(2022,10,10).strftime('%Y-%m-%d')
+        old = df.loc[od]
+        opre = df.between_time(datetime.time(4,0),datetime.time(9,29))['h'].max()
+        omkt = df.between_time(datetime.time(9,30),datetime.time(16,0))['h'].max()
         
-        #####
-        print('in df')
-        import code;code.interact(local=dict(globals(),**locals()))
+        ### new way
+        nd = ddh('10102022').strftime('%Y-%m-%d')
+        new = df.loc[nd]
+        npre = df.between_time(ddh('4h').time,ddh('9h29min').time)['h'].max()
+        nmkt = df.between_time(ddh('9h30min').time,ddh('16h').time)['h'].max()
+        #### some calculation
+        
+        ### get price at 3 minute interval with eastern time zone
+        
+        interval = ddh('2022-10-10T09:30:00,2022-10-10T16:00:00,3min').est.naive.iso.list
+        new_3min = new[new['t'].isin(interval)]
+        # old way
+        
+        ed = datetime.datetime(2022,10,10,16)
+        x = datetime.datetime(2022,10,10,9,30)
+        interval_old = [x.isoformat()]
+        while x<ed:
+            x = x+rd(minutes=3)
+            interval_old.append(x.isoformat())
+        
+        old_3min = old[old['t'].isin(interval_old)]
+        
+        # after mkt open 10,20,30 min high for the 3 months
+        # new way
+
+        
         self.assertEqual(df.index[0], cut)
 
         # dates only divisible by 3
@@ -245,3 +275,4 @@ class TestSubDay(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+    # utils.create_offset_map()
