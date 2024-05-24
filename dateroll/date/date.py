@@ -420,6 +420,42 @@ class Date(datetime.datetime):
 
     def __str__(self):
         return self.to_string()
-
+    
+    @property
+    def ymd(self):
+        return self.date.strftime("%Y%m%d")
+    
+    @property
+    def hymd(self):
+        return self.date.strftime("%Y-%m-%d")
+    
+    @property
+    def symd(self):
+        return self.date.strftime("%Y/%m/%d")
+    
+    @property
+    def mdy(self):
+        return self.date.strftime("%m%d%Y")
+    
+    @property
+    def hmdy(self):
+        return self.date.strftime("%m-%d-%Y")
+    
+    @property
+    def smdy(self):
+        return self.date.strftime("%m/%d/%Y")
+    
+    @property
+    def dmy(self):
+        return self.date.strftime("%d%m%Y")
+    
+    @property
+    def hdmy(self):
+        return self.date.strftime("%d-%m-%Y")
+    
+    @property
+    def sdmy(self):
+        return self.date.strftime("%d/%m/%Y")
+    
 
 DateLike = DateLike + (Date,)
