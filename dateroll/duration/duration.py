@@ -651,7 +651,7 @@ class Duration(dateutil.relativedelta.relativedelta):
         FOLLOWING is handled in +0.0 BD
         PREVIOUS is handled in -0.0 BD
 
-        MODOFIED FOLLOWING is +0.0, then HERE
+        MODiFIED FOLLOWING is +0.0, then HERE
         MODIFIED PREVIOUS is -0.0, then HERE
 
         """

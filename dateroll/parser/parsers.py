@@ -71,7 +71,7 @@ def parseTodayString(s):
     """
     this is [the] place where "t" is replaced
     """
-    today = datetime.datetime.today()
+    today = datetime.datetime.today().replace(microsecond=0)
     # today = dt.Date.today()
 
     # convert today into iso format
@@ -85,7 +85,7 @@ def parseTodayString(s):
             is_today_string = ensure_today_string(s, t)
             if is_today_string:
                 return s.replace(t, today_iso)
-
+    
     return s
 
 
@@ -188,6 +188,7 @@ def parseISOformatStrings(s, gen):
             date = datetime.datetime.fromisoformat(iso_)
         except Exception:
             raise utils.ParserStringsError(f"ISO format {iso_} is wrong")
+        
         date = utils.datetime_to_date(date)
         next_letter = next(gen())
         dates[next_letter] = date
@@ -499,6 +500,10 @@ if __name__=="__main__":
     
     # x = ddh('2022-09-09T04:00:00-04:00-2022-09-08T04:00:00+04:00')
     # x = ddh('03082022,03092022,1min')
-    x = ddh('2022-10-10T09:30:00,2022-10-10T16:00:00,3min')
-    print('here parsers')
+    # x = ddh('2022-10-10T09:30:00,2022-10-10T16:00:00,3min')
+    # x = ddh('t+9h30min,t+14h,30min')
+
+    x = ddh('t-5bd|NYuWE')
+    
+    print('here parsers ', x)
     import code;code.interact(local=dict(globals(),**locals()))

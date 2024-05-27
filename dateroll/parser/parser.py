@@ -121,9 +121,9 @@ class Parser:
 
         notoday = parsersModule.parseTodayString(untouched)
         dates, nodates = parsersModule.parseISOformatStrings(notoday, gen)
+        
 
         dates, nodates = parsersModule.parseManyDateStrings(dates, nodates, gen)
-
         durations, nodatesordurations = parsersModule.parseManyDurationString(
             nodates, gen
         )

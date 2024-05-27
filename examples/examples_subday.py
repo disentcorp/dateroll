@@ -6,8 +6,8 @@ from dateroll import ddh
 
 import code
 
-P = "tests/test_data/spy.csv"
-
+# P = "tests/test_data/spy.csv"
+P = "tests/test_data/tsla.csv"
 def get_data():
 
     df = pd.read_csv(P,header=[0],index_col=[0])
@@ -101,7 +101,25 @@ def get_mkt_high_time_interval(df,interval="3m"):
 
 if __name__=="__main__":
     df = get_data()
-    highs = get_mkt_high_time_interval(df)
 
-    # get the last 3 month of data
-    last_3m_df = df[df['t']>=ddh('t-3m').iso]
+    # import code;code.interact(local=dict(globals(),**locals()))
+    # t_open = ddh('9h30min').time
+    # t_60 = ddh('10h30min').time
+    # t_120 = ddh('11h30min').time
+    # t_180 = ddh('12h30min').time
+    # dfs = []
+    
+    # filter_times = [t_open,t_60,t_120,t_180]
+    # tm_names = ['tm_open','t_30','t_60','t_180']
+    # for tm in filter_times:
+    #     x = df['c'][df.index.time==tm]
+    #     x.index = x.index.date
+    #     dfs.append(x)
+    # df = pd.concat(dfs,axis=1)
+    # df.columns = tm_names
+
+    
+    mkt_p = df[df.index.date==ddh('t-430bd').date]
+    
+
+    import code;code.interact(local=dict(globals(),**locals()))
