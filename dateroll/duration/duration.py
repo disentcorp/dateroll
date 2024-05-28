@@ -452,6 +452,8 @@ class Duration(dateutil.relativedelta.relativedelta):
         a = self
         # duration + duration
         
+        if isinstance(b,datetime.time):
+            b = Duration(h=b.hour,min=b.minute,s=b.second,us=b.microsecond)
         if isinstance(b, Duration):
             """
             combine both

@@ -181,7 +181,7 @@ def parseISOformatStrings(s, gen):
         return dates, s
     pattern = patterns.ISO_YMD
     matches = re.findall(pattern, s)
-
+    validate_iso(matches,s)
     for match in matches:
         iso_ = '-'.join(match[2:])
         try:
@@ -192,7 +192,8 @@ def parseISOformatStrings(s, gen):
         date = utils.datetime_to_date(date)
         next_letter = next(gen())
         dates[next_letter] = date
-        s = s.replace(iso_, next_letter)
+        replace_string = ''.join(match[2:]) if '-' not in match[0] else iso_
+        s = s.replace(replace_string, next_letter)
     
     return dates, s
 
@@ -494,6 +495,9 @@ def check_operators(dic, s):
         thing = s[idx - 1]
         if idx > 0 and thing not in ["+", "-"] and not thing.isalpha():
             raise TypeError(f"Unknown operator in string {thing}")
+def validate_iso(matches,string):
+    if len(matches)==0 and 'T' in string:
+        raise utils.ParserStringsError(f"ISO format {string} is wrong")
         
 if __name__=="__main__":
     from dateroll import ddh
@@ -503,7 +507,8 @@ if __name__=="__main__":
     # x = ddh('2022-10-10T09:30:00,2022-10-10T16:00:00,3min')
     # x = ddh('t+9h30min,t+14h,30min')
 
-    x = ddh('t-5bd|NYuWE')
-    
-    print('here parsers ', x)
-    import code;code.interact(local=dict(globals(),**locals()))
+    # x = ddh('t-5bd|NYuWE')
+    x = ddh('2022-10-10T09:30:00,2022-10-10T16:00:00,3min')
+    print(x)
+    # print('here parsers ', x)
+    # import code;code.interact(local=dict(globals(),**locals()))

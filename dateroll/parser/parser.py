@@ -122,7 +122,8 @@ class Parser:
         notoday = parsersModule.parseTodayString(untouched)
         dates, nodates = parsersModule.parseISOformatStrings(notoday, gen)
         
-
+        # print('in parser')
+        # import code;code.interact(local=dict(globals(),**locals()))
         dates, nodates = parsersModule.parseManyDateStrings(dates, nodates, gen)
         durations, nodatesordurations = parsersModule.parseManyDurationString(
             nodates, gen

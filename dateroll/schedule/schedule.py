@@ -80,6 +80,15 @@ class Schedule:
 
         self._dates = [d.naive for d in self._dates]
         return self
+    
+    @property
+    def date(self):
+        """
+            return list of date of Date
+        """
+
+        self._dates = [d.date for d in self._dates]
+        return self
     @property
     def iso(self):
         """

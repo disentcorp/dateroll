@@ -150,7 +150,8 @@ class TestUsageMore(unittest.TestCase):
             _a = time.time()
             a = ddh(row["final"])
 
-            b = ddh(s)
+            b = ddh(s).naive
+            
             _b = time.time()
             ans = f"{str(b==a):<5}"
             res = color(ans, "green") if b == a else color(ans, "red")
@@ -160,14 +161,15 @@ class TestUsageMore(unittest.TestCase):
                 ms = color(ms, "red")
             else:
                 ms = f"{ms:>10} ms"
-
+            
             print(f"tesing: {s:>28} = {b} == {a}", res, ms)
             if a == b:
                 c += 1
         print(f"{c}/{len(df)} passed")
+
         # assert True if an only if all 32 pass
         self.assertTrue(c == len(df))
-
+        
         # reset
         settings.convention = "MDY"
 

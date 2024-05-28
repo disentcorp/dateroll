@@ -101,25 +101,29 @@ def get_mkt_high_time_interval(df,interval="3m"):
 
 if __name__=="__main__":
     df = get_data()
-
-    # import code;code.interact(local=dict(globals(),**locals()))
-    # t_open = ddh('9h30min').time
-    # t_60 = ddh('10h30min').time
-    # t_120 = ddh('11h30min').time
-    # t_180 = ddh('12h30min').time
-    # dfs = []
+    tsla_close = get_mkt(df)[['c']]
+    import code;code.interact(local=dict(globals(),**locals()))
+    t_open = ddh('9h30min').time
+    t_60 = (t_open + ddh('1h')).time
+    t_120 = (t_open + ddh('2h')).time
+    t_180 = (t_open + ddh('3h')).time
+    dfs = []
     
-    # filter_times = [t_open,t_60,t_120,t_180]
-    # tm_names = ['tm_open','t_30','t_60','t_180']
-    # for tm in filter_times:
-    #     x = df['c'][df.index.time==tm]
-    #     x.index = x.index.date
-    #     dfs.append(x)
-    # df = pd.concat(dfs,axis=1)
-    # df.columns = tm_names
+    filter_times = [t_open,t_60,t_120,t_180]
+    tm_names = ['t_open','t_1h','t_2h','t_3h']
+    for tm in filter_times:
+        x = tsla_close[tsla_close.index.time==tm]
+        x.index = x.index.date
+        dfs.append(x)
+    df = pd.concat(dfs,axis=1)
+    df.columns = tm_names
 
+    average_return_1h = (df['t_1h']/df['t_open'] -1).mean()
+    average_return_2h = (df['t_2h']/df['t_open'] -1).mean()
+    average_return_3h = (df['t_3h']/df['t_open'] -1).mean()
+        
     
-    mkt_p = df[df.index.date==ddh('t-430bd').date]
+    
     
 
     import code;code.interact(local=dict(globals(),**locals()))

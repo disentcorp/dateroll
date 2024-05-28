@@ -4,7 +4,7 @@ from dateroll import ddh
 
 
 # df = ddh('5/25/2024,6/23/2029,6m|NYuWE').split_bond
-P = "tests/test_data/spy.csv"
+P = "tests/test_data/tsla.csv"
 df = pd.read_csv(P,header=[0],index_col=[0])
 
 import code;code.interact(local=dict(globals(),**locals()))

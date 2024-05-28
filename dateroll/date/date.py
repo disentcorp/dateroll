@@ -412,8 +412,15 @@ class Date(datetime.datetime):
         should print as string according to convention
         """
         
+        # try:
+        #     if self.tzinfo is None:
+        #         self.tzinfo = TZ_DISPLAY.__str__()
+        # except:
+        #     print("error in tos string")
+        #     import code;code.interact(local=dict(globals(),**locals()))
         if self.tzinfo is None:
-            self.tzinfo = TZ_DISPLAY
+            # self.tzinfo = TZ_DISPLAY.__str__()
+            self.replace(tzinfo=TZ_DISPLAY)
         mask = utils.convention_map_datetime[settings.convention]
         result = f"{self.strftime(mask)} {self.tzinfo}"
         return result

@@ -64,7 +64,7 @@ class TestDate(unittest.TestCase):
         self.assertEqual(ref, d1)
 
         d2 = Date.from_datetime(b)
-        self.assertEqual(ref, d2)
+        self.assertEqual(ref.naive, d2)
         settings.convention = "MDY"
         d3 = Date.from_string("1/1/1900")
         self.assertEqual(ref, d3)
@@ -74,7 +74,7 @@ class TestDate(unittest.TestCase):
 
         self.assertEqual(
             Date.from_datetime(datetime.datetime(2023, 2, 3, 0, 23)),
-            Date(2023, 2, 3, 0, 23),
+            Date(2023, 2, 3, 0, 23).naive,
         )
 
     def test_is_bd(self):
@@ -162,7 +162,7 @@ class TestDate(unittest.TestCase):
         self.assertEqual(d2 - td, d1)
         self.assertEqual(d2 - d3, Duration(days=0))
         self.assertEqual(d2 - d2, d3 - d2)
-        self.assertEqual(d2 - d2, d4 - d2)
+        self.assertEqual(d2 - d2, d4 - d2.naive)
         self.assertEqual(d2 - d2, d2 - d4)
 
         self.assertRaises(TypeError, lambda: dur - d1)
