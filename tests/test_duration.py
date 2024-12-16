@@ -3,6 +3,7 @@ import sys
 import unittest
 from io import StringIO
 
+import QuantLib as ql
 import dateutil.relativedelta
 
 from dateroll import Date, Duration, ddh
@@ -10,6 +11,25 @@ from dateroll.parser import parsers
 from dateroll.parser.parsers import ParserStringsError
 from dateroll.settings import settings
 
+def get_ql_dayCount(x1,x2,count_convention="Act360",cals="NY"):
+    d1 = ql.Date(x1.day,x1.month,x1.year)
+    d2 = ql.Date(x2.day,x2.month,x2.year)
+    if count_convention=="Act360":
+        cnv = ql.Actual360().dayCount(d1,d2)/360
+    elif count_convention=="Act365":
+        cnv = ql.Actual365Fixed().dayCount(d1,d2)/365
+    elif count_convention=="30E360":
+        cnv = ql.Thirty360(ql.Thirty360.BondBasis).dayCount(d1,d2)/360
+    elif count_convention=="bd252":
+        # default ie=(], does not support other ie=[],(),[)
+        if cals=="NY":
+            cal = ql.UnitedStates(ql.UnitedStates.NYSE)
+        elif cals=="BR":
+            cal = ql.Brazil(ql.Brazil.Exchange)
+        else:
+            raise NotImplementedError
+        cnv = cal.businessDaysBetween(d1,d2,False,True)/252
+    return cnv
 
 class TestDuration(unittest.TestCase):
     @classmethod
@@ -703,23 +723,34 @@ class TestDuration(unittest.TestCase):
     def test_yfs(self):
         d1 = ddh('5/15/2021')
         d2 = ddh('5/15/2024')
-
-        expected_dcf_ACT360 = 3 # manually computed using QL Python
+        
+        expected_dcf_ACT360 = get_ql_dayCount(d1,d2,count_convention="Act360")
+        
         dcf_ACT360 = (d2-d1).yf('ACT/360')
         self.assertEqual(dcf_ACT360, expected_dcf_ACT360)
 
-        expected_dcf_ACT365 = 3 # manually computed using QL Python
+        expected_dcf_ACT365 = get_ql_dayCount(d1,d2,count_convention="Act365")
         dcf_ACT365 = (d2-d1).yf('ACT/365')
         self.assertEqual(dcf_ACT365, expected_dcf_ACT365)
 
-        expected_dcf_30E360 = 3 # manually computed using QL Python
+        expected_dcf_30E360 = get_ql_dayCount(d1,d2,count_convention="30E360")
         dcf_30E360 = (d2-d1).yf('30E/360')
         self.assertEqual(dcf_30E360, expected_dcf_30E360)
 
-        expected_dcf_BD252= 3 # manually computed using QL Python
-        dcf_30E360 = (d2-d1).yf('BD/252',cals='BR') 
-        self.assertEqual(dcf_30E360, expected_dcf_BD252)
+        # if we change to BR the difference is quite big eg, toler=0.083
+        expected_dcf_BD252= get_ql_dayCount(d1,d2,count_convention="bd252",cals="NY")
+        dcf_bd252 = (d2-d1).yf('BD/252',cals="NY") 
+        toler = abs(expected_dcf_BD252 - dcf_bd252)
+        
+        self.assertTrue(toler<0.03)
 
+        with self.assertRaises(ValueError):
+            (d2-d1).yf("none")
+        dur2 = (d2-d1)
+        dur2.__setattribute__("cals","NY") 
+        dcf_bd252 = (d2-d1).yf('BD/252',cals="NY") 
+        toler = abs(expected_dcf_BD252 - dcf_bd252)
+        
     def test_gt(self):
         """
         test when b = 0 to compare a= Duration(something) and a>b

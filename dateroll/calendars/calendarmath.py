@@ -360,7 +360,4 @@ class CalendarMath:
 calmath = CalendarMath()
 
 if __name__ == "__main__":  # pragma:no cover
-    from dateroll import ddh
-    from dateroll.settings import settings
-    import code
-    # code.interact(local=dict(globals(),**locals()))
+    ...

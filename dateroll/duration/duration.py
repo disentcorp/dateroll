@@ -774,7 +774,7 @@ class Duration(dateutil.relativedelta.relativedelta):
         if cals is None:
             cals = self.cals
         if dc is None:
-            dc = settings.default_day_counter
+            dc = settings.default_daycounter
         if dc.upper() not in yfs.yf_mapping:
             raise ValueError(f'Must be one of {yfs.yf_mapping.keys()}')
         else:
@@ -784,6 +784,7 @@ class Duration(dateutil.relativedelta.relativedelta):
             return dcf
         
     def __setattribute__(self,k,v):
+        
         if k == 'cals':
             self._validate_cals(v)
 
