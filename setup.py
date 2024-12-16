@@ -2,7 +2,7 @@ from setuptools import find_packages, setup
 
 setup(
     name="dateroll",
-    version="0.2.4",
+    version="0.2.12",
     description="""dateroll makes working with dates in python easy and fun.""",
     author="Anthony Malizzio",
     author_email="anthony.malizzio@disent.com",

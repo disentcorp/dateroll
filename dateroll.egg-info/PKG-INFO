@@ -1,0 +1,28 @@
+Metadata-Version: 2.1
+Name: dateroll
+Version: 0.2.12
+Summary: dateroll makes working with dates in python easy and fun.
+Home-page: https://github.com/disentcorp/dateroll
+Author: Anthony Malizzio
+Author-email: anthony.malizzio@disent.com
+License: Apache Software License
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Science/Research
+Classifier: Intended Audience :: Developers
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3 :: Only
+Classifier: Topic :: Software Development
+Classifier: Topic :: Scientific/Engineering
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Topic :: Utilities
+Classifier: Operating System :: Unix
+Requires-Python: >=3.7
+License-File: LICENSE
+Requires-Dist: python-dateutil

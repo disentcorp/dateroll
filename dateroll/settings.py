@@ -2,8 +2,6 @@ import importlib.util
 import pathlib
 import warnings
 
-path = pathlib.Path("~/.dateroll/settings.py").expanduser()
-
 ctx_conv = "_ctx_convention"
 
 default_settings = {
@@ -12,6 +10,9 @@ default_settings = {
     "default_daycounter" : "ACT/365",
     "ie":"(]"
 }
+
+def get_settings_path():
+    return pathlib.Path().home() / '.dateroll' / 'settings.py'
 
 default_settings_validation = {
     "debug": (lambda x: isinstance(x, bool), TypeError("debug must be bool")),
@@ -49,7 +50,8 @@ class Settings:
         """
         retrieve user settings and validate
         """
-        if path.exists():
+        
+        if self.path.exists():
             d = self.retrieve()
             d_validated = self.validate(d)
             self.__dict__.update(d_validated)
@@ -57,19 +59,23 @@ class Settings:
         else:
             self.__dict__.update(default_settings)
             self.save()
+    
+    @property
+    def path(self):
+        return get_settings_path()
 
     def retrieve(self):
         """
         try to load settings file, if corrupted replace with defaults
         """
         try:
-            spec = importlib.util.spec_from_file_location("module.name", path)
+            spec = importlib.util.spec_from_file_location("module.name", self.path)
             mod = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(mod)
             d = mod.__dict__
         except Exception as e:
             d = {}
-            msg = f"Unable to read settings file in {path}, will restoring defaults."
+            msg = f"Unable to read settings file in {self.path}, will restoring defaults."
             warnings.warn(msg)
 
         d = {k: v for k, v in d.items() if not k.startswith("_")}
@@ -79,9 +85,9 @@ class Settings:
         """
         save settings file -- settings must be in default_settings
         """
-        path.parent.mkdir(parents=True, exist_ok=True)
-        with path.open("w") as f:
-            txt = f"# Dateroll settings file\n# {path}\n\n"
+        self.path.parent.mkdir(parents=True, exist_ok=True)
+        with self.path.open("w") as f:
+            txt = f"# Dateroll settings file\n# {self.path}\n\n"
             for k, v in self.__dict__.items():
                 if not k.startswith("__") and k in default_settings:
                     txt += f"{k}={repr(v)}\n"

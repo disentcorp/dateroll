@@ -1,4 +1,3 @@
-import code
 import copy
 import datetime
 import math
@@ -402,7 +401,8 @@ class Duration(dateutil.relativedelta.relativedelta):
             w = ",".join(warns)
             message = f"[dateroll] just_days using approx: {w} "
             if not _force_exact:
-                print(message)
+                pass
+                # print(message)
             else:
                 raise ValueError(message)
 
