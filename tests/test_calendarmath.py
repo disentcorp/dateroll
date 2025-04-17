@@ -9,7 +9,7 @@ import uuid
 from unittest import expectedFailure
 
 import dateroll.calendars.calendars as calendars
-from dateroll.calendars.calendarmath import DATA_LOCATION_FILE, CalendarMath
+from dateroll.calendars.calendarmath import CalendarMath
 from dateroll.date.date import Date
 from dateroll.settings import settings
 

@@ -12,14 +12,7 @@ from dateroll.date import date as dateModule
 from dateroll.utils import date_slice, convention_map
 from dateroll import settings
 from dateroll.tblfmt import pretty_table
-
-ROOT_DIR = pathlib.Path(__file__).parents[2]
-PARENT_LOCATION = pathlib.Path.home() / ".dateroll/"
-PARENT_LOCATION.mkdir(exist_ok=True)
-MODULE_LOCATION = PARENT_LOCATION / "calendars/"
-MODULE_LOCATION.mkdir(exist_ok=True)
-DATA_LOCATION_FILE = MODULE_LOCATION / "holiday_lists"
-SAMPLE_DATA_PATH = ROOT_DIR / "dateroll" / "sampledata" / "*.csv"
+from dateroll.settings import get_hol_lists_path, get_comp_cals_path, get_sample_data_path
 
 INCEPTION = datetime.date(1824, 2, 29)
 
@@ -45,9 +38,12 @@ def date_check(i):
 
 
 def load_sample_data():
-    files = glob.glob(str(SAMPLE_DATA_PATH))
+    path = get_sample_data_path()
+    files = glob.glob(str((path)))
     data = {}
+    print('loading sample data',path)
     for file in files:
+        print('loading', file)
         name = pathlib.Path(file).stem
         with open(file) as f:
             ls = f.readlines()
@@ -167,8 +163,8 @@ class Calendars(dict):
     dict-like dictionary of calendars
     """
 
-    def __init__(self, home=DATA_LOCATION_FILE):
-        self.home = str(home)  # on disk location
+    def __init__(self):
+        self.home = get_hol_lists_path()
         self.db_hash = None  # initial hash
         self.db = {}  # cache
         self.write = False  # sentinel to invalidate cache
@@ -199,8 +195,9 @@ class Calendars(dict):
     def __setitem__(self, k, v):
 
         # invalidate calendar union caches, very important
-        if calendarmathModule.DATA_LOCATION_FILE.exists():
-            os.remove(calendarmathModule.DATA_LOCATION_FILE)
+        path = get_comp_cals_path()
+        if path.exists():
+            os.remove(path)
 
         # key must be 2-3 letter string in uppercase
         if not isinstance(k, str):

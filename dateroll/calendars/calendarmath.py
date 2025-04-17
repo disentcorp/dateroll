@@ -7,11 +7,7 @@ import pickle
 import dateroll.date.date as dateModule
 from dateroll.calendars.calendars import Calendars
 
-PARENT_LOCATION = pathlib.Path.home() / ".dateroll/"
-PARENT_LOCATION.mkdir(exist_ok=True)
-MODULE_LOCATION = PARENT_LOCATION / "calendars/"
-MODULE_LOCATION.mkdir(exist_ok=True)
-DATA_LOCATION_FILE = MODULE_LOCATION / "compiled_cals"
+from dateroll.settings import get_comp_cals_path
 
 WEEKEND_CALENDAR = "WE"
 DEFAULT_IE = "(]"
@@ -37,8 +33,8 @@ class CalendarMath:
 
     """
 
-    def __init__(self, home=DATA_LOCATION_FILE):
-        self.home = home
+    def __init__(self):
+        self.home = get_comp_cals_path()
         self.cals = Calendars()
         self.cal_names = list(self.cals.keys())
         self.hash = self.cals.hash
